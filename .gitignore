@@ -1,3 +1,13 @@
 # jar аддонов — не в git: все версии на сервере сборки (tfc admin addon upload), текущий — по sha256 из addon.json
 */*.jar
+
+# Как было в tfc-plans, пока аддоны лежали там: логи, кеши, редакторы
+logs
+*.log
+.cache/
+__pycache__/
+.claude/*
+.vscode/*
+.idea
 .DS_Store
+*.sw?
