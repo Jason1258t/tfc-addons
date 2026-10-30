@@ -25,4 +25,5 @@ workflow and skills (`addon-dev`, `addon-release`) — in that repo: `AGENTS.md`
   call it).
 - Jars are not in git (`*/*.jar`): every version is on the pack server, the current one is found by `sha256` from
   `addon.json`.
-- Nothing can be checked in game: report what the dev server verified and mark the rest «в игре не проверялось».
+- Nothing can be checked in game: report what the dev server verified. Don't append a routine «в игре не проверялось»
+  note unless the in-game status is actually load-bearing for the answer.
