@@ -1,0 +1,14 @@
+{
+  "block.destroy_extras.membrane_electrolyzer": "Membrane Electrolyzer",
+  "item.destroy_extras.membrane": "Ion-Exchange Membrane",
+  "destroy_extras.recipe.electrolysis": "Membrane Electrolysis",
+  "destroy_extras.fluid.salt_water": "Salt Water",
+  "destroy_extras.fluid.hydrogen": "Hydrogen",
+  "destroy_extras.fluid.chlorine": "Chlorine",
+  "destroy_extras.fluid.sodium_hydroxide": "Sodium Hydroxide Solution",
+  "status.destroy_extras.electrolyzer.idle": "Waiting for salt water",
+  "status.destroy_extras.electrolyzer.waiting_for_power": "Waiting for 300 V / 8 A power",
+  "status.destroy_extras.electrolyzer.running": "Electrolysis running",
+  "status.destroy_extras.electrolyzer.blocked_output": "Output full",
+  "status.destroy_extras.electrolyzer.fault": "Fault: check membrane and power"
+}

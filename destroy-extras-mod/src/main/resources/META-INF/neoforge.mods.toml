@@ -50,3 +50,24 @@ type = "required"
 versionRange = "[0.1.0,0.2.0)"
 ordering = "AFTER"
 side = "BOTH"
+
+[[dependencies.destroy_extras]]
+modId = "electroenergetics"
+type = "required"
+versionRange = "[1.21.1-1.1.2,1.21.1-1.2.0)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.destroy_extras]]
+modId = "tfc"
+type = "required"
+versionRange = "[4.2.9,4.3.0)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.destroy_extras]]
+modId = "jei"
+type = "optional"
+versionRange = "[19.44.0.401,20.0.0.0)"
+ordering = "AFTER"
+side = "CLIENT"

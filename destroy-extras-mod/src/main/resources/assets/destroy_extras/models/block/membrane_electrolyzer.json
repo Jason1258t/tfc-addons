@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "destroy_extras:block/membrane_electrolyzer_side",
+    "down": "destroy_extras:block/membrane_electrolyzer_side",
+    "up": "destroy_extras:block/membrane_electrolyzer_top",
+    "north": "destroy_extras:block/membrane_electrolyzer_hydrogen",
+    "south": "destroy_extras:block/membrane_electrolyzer_chlorine",
+    "east": "destroy_extras:block/membrane_electrolyzer_sodium_hydroxide",
+    "west": "destroy_extras:block/membrane_electrolyzer_side"
+  }
+}

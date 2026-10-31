@@ -5,8 +5,8 @@ license = "MIT"
 [[mods]]
 modId = "destroy_extras_devtest"
 version = "0.1.0"
-displayName = "Destroy Extras devtest"
-description = "Зарезервировано для проверок будущих машин."
+displayName = "Destroy Extras Devtest"
+description = "Серверные проверки production-машин Destroy Extras; не входит в release jar."
 
 [[dependencies.destroy_extras_devtest]]
 modId = "destroy_extras"

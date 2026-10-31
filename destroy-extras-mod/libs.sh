@@ -10,8 +10,12 @@ DESTROY_JAR="${DESTROY_JAR:-$CANDIDATES/destroy-1.21.1-0.4.6-eligibbs.jar}"
 PETROLPARK_JAR="${PETROLPARK_JAR:-$CANDIDATES/petrolpark-1.21.1-1.5.11.jar}"
 FILES=(
   "$MODS/create-1.21.1-6.0.10.jar"
+  "$MODS/electroenergetics-1.21.1-1.1.2.jar"
+  "$MODS/TerraFirmaCraft-NeoForge-1.21.1-4.2.9.jar"
+  "$MODS/Patchouli-1.21.1-93-NEOFORGE.jar"
   "$DESTROY_JAR"
   "$PETROLPARK_JAR"
+  "$MODS/jei-1.21.1-neoforge-19.44.0.401.jar"
 )
 for jar in "${FILES[@]}"; do
   [ -f "$jar" ] || { echo "Нет точной зависимости: $jar" >&2; exit 1; }

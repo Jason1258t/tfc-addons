@@ -1,0 +1,14 @@
+{
+  "block.destroy_extras.membrane_electrolyzer": "Мембранный электролизёр",
+  "item.destroy_extras.membrane": "Ионообменная мембрана",
+  "destroy_extras.recipe.electrolysis": "Мембранный электролиз",
+  "destroy_extras.fluid.salt_water": "Солёная вода",
+  "destroy_extras.fluid.hydrogen": "Водород",
+  "destroy_extras.fluid.chlorine": "Хлор",
+  "destroy_extras.fluid.sodium_hydroxide": "Раствор гидроксида натрия",
+  "status.destroy_extras.electrolyzer.idle": "Ожидание исходной воды",
+  "status.destroy_extras.electrolyzer.waiting_for_power": "Ожидание питания 300 В / 8 А",
+  "status.destroy_extras.electrolyzer.running": "Электролиз",
+  "status.destroy_extras.electrolyzer.blocked_output": "Выход переполнен",
+  "status.destroy_extras.electrolyzer.fault": "Неисправность: проверьте мембрану и питание"
+}

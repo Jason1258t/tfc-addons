@@ -1,0 +1,71 @@
+{
+  "type": "destroy_extras:electrolysis",
+  "ingredients": [
+    {
+      "type": "destroy:mixture_with_salt",
+      "cation": "destroy:sodium_ion",
+      "anion": "destroy:chloride",
+      "concentration": 1.0,
+      "amount": 1000
+    }
+  ],
+  "salt_concentration": 1.0,
+  "water_concentration": 10.0,
+  "translation_key": "destroy_extras.fluid.salt_water",
+  "results": [
+    {
+      "amount": 250,
+      "id": "destroy:gas",
+      "components": {
+        "destroy:mixture": {
+          "TranslationKey": "destroy_extras.fluid.hydrogen",
+          "Contents": [
+            {
+              "Molecule": "destroy:hydrogen",
+              "Concentration": 1.0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "amount": 250,
+      "id": "destroy:gas",
+      "components": {
+        "destroy:mixture": {
+          "TranslationKey": "destroy_extras.fluid.chlorine",
+          "Contents": [
+            {
+              "Molecule": "destroy:chlorine",
+              "Concentration": 1.0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "amount": 500,
+      "id": "destroy:mixture",
+      "components": {
+        "destroy:mixture": {
+          "TranslationKey": "destroy_extras.fluid.sodium_hydroxide",
+          "Contents": [
+            {
+              "Molecule": "destroy:sodium_ion",
+              "Concentration": 1.0
+            },
+            {
+              "Molecule": "destroy:hydroxide",
+              "Concentration": 1.0
+            },
+            {
+              "Molecule": "destroy:water",
+              "Concentration": 4.0
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "processing_time": 200
+}
