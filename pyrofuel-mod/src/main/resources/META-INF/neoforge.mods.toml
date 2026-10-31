@@ -6,7 +6,7 @@ license = "MIT"
 modId = "pyrofuel"
 version = "1.0.1"
 displayName = "TFC Pyrofuel"
-authors = "TFC Планы"
+authors = "TFC Studio"
 description = '''Пирококсовые брикеты и жидкий пирогель для промышленного перегрева Create.'''
 
 [[dependencies.pyrofuel]]

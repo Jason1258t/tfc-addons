@@ -30,7 +30,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import small.diesel.electric.Electric;
 
 /**
- * Малые дизели — дополнение к Create Diesel Generators для сборки TFC Планы: малый дизельный двигатель (вращение Create)
+ * Малые дизели — дополнение к Create Diesel Generators для сборки TFC Studio: малый дизельный двигатель (вращение Create)
  * и, если стоит Electro Energetics, малый дизельный генератор (постоянный ток EE). Топливо и его теплота — из реестра
  * CDG (Fuel), горит по нагрузке.
  */

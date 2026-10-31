@@ -6,9 +6,9 @@ license = "MIT"
 modId = "small_diesel"
 version = "1.0.1"
 displayName = "Small Diesel"
-authors = "TFC Планы"
+authors = "TFC Studio"
 description = '''
-Малые дизели для Create Diesel Generators (сборка TFC Планы): малый дизельный двигатель — четверть обычного, топливо
+Малые дизели для Create Diesel Generators (сборка TFC Studio): малый дизельный двигатель — четверть обычного, топливо
 горит по нагрузке; с Electro Energetics — ещё малый дизельный генератор постоянного тока 1,5 кВт. Топлива — те же,
 что у двигателей CDG.
 '''

@@ -5,7 +5,7 @@ license = "MIT"
 modId = "builder_tools"
 version = "1.0.1"
 displayName = "Builder Tools"
-authors = "TFC Планы"
+authors = "TFC Studio"
 description = "Пояс строителя: пополнение блоков в руке и подбор инструмента при добыче."
 [[dependencies.builder_tools]]
 modId = "neoforge"

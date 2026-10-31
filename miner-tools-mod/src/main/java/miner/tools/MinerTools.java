@@ -21,7 +21,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
- * Снаряжение шахтёра для сборки TFC Планы.
+ * Снаряжение шахтёра для сборки TFC Studio.
  * <p>
  * Пояс шахтёра: пока он надет (слот Curios «пояс») или лежит в инвентаре, игрок не подбирает предметы из его фильтра —
  * камешки, гравий, землю. ПКМ с поясом в руке — окно фильтра, Shift+ПКМ — включить/выключить.

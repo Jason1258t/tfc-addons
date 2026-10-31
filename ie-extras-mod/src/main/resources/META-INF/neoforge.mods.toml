@@ -6,9 +6,9 @@ license = "MIT"
 modId = "ie_extras"
 version = "1.1.0"
 displayName = "IE Extras"
-authors = "TFC Планы"
+authors = "TFC Studio"
 description = '''
-Блоки и функции к Immersive Engineering для сборки TFC Планы. Аналоговый нагреватель — электрический (FE) нагреватель
+Блоки и функции к Immersive Engineering для сборки TFC Studio. Аналоговый нагреватель — электрический (FE) нагреватель
 для тигля и других тепловых устройств TFC; температура задаётся силой сигнала красного камня (аналоговый рычаг Create,
 компаратор): 0–15 → 0–1600 °C. Чаша Create (с WoodenCog) греется от внешнего нагревателя IE, аналогового нагревателя
 и нагревателя Electro Energetics.

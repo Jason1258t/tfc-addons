@@ -9,9 +9,9 @@ config = "ee_extras.mixins.json"
 modId = "ee_extras"
 version = "2.5.1"
 displayName = "EE Extras"
-authors = "TFC Планы"
+authors = "TFC Studio"
 description = '''
-Дополнения к Create Electro Energetics для сборки TFC Планы (до 2.0 — EE Rectifiers): трёхфазный и однофазный
+Дополнения к Create Electro Energetics для сборки TFC Studio (до 2.0 — EE Rectifiers): трёхфазный и однофазный
 выпрямители и инверторы, компактный кинетический генератор, двусторонний преобразователь EE ↔ FE, прокладка двухпроводного кабеля EE, четырёхжильный кабель с
 соединителем, отвод фазы и кабельные изоляторы, провода ЛЭП и натяжной зажим, фонарь IE на двухпроводном кабеле.
 '''

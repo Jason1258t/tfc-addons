@@ -1,6 +1,6 @@
 # IE Extras (`ie_extras`)
 
-Блоки и функции к Immersive Engineering для сборки TFC Планы. Ставится на сервер и всем игрокам (новый блок).
+Блоки и функции к Immersive Engineering для сборки TFC Studio. Ставится на сервер и всем игрокам (новый блок).
 Зависимости: NeoForge 21.1.234+, TFC 4.2.9, Immersive Engineering 12.4.2; нагрев чаши — при Create 6.0.10 и WoodenCog 1.2.18
 (необязательные).
 

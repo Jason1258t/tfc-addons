@@ -30,7 +30,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
- * Create Aeronautics Extra — бортовая электрика для машин и кораблей Create Aeronautics (сборка TFC Планы).
+ * Create Aeronautics Extra — бортовая электрика для машин и кораблей Create Aeronautics (сборка TFC Studio).
  *
  * Корабль Aeronautics — «подуровень» Sable (sable 2.0.5, по байткоду): его блоки лежат в чанках-участках того же
  * ServerLevel (ServerLevelPlot берёт level.getChunkSource()), поэтому блок-сущности, сеть вращения Create и устройства

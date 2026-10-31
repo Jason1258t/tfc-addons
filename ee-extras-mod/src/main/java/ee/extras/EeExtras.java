@@ -60,7 +60,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
- * Дополнения к Create Electro Energetics для сборки TFC Планы (до 2.0 — «EE Rectifiers», modId ee_rectifier):
+ * Дополнения к Create Electro Energetics для сборки TFC Studio (до 2.0 — «EE Rectifiers», modId ee_rectifier):
  * выпрямители и сетевые инверторы двух ступеней мощности, компактный кинетический генератор, двусторонний преобразователь EE ↔ FE, двух- и четырёхжильные кабели (катушка двухпроводного кабеля EE
  * в 1.1.2 не доделана — прокладку делает этот мод), кабельные изоляторы, фонарь IE на двухпроводном кабеле.
  */

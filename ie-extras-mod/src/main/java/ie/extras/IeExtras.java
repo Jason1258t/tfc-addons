@@ -31,7 +31,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
- * IE Extras — блоки и функции к Immersive Engineering для сборки TFC Планы. Первый блок — аналоговый нагреватель:
+ * IE Extras — блоки и функции к Immersive Engineering для сборки TFC Studio. Первый блок — аналоговый нагреватель:
  * электрический (FE) нагреватель для тигля и других тепловых устройств TFC, температура задаётся силой сигнала
  * красного камня (аналоговый рычаг Create, компаратор). С 1.1.0 — нагрев чаши Create (WoodenCog) внешним нагревателем
  * IE, аналоговым нагревателем и нагревателем EE.

@@ -1,6 +1,6 @@
 # tfc-addons — pack addons (NeoForge mods)
 
-Addons for the TerraFirmaCraft RealWorld pack of «TFC Планы» (Minecraft 1.21.1, NeoForge). One folder per addon
+Addons for the TerraFirmaCraft RealWorld pack of «TFC Studio» (Minecraft 1.21.1, NeoForge). One folder per addon
 (`<name>-mod/`: Gradle project, `addon.json` site card, `icons/`, `release.sh`).
 
 **Where this repo lives.** It is checked out as the `tools/` git submodule of the site repo
