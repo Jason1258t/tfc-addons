@@ -1,0 +1,9 @@
+{
+  "reactants": [
+    { "molecule": "destroy:hydrogen", "ratio": 1 },
+    { "molecule": "destroy:chlorine", "ratio": 1 }
+  ],
+  "products": [
+    { "molecule": "destroy:hydrochloric_acid", "ratio": 2 }
+  ]
+}

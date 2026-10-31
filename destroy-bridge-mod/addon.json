@@ -1,0 +1,13 @@
+{
+  "id": "destroy_bridge",
+  "name": "Destroy Bridge — ранний прототип",
+  "version": "0.1.0",
+  "jar": "destroy-bridge-0.1.0.jar",
+  "sha256": "2a18609d57e638fd3d5157661445964eedab4558fb96e4269f08f0c698d75960",
+  "order": 800,
+  "side": "both",
+  "summary": "Среда разработки моста Destroy с TFC, Create и EE; не для установки игроками.",
+  "needs": "Только локальный тестовый стенд разработчиков.",
+  "unlisted": true,
+  "blocks": []
+}

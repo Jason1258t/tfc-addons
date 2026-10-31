@@ -1,0 +1,13 @@
+{
+  "id": "destroy_extras",
+  "name": "Destroy Extras — ранний прототип",
+  "version": "0.1.0",
+  "jar": "destroy-extras-0.1.0.jar",
+  "sha256": "6ecc419f831c34faa524cc4ed0fe7e127da8829323ac1c0cd688e086b01c8304",
+  "order": 801,
+  "side": "both",
+  "summary": "Среда разработки недостающих машин Destroy; игровых машин в этой версии ещё нет.",
+  "needs": "Только локальный тестовый стенд разработчиков вместе с Destroy Bridge.",
+  "unlisted": true,
+  "blocks": []
+}

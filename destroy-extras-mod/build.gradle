@@ -1,0 +1,43 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.148'
+}
+
+version = mod_version
+group = 'tfc.destroy.extras'
+base { archivesName = 'destroy-extras' }
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+sourceSets {
+    devtest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+configurations {
+    devtestCompileOnly.extendsFrom compileOnly
+}
+
+neoForge {
+    version = project.neo_version
+    mods {
+        destroy_extras { sourceSet sourceSets.main }
+        destroy_extras_devtest { sourceSet sourceSets.devtest }
+    }
+    addModdingDependenciesTo(sourceSets.devtest)
+    runs {
+        server {
+            server()
+            programArgument '--nogui'
+            sourceSet = sourceSets.devtest
+        }
+    }
+}
+
+dependencies {
+    // Destroy, Petrolpark, Create и destroy_bridge — только для компиляции.
+    compileOnly fileTree(dir: 'libs', include: '*.jar')
+}
+
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
