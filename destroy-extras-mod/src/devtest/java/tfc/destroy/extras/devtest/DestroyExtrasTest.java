@@ -12,6 +12,7 @@ import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import java.util.Map;
 import net.dries007.tfc.common.fluids.TFCFluids;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -23,6 +24,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.IEventBus;
@@ -31,12 +33,23 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import petrolpark.mc.destroy.DestroyBlocks;
+import petrolpark.mc.destroy.DestroyDataComponents;
+import petrolpark.mc.destroy.DestroyItems;
+import petrolpark.mc.destroy.chemistry.legacy.LegacyMixture;
+import petrolpark.mc.destroy.chemistry.legacy.LegacySpecies;
+import petrolpark.mc.destroy.chemistry.legacy.index.DestroyMolecules;
+import petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid;
+import petrolpark.mc.destroy.core.chemistry.vat.VatControllerBlock;
+import petrolpark.mc.destroy.core.chemistry.vat.VatControllerBlockEntity;
 import tfc.destroy.bridge.electric.ProcessPowerDevice;
+import tfc.destroy.bridge.fluid.HydrochloricAcidAdapter;
 import tfc.destroy.extras.DestroyExtras;
 import tfc.destroy.extras.electrolyzer.ElectrolyzerStatus;
 import tfc.destroy.extras.electrolyzer.MembraneElectrolyzerBlockEntity;
@@ -49,6 +62,7 @@ public final class DestroyExtrasTest {
     private static final BlockPos PROCESS = new BlockPos(0, -60, 10);
     private static final BlockPos SOURCE = PROCESS.west();
     private static final BlockPos BATTERY = PROCESS.east(2);
+    private static final BlockPos VAT = new BlockPos(10, -60, 11);
     private static final ResourceLocation SALT_WATER = DestroyExtras.rl("electrolysis/salt_water");
 
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
@@ -62,12 +76,20 @@ public final class DestroyExtrasTest {
 
     private static int checks;
     private static int failures;
+    private static boolean vatThermostat;
 
     public DestroyExtrasTest(IEventBus modBus) {
         BLOCKS.register(modBus);
         BLOCK_ENTITIES.register(modBus);
         modBus.addListener(DestroyExtrasTest::capabilities);
         NeoForge.EVENT_BUS.addListener(DestroyExtrasTest::commands);
+        NeoForge.EVENT_BUS.addListener(DestroyExtrasTest::serverTick);
+    }
+
+    private static void serverTick(ServerTickEvent.Post event) {
+        if (vatThermostat && event.getServer().overworld().getBlockEntity(VAT) instanceof VatControllerBlockEntity vat) {
+            vat.changeHeatingPower(vat.getTemperature() > 298.15F ? -30_000_000.0F : 0.0F);
+        }
     }
 
     private static void capabilities(RegisterCapabilitiesEvent event) {
@@ -106,6 +128,11 @@ public final class DestroyExtrasTest {
                 .then(Commands.argument("damage", IntegerArgumentType.integer(0, 64))
                     .executes(ctx -> membrane(ctx, IntegerArgumentType.getInteger(ctx, "damage")))))
             .then(Commands.literal("report").executes(ctx -> reportState(ctx.getSource())))
+            .then(Commands.literal("m3build").executes(ctx -> m3build(ctx.getSource())))
+            .then(Commands.literal("m3prepare").then(Commands.argument("case", StringArgumentType.word())
+                .executes(ctx -> m3prepare(ctx, StringArgumentType.getString(ctx, "case")))))
+            .then(Commands.literal("m3assert").then(Commands.argument("case", StringArgumentType.word())
+                .executes(ctx -> m3assert(ctx, StringArgumentType.getString(ctx, "case")))))
             .then(Commands.literal("restartcase").executes(DestroyExtrasTest::restartCase))
             .then(Commands.literal("assert").executes(DestroyExtrasTest::report)
                 .then(Commands.argument("case", StringArgumentType.word())
@@ -273,6 +300,170 @@ public final class DestroyExtrasTest {
         return report(ctx);
     }
 
+    private static int m3build(CommandSourceStack source) {
+        ServerLevel level = source.getLevel();
+        for (BlockPos pos : BlockPos.betweenClosed(VAT.offset(-2, -2, -4), VAT.offset(2, 2, 0))) {
+            boolean inside = Math.abs(pos.getX() - VAT.getX()) <= 1 && Math.abs(pos.getY() - VAT.getY()) <= 1
+                && pos.getZ() >= VAT.getZ() - 3 && pos.getZ() < VAT.getZ();
+            place(level, pos, inside ? Blocks.AIR.defaultBlockState() : Blocks.NETHERITE_BLOCK.defaultBlockState());
+        }
+        place(level, VAT, DestroyBlocks.VAT_CONTROLLER.getDefaultState().setValue(VatControllerBlock.FACING, Direction.SOUTH));
+        VatControllerBlockEntity vat = vat(level);
+        if (vat.getVatOptional().isEmpty()) vat.tryMakeVat();
+        vatThermostat = false;
+        reset();
+        check(source, vat.getVatOptional().isPresent(), "штатный Vat 3×3×3 сформирован из незеритовых блоков");
+        check(source, vat.getVatOptional().map(v -> v.getCapacity()).orElse(0) == 27000,
+            "ёмкость штатного Vat — 27000 мБ");
+        check(source, petrolpark.mc.destroy.chemistry.legacy.LegacyReaction.REACTIONS
+            .containsKey("destroy:hydrogen_chloride_synthesis"), "загружена штатная реакция H₂ + Cl₂ → 2 HCl");
+        check(source, petrolpark.mc.destroy.chemistry.legacy.LegacyReaction.REACTIONS
+            .containsKey("destroy:iron_dissolution"), "загружена штатная реакция растворения железа до Fe(III)");
+        return report(source);
+    }
+
+    private static int m3prepare(CommandContext<CommandSourceStack> ctx, String testCase) {
+        VatControllerBlockEntity vat = vat(ctx.getSource().getLevel());
+        vatThermostat = testCase.equals("hcl");
+        switch (testCase) {
+            case "hcl", "hcl_no_uv" -> {
+                FluidStack[] products = recipe(ctx.getSource().getLevel()).products();
+                LegacyMixture hydrogen = mixture(products[0]);
+                LegacyMixture chlorine = mixture(products[1]);
+                LegacyMixture feed = LegacyMixture.mix(Map.of(
+                    hydrogen, 5400.0, chlorine, 5400.0, new LegacyMixture(), 16200.0));
+                feed.heat((298.15F - feed.getTemperature()) * feed.getVolumetricHeatCapacity());
+                vat.getGasTank().setFluid(MixtureFluid.of(27000, feed));
+                if (testCase.equals("hcl")) vat.changeUVPower(1.0F);
+            }
+            case "absorption" -> {
+                FluidStack absorbed = HydrochloricAcidAdapter.absorb(
+                    pure(DestroyMolecules.HYDROCHLORIC_ACID, 25), pure(DestroyMolecules.WATER, 250));
+                if (absorbed.isEmpty()) {
+                    ctx.getSource().sendFailure(Component.literal("атомарное поглощение HCl отклонено"));
+                    return 0;
+                }
+            }
+            case "iron" -> {
+                LegacyMixture acid = new LegacyMixture()
+                    .addMolecule(DestroyMolecules.PROTON, 50.0F / 550)
+                    .addMolecule(DestroyMolecules.CHLORIDE, 50.0F / 550)
+                    .addMolecule(DestroyMolecules.WATER, 500.0F / 550);
+                acid.heat((298.15F - acid.getTemperature()) * acid.getVolumetricHeatCapacity());
+                vat.getLiquidTank().setFluid(MixtureFluid.of(550, acid));
+                if (!vat.inventory.insertItem(0, new ItemStack(DestroyItems.IRON_POWDER.get()), false).isEmpty()) {
+                    ctx.getSource().sendFailure(Component.literal("железная пыль не принята инвентарём Vat"));
+                    return 0;
+                }
+            }
+            default -> {
+                ctx.getSource().sendFailure(Component.literal("неизвестный сценарий M3: " + testCase));
+                return 0;
+            }
+        }
+        vat.updateCachedMixture();
+        vat.setChanged();
+        ctx.getSource().sendSuccess(() -> Component.literal("подготовлен сценарий M3 " + testCase), false);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int m3assert(CommandContext<CommandSourceStack> ctx, String testCase) {
+        reset();
+        VatControllerBlockEntity vat = vat(ctx.getSource().getLevel());
+        FluidStack gas = vat.getGasTankContents();
+        FluidStack liquid = vat.getLiquidTankContents();
+        if (testCase.equals("absorption")) {
+            gas = FluidStack.EMPTY;
+            liquid = HydrochloricAcidAdapter.absorb(
+                pure(DestroyMolecules.HYDROCHLORIC_ACID, 25), pure(DestroyMolecules.WATER, 250));
+        }
+        switch (testCase) {
+            case "hcl" -> {
+                double acid = moles(gas, DestroyMolecules.HYDROCHLORIC_ACID);
+                check(ctx, acid > 1.0, "UV запускает синтез HCl в штатном Vat");
+                check(ctx, close(5400 - moles(gas, DestroyMolecules.HYDROGEN), acid / 2, 1.0)
+                    && close(5400 - moles(gas, DestroyMolecules.CHLORINE), acid / 2, 1.0),
+                    "на 2 HCl расходуются ровно 1 H₂ и 1 Cl₂");
+                check(ctx, close(moles(gas, DestroyMolecules.HYDROGEN), moles(gas, DestroyMolecules.CHLORINE), 0.01),
+                    "остатки H₂ и Cl₂ сохраняют исходное соотношение 1:1");
+                check(ctx, gas.getAmount() > 0 && liquid.isEmpty(), "HCl остаётся в штатном газовом выходе");
+            }
+            case "hcl_no_uv" -> {
+                check(ctx, close(moles(gas, DestroyMolecules.HYDROGEN), 5400, 0.01)
+                    && close(moles(gas, DestroyMolecules.CHLORINE), 5400, 0.01),
+                    "без UV исходные H₂ и Cl₂ сохранены");
+                check(ctx, moles(gas, DestroyMolecules.HYDROCHLORIC_ACID) < 0.001,
+                    "без UV синтез HCl не идёт");
+            }
+            case "absorption" -> {
+                double initial = 25 * DestroyMolecules.HYDROCHLORIC_ACID.getPureConcentration();
+                double chlorine = moles(gas, DestroyMolecules.HYDROCHLORIC_ACID)
+                    + moles(liquid, DestroyMolecules.HYDROCHLORIC_ACID) + moles(liquid, DestroyMolecules.CHLORIDE);
+                check(ctx, close(moles(liquid, DestroyMolecules.PROTON), initial, 0.05)
+                    && close(moles(liquid, DestroyMolecules.CHLORIDE), initial, 0.05),
+                    "атомарное поглощение даёт равные H⁺ и Cl⁻ по одному на HCl");
+                check(ctx, close(chlorine, initial, 0.05), "хлор сохраняется при поглощении HCl водой");
+                check(ctx, close(moles(liquid, DestroyMolecules.WATER),
+                    250 * DestroyMolecules.WATER.getPureConcentration(), 0.05)
+                    && liquid.getAmount() == 275, "вода и объём жидкой фазы сохранены");
+            }
+            case "iron" -> {
+                check(ctx, vat.inventory.getStackInSlot(0).isEmpty(), "одна железная пыль израсходована");
+                check(ctx, close(moles(liquid, DestroyMolecules.IRON_III), 9.0, 0.3),
+                    "одна пыль даёт 9 молей Fe(III) с численной погрешностью Destroy до 3 %");
+                check(ctx, close(moles(gas, DestroyMolecules.HYDROGEN), 13.5, 0.1),
+                    "побочный H₂ выдан в газовую фазу: 13,5 моля");
+                check(ctx, moles(liquid, DestroyMolecules.IRON_II) < 0.001,
+                    "обход через отдельный FeCl₂ не требуется");
+                double acidHydrogenLeft = moles(gas, DestroyMolecules.HYDROCHLORIC_ACID)
+                    + moles(liquid, DestroyMolecules.HYDROCHLORIC_ACID) + moles(liquid, DestroyMolecules.PROTON);
+                check(ctx, close(50 - acidHydrogenLeft, 27.0, 0.9),
+                    "на пыль израсходовано 27 H⁺ с численной погрешностью Destroy до 3 %");
+            }
+            default -> check(ctx, false, "неизвестный сценарий M3 " + testCase);
+        }
+        ctx.getSource().sendSystemMessage(Component.literal("M3 gas=" + gas.getAmount() + " мБ, liquid="
+            + liquid.getAmount() + " мБ, T=" + (gas.isEmpty() ? 0 : mixture(gas).getTemperature())
+            + ", H2=" + moles(gas, DestroyMolecules.HYDROGEN) + ", Cl2=" + moles(gas, DestroyMolecules.CHLORINE)
+            + ", HCl(g/l)=" + moles(gas, DestroyMolecules.HYDROCHLORIC_ACID) + "/"
+            + moles(liquid, DestroyMolecules.HYDROCHLORIC_ACID)
+            + ", H+=" + moles(liquid, DestroyMolecules.PROTON)
+            + ", Cl-=" + moles(liquid, DestroyMolecules.CHLORIDE)
+            + ", Fe(III)=" + moles(liquid, DestroyMolecules.IRON_III)
+            + ", gasContents=" + contents(gas) + ", liquidContents=" + contents(liquid)));
+        return report(ctx);
+    }
+
+    private static String contents(FluidStack stack) {
+        if (stack.isEmpty()) return "{}";
+        LegacyMixture mixture = mixture(stack);
+        StringBuilder result = new StringBuilder("{");
+        for (LegacySpecies molecule : mixture.getContents(false)) {
+            if (result.length() > 1) result.append(", ");
+            result.append(molecule.getFullID()).append('=').append(moles(stack, molecule));
+        }
+        return result.append('}').toString();
+    }
+
+    private static FluidStack pure(LegacySpecies molecule, int amount) {
+        LegacyMixture mixture = new LegacyMixture().addMolecule(molecule, molecule.getPureConcentration());
+        mixture.heat((298.15F - mixture.getTemperature()) * mixture.getVolumetricHeatCapacity());
+        return MixtureFluid.of(amount, mixture);
+    }
+
+    private static LegacyMixture mixture(FluidStack stack) {
+        return LegacyMixture.readNBT(stack.getOrDefault(DestroyDataComponents.MIXTURE, new net.minecraft.nbt.CompoundTag()));
+    }
+
+    private static double moles(FluidStack stack, LegacySpecies molecule) {
+        return stack.isEmpty() ? 0 : mixture(stack).getConcentrationOf(molecule) * stack.getAmount();
+    }
+
+    private static VatControllerBlockEntity vat(ServerLevel level) {
+        if (level.getBlockEntity(VAT) instanceof VatControllerBlockEntity vat) return vat;
+        throw new IllegalStateException("На позиции стенда нет штатного Vat");
+    }
+
     private static void checkPower(CommandContext<CommandSourceStack> ctx, ProcessPowerDevice device,
         double volts, double amps) {
         check(ctx, device != null, "EE-драйвер production-блока создан");
@@ -354,14 +545,22 @@ public final class DestroyExtrasTest {
     }
 
     private static void check(CommandContext<CommandSourceStack> ctx, boolean condition, String label) {
+        check(ctx.getSource(), condition, label);
+    }
+
+    private static void check(CommandSourceStack source, boolean condition, String label) {
         checks++;
         if (!condition) failures++;
-        ctx.getSource().sendSystemMessage(Component.literal("DESTROYEXTRATEST " + (condition ? "OK " : "FAIL ") + label));
+        source.sendSystemMessage(Component.literal("DESTROYEXTRATEST " + (condition ? "OK " : "FAIL ") + label));
     }
 
     private static int report(CommandContext<CommandSourceStack> ctx) {
+        return report(ctx.getSource());
+    }
+
+    private static int report(CommandSourceStack source) {
         int passed = checks - failures;
-        ctx.getSource().sendSystemMessage(Component.literal(
+        source.sendSystemMessage(Component.literal(
             "DESTROYEXTRATEST " + (failures == 0 && checks > 0 ? "PASS " : "FAIL ") + passed + "/" + checks));
         return failures == 0 && checks > 0 ? Command.SINGLE_SUCCESS : 0;
     }

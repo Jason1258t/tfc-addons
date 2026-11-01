@@ -35,6 +35,36 @@ TFC salt water, концентрации соли 1 и воды 10, длител
 JEI-категория находится в отдельном `compat/jei`; JEI объявлен необязательной клиентской зависимостью. Компиляция и
 ресурсы проверены, клиентский запуск — нет.
 
+## M3: HCl и FeCl₃
+
+- Дополнительные машины не добавлены: штатный незеритовый Destroy Vat 3×3×3 на 27 000 мБ выполняет UV-синтез HCl и
+  растворение железной пыли сразу до Fe(III), отдельный FeCl₂-этап не нужен.
+- Для синтеза используются реальные H₂/Cl₂ из JSON M2. Нужен UV и регулируемое охлаждение: постоянный cooler
+  конденсирует газы, а без отвода экзотермической теплоты давление разрушает Vat.
+- Поглощение выполняет атомарный `HydrochloricAcidAdapter` из Bridge: чистые HCl + H₂O → H⁺ + Cl⁻ + H₂O с сохранением
+  молей и объёма. Свободное смешивание в Vat не используется: в Destroy 0.4.6-eligibbs оно нарушает баланс вещества.
+  Эту же операцию должна вызывать травильная ванна M4.
+- Новых fluid type, молекул и release-машин не появилось; стенд и термостат находятся только в devtest.
+
+Команды стенда:
+
+```bash
+./test-server.sh 'destroyextratest m3build' 'destroyextratest m3prepare hcl' \
+  'sleep 30' 'destroyextratest m3assert hcl'
+./test-server.sh 'destroyextratest m3build' 'destroyextratest m3prepare hcl_no_uv' \
+  'sleep 2' 'destroyextratest m3assert hcl_no_uv'
+./test-server.sh 'destroyextratest m3build' 'destroyextratest m3prepare absorption' \
+  'destroyextratest m3assert absorption'
+./test-server.sh 'destroyextratest m3build' 'destroyextratest m3prepare iron' \
+  'sleep 2' 'destroyextratest m3assert iron'
+```
+
+Фактические результаты: Vat и обе реакции — `PASS 4/4`; HCl — `PASS 4/4`, расход H₂/Cl₂ и выдача HCl соответствуют
+1:1:2, жидкой фазы нет; без UV — `PASS 2/2`, HCl не образуется. Атомарное поглощение 25 мБ HCl + 250 мБ воды —
+`PASS 3/3`: 275 мБ смеси, по 1021,6676 моля H⁺/Cl⁻ и 13873,4736 моля H₂O. Железо — `PASS 5/5`: одна пыль
+израсходована, образованы 8,7546 Fe(III) вместо 9 и 13,5 H₂, израсходованы 27,6272 H⁺ вместо 27; расхождение Fe/H⁺
+до 3 % — численная погрешность свободной реакции Destroy, Fe(II) не образуется.
+
 ## Сборка и проверка
 
 ```bash
