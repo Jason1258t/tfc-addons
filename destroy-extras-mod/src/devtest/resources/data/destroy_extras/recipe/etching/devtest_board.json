@@ -1,0 +1,42 @@
+{
+  "type": "destroy_extras:etching",
+  "ingredients": [
+    {
+      "item": "destroy_extras_devtest:board_blank"
+    },
+    {
+      "item": "destroy_extras_devtest:board_mask"
+    },
+    {
+      "type": "neoforge:single",
+      "fluid": "destroy:mixture",
+      "amount": 250
+    }
+  ],
+  "copper_moles": 3.0,
+  "results": [
+    {
+      "id": "destroy_extras_devtest:etched_board"
+    },
+    {
+      "id": "destroy:mixture",
+      "amount": 250,
+      "components": {
+        "destroy:mixture": {
+          "TranslationKey": "destroy_extras.fluid.spent_etchant",
+          "Contents": [
+            {
+              "Molecule": "destroy:iron_ii",
+              "Concentration": 0.024
+            },
+            {
+              "Molecule": "destroy:copper_ii",
+              "Concentration": 0.012
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "processing_time": 400
+}

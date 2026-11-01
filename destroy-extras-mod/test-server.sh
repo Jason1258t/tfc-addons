@@ -26,6 +26,7 @@ for jar in create-1.21.1-6.0.10.jar electroenergetics-1.21.1-1.1.2.jar TerraFirm
   cp "libs/$jar" run/mods/
 done
 cp ../destroy-bridge-mod/build/libs/destroy-bridge-0.1.0.jar run/mods/
+cp ../ee-extras-mod/build/libs/ee-extras-2.5.1.jar run/mods/
 {
   shasum -a 256 run/mods/*.jar build/libs/destroy-extras-0.1.0.jar
 } > run/manifest.txt

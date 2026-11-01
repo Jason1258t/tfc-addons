@@ -15,6 +15,7 @@ import tfc.destroy.extras.recipe.ExtrasRecipeTypes;
 @JeiPlugin
 public final class DestroyExtrasJei implements IModPlugin {
     private CreateRecipeCategory<BasinRecipe> electrolysis;
+    private CreateRecipeCategory<BasinRecipe> etching;
 
     @Override
     public ResourceLocation getPluginUid() {
@@ -29,16 +30,24 @@ public final class DestroyExtrasJei implements IModPlugin {
             .catalyst(DestroyExtras.ELECTROLYZER_BLOCK::get)
             .emptyBackground(177, 103)
             .build(DestroyExtras.rl("electrolysis"), info -> new BasinCategory(info, false));
-        registration.addRecipeCategories(electrolysis);
+        etching = new CreateRecipeCategory.Builder<>(BasinRecipe.class)
+            .addTypedRecipes(ExtrasRecipeTypes.ETCHING)
+            .itemIcon(DestroyExtras.ETCHING_BATH_BLOCK.get())
+            .catalyst(DestroyExtras.ETCHING_BATH_BLOCK::get)
+            .emptyBackground(177, 103)
+            .build(DestroyExtras.rl("etching"), info -> new BasinCategory(info, false));
+        registration.addRecipeCategories(electrolysis, etching);
     }
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
         if (electrolysis != null) electrolysis.registerRecipes(registration);
+        if (etching != null) etching.registerRecipes(registration);
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         if (electrolysis != null) electrolysis.registerCatalysts(registration);
+        if (etching != null) etching.registerCatalysts(registration);
     }
 }

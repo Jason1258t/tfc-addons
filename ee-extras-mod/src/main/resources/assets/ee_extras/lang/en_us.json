@@ -181,5 +181,8 @@
   "ee_extras.goggles.faster": "Signal: faster",
   "ee_extras.goggles.slower": "Signal: slower",
   "ee_extras.goggles.to_grid": "To grid: %s",
-  "ee_extras.goggles.from_grid": "From grid: %s"
+  "ee_extras.goggles.from_grid": "From grid: %s",
+  "item.ee_extras.l1_board_blank": "L1 Copper-Clad Board Blank",
+  "item.ee_extras.l1_mask": "L1 Topology Mask",
+  "item.ee_extras.l1_board": "L1 Board"
 }

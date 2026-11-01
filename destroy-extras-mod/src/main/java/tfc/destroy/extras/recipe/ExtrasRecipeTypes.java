@@ -25,6 +25,31 @@ public final class ExtrasRecipeTypes {
     public static final DeferredHolder<RecipeType<?>, RecipeType<MembraneElectrolysisRecipe>> ELECTROLYSIS_TYPE =
         TYPES.register("electrolysis", () -> RecipeType.simple(ELECTROLYSIS_ID));
 
+    public static final ResourceLocation ETCHING_ID = DestroyExtras.rl("etching");
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<EtchingRecipe>> ETCHING_SERIALIZER =
+        SERIALIZERS.register("etching", EtchingRecipe.Serializer::new);
+    public static final DeferredHolder<RecipeType<?>, RecipeType<EtchingRecipe>> ETCHING_TYPE =
+        TYPES.register("etching", () -> RecipeType.simple(ETCHING_ID));
+
+    public static final IRecipeTypeInfo ETCHING = new IRecipeTypeInfo() {
+        @Override
+        public ResourceLocation getId() {
+            return ETCHING_ID;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T extends RecipeSerializer<?>> T getSerializer() {
+            return (T) ETCHING_SERIALIZER.get();
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public <I extends RecipeInput, R extends Recipe<I>> RecipeType<R> getType() {
+            return (RecipeType<R>) ETCHING_TYPE.get();
+        }
+    };
+
     public static final IRecipeTypeInfo ELECTROLYSIS = new IRecipeTypeInfo() {
         @Override
         public ResourceLocation getId() {

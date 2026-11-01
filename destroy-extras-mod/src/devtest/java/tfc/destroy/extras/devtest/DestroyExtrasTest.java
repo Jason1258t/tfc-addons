@@ -81,8 +81,10 @@ public final class DestroyExtrasTest {
     public DestroyExtrasTest(IEventBus modBus) {
         BLOCKS.register(modBus);
         BLOCK_ENTITIES.register(modBus);
+        M4Test.register(modBus);
         modBus.addListener(DestroyExtrasTest::capabilities);
         NeoForge.EVENT_BUS.addListener(DestroyExtrasTest::commands);
+        NeoForge.EVENT_BUS.addListener(M4Test::commands);
         NeoForge.EVENT_BUS.addListener(DestroyExtrasTest::serverTick);
     }
 

@@ -24,6 +24,7 @@ import ee.extras.lantern.LanternDevice;
 import ee.extras.lines.LineWire;
 import ee.extras.lines.LinesClient;
 import ee.extras.lines.Tension;
+import ee.extras.pcb.PcbItems;
 import ee.extras.converter.BidiConverterBlock;
 import ee.extras.converter.BidiConverterBlockEntity;
 import ee.extras.converter.BidiConverterDevice;
@@ -201,7 +202,9 @@ public class EeExtras {
         AcBlocks.init();
         CableWires.init();
         LineWire.register();
+        PcbItems.init();
         Tension.register(modBus);
+        PcbItems.register(modBus);
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
         DEVICES.register(modBus);
@@ -242,6 +245,7 @@ public class EeExtras {
             event.accept(w.spool.get());
         }
         event.accept(Tension.CLAMP_ITEM.get());
+        PcbItems.addToTab(event);
         // EE 1.1.2 сам не кладёт во вкладку двухпроводной кабель и соединитель, а переменный ток — только с
         // showACContent (по умолчанию выключен). JEI и поиск творческого режима берут предметы из вкладок — без этого
         // их не найти, хотя рецепты есть. Дважды класть нельзя (исключение), поэтому — при тех же условиях, что у EE.

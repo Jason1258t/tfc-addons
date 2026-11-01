@@ -20,6 +20,8 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import tfc.destroy.extras.electrolyzer.MembraneElectrolyzerBlock;
 import tfc.destroy.extras.electrolyzer.MembraneElectrolyzerBlockEntity;
+import tfc.destroy.extras.etching.EtchingBathBlock;
+import tfc.destroy.extras.etching.EtchingBathBlockEntity;
 import tfc.destroy.extras.recipe.ExtrasRecipeTypes;
 
 /** Недостающие машины и процессы Destroy; химия и платы здесь не дублируются. */
@@ -42,6 +44,13 @@ public final class DestroyExtras {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MembraneElectrolyzerBlockEntity>> ELECTROLYZER_BE =
         BLOCK_ENTITIES.register("membrane_electrolyzer", () -> BlockEntityType.Builder
             .of(MembraneElectrolyzerBlockEntity::new, ELECTROLYZER_BLOCK.get()).build(null));
+    public static final DeferredBlock<EtchingBathBlock> ETCHING_BATH_BLOCK = BLOCKS.register("etching_bath",
+        () -> new EtchingBathBlock(BlockBehaviour.Properties.of().strength(3.0f).requiresCorrectToolForDrops().noOcclusion()));
+    public static final DeferredItem<BlockItem> ETCHING_BATH_ITEM = ITEMS.register("etching_bath",
+        () -> new BlockItem(ETCHING_BATH_BLOCK.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EtchingBathBlockEntity>> ETCHING_BATH_BE =
+        BLOCK_ENTITIES.register("etching_bath", () -> BlockEntityType.Builder
+            .of(EtchingBathBlockEntity::new, ETCHING_BATH_BLOCK.get()).build(null));
 
     public DestroyExtras(IEventBus modBus) {
         BLOCKS.register(modBus);
@@ -64,12 +73,16 @@ public final class DestroyExtras {
             return be.input;
         });
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ELECTROLYZER_BE.get(), (be, side) -> be.membrane);
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ETCHING_BATH_BE.get(),
+            (be, side) -> side == Direction.NORTH ? be.spent : be.input);
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ETCHING_BATH_BE.get(), (be, side) -> be.items);
     }
 
     private static void creativeTab(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey().equals(CEECreativeTab.CREATIVE_TAB)) {
             event.accept(ELECTROLYZER_ITEM.get());
             event.accept(MEMBRANE_ITEM.get());
+            event.accept(ETCHING_BATH_ITEM.get());
         }
     }
 }

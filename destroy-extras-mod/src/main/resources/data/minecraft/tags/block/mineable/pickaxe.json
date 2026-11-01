@@ -1,6 +1,4 @@
 {
   "replace": false,
-  "values": [
-    "destroy_extras:membrane_electrolyzer"
-  ]
+  "values": ["destroy_extras:membrane_electrolyzer", "destroy_extras:etching_bath"]
 }

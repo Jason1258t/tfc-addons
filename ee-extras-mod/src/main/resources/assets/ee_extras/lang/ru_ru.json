@@ -181,5 +181,8 @@
   "ee_extras.goggles.faster": "Сигнал: быстрее",
   "ee_extras.goggles.slower": "Сигнал: медленнее",
   "ee_extras.goggles.to_grid": "В сеть: %s",
-  "ee_extras.goggles.from_grid": "Из сети: %s"
+  "ee_extras.goggles.from_grid": "Из сети: %s",
+  "item.ee_extras.l1_board_blank": "Фольгированная заготовка платы L1",
+  "item.ee_extras.l1_mask": "Трафарет топологии L1",
+  "item.ee_extras.l1_board": "Плата L1"
 }

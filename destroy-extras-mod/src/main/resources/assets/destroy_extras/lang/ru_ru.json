@@ -10,5 +10,12 @@
   "status.destroy_extras.electrolyzer.waiting_for_power": "Ожидание питания 300 В / 8 А",
   "status.destroy_extras.electrolyzer.running": "Электролиз",
   "status.destroy_extras.electrolyzer.blocked_output": "Выход переполнен",
-  "status.destroy_extras.electrolyzer.fault": "Неисправность: проверьте мембрану и питание"
+  "status.destroy_extras.electrolyzer.fault": "Неисправность: проверьте мембрану и питание",
+  "block.destroy_extras.etching_bath": "Травильная ванна",
+  "destroy_extras.recipe.etching": "Травление платы",
+  "destroy_extras.fluid.spent_etchant": "Отработанный травильный раствор",
+  "status.destroy_extras.etching.idle": "Ожидание заготовки, маски и FeCl₃",
+  "status.destroy_extras.etching.running": "Травление платы",
+  "status.destroy_extras.etching.blocked_output": "Выход ванны переполнен",
+  "status.destroy_extras.etching.fault": "Неисправность травильной ванны"
 }

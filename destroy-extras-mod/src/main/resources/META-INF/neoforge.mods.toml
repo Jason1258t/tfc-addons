@@ -66,6 +66,13 @@ ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.destroy_extras]]
+modId = "ee_extras"
+type = "optional"
+versionRange = "[2.5.1,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.destroy_extras]]
 modId = "jei"
 type = "optional"
 versionRange = "[19.44.0.401,20.0.0.0)"
