@@ -13,6 +13,7 @@
   "status.destroy_extras.electrolyzer.fault": "Fault: check membrane and power",
   "block.destroy_extras.etching_bath": "Etching Bath",
   "destroy_extras.recipe.etching": "Board Etching",
+  "jei.destroy_extras.etching_bath.absorption": "The south port accepts 25 mB of pure HCl and the east port 250 mB of water. The bath atomically produces 275 mB of HCl solution for FeCl₂ electrolysis. The north port outputs spent etchant; the remaining ports carry the working FeCl₃ solution.",
   "destroy_extras.fluid.spent_etchant": "Spent Etchant",
   "status.destroy_extras.etching.idle": "Waiting for blank, mask and FeCl₃",
   "status.destroy_extras.etching.running": "Etching board",

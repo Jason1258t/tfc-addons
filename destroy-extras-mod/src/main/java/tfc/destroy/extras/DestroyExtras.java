@@ -86,8 +86,12 @@ public final class DestroyExtras {
             return be.input;
         });
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ELECTROLYZER_BE.get(), (be, side) -> be.membrane);
-        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ETCHING_BATH_BE.get(),
-            (be, side) -> side == Direction.NORTH ? be.spent : be.input);
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ETCHING_BATH_BE.get(), (be, side) -> {
+            if (side == Direction.NORTH) return be.spent;
+            if (side == Direction.SOUTH) return be.hydrochloricAcid;
+            if (side == Direction.EAST) return be.water;
+            return be.input;
+        });
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ETCHING_BATH_BE.get(), (be, side) -> be.items);
     }
 

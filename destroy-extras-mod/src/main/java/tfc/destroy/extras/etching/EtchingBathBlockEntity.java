@@ -21,7 +21,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraft.world.level.material.Fluids;
+import petrolpark.mc.destroy.chemistry.legacy.LegacyMixture;
+import petrolpark.mc.destroy.chemistry.legacy.index.DestroyMolecules;
+import petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid;
 import tfc.destroy.bridge.fluid.AtomicFluidOperation;
+import tfc.destroy.bridge.fluid.HydrochloricAcidAdapter;
 import tfc.destroy.extras.DestroyExtras;
 import tfc.destroy.extras.recipe.EtchingRecipe;
 import tfc.destroy.extras.recipe.ExtrasRecipeTypes;
@@ -34,6 +39,9 @@ public final class EtchingBathBlockEntity extends BlockEntity implements IHaveGo
 
     public final FluidTank input = tank(INPUT_CAPACITY, stack -> true, true);
     public final FluidTank spent = tank(SPENT_CAPACITY, stack -> true, false);
+    public final FluidTank hydrochloricAcid = tank(INPUT_CAPACITY, stack -> true, false);
+    public final FluidTank water = tank(INPUT_CAPACITY,
+        stack -> stack.getFluid() == Fluids.WATER, false);
     public final ItemStackHandler items = new ItemStackHandler(3) {
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
@@ -83,6 +91,7 @@ public final class EtchingBathBlockEntity extends BlockEntity implements IHaveGo
         EtchingStatus previousStatus = status;
         mixerRpm = serverLevel.getBlockEntity(worldPosition.above()) instanceof MechanicalMixerBlockEntity mixer
             ? Math.abs(mixer.getSpeed()) : 0.0F;
+        absorbAcid();
         selectRecipe(serverLevel.getRecipeManager());
         if (recipe == null) {
             progress = 0;
@@ -163,6 +172,26 @@ public final class EtchingBathBlockEntity extends BlockEntity implements IHaveGo
         }
     }
 
+    /** Survival-граница M3: 25 мБ чистого HCl + 250 мБ воды атомарно дают 275 мБ кислоты. */
+    private void absorbAcid() {
+        if (hydrochloricAcid.getFluidAmount() < 25 || water.getFluidAmount() < 250) return;
+        FluidStack waterStack = water.getFluid().copyWithAmount(250);
+        if (waterStack.getFluid() == Fluids.WATER) {
+            waterStack = MixtureFluid.of(250, new LegacyMixture().addMolecule(DestroyMolecules.WATER,
+                DestroyMolecules.WATER.getPureConcentration()));
+        }
+        FluidStack absorbed = HydrochloricAcidAdapter.absorb(
+            hydrochloricAcid.getFluid().copyWithAmount(25), waterStack);
+        if (absorbed.isEmpty() || input.fill(absorbed, FluidTank.FluidAction.SIMULATE) != absorbed.getAmount()) return;
+        FluidStack acidDrain = hydrochloricAcid.drain(25, FluidTank.FluidAction.SIMULATE);
+        FluidStack waterDrain = water.drain(250, FluidTank.FluidAction.SIMULATE);
+        if (acidDrain.getAmount() != 25 || waterDrain.getAmount() != 250) return;
+        hydrochloricAcid.drain(25, FluidTank.FluidAction.EXECUTE);
+        water.drain(250, FluidTank.FluidAction.EXECUTE);
+        input.fill(absorbed, FluidTank.FluidAction.EXECUTE);
+        setChanged();
+    }
+
     private void selectRecipe(RecipeManager manager) {
         if (recipeManager != manager) {
             recipeManager = manager;
@@ -230,6 +259,8 @@ public final class EtchingBathBlockEntity extends BlockEntity implements IHaveGo
         super.saveAdditional(tag, registries);
         tag.put("Input", input.writeToNBT(registries, new CompoundTag()));
         tag.put("Spent", spent.writeToNBT(registries, new CompoundTag()));
+        tag.put("HydrochloricAcid", hydrochloricAcid.writeToNBT(registries, new CompoundTag()));
+        tag.put("Water", water.writeToNBT(registries, new CompoundTag()));
         tag.put("Items", items.serializeNBT(registries));
         tag.putInt("Progress", progress);
         tag.putInt("Batches", batches);
@@ -242,6 +273,8 @@ public final class EtchingBathBlockEntity extends BlockEntity implements IHaveGo
         super.loadAdditional(tag, registries);
         input.readFromNBT(registries, tag.getCompound("Input"));
         spent.readFromNBT(registries, tag.getCompound("Spent"));
+        hydrochloricAcid.readFromNBT(registries, tag.getCompound("HydrochloricAcid"));
+        water.readFromNBT(registries, tag.getCompound("Water"));
         items.deserializeNBT(registries, tag.getCompound("Items"));
         progress = tag.getInt("Progress");
         batches = tag.getInt("Batches");

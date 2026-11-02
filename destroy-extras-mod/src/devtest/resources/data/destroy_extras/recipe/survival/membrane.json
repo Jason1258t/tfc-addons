@@ -1,0 +1,6 @@
+{
+  "type": "create:pressing",
+  "conditions": [{ "type": "neoforge:mod_loaded", "modid": "immersiveengineering" }],
+  "ingredients": [{ "item": "immersiveengineering:hemp_fabric" }],
+  "results": [{ "id": "destroy_extras:membrane" }]
+}

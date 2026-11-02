@@ -1,13 +1,45 @@
 {
   "id": "destroy_extras",
-  "name": "Destroy Extras — ранний прототип",
-  "version": "0.1.0",
-  "jar": "destroy-extras-0.1.0.jar",
-  "sha256": "6ecc419f831c34faa524cc4ed0fe7e127da8829323ac1c0cd688e086b01c8304",
+  "name": "Destroy Extras — химические машины",
+  "version": "0.2.0",
+  "jar": "destroy-extras-0.2.0.jar",
+  "sha256": "b6b99f82dbb3619d883a87cc3b3606118a3c7dbc70b56040ff0d87577746af50",
   "order": 801,
   "side": "both",
-  "summary": "Среда разработки недостающих машин Destroy; игровых машин в этой версии ещё нет.",
-  "needs": "Только локальный тестовый стенд разработчиков вместе с Destroy Bridge.",
-  "unlisted": true,
-  "blocks": []
+  "summary": "Мембранный электролизёр для получения H₂, Cl₂ и NaOH из солёной воды и травильная ванна для первых плат L1. Поддерживаются промышленная форма 3×3×2, насос и мешалка Create, JEI/EMI и Ponder. Ванна атомарно готовит кислотный раствор из чистого HCl и воды через Destroy Bridge.",
+  "needs": "Сервер и все игроки. NeoForge 21.1.251+, Destroy 0.4.6-eligibbs, Petrolpark 1.5.11, Destroy Bridge 0.1.0, EE Extras 2.6.0, Create 6.0.10 и Electro Energetics 1.1.2+. Survival-рецепты электролизёра, мембраны и заготовки L1 также используют Immersive Engineering.",
+  "blocks": [
+    {
+      "id": "destroy_extras:membrane_electrolyzer",
+      "name": "Мембранный электролизёр",
+      "image": "membrane_electrolyzer.png",
+      "recipe": {
+        "pattern": ["GEG", "CTC", "GGG"],
+        "key": {
+          "G": { "item": "immersiveengineering:graphite_electrode" },
+          "E": { "item": "electroenergetics:connector" },
+          "C": { "item": "create:copper_casing" },
+          "T": { "item": "create:electron_tube" }
+        }
+      }
+    },
+    {
+      "id": "destroy_extras:membrane",
+      "name": "Мембрана электролизёра",
+      "image": "membrane.png"
+    },
+    {
+      "id": "destroy_extras:etching_bath",
+      "name": "Травильная ванна L1",
+      "image": "etching_bath.png",
+      "recipe": {
+        "pattern": ["CCC", "TFT", "CCC"],
+        "key": {
+          "C": { "item": "create:copper_sheet", "tag": "c:plates/copper" },
+          "T": { "item": "create:fluid_tank" },
+          "F": { "item": "create:copper_casing" }
+        }
+      }
+    }
+  ]
 }

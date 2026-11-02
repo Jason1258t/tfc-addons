@@ -7,8 +7,11 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.registration.IRecipeRegistration;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import tfc.destroy.extras.DestroyExtras;
 import tfc.destroy.extras.recipe.ExtrasRecipeTypes;
 
@@ -43,6 +46,10 @@ public final class DestroyExtrasJei implements IModPlugin {
     public void registerRecipes(IRecipeRegistration registration) {
         if (electrolysis != null) electrolysis.registerRecipes(registration);
         if (etching != null) etching.registerRecipes(registration);
+        registration.addIngredientInfo(
+            new ItemStack(DestroyExtras.ETCHING_BATH_BLOCK.get()),
+            VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.destroy_extras.etching_bath.absorption"));
     }
 
     @Override

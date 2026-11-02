@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["CCC", "TFT", "CCC"],
+  "key": {
+    "C": { "tag": "c:plates/copper" },
+    "T": { "item": "create:fluid_tank" },
+    "F": { "item": "create:copper_casing" }
+  },
+  "result": { "id": "destroy_extras:etching_bath", "count": 1 }
+}

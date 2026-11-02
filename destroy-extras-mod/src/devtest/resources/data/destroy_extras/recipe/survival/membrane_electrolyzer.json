@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "conditions": [{ "type": "neoforge:mod_loaded", "modid": "immersiveengineering" }],
+  "category": "misc",
+  "pattern": ["GEG", "CTC", "GGG"],
+  "key": {
+    "G": { "item": "immersiveengineering:graphite_electrode" },
+    "E": { "item": "electroenergetics:connector" },
+    "C": { "item": "create:copper_casing" },
+    "T": { "item": "create:electron_tube" }
+  },
+  "result": { "id": "destroy_extras:membrane_electrolyzer", "count": 1 }
+}

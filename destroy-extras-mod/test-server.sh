@@ -37,11 +37,13 @@ if [ "$PROFILE" = thermal ]; then
   cp "$MODS/woodencog-1.2.18-1.21.1-TFCR.jar" "$MODS/ImmersiveEngineering-1.21.1-12.4.2-194.jar" "$RUN_DIR/mods/"
 fi
 if [ "$PROFILE" = sable ]; then cp "$MODS/sable-neoforge-1.21.1-2.0.5.jar" "$RUN_DIR/mods/"; fi
+EE_VERSION=$(sed -n 's/^mod_version=//p' ../ee-extras-mod/gradle.properties)
+VERSION=$(sed -n 's/^mod_version=//p' gradle.properties)
 cp ../destroy-bridge-mod/build/libs/destroy-bridge-0.1.0.jar "$RUN_DIR/mods/"
-cp ../ee-extras-mod/build/libs/ee-extras-2.5.1.jar "$RUN_DIR/mods/"
+cp "../ee-extras-mod/build/libs/ee-extras-$EE_VERSION.jar" "$RUN_DIR/mods/"
 {
   echo "profile=$PROFILE"
-  shasum -a 256 "$RUN_DIR/mods"/*.jar build/libs/destroy-extras-0.1.0.jar
+  shasum -a 256 "$RUN_DIR/mods"/*.jar "build/libs/destroy-extras-$VERSION.jar"
 } > "$RUN_DIR/manifest.txt"
 echo 'eula=true' > "$RUN_DIR/eula.txt"
 cat > "$RUN_DIR/server.properties" <<P

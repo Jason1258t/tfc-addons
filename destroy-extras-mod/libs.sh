@@ -32,7 +32,8 @@ echo 'f9870f0c9c654d962d89a485c60d971181556c48bea345964ee5a07bc54095f4  '"$PETRO
 (cd ../ee-extras-mod && ./libs.sh && ./gradlew jar --console=plain)
 rm -rf libs && mkdir libs
 : > libs/manifest.txt
-for jar in "${FILES[@]}" ../destroy-bridge-mod/build/libs/destroy-bridge-0.1.0.jar ../ee-extras-mod/build/libs/ee-extras-2.5.1.jar; do
+EE_VERSION=$(sed -n 's/^mod_version=//p' ../ee-extras-mod/gradle.properties)
+for jar in "${FILES[@]}" ../destroy-bridge-mod/build/libs/destroy-bridge-0.1.0.jar "../ee-extras-mod/build/libs/ee-extras-$EE_VERSION.jar"; do
   cp "$jar" libs/
   shasum -a 256 "$jar" >> libs/manifest.txt
   case "$jar" in *destroy-bridge-*) ;; *) unzip -qq -o -j "$jar" 'META-INF/jarjar/*.jar' -d libs/ 2>/dev/null || true ;; esac
