@@ -1,0 +1,22 @@
+{
+  "reactants": [
+    { "molecule": "destroy:ammonia", "ratio": 1 },
+    { "molecule": "destroy:oxygen", "ratio": 2 }
+  ],
+  "products": [
+    { "molecule": "destroy:nitric_acid", "ratio": 1 },
+    { "molecule": "destroy:water", "ratio": 1 }
+  ],
+  "item_reactants": [
+    {
+      "tag": "c:dusts/nickel",
+      "catalyst": true,
+      "moles": 1.0
+    }
+  ],
+  "kinetics": {
+    "activation_energy": 25.0,
+    "preexponential_factor": 1000.0,
+    "enthalpy_change": 0.0
+  }
+}

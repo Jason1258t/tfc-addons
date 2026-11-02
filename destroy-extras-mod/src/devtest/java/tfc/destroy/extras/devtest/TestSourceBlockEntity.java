@@ -25,6 +25,7 @@ public final class TestSourceBlockEntity extends BlockEntity {
     public int savedMembraneDamage;
     public FluidStack savedMixture = FluidStack.EMPTY;
     public CompoundTag savedM4 = new CompoundTag();
+    public CompoundTag savedM8 = new CompoundTag();
 
     public TestSourceBlockEntity(BlockPos pos, BlockState state) {
         super(DestroyExtrasTest.SOURCE_BE.get(), pos, state);
@@ -51,6 +52,7 @@ public final class TestSourceBlockEntity extends BlockEntity {
         tag.putInt("SavedMembraneDamage", savedMembraneDamage);
         if (!savedMixture.isEmpty()) tag.put("SavedMixture", savedMixture.save(registries));
         tag.put("SavedM4", savedM4);
+        tag.put("SavedM8", savedM8);
     }
 
     @Override
@@ -62,5 +64,6 @@ public final class TestSourceBlockEntity extends BlockEntity {
         savedMembraneDamage = tag.getInt("SavedMembraneDamage");
         savedMixture = FluidStack.parseOptional(registries, tag.getCompound("SavedMixture"));
         savedM4 = tag.getCompound("SavedM4");
+        savedM8 = tag.getCompound("SavedM8");
     }
 }
