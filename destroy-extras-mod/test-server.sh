@@ -33,6 +33,7 @@ for jar in create-1.21.1-6.0.10.jar electroenergetics-1.21.1-1.1.2.jar TerraFirm
   cp "libs/$jar" "$RUN_DIR/mods/"
 done
 MODS="${MODS:-${TFC_MODS_DIR:-${TFC_PACK_CACHE:-$HOME/.cache/tfc-plans/pack}/mods}}"
+cp "$MODS/Firmalife-NeoForge-1.21.1-3.0.14.jar" "$RUN_DIR/mods/"
 if [ "$PROFILE" = thermal ]; then
   cp "$MODS/woodencog-1.2.18-1.21.1-TFCR.jar" "$MODS/ImmersiveEngineering-1.21.1-12.4.2-194.jar" "$RUN_DIR/mods/"
 fi

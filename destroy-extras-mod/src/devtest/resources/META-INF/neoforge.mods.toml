@@ -11,6 +11,13 @@ description = "Серверные проверки production-машин Destroy
 [[dependencies.destroy_extras_devtest]]
 modId = "destroy_extras"
 type = "required"
-versionRange = "[0.1.0]"
+versionRange = "[0.1.0,)"
 ordering = "AFTER"
 side = "BOTH"
+
+[[dependencies.destroy_extras_devtest]]
+modId = "jei"
+type = "required"
+versionRange = "[19,)"
+ordering = "AFTER"
+side = "CLIENT"

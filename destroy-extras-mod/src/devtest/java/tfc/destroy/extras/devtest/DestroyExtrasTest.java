@@ -93,6 +93,8 @@ public final class DestroyExtrasTest {
         NeoForge.EVENT_BUS.addListener(M5Test::commands);
         NeoForge.EVENT_BUS.addListener(M5LoadTest::commands);
         NeoForge.EVENT_BUS.addListener(M6Test::commands);
+        NeoForge.EVENT_BUS.addListener(M7Test::commands);
+        NeoForge.EVENT_BUS.addListener(M7Test::tick);
         NeoForge.EVENT_BUS.addListener(M5LoadTest::tickPre);
         NeoForge.EVENT_BUS.addListener(M5LoadTest::tickPost);
         NeoForge.EVENT_BUS.addListener(DestroyExtrasTest::serverTick);

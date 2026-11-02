@@ -1,0 +1,21 @@
+{
+  "type": "destroy:centrifugation",
+  "ingredients": [
+    {
+      "fluid": "tfc:canola_oil_water",
+      "amount": 250,
+      "type": "neoforge:single"
+    }
+  ],
+  "results": [
+    {
+      "amount": 200,
+      "id": "minecraft:water"
+    },
+    {
+      "amount": 50,
+      "id": "tfc:canola_oil"
+    }
+  ],
+  "processing_time": 500
+}

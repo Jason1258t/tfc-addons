@@ -1,0 +1,20 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "item": "tfc:olive_paste"
+    },
+    {
+      "fluid": "minecraft:water",
+      "amount": 200,
+      "type": "neoforge:single"
+    }
+  ],
+  "results": [
+    {
+      "amount": 200,
+      "id": "tfc:olive_oil_water"
+    }
+  ],
+  "processing_time": 100
+}
