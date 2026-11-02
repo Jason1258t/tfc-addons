@@ -19,6 +19,11 @@
     "ee_extras:industrial_three_phase_synchronizer",
     "ee_extras:industrial_three_phase_synchronizer_base",
     "ee_extras:single_phase_synchronizer",
-    "ee_extras:heavy_single_phase_synchronizer"
+    "ee_extras:heavy_single_phase_synchronizer",
+    {
+      "id": "ee_extras:floodlight",
+      "required": false
+    },
+    "ee_extras:cable_converter"
   ]
 }

@@ -24,7 +24,7 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 /**
- * События игры: катушка двухпроводного кабеля EE (и по фонарю IE — LanternConversion), ключ и установка
+ * События игры: катушка двухпроводного кабеля EE (и по фонарю и прожектору IE — LanternConversion), ключ и установка
  * двухпроводного соединителя EE (фаза, четыре положения вместо двух), сверка кабелей
  */
 public final class CableEvents {
@@ -45,8 +45,9 @@ public final class CableEvents {
         Level level = e.getLevel();
         BlockPos pos = e.getPos();
         if (stack.getItem() instanceof BundledWireItem && !(stack.getItem() instanceof FourCoreSpoolItem)) {
-            // Фонарь IE сначала становится фонарём в сети EE, затем клик идёт в прокладку как обычно
-            if (LanternConversion.isIeLantern(level.getBlockState(pos))) {
+            // Фонарь и прожектор IE сначала становятся блоками сети EE, затем клик идёт в прокладку как обычно
+            BlockState ie = level.getBlockState(pos);
+            if (LanternConversion.isIeLantern(ie) || LanternConversion.isIeFloodlight(ie)) {
                 InteractionResult c = LanternConversion.convert(level, pos, e.getEntity());
                 if (c != null) {
                     e.setCanceled(true);

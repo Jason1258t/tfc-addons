@@ -1,22 +1,31 @@
 {
   "id": "ee_extras",
   "name": "EE Extras — электрика для Electro Energetics",
-  "version": "2.6.0",
-  "jar": "ee-extras-2.6.0.jar",
-  "sha256": "557e9b83b29799fad1973f950f62c2dc8b13c2a15d469ae49d5e14111db019ea",
+  "version": "2.7.0",
+  "jar": "ee-extras-2.7.0.jar",
+  "sha256": "f5d3cebc63c43b442956080c4be8d938436b70323d2d9cc2941e84570752167c",
   "order": 10,
   "side": "both",
-  "summary": "Блоки для Create Electro Energetics: выпрямители (переменный ток → ровный постоянный) и с 2.2 сетевые инверторы (постоянный → переменный в такт генераторам), лёгкие на 6 кВт и тяжёлые на 48 кВт, с 2.3 — компактный генератор (вал Create → постоянный ток до 1,5 кВт), двусторонний преобразователь EE ↔ FE для конденсаторов IE, рабочий двухпроводной кабель EE (в самом EE 1.1.2 катушка кабель не прокладывает), четырёхжильный кабель для трёхфазной сети, отвод фазы и кабельные изоляторы; с 2.1 — провода ЛЭП и сильноточной разводки (медная шина, силовой кабель, М, АС, А, бронзовый, ПС) и натяжной зажим; с 2.4 — электрический фонарь IE подключается к двухпроводному кабелю EE и собирается в линию; с 2.5 — преобразователи частоты (любой ток → заданные 1–40 Гц) и синхронизаторы (автоматическое включение генератора в сеть), до промышленного шкафа в два блока с радиаторами; с 2.6 — заготовка, маска и готовая плата L1 для травильной ванны Destroy Extras. До версии 2.0 назывался «EE Rectifiers» (ee_rectifier): поставленные выпрямители при обновлении остаются на месте.",
+  "summary": "Блоки для Create Electro Energetics: выпрямители (переменный ток → ровный постоянный) и с 2.2 сетевые инверторы (постоянный → переменный в такт генераторам), лёгкие на 6 кВт и тяжёлые на 48 кВт, с 2.3 — компактный генератор (вал Create → постоянный ток до 1,5 кВт), двусторонний преобразователь EE ↔ FE для конденсаторов IE, рабочий двухпроводной кабель EE (в самом EE 1.1.2 катушка кабель не прокладывает), четырёхжильный кабель для трёхфазной сети, отвод фазы и кабельные изоляторы; с 2.1 — провода ЛЭП и сильноточной разводки (медная шина, силовой кабель, М, АС, А, бронзовый, ПС) и натяжной зажим; с 2.4 — электрический фонарь IE подключается к двухпроводному кабелю EE и собирается в линию; с 2.5 — преобразователи частоты (любой ток → заданные 1–40 Гц) и синхронизаторы (автоматическое включение генератора в сеть), до промышленного шкафа в два блока с радиаторами; с 2.6 — заготовка, маска и готовая плата L1 для травильной ванны Destroy Extras; с 2.7 — прожектор IE на двухжильном кабеле и кабельный преобразователь для машин. До версии 2.0 назывался «EE Rectifiers» (ee_rectifier): поставленные выпрямители при обновлении остаются на месте.",
   "needs": "Сервер и все игроки (новые блоки). NeoForge 21.1.219+, Create 6.0.10, Electro Energetics 1.1.2+. Старый ee-rectifier-*.jar убрать — tfc pull addons уберёт сам.",
-  "formerIds": ["ee_rectifier"],
-  "replaces": ["mods/ee-rectifier-1.1.0.jar", "mods/ee-rectifier-1.0.0.jar"],
+  "formerIds": [
+    "ee_rectifier"
+  ],
+  "replaces": [
+    "mods/ee-rectifier-1.1.0.jar",
+    "mods/ee-rectifier-1.0.0.jar"
+  ],
   "blocks": [
     {
       "id": "ee_extras:three_phase_rectifier",
       "name": "Трёхфазный выпрямитель",
       "image": "three_phase_rectifier.png",
       "recipe": {
-        "pattern": ["CDC", "DPD", "DDD"],
+        "pattern": [
+          "CDC",
+          "DPD",
+          "DDD"
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -36,7 +45,11 @@
       "name": "Однофазный выпрямитель",
       "image": "single_phase_rectifier.png",
       "recipe": {
-        "pattern": ["CDC", "DPD", " D "],
+        "pattern": [
+          "CDC",
+          "DPD",
+          " D "
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -56,7 +69,11 @@
       "name": "Тяжёлые выпрямители (трёх- и однофазный)",
       "image": "heavy_three_phase_rectifier.png",
       "recipe": {
-        "pattern": ["CRC", "XSX", "RSR"],
+        "pattern": [
+          "CRC",
+          "XSX",
+          "RSR"
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -81,7 +98,11 @@
       "name": "Трёхфазный инвертор",
       "image": "three_phase_inverter.png",
       "recipe": {
-        "pattern": ["CKC", "DPD", "LDL"],
+        "pattern": [
+          "CKC",
+          "DPD",
+          "LDL"
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -107,7 +128,11 @@
       "name": "Однофазный инвертор",
       "image": "single_phase_inverter.png",
       "recipe": {
-        "pattern": ["CKC", "DPD", " L "],
+        "pattern": [
+          "CKC",
+          "DPD",
+          " L "
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -133,7 +158,11 @@
       "name": "Тяжёлые инверторы (трёх- и однофазный)",
       "image": "heavy_three_phase_inverter.png",
       "recipe": {
-        "pattern": ["CRC", "XSX", "RSR"],
+        "pattern": [
+          "CRC",
+          "XSX",
+          "RSR"
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -158,7 +187,11 @@
       "name": "Трёхфазный преобразователь частоты",
       "image": "three_phase_frequency_converter.png",
       "recipe": {
-        "pattern": ["CKC", "RPV", " L "],
+        "pattern": [
+          "CKC",
+          "RPV",
+          " L "
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -191,7 +224,11 @@
       "name": "Однофазный преобразователь частоты",
       "image": "single_phase_frequency_converter.png",
       "recipe": {
-        "pattern": ["CKC", "RPV", " L "],
+        "pattern": [
+          "CKC",
+          "RPV",
+          " L "
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -224,7 +261,11 @@
       "name": "Тяжёлые преобразователи частоты (трёх- и однофазный)",
       "image": "heavy_three_phase_frequency_converter.png",
       "recipe": {
-        "pattern": ["CRC", "XSX", "RSR"],
+        "pattern": [
+          "CRC",
+          "XSX",
+          "RSR"
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -249,7 +290,11 @@
       "name": "Промышленный преобразователь частоты",
       "image": "industrial_three_phase_frequency_converter.png",
       "recipe": {
-        "pattern": ["CRC", "XSX", "RSR"],
+        "pattern": [
+          "CRC",
+          "XSX",
+          "RSR"
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -274,7 +319,11 @@
       "name": "Трёхфазный синхронизатор",
       "image": "three_phase_synchronizer.png",
       "recipe": {
-        "pattern": ["CYC", "BPB", " B "],
+        "pattern": [
+          "CYC",
+          "BPB",
+          " B "
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -297,7 +346,11 @@
       "name": "Однофазный синхронизатор",
       "image": "single_phase_synchronizer.png",
       "recipe": {
-        "pattern": ["CYC", "BPB", "   "],
+        "pattern": [
+          "CYC",
+          "BPB",
+          "   "
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -320,7 +373,11 @@
       "name": "Тяжёлые синхронизаторы (трёх- и однофазный)",
       "image": "heavy_three_phase_synchronizer.png",
       "recipe": {
-        "pattern": ["CRC", "XSX", "RSR"],
+        "pattern": [
+          "CRC",
+          "XSX",
+          "RSR"
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -345,7 +402,11 @@
       "name": "Промышленный синхронизатор",
       "image": "industrial_three_phase_synchronizer.png",
       "recipe": {
-        "pattern": ["CRC", "XBX", "RSR"],
+        "pattern": [
+          "CRC",
+          "XBX",
+          "RSR"
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -373,7 +434,11 @@
       "name": "Компактный генератор",
       "image": "compact_kinetic_generator.png",
       "recipe": {
-        "pattern": ["PCP", "MSM", "PAP"],
+        "pattern": [
+          "PCP",
+          "MSM",
+          "PAP"
+        ],
         "key": {
           "P": {
             "item": "create:iron_sheet",
@@ -399,7 +464,11 @@
       "name": "Двусторонний преобразователь",
       "image": "bidirectional_converter.png",
       "recipe": {
-        "pattern": ["VV ", "   ", "   "],
+        "pattern": [
+          "VV ",
+          "   ",
+          "   "
+        ],
         "key": {
           "V": {
             "item": "electroenergetics:converter"
@@ -416,7 +485,11 @@
       "name": "Четырёхжильный соединитель",
       "image": "four_core_termination.png",
       "recipe": {
-        "pattern": ["TT ", "   ", "   "],
+        "pattern": [
+          "TT ",
+          "   ",
+          "   "
+        ],
         "key": {
           "T": {
             "item": "electroenergetics:duplex_wire_termination"
@@ -429,7 +502,11 @@
       "name": "Отвод фазы",
       "image": "four_core_tap.png",
       "recipe": {
-        "pattern": ["TW ", "   ", "   "],
+        "pattern": [
+          "TW ",
+          "   ",
+          "   "
+        ],
         "key": {
           "T": {
             "item": "electroenergetics:duplex_wire_termination"
@@ -450,7 +527,11 @@
       "name": "Натяжной зажим",
       "image": "tension_clamp.png",
       "recipe": {
-        "pattern": ["SR ", "   ", "   "],
+        "pattern": [
+          "SR ",
+          "   ",
+          "   "
+        ],
         "key": {
           "S": {
             "item": "tfc:metal/sheet/wrought_iron",
@@ -468,7 +549,11 @@
       "name": "Катушка четырёхжильного кабеля",
       "image": "four_core_cable_spool.png",
       "recipe": {
-        "pattern": ["WWW", "WSW", "WWW"],
+        "pattern": [
+          "WWW",
+          "WSW",
+          "WWW"
+        ],
         "key": {
           "W": {
             "item": "electroenergetics:insulated_wire"
@@ -484,7 +569,11 @@
       "name": "Изоляторы двух- и четырёхжильного кабеля",
       "image": "four_core_cable_insulator.png",
       "recipe": {
-        "pattern": ["C  ", "   ", "   "],
+        "pattern": [
+          "C  ",
+          "   ",
+          "   "
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -498,6 +587,31 @@
       "image": "electric_lantern.png"
     },
     {
+      "id": "ee_extras:floodlight",
+      "name": "Прожектор IE на кабеле EE",
+      "image": "floodlight.png"
+    },
+    {
+      "id": "ee_extras:cable_converter",
+      "name": "Кабельный преобразователь",
+      "image": "cable_converter.png",
+      "recipe": {
+        "pattern": [
+          "VT ",
+          "   ",
+          "   "
+        ],
+        "key": {
+          "V": {
+            "item": "electroenergetics:converter"
+          },
+          "T": {
+            "item": "electroenergetics:duplex_wire_termination"
+          }
+        }
+      }
+    },
+    {
       "id": "ee_extras:l1_board_blank",
       "name": "Заготовка платы L1",
       "image": "l1_board_blank.png"
@@ -507,10 +621,18 @@
       "name": "Маска платы L1",
       "image": "l1_mask.png",
       "recipe": {
-        "pattern": ["PB ", "   ", "   "],
+        "pattern": [
+          "PB ",
+          "   ",
+          "   "
+        ],
         "key": {
-          "P": { "item": "minecraft:paper" },
-          "B": { "item": "minecraft:black_dye" }
+          "P": {
+            "item": "minecraft:paper"
+          },
+          "B": {
+            "item": "minecraft:black_dye"
+          }
         }
       }
     },

@@ -20,6 +20,7 @@ public record CableEnd(BlockPos pos, CableKind kind, boolean eeTermination, int 
     public static CableEnd of(BlockPos pos, BlockState state) {
         if (state.getBlock() instanceof PhaseTapBlock) return new CableEnd(pos, CableKind.DUPLEX, true, 0);
         if (state.getBlock() instanceof CableEndBlock b) return new CableEnd(pos, b.kind, false, 0);
+        if (state.getBlock() instanceof CableJunction j) return new CableEnd(pos, j.cableKind(), false, 0);
         if (state.getBlock() instanceof BundledWireTerminationBlock) {
             int side = (state.getValue(BundledWireTerminationBlock.FLIP) ? 2 : 0)
                     + (state.getValue(BundledWireTerminationBlock.ROLL) ? 1 : 0);

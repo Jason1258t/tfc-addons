@@ -14,6 +14,7 @@ import com.simibubi.create.AllSoundEvents;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
@@ -53,9 +54,7 @@ public final class CableLaying {
 
         BundledWireTerminationState selected = stack.get(CEEDataComponents.SELECTED_WIRE_TERMINATION);
         if (selected == null) {
-            stack.set(CEEDataComponents.SELECTED_WIRE_TERMINATION, new BundledWireTerminationState(pos,
-                    state.getValue(BundledWireTerminationBlock.FACING), state.getValue(BundledWireTerminationBlock.ROLL),
-                    state.getValue(BundledWireTerminationBlock.FLIP)));
+            stack.set(CEEDataComponents.SELECTED_WIRE_TERMINATION, selection(pos, state));
             AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos);
             return InteractionResult.SUCCESS;
         }
@@ -82,6 +81,13 @@ public final class CableLaying {
                 player.displayClientMessage(Component.translatable("ee_extras.cable.phase", "L" + CableData.get(sl).phase(ee.pos())), true);
         }
         return InteractionResult.SUCCESS;
+    }
+
+    /** Компонент выбранного конца: у CableJunction нет свойств соединителя, EE для пунктира читает из него только позицию */
+    private static BundledWireTerminationState selection(BlockPos pos, BlockState state) {
+        if (!(state.getBlock() instanceof BundledWireTerminationBlock)) return new BundledWireTerminationState(pos, Direction.UP, false, false);
+        return new BundledWireTerminationState(pos, state.getValue(BundledWireTerminationBlock.FACING),
+                state.getValue(BundledWireTerminationBlock.ROLL), state.getValue(BundledWireTerminationBlock.FLIP));
     }
 
     static boolean fits(CableKind kind, CableEnd end) {

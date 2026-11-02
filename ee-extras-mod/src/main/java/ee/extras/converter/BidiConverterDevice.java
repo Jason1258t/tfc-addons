@@ -43,11 +43,11 @@ public class BidiConverterDevice extends SimpleElectricalDevice {
         super(level, pos, devices, type);
     }
 
-    static double maxEnergy() {
+    public static double maxEnergy() {
         return CEEConfigs.server().converterMaxPowerKw.get() * 1000.0;
     }
 
-    static double rate() {
+    public static double rate() {
         return CEEConfigs.server().wattFeTConversionRate.get();
     }
 
@@ -115,7 +115,7 @@ public class BidiConverterDevice extends SimpleElectricalDevice {
         }
     }
 
-    static Direction[] order(Direction facing) {
+    public static Direction[] order(Direction facing) {
         Direction[] out = new Direction[6];
         out[0] = facing;
         int i = 1;

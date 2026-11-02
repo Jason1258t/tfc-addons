@@ -28,6 +28,12 @@ import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 public final class LanternConversion {
     public static final ResourceLocation IE_LANTERN = ResourceLocation.fromNamespaceAndPath("immersiveengineering", "electric_lantern");
 
+    public static final ResourceLocation IE_FLOODLIGHT = ResourceLocation.fromNamespaceAndPath("immersiveengineering", "floodlight");
+
+    public static boolean isIeFloodlight(BlockState state) {
+        return BuiltInRegistries.BLOCK.getKey(state.getBlock()).equals(IE_FLOODLIGHT);
+    }
+
     public static boolean isIeLantern(BlockState state) {
         return BuiltInRegistries.BLOCK.getKey(state.getBlock()).equals(IE_LANTERN);
     }
@@ -41,8 +47,16 @@ public final class LanternConversion {
         if (!(level instanceof ServerLevel sl)) return InteractionResult.SUCCESS;
         BlockState old = level.getBlockState(pos);
         if (IeWires.connected(sl, pos)) {
+            if (isIeFloodlight(old)) {
+                player.displayClientMessage(Component.translatable("ee_extras.floodlight.ie_wired"), true);
+                return InteractionResult.FAIL;
+            }
             player.displayClientMessage(Component.translatable("ee_extras.lantern.ie_wired"), true);
             return InteractionResult.FAIL;
+        }
+        if (isIeFloodlight(old)) {
+            EeFloodlight.convert(sl, pos, old);
+            return null;
         }
         // У IE facing=down — стоит основанием вниз (провод снизу), up — висит
         Direction facing = ieFacing(old) == Direction.UP ? Direction.DOWN : Direction.UP;
@@ -57,11 +71,12 @@ public final class LanternConversion {
         return Direction.DOWN;
     }
 
-    /** Подсказка у фонаря IE: его можно подключить к кабелю EE */
+    /** Подсказка у фонаря и прожектора IE: их можно подключить к кабелю EE */
     public static void registerTooltip(IEventBus bus) {
         bus.addListener((ItemTooltipEvent e) -> {
-            if (BuiltInRegistries.ITEM.getKey(e.getItemStack().getItem()).equals(IE_LANTERN))
-                TooltipBlockItem.tooltip("block.ee_extras.electric_lantern", e.getToolTip());
+            ResourceLocation id = BuiltInRegistries.ITEM.getKey(e.getItemStack().getItem());
+            if (id.equals(IE_LANTERN)) TooltipBlockItem.tooltip("block.ee_extras.electric_lantern", e.getToolTip());
+            else if (id.equals(IE_FLOODLIGHT)) TooltipBlockItem.tooltip("block.ee_extras.floodlight", e.getToolTip());
         });
     }
 

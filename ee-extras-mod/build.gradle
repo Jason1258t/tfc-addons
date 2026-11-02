@@ -29,6 +29,10 @@ neoForge {
     addModdingDependenciesTo(sourceSets.devtest)
     // Проверочный сервер: ./gradlew runServer. Create и Electro Energetics кладёт в run/mods скрипт test-server.sh
     runs {
+        client {
+            client()
+            sourceSet = sourceSets.devtest
+        }
         server {
             server()
             programArgument '--nogui'

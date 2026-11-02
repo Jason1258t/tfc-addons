@@ -18,6 +18,7 @@ import ee.extras.cable.CableWires;
 import ee.extras.cable.FourCoreSpoolItem;
 import ee.extras.cable.FourCoreTerminationBlock;
 import ee.extras.cable.PhaseTapBlock;
+import ee.extras.lantern.EeFloodlight;
 import ee.extras.lantern.LanternBlock;
 import ee.extras.lantern.LanternConversion;
 import ee.extras.lantern.LanternDevice;
@@ -28,6 +29,8 @@ import ee.extras.pcb.PcbItems;
 import ee.extras.converter.BidiConverterBlock;
 import ee.extras.converter.BidiConverterBlockEntity;
 import ee.extras.converter.BidiConverterDevice;
+import ee.extras.converter.CableConverterBlock;
+import ee.extras.converter.CableConverterDevice;
 import ee.extras.generator.GeneratorClient;
 import ee.extras.generator.GeneratorDevice;
 import ee.extras.generator.KineticGeneratorBlock;
@@ -47,6 +50,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -143,6 +147,15 @@ public class EeExtras {
     public static final DeferredBlock<LanternBlock> LANTERN = BLOCKS.register("electric_lantern",
             () -> new LanternBlock(metal().strength(3.0f, 15.0f).sound(SoundType.METAL).lightLevel(LanternBlock::light)));
 
+    /** Кабельный преобразователь (converter/): двухжильный кабель EE → FE в блок за задней гранью */
+    public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<CableConverterDevice>> CABLE_CONVERTER_DEVICE =
+            DEVICES.register("cable_converter", () -> new SimulatedDeviceType<CableConverterDevice>(rl("cable_converter"),
+                    (type, level, pos, devices) -> new CableConverterDevice(level, pos, devices, type)));
+    public static final DeferredBlock<CableConverterBlock> CABLE_CONVERTER = BLOCKS.register("cable_converter",
+            () -> new CableConverterBlock(metal()));
+    public static final DeferredItem<Item> CABLE_CONVERTER_ITEM = ITEMS.register("cable_converter",
+            () -> new TooltipBlockItem(CABLE_CONVERTER.get(), new Item.Properties()));
+
     public static final DeferredItem<FourCoreSpoolItem> FOUR_CORE_SPOOL = ITEMS.register("four_core_cable_spool",
             () -> new FourCoreSpoolItem(new Item.Properties().stacksTo(16)));
 
@@ -203,6 +216,8 @@ public class EeExtras {
         CableWires.init();
         LineWire.register();
         PcbItems.init();
+        // Прожектор — наследник блока IE, поэтому его класс и регистрация только при IE (фонарю IE не нужен)
+        if (ModList.get().isLoaded("immersiveengineering")) EeFloodlight.init(modBus);
         Tension.register(modBus);
         PcbItems.register(modBus);
         BLOCKS.register(modBus);
@@ -237,7 +252,7 @@ public class EeExtras {
         if (!event.getTabKey().equals(CEECreativeTab.CREATIVE_TAB.getKey())) return;
         for (Kind<?> k : POWER) event.accept(k.item.get());
         AcBlocks.addToTab(event);
-        for (Supplier<? extends Item> item : new Supplier[] {KINETIC_GENERATOR_ITEM, CONVERTER_ITEM,
+        for (Supplier<? extends Item> item : new Supplier[] {KINETIC_GENERATOR_ITEM, CONVERTER_ITEM, CABLE_CONVERTER_ITEM,
                 FOUR_CORE_TERMINATION_ITEM, PHASE_TAP_ITEM, DUPLEX_INSULATOR_ITEM, FOUR_CORE_INSULATOR_ITEM, FOUR_CORE_SPOOL})
             event.accept(item.get());
         for (LineWire w : LineWire.values()) {

@@ -46,6 +46,8 @@
   `ElectricLanternBlockEntity.getConnectionOffset`), кабели жила к жиле. `LanternDevice` — резистор 1000 Ом, горит от
   50 В и ещё 40 тиков после (переменный ток проходит через ноль), `SpawnPreventingDevice` EE. Модели — фонаря IE по
   ссылке (`art/cables.py`, `lantern_blockstate`), выпадает фонарь IE, своего предмета нет; подсказка — на фонаре IE.
+- `lantern/EeFloodlight*`, `FloodlightDevice` (2.7) — прожектор IE в сети EE. Наследник `FloodlightBlock` IE, а не `CableEndBlock`: `FloodlightBlockEntity` читает `IEProperties.FACING_ALL`, а `FACING` у блоков EE — другой объект с тем же именем, два в одном блоке нельзя (IE 12.4.2, EE 1.1.2, по байткоду). Блок-сущность — сама IE, свой блок добавлен в тип `FLOODLIGHT` через `BlockEntityTypeAddBlocksEvent`; для кабеля блок — `cable/CableJunction`. Регистрация только при IE. Устройство держит запас прожектора полным, пока есть напряжение, и даёт 440 Ом, только когда он светит.
+- `converter/CableConverter*` (2.7) — кабельный преобразователь: формулы половины «заряд» `BidiConverterDevice`, вход — жилы кабеля, FE — в блок за задней гранью. Проверка: `IE=1 ./test-server.sh 'rectest floods' …` (`Flood`), настоящий клиент — `./test-client.sh` (`ClientTest`), снимки в `run/screenshots`.
 - `EeExtras` — регистрация (блоки, предметы, устройства EE, типы проводов, блок-сущность), псевдонимы `ee_rectifier:*`,
   вкладка творческого режима EE. `Layout` — раскладки клемм (выпрямители, преобразователь, соединитель).
 - Выпрямители и инверторы — `PowerBlock` (до 2.2 — `RectifierBlock`), `RectifierDevice` (с 1.1 без диодов: резисторы

@@ -193,6 +193,35 @@ def termination_model(ns, o, display, terms=FOUR_TERMS):
     return {'credit': 'ee_extras', 'textures': {'0': tex, 'particle': tex}, 'elements': els, 'display': display}
 
 
+def cable_converter_model(ns, o, display):
+    """Кабельный преобразователь: плита и ввод кабеля как у отвода фазы, сверху корпус с клеммой FE; форма — CableConverterBlock"""
+    t = '#0'
+    side = {'texture': t, 'uv': [8, 5.5, 16, 8]}
+    top = {'texture': t, 'uv': [0, 8, 8, 11]}
+    faces = {'north': side, 'east': side, 'south': side, 'west': side, 'up': top, 'down': top}
+    term = {'texture': t, 'uv': [0, 6, 2, 8]}
+    rubber = {'texture': t, 'uv': [12, 0, 16, 4]}
+    els = [box('plate', [0, 0, 1], [16, 2, 7], faces), box('body', [2, 2, 1.5], [14, 5, 6.5], faces),
+           box('fe', [6.5, 5, 2.5], [9.5, 6, 5.5], {f: term for f in ('north', 'east', 'south', 'west', 'up')}),
+           box('cable_entry', [6, 0, 7], [10, 4, 13], {
+               'north': rubber, 'east': rubber, 'west': rubber, 'up': rubber, 'down': rubber,
+               'south': {'texture': t, 'uv': [8, 0, 12, 4]}})]
+    tex = f'{ns}:block/four_core_termination'
+    return {'credit': 'ee_extras', 'textures': {'0': tex, 'particle': tex}, 'elements': turn(els, o), 'display': display}
+
+
+def floodlight_blockstate():
+    """Прожектор IE в сети EE (lantern/EeFloodlightBlock): те же модели и повороты, что в blockstates/floodlight.json у IE"""
+    turns = {'down': {}, 'east': {'x': 90, 'y': 270}, 'north': {'x': 90, 'y': 180}, 'south': {'x': 90},
+             'up': {'x': 180}, 'west': {'x': 90, 'y': 90}}
+    variants = {}
+    for active in ('false', 'true'):
+        model = 'immersiveengineering:block/metal_device/floodlight_' + ('on' if active == 'true' else 'off')
+        for facing, r in turns.items():
+            variants[f'active={active},facing={facing}'] = {'model': model, **r}
+    return {'variants': variants}
+
+
 def segment_model(ns):
     """Отрезок четырёхжильного кабеля (как у моделей отрезков EE: вдоль z от 0 до 8, сечение вокруг нуля)"""
     t = '#0'
@@ -307,6 +336,12 @@ def generate(res, ns, dump, rot, display):
         dump(blockstate(ns, name, rot, ['block'] * 4), 'blockstates', name + '.json')
 
     dump(lantern_blockstate(rot), 'blockstates', 'electric_lantern.json')
+    dump(floodlight_blockstate(), 'blockstates', 'floodlight.json')
+
+    for o, name in enumerate(ORIENT_MODELS):
+        dump(cable_converter_model(ns, o, display), 'models', 'block', 'cable_converter', name + '.json')
+    dump({'parent': f'{ns}:block/cable_converter/block'}, 'models', 'item', 'cable_converter.json')
+    dump(blockstate(ns, 'cable_converter', rot, ORIENT_MODELS), 'blockstates', 'cable_converter.json')
 
     write(os.path.join(tex, 'block', 'four_core_cable.png'), segment_texture())
     dump(segment_model(ns), 'models', 'block', 'four_core_cable_segment.json')

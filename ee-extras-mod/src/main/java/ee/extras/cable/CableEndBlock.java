@@ -29,7 +29,7 @@ public abstract class CableEndBlock extends BundledWireTerminationBlock {
     }
 
     /** Точки {x, y, z} в пикселях для блока лицом вверх, o раз повёрнутые креном (x, z) → (16 − z, x), как у выпрямителей */
-    static NodeConfigurator configurator(float[][] points, int o) {
+    public static NodeConfigurator configurator(float[][] points, int o) {
         NodeConfigurator.Builder b = new NodeConfigurator.Builder();
         for (float[] p : points) {
             float x = p[0], z = p[2];

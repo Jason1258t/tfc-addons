@@ -184,5 +184,12 @@
   "ee_extras.goggles.from_grid": "From grid: %s",
   "item.ee_extras.l1_board_blank": "L1 Copper-Clad Board Blank",
   "item.ee_extras.l1_mask": "L1 Topology Mask",
-  "item.ee_extras.l1_board": "L1 Board"
+  "item.ee_extras.l1_board": "L1 Board",
+  "block.ee_extras.floodlight": "Floodlight (EE grid)",
+  "block.ee_extras.floodlight.tooltip": "Click a placed floodlight with an EE duplex cable spool to join it to the EE grid: it becomes a cable junction, all cables joined core to core.",
+  "block.ee_extras.floodlight.tooltip.nodes": "Controlled as usual: redstone, screwdriver inverts, hammer turns the beam. Works from 50 V (230 V — 120 W), draws power only while on. Breaks back into the IE floodlight.",
+  "ee_extras.floodlight.ie_wired": "Remove the IE wires from the floodlight first",
+  "block.ee_extras.cable_converter": "Cable Converter",
+  "block.ee_extras.cable_converter.tooltip": "Converter for machines: EE duplex cable in, FE into the block behind it (an IE machine or capacitor). One cable instead of two wires.",
+  "block.ee_extras.cable_converter.tooltip.nodes": "The cable can continue to the next converter: all cables are joined core to core. Draws only what the machine can accept."
 }
