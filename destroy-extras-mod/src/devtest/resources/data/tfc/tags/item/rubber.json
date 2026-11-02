@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "afc:rubber_bar", "required": false },
+    "destroy:polystyrene_butadiene"
+  ]
+}

@@ -209,6 +209,37 @@ Destroy численно изменяет моли при фазовых пер�
 температуру; проверяются восстановленные количества веществ, а не побитовое равенство всех data components. Это
 ограничение стенда и штатной симуляции, а не дополнительный расход катализатора или изменение стехиометрии datapack.
 
+## M9: нефтехимия, полимеры и изоляция
+
+Сайтовый datapack `Destroy — нефтехимия и полимеры` (`7IHNTyYMc046lNeC0anS`) содержит семь записей. Химия целиком
+штатная для Destroy 0.4.6-eligibbs: перегонка `#c:crude_oil` выдаёт ароматику и заводской газ с метаном, этеном, пропеном
+и бутадиеном; бензол и этен дают стирол через этилбензол; кумольный процесс даёт фенол и ацетон; Vat осаждает PE, PP,
+PVC и SBR с инициатором AIBN. Собственные молекулы, машины, жидкости, предметы и production-код не добавлялись.
+
+- `destroy:polystyrene_butadiene` добавлен в `#tfc:rubber`; AFC остаётся необязательным членом того же тега.
+- PE, PP, PVC, SBR и необязательный `afc:rubber_bar` добавлены в `#tfc:insulation`.
+- Create принимает тег резины в крафте и прессовании ремня, а также в альтернативном крафте hose pulley.
+- Оба изолированных провода EE принимают тег изоляции с сохранением выхода 8 и 4 проводов.
+- Нефтяная фенольная смола IE не добавлена: смесь Destroy нельзя без потерь передать в IE Refinery простым JSON.
+  Существующий путь `acetaldehyde + creosote → phenolic_resin` и его потребители сохранены. Эпоксидной системы в Destroy
+  0.4.6 нет; параллельная цепочка не создавалась. Топливные фракции CDG в этот срез не входят.
+
+Проверки M9 в minimal и thermal: штатные реакции и перегонка 9/9, теги и потребители 11/11, каждый полимер 2/2, контроль
+без AIBN 2/2, стирол и кумольный процесс по 2/2. Для измеримого результата стенд заполняет Vat целиком: при одном ведре
+в 27 000 мБ концентрация слишком мала, и штатный порог синхронизации Destroy не записывает накопленный результат. Это
+особенность тестовых условий, а не изменение реакций. Ручной Survival-проход и pack-wide confirm не выполнялись.
+
+```bash
+./test-server.sh 'destroyextratest m9build' 'destroyextratest m9recipes' \
+  'destroyextratest m9prepare pe' 'sleep 3' 'destroyextratest m9assert pe' \
+  'destroyextratest m9prepare pp' 'sleep 3' 'destroyextratest m9assert pp' \
+  'destroyextratest m9prepare pvc' 'sleep 3' 'destroyextratest m9assert pvc' \
+  'destroyextratest m9prepare sbr' 'sleep 3' 'destroyextratest m9assert sbr' \
+  'destroyextratest m9prepare pe_no_aibn' 'sleep 3' 'destroyextratest m9assert pe_no_aibn' \
+  'destroyextratest m9prepare styrene' 'sleep 3' 'destroyextratest m9assert styrene' \
+  'destroyextratest m9prepare cumene' 'sleep 3' 'destroyextratest m9assert cumene'
+```
+
 ## Сборка и проверка
 
 ```bash

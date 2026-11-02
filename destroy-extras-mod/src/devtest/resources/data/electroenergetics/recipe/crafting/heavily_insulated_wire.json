@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["pwp", "wkw", "pwp"],
+  "key": {
+    "w": { "item": "electroenergetics:insulated_wire" },
+    "k": { "tag": "tfc:insulation" },
+    "p": { "item": "minecraft:paper" }
+  },
+  "result": {
+    "count": 4,
+    "id": "electroenergetics:heavily_insulated_wire"
+  }
+}

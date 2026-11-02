@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [" a ", "bbb", " c "],
+  "key": {
+    "a": { "item": "create:copper_casing" },
+    "b": { "tag": "tfc:rubber" },
+    "c": { "item": "create:copper_sheet" }
+  },
+  "result": {
+    "count": 1,
+    "id": "create:hose_pulley"
+  }
+}

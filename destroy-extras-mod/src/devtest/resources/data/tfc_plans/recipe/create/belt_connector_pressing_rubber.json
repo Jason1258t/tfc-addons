@@ -1,0 +1,5 @@
+{
+  "type": "create:pressing",
+  "ingredients": [{ "tag": "tfc:rubber" }],
+  "results": [{ "id": "create:belt_connector" }]
+}

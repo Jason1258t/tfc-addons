@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["www", "wkw", "www"],
+  "key": {
+    "w": { "tag": "c:wires/copper" },
+    "k": { "tag": "tfc:insulation" }
+  },
+  "result": {
+    "count": 8,
+    "id": "electroenergetics:insulated_wire"
+  }
+}

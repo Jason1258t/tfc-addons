@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["DDD", "DDD"],
+  "key": {
+    "D": { "tag": "tfc:rubber" }
+  },
+  "result": {
+    "count": 1,
+    "id": "create:belt_connector"
+  }
+}
