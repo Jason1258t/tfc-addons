@@ -1,11 +1,15 @@
 package tfc.destroy.extras;
 
 import com.george_vi.electroenergetics.CEECreativeTab;
+import java.util.List;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -38,7 +42,16 @@ public final class DestroyExtras {
         "membrane_electrolyzer", () -> new MembraneElectrolyzerBlock(BlockBehaviour.Properties.of()
             .strength(3.0f).requiresCorrectToolForDrops().noOcclusion()));
     public static final DeferredItem<BlockItem> ELECTROLYZER_ITEM = ITEMS.register("membrane_electrolyzer",
-        () -> new BlockItem(ELECTROLYZER_BLOCK.get(), new Item.Properties()));
+        () -> new BlockItem(ELECTROLYZER_BLOCK.get(), new Item.Properties()) {
+            @Override
+            public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+                super.appendHoverText(stack, context, tooltip, flag);
+                tooltip.add(Component.translatable("tooltip.destroy_extras.electrolyzer.power"));
+                tooltip.add(Component.translatable("tooltip.destroy_extras.electrolyzer.outputs"));
+                tooltip.add(Component.translatable("tooltip.destroy_extras.electrolyzer.structure"));
+                tooltip.add(Component.translatable("tooltip.destroy_extras.electrolyzer.membrane"));
+            }
+        });
     public static final DeferredItem<Item> MEMBRANE_ITEM = ITEMS.register("membrane",
         () -> new Item(new Item.Properties().durability(MembraneElectrolyzerBlockEntity.MEMBRANE_OPERATIONS)));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MembraneElectrolyzerBlockEntity>> ELECTROLYZER_BE =

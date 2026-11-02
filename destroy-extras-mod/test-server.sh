@@ -5,6 +5,8 @@ cd "$(dirname "$0")"
 export JAVA_HOME="${JAVA_HOME:-$HOME/.gradle/local-tools/jdk21/Contents/Home}"
 RCON_PORT="${RCON_PORT:-25606}"
 SERVER_PORT="${SERVER_PORT:-25607}"
+PROFILE="${PROFILE:-minimal}"
+case "$PROFILE" in minimal|thermal|sable) ;; *) echo "Неизвестный PROFILE=$PROFILE" >&2; exit 2 ;; esac
 python3 - "$RCON_PORT" "$SERVER_PORT" <<'PY'
 import socket, sys
 for value in sys.argv[1:]:
@@ -16,22 +18,33 @@ for value in sys.argv[1:]:
     finally:
         s.close()
 PY
-./libs.sh
+RUN_DIR="${RUN_DIR:-run}"
+export RUN_DIR
+if [ -z "${SKIP_LIBS:-}" ]; then
+  ./libs.sh
+  (cd ../destroy-bridge-mod && ./libs.sh)
+fi
 ./gradlew jar --console=plain
-(cd ../destroy-bridge-mod && ./libs.sh && ./gradlew jar --console=plain)
-if [ -z "${KEEP:-}" ]; then rm -rf run; fi
-mkdir -p run/mods
-rm -f run/mods/*.jar
+(cd ../destroy-bridge-mod && ./gradlew jar --console=plain)
+if [ -z "${KEEP:-}" ]; then rm -rf "$RUN_DIR"; fi
+mkdir -p "$RUN_DIR/mods"
+rm -f "$RUN_DIR/mods"/*.jar
 for jar in create-1.21.1-6.0.10.jar electroenergetics-1.21.1-1.1.2.jar TerraFirmaCraft-NeoForge-1.21.1-4.2.9.jar Patchouli-1.21.1-93-NEOFORGE.jar destroy-1.21.1-0.4.6-eligibbs.jar petrolpark-1.21.1-1.5.11.jar; do
-  cp "libs/$jar" run/mods/
+  cp "libs/$jar" "$RUN_DIR/mods/"
 done
-cp ../destroy-bridge-mod/build/libs/destroy-bridge-0.1.0.jar run/mods/
-cp ../ee-extras-mod/build/libs/ee-extras-2.5.1.jar run/mods/
+MODS="${MODS:-${TFC_MODS_DIR:-${TFC_PACK_CACHE:-$HOME/.cache/tfc-plans/pack}/mods}}"
+if [ "$PROFILE" = thermal ]; then
+  cp "$MODS/woodencog-1.2.18-1.21.1-TFCR.jar" "$MODS/ImmersiveEngineering-1.21.1-12.4.2-194.jar" "$RUN_DIR/mods/"
+fi
+if [ "$PROFILE" = sable ]; then cp "$MODS/sable-neoforge-1.21.1-2.0.5.jar" "$RUN_DIR/mods/"; fi
+cp ../destroy-bridge-mod/build/libs/destroy-bridge-0.1.0.jar "$RUN_DIR/mods/"
+cp ../ee-extras-mod/build/libs/ee-extras-2.5.1.jar "$RUN_DIR/mods/"
 {
-  shasum -a 256 run/mods/*.jar build/libs/destroy-extras-0.1.0.jar
-} > run/manifest.txt
-echo 'eula=true' > run/eula.txt
-cat > run/server.properties <<P
+  echo "profile=$PROFILE"
+  shasum -a 256 "$RUN_DIR/mods"/*.jar build/libs/destroy-extras-0.1.0.jar
+} > "$RUN_DIR/manifest.txt"
+echo 'eula=true' > "$RUN_DIR/eula.txt"
+cat > "$RUN_DIR/server.properties" <<P
 level-type=minecraft\\:flat
 online-mode=false
 spawn-protection=0
@@ -45,7 +58,7 @@ P
 if [ $# -eq 0 ]; then
   set -- 'destroyextratest environment'
 fi
-./gradlew runServer --console=plain > run/check.log 2>&1 &
+./gradlew runServer --console=plain > "$RUN_DIR/check.log" 2>&1 &
 GRADLE=$!
 cleanup() {
   if kill -0 "$GRADLE" 2>/dev/null; then
@@ -54,16 +67,16 @@ cleanup() {
 }
 trap cleanup EXIT
 set +e
-SERVER_PID=$GRADLE python3 rcon.py "$RCON_PORT" check 'forceload add -16 -16 16 16' "$@" 'stop' 2>&1 | tee run/results.txt
+SERVER_PID=$GRADLE python3 rcon.py "$RCON_PORT" check 'forceload add -16 -16 16 16' "$@" 'stop' 2>&1 | tee "$RUN_DIR/results.txt"
 RCON_STATUS=${PIPESTATUS[0]}
 wait "$GRADLE"
 SERVER_STATUS=$?
 set -e
 trap - EXIT
-grep -E 'DESTROYEXTRATEST|ERROR|FATAL|Exception|Caused by' run/check.log | head -100 || true
+grep -E 'DESTROYEXTRATEST|ERROR|FATAL|Exception|Caused by' "$RUN_DIR/check.log" | head -100 || true
 STATUS=0
 if [ "$RCON_STATUS" -ne 0 ] || [ "$SERVER_STATUS" -ne 0 ]; then STATUS=1; fi
-if grep -E 'DESTROYEXTRATEST FAIL|Unknown command|No value present' run/results.txt run/check.log; then STATUS=1; fi
-if grep -E 'FATAL|Failed to start the minecraft server|Mod loading has failed' run/check.log; then STATUS=1; fi
-case " $* " in *' destroyextratest assert '*) grep -q 'DESTROYEXTRATEST PASS' run/results.txt || STATUS=1 ;; esac
+if grep -E 'DESTROYEXTRATEST FAIL|Unknown (or incomplete )?command|No value present' "$RUN_DIR/results.txt" "$RUN_DIR/check.log"; then STATUS=1; fi
+if grep -E 'FATAL|Failed to start the minecraft server|Mod loading has failed' "$RUN_DIR/check.log"; then STATUS=1; fi
+case " $* " in *' destroyextratest assert '*) grep -q 'DESTROYEXTRATEST PASS' "$RUN_DIR/results.txt" || STATUS=1 ;; esac
 exit "$STATUS"

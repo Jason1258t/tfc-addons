@@ -35,6 +35,11 @@ public final class TestSourceBlockEntity extends BlockEntity {
         IFluidHandler destination = serverLevel.getCapability(Capabilities.FluidHandler.BLOCK,
             worldPosition.east(), Direction.WEST);
         if (destination != null) FluidUtil.tryFluidTransfer(destination, tank, 1000, true);
+        else {
+            destination = serverLevel.getCapability(Capabilities.FluidHandler.BLOCK,
+                worldPosition.east(2), Direction.WEST);
+            if (destination != null) FluidUtil.tryFluidTransfer(destination, tank, 1000, true);
+        }
     }
 
     @Override

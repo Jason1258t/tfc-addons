@@ -1,10 +1,16 @@
 package tfc.destroy.extras.electrolyzer;
 
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
+import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
+import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
@@ -23,7 +29,7 @@ import tfc.destroy.extras.recipe.ExtrasRecipeTypes;
 import tfc.destroy.extras.recipe.MembraneElectrolysisRecipe;
 
 /** Production-контроллер: рецепт берётся из RecipeManager, все изменения выполняются на серверном потоке. */
-public final class MembraneElectrolyzerBlockEntity extends BlockEntity {
+public final class MembraneElectrolyzerBlockEntity extends BlockEntity implements IHaveGoggleInformation {
     public static final int INPUT_CAPACITY = 8000;
     public static final int MIXTURE_CAPACITY = 2000;
     public static final int OUTPUT_CAPACITY = 4000;
@@ -52,6 +58,10 @@ public final class MembraneElectrolyzerBlockEntity extends BlockEntity {
     private RecipeHolder<MembraneElectrolysisRecipe> recipe;
     private ResourceLocation recipeId;
     private ElectrolyzerStatus status = ElectrolyzerStatus.IDLE;
+    private boolean formed;
+    private float pumpRpm;
+    private long nextStructureCheck;
+    private long nextRecipeScan;
     public int progress;
     public int batches;
 
@@ -70,17 +80,27 @@ public final class MembraneElectrolyzerBlockEntity extends BlockEntity {
 
     public void tick() {
         if (!(level instanceof ServerLevel serverLevel)) return;
+        ElectrolyzerStatus previousStatus = status;
+        refreshStructure(serverLevel);
         if (device == null || !device.isValid()) {
             device = DevicesSavedData.load(serverLevel).getDevice(worldPosition, ProcessPowerDevice.class);
         }
-        selectRecipe(serverLevel.getRecipeManager());
         if (device == null) {
             status = ElectrolyzerStatus.FAULT;
+            syncStatus(previousStatus);
             return;
         }
+        if (!formed) {
+            device.setActive(false);
+            status = ElectrolyzerStatus.FAULT;
+            syncStatus(previousStatus);
+            return;
+        }
+        selectRecipe(serverLevel.getRecipeManager());
         if (recipe == null) {
             device.setActive(false);
             status = mixture.isEmpty() ? ElectrolyzerStatus.IDLE : ElectrolyzerStatus.FAULT;
+            syncStatus(previousStatus);
             return;
         }
 
@@ -90,9 +110,10 @@ public final class MembraneElectrolyzerBlockEntity extends BlockEntity {
         FluidStack[] products = value.products();
         boolean hasBatch = mixture.getFluidAmount() >= value.input().amount();
         boolean ready = hasBatch && AtomicFluidOperation.canExecute(mixture, consumed, outputs, products);
-        device.setActive(ready && hasUsableMembrane());
+        boolean hasPump = pumpRpm >= ElectrolyzerStructure.MINIMUM_PUMP_RPM;
+        device.setActive(ready && hasUsableMembrane() && hasPump);
 
-        if (!hasUsableMembrane()) {
+        if (!hasUsableMembrane() || !hasPump) {
             status = ElectrolyzerStatus.FAULT;
         } else if (hasBatch && !ready) {
             status = ElectrolyzerStatus.BLOCKED_OUTPUT;
@@ -103,11 +124,15 @@ public final class MembraneElectrolyzerBlockEntity extends BlockEntity {
         } else {
             status = ElectrolyzerStatus.RUNNING;
         }
-        if (!ready || !hasUsableMembrane() || !device.hasWorkingPower()) return;
+        if (!ready || !hasUsableMembrane() || !hasPump || !device.hasWorkingPower()) {
+            syncStatus(previousStatus);
+            return;
+        }
 
         progress++;
         if (progress < value.getProcessingDuration()) {
             setChanged();
+            syncStatus(previousStatus);
             return;
         }
         if (!AtomicFluidOperation.execute(mixture, consumed, outputs, products)) {
@@ -120,14 +145,30 @@ public final class MembraneElectrolyzerBlockEntity extends BlockEntity {
         batches++;
         status = ElectrolyzerStatus.IDLE;
         setChanged();
+        syncStatus(previousStatus);
+    }
+
+    private void refreshStructure(ServerLevel level) {
+        if (level.getGameTime() < nextStructureCheck) return;
+        nextStructureCheck = level.getGameTime() + 20;
+        formed = ElectrolyzerStructure.hasShell(level, worldPosition);
+        pumpRpm = formed ? ElectrolyzerStructure.pumpRpm(level, worldPosition) : 0.0F;
+    }
+
+    private void syncStatus(ElectrolyzerStatus previousStatus) {
+        if (status != previousStatus && level != null) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
     }
 
     private void selectRecipe(RecipeManager manager) {
         if (recipeManager != manager) {
             recipeManager = manager;
             recipe = null;
+            nextRecipeScan = 0;
         }
-        if (recipe != null) return;
+        if (recipe != null || level == null || level.getGameTime() < nextRecipeScan) return;
+        nextRecipeScan = level.getGameTime() + 20;
         for (RecipeHolder<MembraneElectrolysisRecipe> candidate : manager.getAllRecipesFor(ExtrasRecipeTypes.ELECTROLYSIS_TYPE.get())) {
             if (recipeId != null && !candidate.id().equals(recipeId)) continue;
             MembraneElectrolysisRecipe value = candidate.value();
@@ -186,6 +227,42 @@ public final class MembraneElectrolyzerBlockEntity extends BlockEntity {
         return recipeId;
     }
 
+    public boolean formed() {
+        return formed;
+    }
+
+    public float pumpRpm() {
+        return pumpRpm;
+    }
+
+    @Override
+    public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
+        tooltip.add(Component.translatable("goggles.destroy_extras.electrolyzer.status", status.text()));
+        tooltip.add(Component.translatable("goggles.destroy_extras.electrolyzer.structure",
+            Component.translatable(formed ? "goggles.destroy_extras.formed" : "goggles.destroy_extras.not_formed")));
+        tooltip.add(Component.translatable("goggles.destroy_extras.electrolyzer.pump", String.format(java.util.Locale.ROOT, "%.0f", pumpRpm)));
+        tooltip.add(Component.translatable("goggles.destroy_extras.electrolyzer.membrane", remainingMembraneOperations()));
+        return true;
+    }
+
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.Builder builder) {
+        super.collectImplicitComponents(builder);
+        CompoundTag data = saveCustomOnly(level.registryAccess());
+        BlockEntity.addEntityType(data, getType());
+        builder.set(DataComponents.BLOCK_ENTITY_DATA, net.minecraft.world.item.component.CustomData.of(data));
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveCustomOnly(registries);
+    }
+
+    @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
@@ -197,6 +274,7 @@ public final class MembraneElectrolyzerBlockEntity extends BlockEntity {
         tag.put("Membrane", membrane.serializeNBT(registries));
         tag.putInt("Progress", progress);
         tag.putInt("Batches", batches);
+        tag.putBoolean("Formed", formed);
         tag.putString("Status", status.id());
         if (recipeId != null) tag.putString("Recipe", recipeId.toString());
     }
@@ -212,6 +290,9 @@ public final class MembraneElectrolyzerBlockEntity extends BlockEntity {
         membrane.deserializeNBT(registries, tag.getCompound("Membrane"));
         progress = tag.getInt("Progress");
         batches = tag.getInt("Batches");
+        formed = tag.getBoolean("Formed");
+        nextStructureCheck = 0;
+        nextRecipeScan = 0;
         recipeId = tag.contains("Recipe") ? ResourceLocation.tryParse(tag.getString("Recipe")) : null;
         recipe = null;
         recipeManager = null;

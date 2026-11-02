@@ -1,8 +1,11 @@
 package tfc.destroy.extras.devtest;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.simibubi.create.AllBlocks;
+import com.simibubi.create.content.kinetics.motor.CreativeMotorBlockEntity;
 import ee.extras.pcb.PcbItems;
 import java.util.List;
 import net.minecraft.commands.CommandSourceStack;
@@ -78,6 +81,8 @@ final class M4Test {
             .then(Commands.literal("m4environment").executes(M4Test::environment))
             .then(Commands.literal("m4build").executes(ctx -> build(ctx.getSource())))
             .then(Commands.literal("m4acid").executes(ctx -> acid(ctx.getSource())))
+            .then(Commands.literal("m4mixer").then(Commands.argument("rpm", IntegerArgumentType.integer(0, 256))
+                .executes(ctx -> mixer(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "rpm")))))
             .then(Commands.literal("m4load").then(Commands.argument("case", StringArgumentType.word())
                 .executes(ctx -> load(ctx, StringArgumentType.getString(ctx, "case")))))
             .then(Commands.literal("m4assert").then(Commands.argument("case", StringArgumentType.word())
@@ -122,6 +127,21 @@ final class M4Test {
         VatControllerBlockEntity vat = vat(level);
         if (vat.getVatOptional().isEmpty()) vat.tryMakeVat();
         source.sendSuccess(() -> Component.literal("стенд M4: Bridge absorption → Destroy Vat → etching bath"), false);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int mixer(CommandSourceStack source, int rpm) {
+        ServerLevel level = source.getLevel();
+        place(level, BATH.above(), AllBlocks.MECHANICAL_MIXER.getDefaultState());
+        BlockPos drive = BATH.above().east();
+        place(level, drive, AllBlocks.COGWHEEL.getDefaultState()
+            .setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.AXIS, Direction.Axis.Y));
+        place(level, drive.above(), AllBlocks.CREATIVE_MOTOR.getDefaultState()
+            .setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING, Direction.DOWN));
+        if (level.getBlockEntity(drive.above()) instanceof CreativeMotorBlockEntity motor) {
+            motor.generatedSpeed.setValue(rpm);
+        }
+        source.sendSuccess(() -> Component.literal("Create-мешалка ванны: " + rpm + " RPM"), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -188,9 +208,11 @@ final class M4Test {
         EtchingBathBlockEntity bath = bath(level);
         CompoundTag saved = source(level).savedM4;
         switch (testCase) {
-            case "l1", "devtest" -> {
-                ItemStack expectedBoard = new ItemStack(testCase.equals("l1") ? PcbItems.L1_BOARD.get() : ETCHED_BOARD.get());
-                check(ctx, bath.batches == 1 && bath.progress == 0, "выполнена ровно одна операция на 400 тиков");
+            case "l1", "devtest", "mixed" -> {
+                ItemStack expectedBoard = new ItemStack(testCase.equals("devtest") ? ETCHED_BOARD.get() : PcbItems.L1_BOARD.get());
+                check(ctx, bath.batches == 1 && bath.progress == 0, testCase.equals("mixed")
+                    ? "мешалка ≥16 RPM выполнила операцию за 200 тиков" : "выполнена ровно одна операция на 400 тиков");
+                if (testCase.equals("mixed")) check(ctx, bath.mixerRpm() >= 16, "ускорение выполнено настоящей Create-мешалкой");
                 check(ctx, bath.items.getStackInSlot(0).isEmpty() && bath.items.getStackInSlot(1).isEmpty(),
                     "заготовка и маска израсходованы по одной");
                 check(ctx, ItemStack.isSameItem(bath.items.getStackInSlot(2), expectedBoard)
@@ -210,7 +232,7 @@ final class M4Test {
                     saved.getDouble("InitialWater"), 0.01), "хлорид, вода и остальные компоненты сохранены");
                 check(ctx, close(mixture(bath.spent.getFluid()).getTemperature(), saved.getFloat("InitialTemperature"), 0.001),
                     "температура смеси сохранена");
-                check(ctx, (testCase.equals("l1") ? L1_RECIPE : DEVTEST_RECIPE).equals(bath.recipeId()),
+                check(ctx, (testCase.equals("devtest") ? DEVTEST_RECIPE : L1_RECIPE).equals(bath.recipeId()),
                     "ванна использует выбранный JSON-рецепт");
             }
             case "blocked" -> {

@@ -14,7 +14,14 @@
           "name": "destroy_extras:membrane_electrolyzer"
         }
       ],
-      "rolls": 1.0
+      "rolls": 1.0,
+      "functions": [
+        {
+          "function": "minecraft:copy_components",
+          "source": "block_entity",
+          "include": ["minecraft:block_entity_data"]
+        }
+      ]
     }
   ]
 }

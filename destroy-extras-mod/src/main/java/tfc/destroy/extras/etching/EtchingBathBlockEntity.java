@@ -1,11 +1,16 @@
 package tfc.destroy.extras.etching;
 
+import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
+import com.simibubi.create.content.kinetics.mixer.MechanicalMixerBlockEntity;
+import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
@@ -22,9 +27,10 @@ import tfc.destroy.extras.recipe.EtchingRecipe;
 import tfc.destroy.extras.recipe.ExtrasRecipeTypes;
 
 /** Травление без EE/FE: длительность и расход задаёт JSON, завершение атомарно для предметов и жидкости. */
-public final class EtchingBathBlockEntity extends BlockEntity {
+public final class EtchingBathBlockEntity extends BlockEntity implements IHaveGoggleInformation {
     public static final int INPUT_CAPACITY = 4000;
     public static final int SPENT_CAPACITY = 4000;
+    public static final float MINIMUM_MIXER_RPM = 16.0F;
 
     public final FluidTank input = tank(INPUT_CAPACITY, stack -> true, true);
     public final FluidTank spent = tank(SPENT_CAPACITY, stack -> true, false);
@@ -40,6 +46,7 @@ public final class EtchingBathBlockEntity extends BlockEntity {
                 progress = 0;
                 recipe = null;
                 recipeId = null;
+                nextRecipeScan = 0;
             }
             setChanged();
         }
@@ -49,6 +56,8 @@ public final class EtchingBathBlockEntity extends BlockEntity {
     private RecipeHolder<EtchingRecipe> recipe;
     private ResourceLocation recipeId;
     private EtchingStatus status = EtchingStatus.IDLE;
+    private long nextRecipeScan;
+    private float mixerRpm;
     public int progress;
     public int batches;
 
@@ -60,7 +69,10 @@ public final class EtchingBathBlockEntity extends BlockEntity {
         return new FluidTank(capacity, validator) {
             @Override
             protected void onContentsChanged() {
-                if (affectsRecipe) recipe = null;
+                if (affectsRecipe) {
+                    recipe = null;
+                    nextRecipeScan = 0;
+                }
                 setChanged();
             }
         };
@@ -68,10 +80,14 @@ public final class EtchingBathBlockEntity extends BlockEntity {
 
     public void tick() {
         if (!(level instanceof ServerLevel serverLevel)) return;
+        EtchingStatus previousStatus = status;
+        mixerRpm = serverLevel.getBlockEntity(worldPosition.above()) instanceof MechanicalMixerBlockEntity mixer
+            ? Math.abs(mixer.getSpeed()) : 0.0F;
         selectRecipe(serverLevel.getRecipeManager());
         if (recipe == null) {
             progress = 0;
             status = EtchingStatus.IDLE;
+            syncStatus(previousStatus);
             return;
         }
 
@@ -91,21 +107,25 @@ public final class EtchingBathBlockEntity extends BlockEntity {
         if (!hasItems || !hasFluid) {
             if (!hasItems || input.getFluidAmount() < amount) progress = 0;
             status = EtchingStatus.IDLE;
+            syncStatus(previousStatus);
             return;
         }
         if (!ready) {
             status = EtchingStatus.BLOCKED_OUTPUT;
+            syncStatus(previousStatus);
             return;
         }
 
         status = EtchingStatus.RUNNING;
-        progress++;
+        progress += mixerRpm >= MINIMUM_MIXER_RPM ? 2 : 1;
         if (progress < value.getProcessingDuration()) {
             setChanged();
+            syncStatus(previousStatus);
             return;
         }
         if (!AtomicFluidOperation.execute(input, consumed, new FluidTank[] {spent}, new FluidStack[] {spentResult})) {
             status = EtchingStatus.BLOCKED_OUTPUT;
+            syncStatus(previousStatus);
             return;
         }
         ResourceLocation completedRecipe = recipeId;
@@ -117,6 +137,13 @@ public final class EtchingBathBlockEntity extends BlockEntity {
         batches++;
         status = EtchingStatus.IDLE;
         setChanged();
+        syncStatus(previousStatus);
+    }
+
+    private void syncStatus(EtchingStatus previousStatus) {
+        if (status != previousStatus && level != null) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
     }
 
     private boolean canOutput(ItemStack result) {
@@ -140,8 +167,10 @@ public final class EtchingBathBlockEntity extends BlockEntity {
         if (recipeManager != manager) {
             recipeManager = manager;
             recipe = null;
+            nextRecipeScan = 0;
         }
-        if (recipe != null) return;
+        if (recipe != null || level == null || level.getGameTime() < nextRecipeScan) return;
+        nextRecipeScan = level.getGameTime() + 20;
         for (RecipeHolder<EtchingRecipe> candidate : manager.getAllRecipesFor(ExtrasRecipeTypes.ETCHING_TYPE.get())) {
             if (recipeId != null && !candidate.id().equals(recipeId)) continue;
             EtchingRecipe value = candidate.value();
@@ -164,6 +193,28 @@ public final class EtchingBathBlockEntity extends BlockEntity {
 
     public ResourceLocation recipeId() {
         return recipeId;
+    }
+
+    public float mixerRpm() {
+        return mixerRpm;
+    }
+
+    @Override
+    public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
+        tooltip.add(Component.translatable("goggles.destroy_extras.etching.status", status.text()));
+        tooltip.add(Component.translatable("goggles.destroy_extras.etching.mixer",
+            String.format(java.util.Locale.ROOT, "%.0f", mixerRpm)));
+        return true;
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveCustomOnly(registries);
+    }
+
+    @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override

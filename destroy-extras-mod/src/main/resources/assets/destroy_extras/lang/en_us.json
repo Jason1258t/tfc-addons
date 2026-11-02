@@ -17,5 +17,21 @@
   "status.destroy_extras.etching.idle": "Waiting for blank, mask and FeCl₃",
   "status.destroy_extras.etching.running": "Etching board",
   "status.destroy_extras.etching.blocked_output": "Bath output full",
-  "status.destroy_extras.etching.fault": "Etching bath fault"
+  "status.destroy_extras.etching.fault": "Etching bath fault",
+  "goggles.destroy_extras.electrolyzer.status": "Status: %s",
+  "goggles.destroy_extras.electrolyzer.structure": "Industrial structure: %s",
+  "goggles.destroy_extras.electrolyzer.pump": "Create pump: %s RPM (16 required)",
+  "goggles.destroy_extras.electrolyzer.membrane": "Membrane operations left: %s",
+  "goggles.destroy_extras.etching.status": "Status: %s",
+  "goggles.destroy_extras.etching.mixer": "Create mixer: %s RPM; 16+ doubles speed",
+  "goggles.destroy_extras.formed": "formed",
+  "goggles.destroy_extras.not_formed": "not formed",
+  "tooltip.destroy_extras.electrolyzer.power": "EE: 300 V / 8 A; batch: 200 ticks",
+  "tooltip.destroy_extras.electrolyzer.outputs": "Three separate outputs: H₂, Cl₂ and NaOH",
+  "tooltip.destroy_extras.electrolyzer.structure": "3×3×2 structure: Create tanks and copper casing, 16+ RPM pump",
+  "tooltip.destroy_extras.electrolyzer.membrane": "Requires a 64-batch membrane",
+  "tooltip.destroy_extras.etching.mixer": "A 16+ RPM Create mixer above reduces etching from 400 to 200 ticks",
+  "destroy_extras.ponder.industrial_electrolyzer.header": "Industrial Membrane Electrolyzer",
+  "destroy_extras.ponder.industrial_electrolyzer.text_1": "Two Create tank compartments separate the circuits. Install the controller and pump in the copper divider.",
+  "destroy_extras.ponder.industrial_electrolyzer.text_2": "Supply 300 V / 8 A EE and at least 16 RPM to the pump. H₂, Cl₂ and NaOH stay separate; any full output stops the whole unit."
 }

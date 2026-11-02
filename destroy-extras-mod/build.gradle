@@ -27,8 +27,15 @@ neoForge {
     }
     addModdingDependenciesTo(sourceSets.devtest)
     runs {
+        client {
+            client()
+            gameDirectory = project.file('run-client')
+            systemProperty 'fml.earlydisplay', 'false'
+            sourceSet = sourceSets.devtest
+        }
         server {
             server()
+            gameDirectory = project.file(System.getenv('RUN_DIR') ?: 'run')
             programArgument '--nogui'
             sourceSet = sourceSets.devtest
         }

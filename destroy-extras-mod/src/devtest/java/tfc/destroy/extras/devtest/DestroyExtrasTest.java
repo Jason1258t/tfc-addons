@@ -12,6 +12,8 @@ import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.simibubi.create.AllBlocks;
+import com.simibubi.create.content.kinetics.motor.CreativeMotorBlockEntity;
 import java.util.Map;
 import net.dries007.tfc.common.fluids.TFCFluids;
 import net.minecraft.commands.CommandSourceStack;
@@ -27,8 +29,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -60,7 +64,7 @@ import tfc.destroy.extras.recipe.MembraneElectrolysisRecipe;
 public final class DestroyExtrasTest {
     public static final String MOD_ID = DestroyExtras.MOD_ID + "_devtest";
     private static final BlockPos PROCESS = new BlockPos(0, -60, 10);
-    private static final BlockPos SOURCE = PROCESS.west();
+    private static final BlockPos SOURCE = PROCESS.west(2);
     private static final BlockPos BATTERY = PROCESS.east(2);
     private static final BlockPos VAT = new BlockPos(10, -60, 11);
     private static final ResourceLocation SALT_WATER = DestroyExtras.rl("electrolysis/salt_water");
@@ -82,10 +86,18 @@ public final class DestroyExtrasTest {
         BLOCKS.register(modBus);
         BLOCK_ENTITIES.register(modBus);
         M4Test.register(modBus);
+        M5LoadTest.register(modBus);
         modBus.addListener(DestroyExtrasTest::capabilities);
         NeoForge.EVENT_BUS.addListener(DestroyExtrasTest::commands);
         NeoForge.EVENT_BUS.addListener(M4Test::commands);
+        NeoForge.EVENT_BUS.addListener(M5Test::commands);
+        NeoForge.EVENT_BUS.addListener(M5LoadTest::commands);
+        NeoForge.EVENT_BUS.addListener(M5LoadTest::tickPre);
+        NeoForge.EVENT_BUS.addListener(M5LoadTest::tickPost);
         NeoForge.EVENT_BUS.addListener(DestroyExtrasTest::serverTick);
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            new ClientTest();
+        }
     }
 
     private static void serverTick(ServerTickEvent.Post event) {
@@ -148,15 +160,38 @@ public final class DestroyExtrasTest {
 
     private static int build(CommandSourceStack source) {
         ServerLevel level = source.getLevel();
+        buildIndustrial(level, PROCESS);
+        place(level, PROCESS.west(), AllBlocks.FLUID_PIPE.getDefaultState());
         place(level, SOURCE, SOURCE_BLOCK.get().defaultBlockState());
-        place(level, PROCESS, DestroyExtras.ELECTROLYZER_BLOCK.get().defaultBlockState());
         place(level, BATTERY, CEEBlocks.CREATIVE_BATTERY.getDefaultState());
         source(level).tank.setFluid(new FluidStack(TFCFluids.SALT_WATER.getSource(), 8000));
         process(level).membrane.setStackInSlot(0, new ItemStack(DestroyExtras.MEMBRANE_ITEM.get()));
         wire(level, BATTERY, 0, PROCESS, ProcessPowerDevice.PLUS);
         wire(level, BATTERY, 1, PROCESS, ProcessPowerDevice.MINUS);
-        source.sendSuccess(() -> Component.literal("стенд production M2 собран"), false);
+        source.sendSuccess(() -> Component.literal("стенд промышленного электролизёра M5 собран"), false);
         return Command.SINGLE_SUCCESS;
+    }
+
+    static void buildIndustrial(ServerLevel level, BlockPos controller) {
+        for (int x = -1; x <= 1; x++) {
+            for (int y = 0; y <= 2; y++) {
+                for (int z = 0; z <= 1; z++) {
+                    if ((y == 0 && z == 0) || (x == 1 && y == 1 && z == 1)) continue;
+                    BlockPos pos = controller.offset(x, y, z);
+                    BlockState state = x != 0 ? AllBlocks.FLUID_TANK.getDefaultState()
+                        : y == 1 && z == 1 ? AllBlocks.MECHANICAL_PUMP.getDefaultState()
+                        : AllBlocks.COPPER_CASING.getDefaultState();
+                    place(level, pos, state);
+                }
+            }
+        }
+        place(level, controller, DestroyExtras.ELECTROLYZER_BLOCK.get().defaultBlockState());
+        place(level, controller.offset(1, 1, 1), AllBlocks.COGWHEEL.getDefaultState()
+            .setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.AXIS, Direction.Axis.Z));
+        BlockPos motorPos = controller.offset(1, 1, 2);
+        place(level, motorPos, AllBlocks.CREATIVE_MOTOR.getDefaultState()
+            .setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING, Direction.NORTH));
+        if (level.getBlockEntity(motorPos) instanceof CreativeMotorBlockEntity motor) motor.generatedSpeed.setValue(64);
     }
 
     private static void place(ServerLevel level, BlockPos pos, BlockState state) {
@@ -530,7 +565,8 @@ public final class DestroyExtrasTest {
     private static int reportState(CommandSourceStack source) {
         MembraneElectrolyzerBlockEntity process = process(source.getLevel());
         ProcessPowerDevice device = process.device();
-        String message = "M2 " + process.status() + " progress=" + process.progress + " batches=" + process.batches
+        String message = "M2 " + process.status() + " formed=" + process.formed() + " pumpRpm=" + process.pumpRpm()
+            + " progress=" + process.progress + " batches=" + process.batches
             + " membrane=" + process.remainingMembraneOperations() + " tanks=" + process.input.getFluidAmount() + "/"
             + process.mixture.getFluidAmount() + "/" + process.hydrogen.getFluidAmount() + "/"
             + process.chlorine.getFluidAmount() + "/" + process.sodiumHydroxide.getFluidAmount();

@@ -17,5 +17,21 @@
   "status.destroy_extras.etching.idle": "Ожидание заготовки, маски и FeCl₃",
   "status.destroy_extras.etching.running": "Травление платы",
   "status.destroy_extras.etching.blocked_output": "Выход ванны переполнен",
-  "status.destroy_extras.etching.fault": "Неисправность травильной ванны"
+  "status.destroy_extras.etching.fault": "Неисправность травильной ванны",
+  "goggles.destroy_extras.electrolyzer.status": "Состояние: %s",
+  "goggles.destroy_extras.electrolyzer.structure": "Промышленный корпус: %s",
+  "goggles.destroy_extras.electrolyzer.pump": "Насос Create: %s об/мин (нужно 16)",
+  "goggles.destroy_extras.electrolyzer.membrane": "Осталось операций мембраны: %s",
+  "goggles.destroy_extras.etching.status": "Состояние: %s",
+  "goggles.destroy_extras.etching.mixer": "Мешалка Create: %s об/мин; от 16 — вдвое быстрее",
+  "goggles.destroy_extras.formed": "сформирован",
+  "goggles.destroy_extras.not_formed": "не сформирован",
+  "tooltip.destroy_extras.electrolyzer.power": "EE: 300 В / 8 А; партия: 200 тиков",
+  "tooltip.destroy_extras.electrolyzer.outputs": "Три раздельных выхода: H₂, Cl₂ и NaOH",
+  "tooltip.destroy_extras.electrolyzer.structure": "Корпус 3×3×2: баки и медный корпус Create, насос от 16 об/мин",
+  "tooltip.destroy_extras.electrolyzer.membrane": "Требуется мембрана на 64 партии",
+  "tooltip.destroy_extras.etching.mixer": "Мешалка Create сверху от 16 об/мин сокращает травление с 400 до 200 тиков",
+  "destroy_extras.ponder.industrial_electrolyzer.header": "Промышленный мембранный электролизёр",
+  "destroy_extras.ponder.industrial_electrolyzer.text_1": "Два отсека из баков Create разделяют контуры. Контроллер и насос устанавливаются в медную перегородку.",
+  "destroy_extras.ponder.industrial_electrolyzer.text_2": "Подайте EE 300 В / 8 А и вращение насосу от 16 об/мин. H₂, Cl₂ и NaOH выводятся раздельно; полный выход останавливает всю установку."
 }
