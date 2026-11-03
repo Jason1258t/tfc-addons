@@ -34,7 +34,7 @@ public final class ClientTest {
     /** Перед игроком: его кликаем настоящим клиентом */
     private static final BlockPos F3 = Flood.BAT.offset(11, 0, -3);
 
-    private static void check(String name, boolean ok) {
+    static void check(String name, boolean ok) {
         if (!ok) fails++;
         System.out.println("EECLIENT " + (ok ? "OK " : "FAIL ") + name);
     }
@@ -88,9 +88,8 @@ public final class ClientTest {
             if (tick == 340) {
                 check("без напряжения F1 у клиента погас", !mc.level.getBlockState(Flood.F1).getValue(IEProperties.ACTIVE));
                 net.minecraft.client.Screenshot.grab(mc.gameDirectory, "floodlight_off.png", mc.getMainRenderTarget(), c -> {});
-                System.out.println("EECLIENT ИТОГ: ошибок " + fails);
-                mc.stop();
             }
+            PcbClientTest.tick(mc, server, tick);
         } catch (Throwable t) {
             check("исключение: " + t, false);
             t.printStackTrace();

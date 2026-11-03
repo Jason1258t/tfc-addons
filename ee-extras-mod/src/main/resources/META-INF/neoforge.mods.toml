@@ -7,19 +7,20 @@ config = "ee_extras.mixins.json"
 
 [[mods]]
 modId = "ee_extras"
-version = "2.7.0"
+version = "2.8.0"
 displayName = "EE Extras"
 authors = "TFC Studio"
 description = '''
 Дополнения к Create Electro Energetics для сборки TFC Studio (до 2.0 — EE Rectifiers): трёхфазный и однофазный
 выпрямители и инверторы, компактный кинетический генератор, двусторонний преобразователь EE ↔ FE, прокладка двухпроводного кабеля EE, четырёхжильный кабель с
 соединителем, отвод фазы и кабельные изоляторы, провода ЛЭП и натяжной зажим, фонарь IE на двухпроводном кабеле.
+С версии 2.8 — редактор печатных плат до трёх слоёв, материалы и компоненты электроники, солнечная панель и термометр TFC.
 '''
 
 [[dependencies.ee_extras]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.1.219,)"
+versionRange = "[21.1.234,)"
 ordering = "NONE"
 side = "BOTH"
 
@@ -41,5 +42,12 @@ side = "BOTH"
 modId = "create"
 type = "required"
 versionRange = "[6.0.10,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.ee_extras]]
+modId = "tfc"
+type = "optional"
+versionRange = "[4.2.9,)"
 ordering = "AFTER"
 side = "BOTH"

@@ -24,6 +24,12 @@
       "id": "ee_extras:floodlight",
       "required": false
     },
-    "ee_extras:cable_converter"
+    "ee_extras:cable_converter",
+    "ee_extras:solar_panel",
+    {
+      "id": "ee_extras:thermometer",
+      "required": false
+    },
+    "ee_extras:pcb_design_table"
   ]
 }

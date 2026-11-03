@@ -26,6 +26,9 @@ import ee.extras.lines.LineWire;
 import ee.extras.lines.LinesClient;
 import ee.extras.lines.Tension;
 import ee.extras.pcb.PcbItems;
+import ee.extras.solar.SolarPanelBlock;
+import ee.extras.solar.SolarPanelBlockEntity;
+import ee.extras.thermometer.Thermometer;
 import ee.extras.converter.BidiConverterBlock;
 import ee.extras.converter.BidiConverterBlockEntity;
 import ee.extras.converter.BidiConverterDevice;
@@ -55,6 +58,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
+import com.simibubi.create.foundation.utility.DistExecutor;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -123,6 +127,17 @@ public class EeExtras {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<KineticGeneratorBlockEntity>> KINETIC_GENERATOR_BE =
             BLOCK_ENTITIES.register("compact_kinetic_generator", () -> BlockEntityType.Builder
                     .of(KineticGeneratorBlockEntity::new, KINETIC_GENERATOR.get()).build(null));
+
+    public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<GeneratorDevice>> SOLAR_PANEL_DEVICE =
+            DEVICES.register("solar_panel", () -> new SimulatedDeviceType<GeneratorDevice>(rl("solar_panel"),
+                    (type, level, pos, devices) -> new GeneratorDevice(level, pos, devices, type, SolarPanelBlockEntity.MAX_POWER)));
+    public static final DeferredBlock<SolarPanelBlock> SOLAR_PANEL = BLOCKS.register("solar_panel",
+            () -> new SolarPanelBlock(metal()));
+    public static final DeferredItem<Item> SOLAR_PANEL_ITEM = ITEMS.register("solar_panel",
+            () -> new TooltipBlockItem(SOLAR_PANEL.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SolarPanelBlockEntity>> SOLAR_PANEL_BE =
+            BLOCK_ENTITIES.register("solar_panel", () -> BlockEntityType.Builder
+                    .of(SolarPanelBlockEntity::new, SOLAR_PANEL.get()).build(null));
 
     public static final DeferredBlock<FourCoreTerminationBlock> FOUR_CORE_TERMINATION = BLOCKS.register(
             "four_core_termination", () -> new FourCoreTerminationBlock(metal()));
@@ -216,6 +231,7 @@ public class EeExtras {
         CableWires.init();
         LineWire.register();
         PcbItems.init();
+        if (ModList.get().isLoaded("tfc")) Thermometer.init();
         // Прожектор — наследник блока IE, поэтому его класс и регистрация только при IE (фонарю IE не нужен)
         if (ModList.get().isLoaded("immersiveengineering")) EeFloodlight.init(modBus);
         Tension.register(modBus);
@@ -237,6 +253,10 @@ public class EeExtras {
             LinesClient.register(modBus, NeoForge.EVENT_BUS);
             LanternConversion.registerTooltip(NeoForge.EVENT_BUS);
             GeneratorClient.register(modBus);
+            DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> {
+                ee.extras.pcb.PcbClient.register(modBus);
+                return null;
+            });
             modBus.addListener((FMLClientSetupEvent e) -> WireFixCheck.log());
             WireDiag.register(NeoForge.EVENT_BUS);
         }
@@ -260,6 +280,8 @@ public class EeExtras {
             event.accept(w.spool.get());
         }
         event.accept(Tension.CLAMP_ITEM.get());
+        event.accept(SOLAR_PANEL_ITEM.get());
+        if (ModList.get().isLoaded("tfc")) Thermometer.addToTab(event);
         PcbItems.addToTab(event);
         // EE 1.1.2 сам не кладёт во вкладку двухпроводной кабель и соединитель, а переменный ток — только с
         // showACContent (по умолчанию выключен). JEI и поиск творческого режима берут предметы из вкладок — без этого

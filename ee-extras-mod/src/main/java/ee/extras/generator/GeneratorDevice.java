@@ -41,6 +41,13 @@ public class GeneratorDevice extends SimpleElectricalDevice {
         this.nominal = nominal;
     }
 
+    /** Задаёт доступную на следующий тик мощность и напряжение источника. */
+    public void setSupply(double maxPower, double voltage) {
+        this.maxPower = Math.max(0, maxPower);
+        this.voltage = Math.max(0, voltage);
+        this.pool = this.maxPower;
+    }
+
     private static int plus() {
         return Layout.COMPACT_GENERATOR.plus();
     }

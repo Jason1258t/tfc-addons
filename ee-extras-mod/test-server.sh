@@ -18,6 +18,7 @@ rm -f run/mods/*.jar
 cp libs/create-1.21.1-*.jar libs/electroenergetics-*.jar run/mods/
 MODS="${MODS:-${TFC_MODS_DIR:-${TFC_PACK_CACHE:-$HOME/.cache/tfc-plans/pack}/mods}}"
 if [ -n "${IE:-}" ]; then cp "$MODS"/ImmersiveEngineering-*.jar run/mods/; fi
+if [ -n "${TFC:-}" ]; then cp "$MODS"/TerraFirmaCraft-NeoForge-*.jar "$MODS"/Patchouli-*.jar run/mods/; fi
 if [ -n "${OLD_JAR:-}" ]; then cp "$OLD_JAR" run/mods/; fi
 echo 'eula=true' > run/eula.txt
 cat > run/server.properties <<P
