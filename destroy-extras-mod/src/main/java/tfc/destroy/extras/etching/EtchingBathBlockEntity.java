@@ -106,7 +106,7 @@ public final class EtchingBathBlockEntity extends BlockEntity implements IHaveGo
         int amount = value.input().amount();
         FluidStack consumed = input.getFluid().copyWithAmount(amount);
         FluidStack spentResult = EtchingChemistry.spentEtchant(consumed, amount, value.copperMoles());
-        boolean hasItems = value.blank().test(blank) && value.mask().test(mask) && !mask.getComponentsPatch().isEmpty();
+        boolean hasItems = value.validItems(blank, mask);
         boolean hasFluid = value.input().test(consumed) && !spentResult.isEmpty();
         ItemStack result = hasItems ? value.result(mask) : ItemStack.EMPTY;
         boolean hasOutputSpace = canOutput(result);
@@ -132,14 +132,15 @@ public final class EtchingBathBlockEntity extends BlockEntity implements IHaveGo
             syncStatus(previousStatus);
             return;
         }
-        if (!AtomicFluidOperation.execute(input, consumed, new FluidTank[] {spent}, new FluidStack[] {spentResult})) {
+        if (!value.validItems(blank, mask) || !canOutput(result)
+            || !AtomicFluidOperation.execute(input, consumed, new FluidTank[] {spent}, new FluidStack[] {spentResult})) {
             status = EtchingStatus.BLOCKED_OUTPUT;
             syncStatus(previousStatus);
             return;
         }
         ResourceLocation completedRecipe = recipeId;
         items.extractItem(0, 1, false);
-        items.extractItem(1, 1, false);
+        if (value.industrialLevel() == 0) items.extractItem(1, 1, false);
         output(result);
         recipeId = completedRecipe;
         progress = 0;

@@ -4,7 +4,7 @@ license = "MIT"
 
 [[mods]]
 modId = "destroy_extras"
-version = "0.3.0"
+version = "0.4.0"
 displayName = "Destroy Extras"
 authors = "TFC Studio"
 description = "Недостающие химические машины и процессы для Destroy."
@@ -68,7 +68,7 @@ side = "BOTH"
 [[dependencies.destroy_extras]]
 modId = "ee_extras"
 type = "optional"
-versionRange = "[2.6.0,)"
+versionRange = "[2.9.0,)"
 ordering = "AFTER"
 side = "BOTH"
 

@@ -1,0 +1,11 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    { "item": "minecraft:paper" },
+    { "tag": "c:dyes" },
+    { "type": "neoforge:tag", "tag": "c:phenolic_resin", "amount": 125 },
+    { "type": "neoforge:tag", "tag": "c:ethanol", "amount": 125 }
+  ],
+  "results": [{ "id": "ee_extras:photoresist" }],
+  "processing_time": 200
+}

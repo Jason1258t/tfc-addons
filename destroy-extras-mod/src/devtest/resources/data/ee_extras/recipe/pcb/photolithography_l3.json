@@ -1,0 +1,14 @@
+{
+  "type": "ee_extras:pcb_process",
+  "machine": "photolithography",
+  "level": 3,
+  "voltage": 600.0,
+  "current": 8.0,
+  "ingredients": [
+    { "item": "ee_extras:l3_board_blank" },
+    { "item": "ee_extras:pcb_design" },
+    { "item": "ee_extras:photoresist" }
+  ],
+  "results": [{ "id": "ee_extras:l3_prepared_blank" }],
+  "processing_time": 450
+}

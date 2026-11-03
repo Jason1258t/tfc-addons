@@ -265,6 +265,7 @@ public class EeExtras {
     /** FE — только через заднюю грань (ту, которой блок стоит на конденсаторе или машине), как у преобразователя EE */
     private static void capabilities(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, CONVERTER_BE.get(), BidiConverterBlockEntity::energy);
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, PcbItems.PCB_MACHINE_BE.get(), (be, side) -> be.items);
     }
 
     /** Во вкладку творческого режима Electro Energetics, рядом с остальной электрикой */

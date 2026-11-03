@@ -47,6 +47,24 @@ public final class EtchingRecipe extends BasinRecipe {
         return mask.transmuteCopy(output.getItem(), output.getCount());
     }
 
+    /** Для промышленных L2/L3 чертёж многоразовый и обязан пройти полную проверку топологии. */
+    public int industrialLevel() {
+        if (output().is(ee.extras.pcb.PcbItems.L2_ETCHED_BOARD.get())) return 2;
+        if (output().is(ee.extras.pcb.PcbItems.L3_ETCHED_BOARD.get())) return 3;
+        return 0;
+    }
+
+    public boolean validItems(ItemStack blank, ItemStack mask) {
+        if (!blank().test(blank) || !mask().test(mask)) return false;
+        int level = industrialLevel();
+        if (level == 0) return !mask.getComponentsPatch().isEmpty();
+        if (!mask.is(ee.extras.pcb.PcbItems.PCB_DESIGN.get())) return false;
+        net.minecraft.nbt.CompoundTag topology = mask.get(ee.extras.pcb.PcbItems.PCB_TOPOLOGY.get());
+        return topology != null && topology.getBoolean("Validated")
+            && ee.extras.pcb.PcbTopology.level(topology) == level
+            && ee.extras.pcb.PcbTopology.validate(topology) == null;
+    }
+
     public float copperMoles() {
         return copperMoles;
     }

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["PEP", "CDC", "BBB"],
+  "key": {
+    "P": { "item": "create:mechanical_press" },
+    "E": { "item": "create:electron_tube" },
+    "C": { "item": "create:copper_casing" },
+    "D": { "item": "ee_extras:pcb_design_table" },
+    "B": { "item": "immersiveengineering:plate_duroplast" }
+  },
+  "result": { "id": "ee_extras:pcb_photolithographer", "count": 1 }
+}

@@ -22,6 +22,7 @@ ICONS="compact_kinetic_generator three_phase_rectifier single_phase_rectifier he
   heavy_single_phase_synchronizer industrial_three_phase_synchronizer l1_board_blank l1_mask l1_board
   copper_foil glass_fiber glass_fabric epoxy_laminate l2_board_blank l3_board_blank solder_wire rosin_flux
   resistor capacitor inductor connector silicon_diode transistor basic_ic advanced_ic silicon_wafer pcb_design
-  solar_panel thermometer pcb_design_table"
+  solar_panel thermometer pcb_design_table pcb_photolithographer pcb_via_metallizer photoresist
+  l2_prepared_blank l3_prepared_blank l2_etched_board l3_etched_board l2_board l3_board"
 (cd ../.. && node scripts/mcp/render.mjs tools/ee-extras-mod $(printf 'ee_extras:%s ' $ICONS) --out tools/ee-extras-mod/icons --size 192)
 echo "готово: ee-extras-$VERSION.jar → tools/ee-extras-mod; обновите addon.json и проверьте MCP addon_check"

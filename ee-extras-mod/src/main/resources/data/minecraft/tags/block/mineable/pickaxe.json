@@ -30,6 +30,8 @@
       "id": "ee_extras:thermometer",
       "required": false
     },
-    "ee_extras:pcb_design_table"
+    "ee_extras:pcb_design_table",
+    "ee_extras:pcb_photolithographer",
+    "ee_extras:pcb_via_metallizer"
   ]
 }

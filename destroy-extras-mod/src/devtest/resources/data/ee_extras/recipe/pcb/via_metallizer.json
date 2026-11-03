@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["ECE", "FBF", "CRC"],
+  "key": {
+    "E": { "item": "create:electron_tube" },
+    "C": { "item": "create:copper_casing" },
+    "F": { "item": "ee_extras:copper_foil" },
+    "B": { "item": "create:basin" },
+    "R": { "item": "ee_extras:basic_ic" }
+  },
+  "result": { "id": "ee_extras:pcb_via_metallizer", "count": 1 }
+}

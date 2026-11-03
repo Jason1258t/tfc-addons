@@ -1,0 +1,13 @@
+{
+  "type": "ee_extras:pcb_process",
+  "machine": "metallization",
+  "level": 2,
+  "voltage": 240.0,
+  "current": 4.0,
+  "ingredients": [
+    { "item": "ee_extras:l2_etched_board" },
+    { "item": "ee_extras:copper_foil" }
+  ],
+  "results": [{ "id": "ee_extras:l2_board" }],
+  "processing_time": 300
+}

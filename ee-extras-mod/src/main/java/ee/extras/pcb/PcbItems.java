@@ -50,12 +50,35 @@ public final class PcbItems {
             "pcb_design_table", () -> IMenuTypeExtension.create((id, inventory, data) ->
                     new PcbEditorMenu(id, inventory, data.readBlockPos())));
 
+    public static final DeferredHolder<com.george_vi.electroenergetics.devices.device.SimulatedDeviceType<?>,
+            com.george_vi.electroenergetics.devices.device.SimulatedDeviceType<PcbMachineDevice>> PCB_MACHINE_DEVICE =
+            EeExtras.DEVICES.register("pcb_machine", () -> new com.george_vi.electroenergetics.devices.device.SimulatedDeviceType<>(
+                    EeExtras.rl("pcb_machine"), (type, level, pos, devices) -> new PcbMachineDevice(level, pos, devices, type)));
+    public static final DeferredBlock<PcbMachineBlock> PHOTOLITHOGRAPHER_BLOCK = EeExtras.BLOCKS.register(
+            "pcb_photolithographer", () -> new PcbMachineBlock(EeExtras.metal(), PcbMachineKind.PHOTOLITHOGRAPHY));
+    public static final DeferredItem<BlockItem> PHOTOLITHOGRAPHER_ITEM = EeExtras.ITEMS.register(
+            "pcb_photolithographer", () -> new BlockItem(PHOTOLITHOGRAPHER_BLOCK.get(), new Item.Properties()));
+    public static final DeferredBlock<PcbMachineBlock> METALLIZER_BLOCK = EeExtras.BLOCKS.register(
+            "pcb_via_metallizer", () -> new PcbMachineBlock(EeExtras.metal(), PcbMachineKind.METALLIZATION));
+    public static final DeferredItem<BlockItem> METALLIZER_ITEM = EeExtras.ITEMS.register(
+            "pcb_via_metallizer", () -> new BlockItem(METALLIZER_BLOCK.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PcbMachineBlockEntity>> PCB_MACHINE_BE =
+            EeExtras.BLOCK_ENTITIES.register("pcb_machine", () -> BlockEntityType.Builder
+                    .of(PcbMachineBlockEntity::new, PHOTOLITHOGRAPHER_BLOCK.get(), METALLIZER_BLOCK.get()).build(null));
+
     public static final DeferredItem<Item> COPPER_FOIL = item("copper_foil", 64);
     public static final DeferredItem<Item> GLASS_FIBER = item("glass_fiber", 64);
     public static final DeferredItem<Item> GLASS_FABRIC = item("glass_fabric", 64);
     public static final DeferredItem<Item> EPOXY_LAMINATE = item("epoxy_laminate", 32);
+    public static final DeferredItem<Item> PHOTORESIST = item("photoresist", 64);
     public static final DeferredItem<Item> L2_BOARD_BLANK = item("l2_board_blank", 16);
     public static final DeferredItem<Item> L3_BOARD_BLANK = item("l3_board_blank", 16);
+    public static final DeferredItem<Item> L2_PREPARED_BLANK = item("l2_prepared_blank", 16);
+    public static final DeferredItem<Item> L3_PREPARED_BLANK = item("l3_prepared_blank", 16);
+    public static final DeferredItem<Item> L2_ETCHED_BOARD = item("l2_etched_board", 16);
+    public static final DeferredItem<Item> L3_ETCHED_BOARD = item("l3_etched_board", 16);
+    public static final DeferredItem<Item> L2_BOARD = item("l2_board", 16);
+    public static final DeferredItem<Item> L3_BOARD = item("l3_board", 16);
     public static final DeferredItem<Item> SOLDER_WIRE = item("solder_wire", 64);
     public static final DeferredItem<Item> ROSIN_FLUX = item("rosin_flux", 64);
     public static final DeferredItem<Item> RESISTOR = item("resistor", 64);
@@ -69,7 +92,8 @@ public final class PcbItems {
     public static final DeferredItem<Item> SILICON_WAFER = item("silicon_wafer", 16);
 
     private static final List<DeferredItem<? extends Item>> ELECTRONICS = List.of(COPPER_FOIL, GLASS_FIBER, GLASS_FABRIC,
-            EPOXY_LAMINATE, L2_BOARD_BLANK, L3_BOARD_BLANK, SOLDER_WIRE, ROSIN_FLUX, RESISTOR, CAPACITOR, INDUCTOR,
+            EPOXY_LAMINATE, PHOTORESIST, L2_BOARD_BLANK, L3_BOARD_BLANK, L2_PREPARED_BLANK, L3_PREPARED_BLANK,
+            L2_ETCHED_BOARD, L3_ETCHED_BOARD, L2_BOARD, L3_BOARD, SOLDER_WIRE, ROSIN_FLUX, RESISTOR, CAPACITOR, INDUCTOR,
             CONNECTOR, SILICON_DIODE, TRANSISTOR, BASIC_IC, ADVANCED_IC, SILICON_WAFER);
 
     private PcbItems() {}
@@ -83,10 +107,13 @@ public final class PcbItems {
     public static void register(IEventBus modBus) {
         DATA_COMPONENTS.register(modBus);
         MENUS.register(modBus);
+        PcbProcessRecipes.register(modBus);
     }
 
     public static void addToTab(BuildCreativeModeTabContentsEvent event) {
         event.accept(EDITOR_ITEM.get());
+        event.accept(PHOTOLITHOGRAPHER_ITEM.get());
+        event.accept(METALLIZER_ITEM.get());
         event.accept(L1_BOARD_BLANK.get());
         event.accept(L1_MASK.get());
         event.accept(L1_BOARD.get());

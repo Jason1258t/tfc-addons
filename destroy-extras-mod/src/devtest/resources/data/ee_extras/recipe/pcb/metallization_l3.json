@@ -1,0 +1,13 @@
+{
+  "type": "ee_extras:pcb_process",
+  "machine": "metallization",
+  "level": 3,
+  "voltage": 600.0,
+  "current": 8.0,
+  "ingredients": [
+    { "item": "ee_extras:l3_etched_board" },
+    { "item": "ee_extras:copper_foil" }
+  ],
+  "results": [{ "id": "ee_extras:l3_board" }],
+  "processing_time": 450
+}
