@@ -6,6 +6,7 @@
   "sha256": "b6b99f82dbb3619d883a87cc3b3606118a3c7dbc70b56040ff0d87577746af50",
   "order": 801,
   "side": "both",
+  "manual": true,
   "summary": "Мембранный электролизёр для получения H₂, Cl₂ и NaOH из солёной воды и травильная ванна для первых плат L1. Поддерживаются промышленная форма 3×3×2, насос и мешалка Create, JEI/EMI и Ponder. Ванна атомарно готовит кислотный раствор из чистого HCl и воды через Destroy Bridge.",
   "needs": "Сервер и все игроки. NeoForge 21.1.251+, Destroy 0.4.6-eligibbs, Petrolpark 1.5.11, Destroy Bridge 0.1.0, EE Extras 2.6.0, Create 6.0.10 и Electro Energetics 1.1.2+. Survival-рецепты электролизёра, мембраны и заготовки L1 также используют Immersive Engineering.",
   "blocks": [
