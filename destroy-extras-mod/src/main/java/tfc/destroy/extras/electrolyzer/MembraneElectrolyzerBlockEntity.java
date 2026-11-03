@@ -20,6 +20,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import petrolpark.mc.destroy.DestroyDataComponents;
+import petrolpark.mc.destroy.DestroyFluids;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import tfc.destroy.bridge.electric.ProcessPowerDevice;
 import tfc.destroy.bridge.fluid.AtomicFluidOperation;
@@ -287,6 +289,8 @@ public final class MembraneElectrolyzerBlockEntity extends BlockEntity implement
         hydrogen.readFromNBT(registries, tag.getCompound("Hydrogen"));
         chlorine.readFromNBT(registries, tag.getCompound("Chlorine"));
         sodiumHydroxide.readFromNBT(registries, tag.getCompound("SodiumHydroxide"));
+        migrateGas(hydrogen);
+        migrateGas(chlorine);
         membrane.deserializeNBT(registries, tag.getCompound("Membrane"));
         progress = tag.getInt("Progress");
         batches = tag.getInt("Batches");
@@ -298,5 +302,13 @@ public final class MembraneElectrolyzerBlockEntity extends BlockEntity implement
         recipeManager = null;
         device = null;
         status = ElectrolyzerStatus.IDLE;
+    }
+
+    /** До 0.3.0 газы выходили как destroy:gas: чан такую жидкость не принимает, а новая партия с ней не смешается. */
+    private static void migrateGas(FluidTank tank) {
+        FluidStack stack = tank.getFluid();
+        if (stack.isEmpty() || DestroyFluids.isMixture(stack) || !stack.has(DestroyDataComponents.MIXTURE)) return;
+        tank.setFluid(new FluidStack(DestroyFluids.MIXTURE.get().builtInRegistryHolder(), stack.getAmount(),
+            stack.getComponentsPatch()));
     }
 }

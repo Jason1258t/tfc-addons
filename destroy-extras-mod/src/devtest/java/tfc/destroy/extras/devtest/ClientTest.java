@@ -1,11 +1,7 @@
 package tfc.destroy.extras.devtest;
 
-import com.simibubi.create.compat.jei.CreateJEI;
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
-import dev.emi.emi.jemi.JemiCategory;
-import dev.emi.emi.jemi.JemiRecipe;
-import dev.emi.emi.registry.EmiRecipes;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
@@ -47,7 +43,8 @@ public final class ClientTest {
         NeoForge.EVENT_BUS.addListener(this::screen);
         NeoForge.EVENT_BUS.addListener(this::tick);
         step(100, "мир", () -> check("клиент и интегрированный мир загружены", mc().player != null));
-        step(40, "прогрев JEI", () -> jei("electrolysis"));
+        // EMI ждёт JEI и переносит категории Destroy заметно дольше, чем открывается мир.
+        step(600, "прогрев JEI и EMI", () -> jei("electrolysis"));
         step(40, "JEI травление", () -> jei("etching"));
         step(25, "скриншот JEI травления", () -> {
             check("JEI/Jemi открыл категорию травления", mc().screen != null
@@ -72,7 +69,13 @@ public final class ClientTest {
                     || mc().screen.getClass().getName().equals("dev.emi.emi.screen.RecipeScreen")));
             shot("jei-centrifugation");
         });
-        step(5, "EMI центрифуга", () -> emiDestroy("centrifugation"));
+        step(5, "EMI центрифуга", () -> {
+            emiDestroy("centrifugation");
+            EmiApi.getRecipeManager().getCategories().stream()
+                .filter(value -> value.getId().equals(ResourceLocation.fromNamespaceAndPath("destroy", "centrifugation")))
+                .findFirst().ifPresent(value -> check("EMI показывает 3 рецепта центрифуги",
+                    EmiApi.getRecipeManager().getRecipes(value).size() == 3));
+        });
         step(30, "скриншот EMI центрифуги", () -> shot("emi-centrifugation"));
         step(5, "EMI электролиз", () -> emi("electrolysis"));
         step(30, "скриншот EMI электролиза", () -> shot("emi-electrolysis"));
@@ -118,17 +121,6 @@ public final class ClientTest {
     }
 
     private void emiDestroy(String category) {
-        ResourceLocation id = ResourceLocation.fromNamespaceAndPath("destroy", category);
-        if (EmiApi.getRecipeManager().getCategories().stream().noneMatch(value -> id.equals(value.getId()))) {
-            // Destroy сам не переносит центрифугу в EMI; для скриншота используем его штатный JEI-экран через Jemi.
-            RecipeType<?> type = Internal.getJeiRuntime().getRecipeManager().getRecipeType(id).orElseThrow();
-            var jeiCategory = Internal.getJeiRuntime().getRecipeManager().getRecipeCategory(type);
-            JemiCategory emiCategory = new JemiCategory(jeiCategory);
-            EmiRecipes.addCategory(emiCategory);
-            CreateJEI.getTypedRecipes(petrolpark.mc.destroy.DestroyRecipeTypes.CENTRIFUGATION.getType())
-                .forEach(holder -> EmiRecipes.addRecipe(new JemiRecipe(emiCategory, jeiCategory, holder)));
-            EmiRecipes.bake();
-        }
         emi("destroy", category);
     }
 

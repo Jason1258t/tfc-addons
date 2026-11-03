@@ -93,6 +93,7 @@ public final class DestroyExtrasTest {
         NeoForge.EVENT_BUS.addListener(M5Test::commands);
         NeoForge.EVENT_BUS.addListener(M5LoadTest::commands);
         NeoForge.EVENT_BUS.addListener(M6Test::commands);
+        NeoForge.EVENT_BUS.addListener(M10Test::commands);
         NeoForge.EVENT_BUS.addListener(M7Test::commands);
         NeoForge.EVENT_BUS.addListener(M7Test::tick);
         NeoForge.EVENT_BUS.addListener(M8Test::commands);
@@ -282,6 +283,7 @@ public final class DestroyExtrasTest {
             case "ports" -> {
                 check(ctx, capability(level, Direction.NORTH) == process.hydrogen, "север — водород");
                 check(ctx, capability(level, Direction.SOUTH) == process.chlorine, "юг — хлор");
+                check(ctx, capability(level, Direction.DOWN) == process.chlorine, "низ — хлор, доступен при собранном корпусе");
                 check(ctx, capability(level, Direction.EAST) == process.sodiumHydroxide, "восток — NaOH");
                 check(ctx, capability(level, Direction.WEST) == process.input, "запад — вход TFC");
                 check(ctx, level.getCapability(Capabilities.ItemHandler.BLOCK, PROCESS, Direction.UP) == process.membrane,

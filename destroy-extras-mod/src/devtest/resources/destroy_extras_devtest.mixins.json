@@ -1,0 +1,8 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "tfc.destroy.extras.devtest.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": ["CommonHooksMixin"],
+  "injectors": { "defaultRequire": 1 }
+}

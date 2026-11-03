@@ -28,7 +28,7 @@
   "goggles.destroy_extras.formed": "сформирован",
   "goggles.destroy_extras.not_formed": "не сформирован",
   "tooltip.destroy_extras.electrolyzer.power": "EE: 300 В / 8 А; партия: 200 тиков",
-  "tooltip.destroy_extras.electrolyzer.outputs": "Три раздельных выхода: H₂, Cl₂ и NaOH",
+  "tooltip.destroy_extras.electrolyzer.outputs": "Выходы: север — H₂, низ — Cl₂, восток — NaOH; вход воды — запад",
   "tooltip.destroy_extras.electrolyzer.structure": "Корпус 3×3×2: баки и медный корпус Create, насос от 16 об/мин",
   "tooltip.destroy_extras.electrolyzer.membrane": "Требуется мембрана на 64 партии",
   "tooltip.destroy_extras.etching.mixer": "Мешалка Create сверху от 16 об/мин сокращает травление с 400 до 200 тиков",

@@ -6,7 +6,7 @@ export JAVA_HOME="${JAVA_HOME:-$HOME/.gradle/local-tools/jdk21/Contents/Home}"
 ./libs.sh
 rm -rf run-client
 mkdir -p run-client/mods
-for jar in create-1.21.1-6.0.10.jar electroenergetics-1.21.1-1.1.2.jar TerraFirmaCraft-NeoForge-1.21.1-4.2.9.jar Patchouli-1.21.1-93-NEOFORGE.jar destroy-1.21.1-0.4.6-eligibbs.jar petrolpark-1.21.1-1.5.11.jar jei-1.21.1-neoforge-19.56.0.441.jar emi-1.1.24+1.21.1+neoforge.jar; do
+for jar in create-1.21.1-6.0.10.jar electroenergetics-1.21.1-1.1.2.jar TerraFirmaCraft-NeoForge-1.21.1-4.2.9.jar Patchouli-1.21.1-93-NEOFORGE.jar destroy-1.21.1-0.4.6-eligibbs.jar petrolpark-1.21.1-1.5.11.jar jei-1.21.1-neoforge-19.55.0.431.jar emi-1.1.24+1.21.1+neoforge.jar; do
   cp "libs/$jar" run-client/mods/
 done
 MODS="${MODS:-${TFC_MODS_DIR:-${TFC_PACK_CACHE:-$HOME/.cache/tfc-plans/pack}/mods}}"

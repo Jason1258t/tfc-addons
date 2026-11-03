@@ -4,7 +4,7 @@ license = "MIT"
 
 [[mods]]
 modId = "destroy_extras"
-version = "0.2.0"
+version = "0.3.0"
 displayName = "Destroy Extras"
 authors = "TFC Studio"
 description = "Недостающие химические машины и процессы для Destroy."
@@ -78,3 +78,13 @@ type = "optional"
 versionRange = "[19.44.0.401,20.0.0.0)"
 ordering = "AFTER"
 side = "CLIENT"
+
+[[dependencies.destroy_extras]]
+modId = "emi"
+type = "optional"
+versionRange = "[1.1,)"
+ordering = "AFTER"
+side = "CLIENT"
+
+[[mixins]]
+config = "destroy_extras.mixins.json"

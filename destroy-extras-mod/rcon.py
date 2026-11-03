@@ -20,7 +20,7 @@ def main(port, password, commands, alive=None):
         if alive and not alive():
             sys.exit('сервер упал при запуске — смотрите run/check.log')
         try:
-            s = socket.create_connection(('127.0.0.1', port), timeout=5)
+            s = socket.create_connection(('127.0.0.1', port), timeout=120)
             break
         except OSError:
             time.sleep(1)

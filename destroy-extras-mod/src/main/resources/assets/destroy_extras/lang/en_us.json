@@ -28,7 +28,7 @@
   "goggles.destroy_extras.formed": "formed",
   "goggles.destroy_extras.not_formed": "not formed",
   "tooltip.destroy_extras.electrolyzer.power": "EE: 300 V / 8 A; batch: 200 ticks",
-  "tooltip.destroy_extras.electrolyzer.outputs": "Three separate outputs: H₂, Cl₂ and NaOH",
+  "tooltip.destroy_extras.electrolyzer.outputs": "Outputs: north H₂, bottom Cl₂, east NaOH; water input from the west",
   "tooltip.destroy_extras.electrolyzer.structure": "3×3×2 structure: Create tanks and copper casing, 16+ RPM pump",
   "tooltip.destroy_extras.electrolyzer.membrane": "Requires a 64-batch membrane",
   "tooltip.destroy_extras.etching.mixer": "A 16+ RPM Create mixer above reduces etching from 400 to 200 ticks",

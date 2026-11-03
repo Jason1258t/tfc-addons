@@ -81,7 +81,8 @@ public final class DestroyExtras {
     private static void capabilities(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ELECTROLYZER_BE.get(), (be, side) -> {
             if (side == Direction.NORTH) return be.hydrogen;
-            if (side == Direction.SOUTH) return be.chlorine;
+            // Южную грань закрывает корпус 3×3×2, труба к хлору подходит снизу.
+            if (side == Direction.DOWN || side == Direction.SOUTH) return be.chlorine;
             if (side == Direction.EAST) return be.sodiumHydroxide;
             return be.input;
         });

@@ -1,0 +1,8 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "tfc.destroy.extras.compat.emi.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": ["JemiUtilMixin", "JemiPluginMixin"],
+  "injectors": { "defaultRequire": 0 }
+}

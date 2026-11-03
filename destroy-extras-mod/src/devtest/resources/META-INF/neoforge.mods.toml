@@ -21,3 +21,6 @@ type = "required"
 versionRange = "[19,)"
 ordering = "AFTER"
 side = "CLIENT"
+
+[[mixins]]
+config = "destroy_extras_devtest.mixins.json"

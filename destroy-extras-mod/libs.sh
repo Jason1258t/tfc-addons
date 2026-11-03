@@ -8,8 +8,8 @@ MAIN_ROOT="${SUPER_ROOT%%/.claude/worktrees/*}"
 CANDIDATES="${CANDIDATES:-$MAIN_ROOT/.cache/mcp/candidates}"
 DESTROY_JAR="${DESTROY_JAR:-$CANDIDATES/destroy-1.21.1-0.4.6-eligibbs.jar}"
 PETROLPARK_JAR="${PETROLPARK_JAR:-$CANDIDATES/petrolpark-1.21.1-1.5.11.jar}"
-# В снимке пака JEI старше минимально поддерживаемого Petrolpark 1.5.11; для клиентского стенда нужна совместимая 19.56.
-JEI_VERSION="19.56.0.441"
+# В снимке пака JEI старше минимально поддерживаемого Petrolpark 1.5.11; на клиентском стенде та же 19.55, что в обновлении сборки.
+JEI_VERSION="19.55.0.431"
 JEI_JAR="$PWD/client-libs/jei-1.21.1-neoforge-$JEI_VERSION.jar"
 mkdir -p client-libs
 [ -f "$JEI_JAR" ] || curl -fsSL "https://maven.blamejared.com/mezz/jei/jei-1.21.1-neoforge/$JEI_VERSION/jei-1.21.1-neoforge-$JEI_VERSION.jar" -o "$JEI_JAR"
