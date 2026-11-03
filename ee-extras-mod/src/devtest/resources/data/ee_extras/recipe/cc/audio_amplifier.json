@@ -1,0 +1,25 @@
+{
+  "type": "morered:soldering",
+  "ingredients": [
+    {
+      "item": "ee_extras:control_board_l1"
+    },
+    {
+      "item": "ee_extras:transistor"
+    },
+    {
+      "item": "ee_extras:capacitor"
+    },
+    {
+      "item": "ee_extras:inductor"
+    },
+    {
+      "item": "ee_extras:resistor",
+      "count": 2
+    }
+  ],
+  "result": {
+    "id": "ee_extras:audio_amplifier",
+    "count": 1
+  }
+}

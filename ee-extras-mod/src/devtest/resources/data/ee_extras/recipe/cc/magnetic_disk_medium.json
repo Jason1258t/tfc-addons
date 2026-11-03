@@ -1,0 +1,27 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    " S ",
+    "IMI",
+    "PPP"
+  ],
+  "key": {
+    "S": {
+      "tag": "c:plates/steel"
+    },
+    "I": {
+      "item": "minecraft:iron_nugget"
+    },
+    "M": {
+      "item": "tfc:powder/magnetite"
+    },
+    "P": {
+      "tag": "tfc:insulation"
+    }
+  },
+  "result": {
+    "id": "ee_extras:magnetic_disk_medium",
+    "count": 4
+  }
+}

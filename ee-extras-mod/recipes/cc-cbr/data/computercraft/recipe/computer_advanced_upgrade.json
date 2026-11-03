@@ -1,0 +1,41 @@
+{
+  "type": "computercraft:transform_shaped",
+  "category": "redstone",
+  "function": [
+    {
+      "type": "computercraft:copy_components",
+      "from": {
+        "item": "computercraft:computer_normal"
+      }
+    }
+  ],
+  "pattern": [
+    "AMA",
+    "DCD",
+    "KPK"
+  ],
+  "key": {
+    "A": {
+      "item": "ee_extras:advanced_computer_case"
+    },
+    "M": {
+      "item": "ee_extras:advanced_motherboard"
+    },
+    "D": {
+      "item": "ee_extras:display_advanced"
+    },
+    "C": {
+      "item": "computercraft:computer_normal"
+    },
+    "K": {
+      "item": "ee_extras:keyboard"
+    },
+    "P": {
+      "item": "ee_extras:power_supply"
+    }
+  },
+  "result": {
+    "id": "computercraft:computer_advanced",
+    "count": 1
+  }
+}

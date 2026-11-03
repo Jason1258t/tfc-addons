@@ -1,0 +1,30 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    "S S",
+    "ICI",
+    "DCT"
+  ],
+  "key": {
+    "S": {
+      "tag": "c:plates/steel"
+    },
+    "I": {
+      "item": "ee_extras:inductor"
+    },
+    "C": {
+      "item": "ee_extras:capacitor"
+    },
+    "D": {
+      "item": "ee_extras:silicon_diode"
+    },
+    "T": {
+      "item": "ee_extras:connector"
+    }
+  },
+  "result": {
+    "id": "ee_extras:power_supply",
+    "count": 1
+  }
+}

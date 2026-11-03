@@ -1,0 +1,36 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    "PDP",
+    "IMI",
+    "CBT"
+  ],
+  "key": {
+    "P": {
+      "item": "ee_extras:pocket_case"
+    },
+    "D": {
+      "item": "ee_extras:pocket_display"
+    },
+    "I": {
+      "item": "ee_extras:pocket_input"
+    },
+    "M": {
+      "item": "ee_extras:advanced_motherboard"
+    },
+    "C": {
+      "item": "ee_extras:connector"
+    },
+    "B": {
+      "item": "ee_extras:battery_module"
+    },
+    "T": {
+      "item": "ee_extras:network_port"
+    }
+  },
+  "result": {
+    "id": "computercraft:pocket_computer_advanced",
+    "count": 1
+  }
+}

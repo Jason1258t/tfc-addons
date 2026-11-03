@@ -1,0 +1,38 @@
+{
+  "type": "computercraft:transform_shaped",
+  "category": "redstone",
+  "function": [
+    {
+      "type": "computercraft:copy_components",
+      "from": {
+        "item": "computercraft:turtle_normal"
+      }
+    }
+  ],
+  "pattern": [
+    " R ",
+    "ACP",
+    " S "
+  ],
+  "key": {
+    "R": {
+      "item": "ee_extras:robot_chassis"
+    },
+    "A": {
+      "item": "ee_extras:advanced_turtle_controller"
+    },
+    "C": {
+      "item": "computercraft:turtle_normal"
+    },
+    "P": {
+      "item": "ee_extras:precision_actuator"
+    },
+    "S": {
+      "item": "ee_extras:storage_bay"
+    }
+  },
+  "result": {
+    "id": "computercraft:turtle_advanced",
+    "count": 1
+  }
+}

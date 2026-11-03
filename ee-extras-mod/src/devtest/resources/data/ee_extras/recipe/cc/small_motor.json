@@ -1,0 +1,30 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    "WCW",
+    "RSR",
+    " T "
+  ],
+  "key": {
+    "W": {
+      "tag": "c:wires/copper"
+    },
+    "C": {
+      "item": "ee_extras:inductor"
+    },
+    "R": {
+      "tag": "c:rods/steel"
+    },
+    "S": {
+      "tag": "c:plates/steel"
+    },
+    "T": {
+      "tag": "tfc:insulation"
+    }
+  },
+  "result": {
+    "id": "ee_extras:small_motor",
+    "count": 1
+  }
+}

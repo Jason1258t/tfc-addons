@@ -1,0 +1,19 @@
+{
+  "type": "morered:soldering",
+  "ingredients": [
+    {
+      "item": "ee_extras:control_board_l1"
+    },
+    {
+      "item": "ee_extras:connector"
+    },
+    {
+      "item": "ee_extras:copper_foil",
+      "count": 2
+    }
+  ],
+  "result": {
+    "id": "ee_extras:pocket_input",
+    "count": 1
+  }
+}

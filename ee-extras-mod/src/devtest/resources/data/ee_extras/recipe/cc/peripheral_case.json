@@ -1,0 +1,21 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    "S S",
+    "SPS",
+    "SSS"
+  ],
+  "key": {
+    "S": {
+      "tag": "c:plates/steel"
+    },
+    "P": {
+      "tag": "tfc:insulation"
+    }
+  },
+  "result": {
+    "id": "ee_extras:peripheral_case",
+    "count": 1
+  }
+}

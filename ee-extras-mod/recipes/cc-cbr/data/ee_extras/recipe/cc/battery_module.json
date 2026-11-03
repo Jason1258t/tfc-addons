@@ -1,0 +1,30 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    "L L",
+    "SCS",
+    "DCT"
+  ],
+  "key": {
+    "L": {
+      "tag": "c:plates/lead"
+    },
+    "S": {
+      "item": "tfc:powder/sulfur"
+    },
+    "C": {
+      "item": "ee_extras:capacitor"
+    },
+    "D": {
+      "item": "ee_extras:silicon_diode"
+    },
+    "T": {
+      "item": "ee_extras:connector"
+    }
+  },
+  "result": {
+    "id": "ee_extras:battery_module",
+    "count": 1
+  }
+}

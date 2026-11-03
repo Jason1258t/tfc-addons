@@ -1,12 +1,12 @@
 {
   "id": "ee_extras",
   "name": "EE Extras — электрика для Electro Energetics",
-  "version": "2.9.0",
-  "jar": "ee-extras-2.9.0.jar",
-  "sha256": "885183827259582f8649009e70b33e7dc78dde5fc2a95a9f2582be2cf34cd797",
+  "version": "2.10.0",
+  "jar": "ee-extras-2.10.0.jar",
+  "sha256": "f3c90cc85c115cb8324a48c29cd5cf5af0a988939b28cb7a3bad14a855f23876",
   "order": 10,
   "side": "both",
-  "summary": "Блоки для Create Electro Energetics: выпрямители (переменный ток → ровный постоянный) и с 2.2 сетевые инверторы (постоянный → переменный в такт генераторам), лёгкие на 6 кВт и тяжёлые на 48 кВт, с 2.3 — компактный генератор (вал Create → постоянный ток до 1,5 кВт), двусторонний преобразователь EE ↔ FE для конденсаторов IE, рабочий двухпроводной кабель EE (в самом EE 1.1.2 катушка кабель не прокладывает), четырёхжильный кабель для трёхфазной сети, отвод фазы и кабельные изоляторы; с 2.1 — провода ЛЭП и сильноточной разводки (медная шина, силовой кабель, М, АС, А, бронзовый, ПС) и натяжной зажим; с 2.4 — электрический фонарь IE подключается к двухпроводному кабелю EE и собирается в линию; с 2.5 — преобразователи частоты (любой ток → заданные 1–40 Гц) и синхронизаторы (автоматическое включение генератора в сеть), до промышленного шкафа в два блока с радиаторами; с 2.6 — заготовка, маска и готовая плата L1 для травильной ванны Destroy Extras; с 2.7 — прожектор IE на двухжильном кабеле и кабельный преобразователь для машин; с 2.8 — редактор плат до трёх слоёв, материалы и компоненты электроники, солнечная панель 240 Вт / 48 В и термометр TFC 0–1600 °C → 0–15 В; с 2.9 — фотолитограф, металлизатор via и полный промышленный цикл плат L2/L3 совместно с травильной ванной Destroy Extras 0.4.0. До версии 2.0 назывался «EE Rectifiers» (ee_rectifier): поставленные выпрямители при обновлении остаются на месте.",
+  "summary": "Блоки для Create Electro Energetics: выпрямители (переменный ток → ровный постоянный) и с 2.2 сетевые инверторы (постоянный → переменный в такт генераторам), лёгкие на 6 кВт и тяжёлые на 48 кВт, с 2.3 — компактный генератор (вал Create → постоянный ток до 1,5 кВт), двусторонний преобразователь EE ↔ FE для конденсаторов IE, рабочий двухпроводной кабель EE (в самом EE 1.1.2 катушка кабель не прокладывает), четырёхжильный кабель для трёхфазной сети, отвод фазы и кабельные изоляторы; с 2.1 — провода ЛЭП и сильноточной разводки (медная шина, силовой кабель, М, АС, А, бронзовый, ПС) и натяжной зажим; с 2.4 — электрический фонарь IE подключается к двухпроводному кабелю EE и собирается в линию; с 2.5 — преобразователи частоты (любой ток → заданные 1–40 Гц) и синхронизаторы (автоматическое включение генератора в сеть), до промышленного шкафа в два блока с радиаторами; с 2.6 — заготовка, маска и готовая плата L1 для травильной ванны Destroy Extras; с 2.7 — прожектор IE на двухжильном кабеле и кабельный преобразователь для машин; с 2.8 — редактор плат до трёх слоёв, материалы и компоненты электроники, солнечная панель 240 Вт / 48 В и термометр TFC 0–1600 °C → 0–15 В; с 2.9 — фотолитограф, металлизатор via и полный промышленный цикл плат L2/L3 совместно с травильной ванной Destroy Extras 0.4.0; с 2.10 — 30 компонентов для промышленного производства ComputerCraft и CCBR, магнитный носитель дискет и совместимость периферии CC с TFC. До версии 2.0 назывался «EE Rectifiers» (ee_rectifier): поставленные выпрямители при обновлении остаются на месте.",
   "needs": "Сервер и все игроки (новые блоки). NeoForge 21.1.234+ (требование TFC 4.2.9), Create 6.0.10, Electro Energetics 1.1.2+. Термометр появляется при установленном TFC. Старый ee-rectifier-*.jar убрать — tfc pull addons уберёт сам.",
   "formerIds": ["ee_rectifier"],
   "replaces": ["mods/ee-rectifier-1.1.0.jar", "mods/ee-rectifier-1.0.0.jar"],
@@ -725,6 +725,156 @@
       "id": "ee_extras:thermometer",
       "name": "Термометр TFC",
       "image": "thermometer.png"
+    },
+    {
+      "id": "ee_extras:control_board_l1",
+      "name": "Плата управления L1",
+      "image": "control_board_l1.png"
+    },
+    {
+      "id": "ee_extras:computer_motherboard",
+      "name": "Материнская плата компьютера",
+      "image": "computer_motherboard.png"
+    },
+    {
+      "id": "ee_extras:advanced_motherboard",
+      "name": "Продвинутая материнская плата",
+      "image": "advanced_motherboard.png"
+    },
+    {
+      "id": "ee_extras:turtle_controller",
+      "name": "Контроллер черепахи",
+      "image": "turtle_controller.png"
+    },
+    {
+      "id": "ee_extras:advanced_turtle_controller",
+      "name": "Продвинутый контроллер черепахи",
+      "image": "advanced_turtle_controller.png"
+    },
+    {
+      "id": "ee_extras:keyboard",
+      "name": "Клавиатура",
+      "image": "keyboard.png"
+    },
+    {
+      "id": "ee_extras:pocket_input",
+      "name": "Контактная матрица карманного компьютера",
+      "image": "pocket_input.png"
+    },
+    {
+      "id": "ee_extras:display_driver",
+      "name": "Драйвер дисплея",
+      "image": "display_driver.png"
+    },
+    {
+      "id": "ee_extras:advanced_display_driver",
+      "name": "Драйвер продвинутого дисплея",
+      "image": "advanced_display_driver.png"
+    },
+    {
+      "id": "ee_extras:display_crt",
+      "name": "Электронно-лучевой дисплей",
+      "image": "display_crt.png"
+    },
+    {
+      "id": "ee_extras:display_advanced",
+      "name": "Цветной дисплей",
+      "image": "display_advanced.png"
+    },
+    {
+      "id": "ee_extras:pocket_display",
+      "name": "Миниатюрный дисплей",
+      "image": "pocket_display.png"
+    },
+    {
+      "id": "ee_extras:network_port",
+      "name": "Сетевой порт",
+      "image": "network_port.png"
+    },
+    {
+      "id": "ee_extras:computer_case",
+      "name": "Корпус компьютера",
+      "image": "computer_case.png"
+    },
+    {
+      "id": "ee_extras:advanced_computer_case",
+      "name": "Корпус продвинутого компьютера",
+      "image": "advanced_computer_case.png"
+    },
+    {
+      "id": "ee_extras:pocket_case",
+      "name": "Корпус карманного компьютера",
+      "image": "pocket_case.png"
+    },
+    {
+      "id": "ee_extras:peripheral_case",
+      "name": "Корпус периферии",
+      "image": "peripheral_case.png"
+    },
+    {
+      "id": "ee_extras:small_motor",
+      "name": "Малый электродвигатель",
+      "image": "small_motor.png"
+    },
+    {
+      "id": "ee_extras:precision_actuator",
+      "name": "Прецизионный привод",
+      "image": "precision_actuator.png"
+    },
+    {
+      "id": "ee_extras:storage_bay",
+      "name": "Отсек хранения черепахи",
+      "image": "storage_bay.png"
+    },
+    {
+      "id": "ee_extras:robot_chassis",
+      "name": "Шасси робота",
+      "image": "robot_chassis.png"
+    },
+    {
+      "id": "ee_extras:disk_transport",
+      "name": "Механизм дисковода",
+      "image": "disk_transport.png"
+    },
+    {
+      "id": "ee_extras:print_mechanism",
+      "name": "Печатающий механизм",
+      "image": "print_mechanism.png"
+    },
+    {
+      "id": "ee_extras:network_transceiver",
+      "name": "Сетевой приёмопередатчик",
+      "image": "network_transceiver.png"
+    },
+    {
+      "id": "ee_extras:ender_transceiver",
+      "name": "Эндер-приёмопередатчик",
+      "image": "ender_transceiver.png"
+    },
+    {
+      "id": "ee_extras:speaker_driver",
+      "name": "Динамическая головка",
+      "image": "speaker_driver.png"
+    },
+    {
+      "id": "ee_extras:audio_amplifier",
+      "name": "Усилитель звука",
+      "image": "audio_amplifier.png"
+    },
+    {
+      "id": "ee_extras:power_supply",
+      "name": "Блок питания компьютера",
+      "image": "power_supply.png"
+    },
+    {
+      "id": "ee_extras:battery_module",
+      "name": "Аккумуляторный модуль",
+      "image": "battery_module.png"
+    },
+    {
+      "id": "ee_extras:magnetic_disk_medium",
+      "name": "Магнитный носитель дискеты",
+      "image": "magnetic_disk_medium.png"
     }
   ]
 }

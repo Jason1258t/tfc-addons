@@ -1,0 +1,274 @@
+[
+  {
+    "id": "ccbr:basic_integrated_circuit_crafting",
+    "output": "ccbr:basic_integrated_circuit"
+  },
+  {
+    "id": "ccbr:mechanical_crafting/integrated_circuit",
+    "output": "ccbr:integrated_circuit"
+  },
+  {
+    "id": "ccbr:pressing/lapis_block",
+    "output": ""
+  },
+  {
+    "id": "computercraft:cable",
+    "output": "computercraft:cable"
+  },
+  {
+    "id": "computercraft:computer_advanced",
+    "output": "computercraft:computer_advanced"
+  },
+  {
+    "id": "computercraft:computer_advanced_upgrade",
+    "output": "computercraft:computer_advanced"
+  },
+  {
+    "id": "computercraft:computer_normal",
+    "output": "computercraft:computer_normal"
+  },
+  {
+    "id": "computercraft:disk_1",
+    "output": "computercraft:disk"
+  },
+  {
+    "id": "computercraft:disk_10",
+    "output": "computercraft:disk"
+  },
+  {
+    "id": "computercraft:disk_11",
+    "output": "computercraft:disk"
+  },
+  {
+    "id": "computercraft:disk_12",
+    "output": "computercraft:disk"
+  },
+  {
+    "id": "computercraft:disk_13",
+    "output": "computercraft:disk"
+  },
+  {
+    "id": "computercraft:disk_14",
+    "output": "computercraft:disk"
+  },
+  {
+    "id": "computercraft:disk_15",
+    "output": "computercraft:disk"
+  },
+  {
+    "id": "computercraft:disk_16",
+    "output": "computercraft:disk"
+  },
+  {
+    "id": "computercraft:disk_2",
+    "output": "computercraft:disk"
+  },
+  {
+    "id": "computercraft:disk_3",
+    "output": "computercraft:disk"
+  },
+  {
+    "id": "computercraft:disk_4",
+    "output": "computercraft:disk"
+  },
+  {
+    "id": "computercraft:disk_5",
+    "output": "computercraft:disk"
+  },
+  {
+    "id": "computercraft:disk_6",
+    "output": "computercraft:disk"
+  },
+  {
+    "id": "computercraft:disk_7",
+    "output": "computercraft:disk"
+  },
+  {
+    "id": "computercraft:disk_8",
+    "output": "computercraft:disk"
+  },
+  {
+    "id": "computercraft:disk_9",
+    "output": "computercraft:disk"
+  },
+  {
+    "id": "computercraft:disk_drive",
+    "output": "computercraft:disk_drive"
+  },
+  {
+    "id": "computercraft:monitor_advanced",
+    "output": "computercraft:monitor_advanced"
+  },
+  {
+    "id": "computercraft:monitor_normal",
+    "output": "computercraft:monitor_normal"
+  },
+  {
+    "id": "computercraft:pocket_computer_advanced",
+    "output": "computercraft:pocket_computer_advanced"
+  },
+  {
+    "id": "computercraft:pocket_computer_advanced_upgrade",
+    "output": "computercraft:pocket_computer_advanced"
+  },
+  {
+    "id": "computercraft:pocket_computer_normal",
+    "output": "computercraft:pocket_computer_normal"
+  },
+  {
+    "id": "computercraft:printer",
+    "output": "computercraft:printer"
+  },
+  {
+    "id": "computercraft:redstone_relay",
+    "output": "computercraft:redstone_relay"
+  },
+  {
+    "id": "computercraft:speaker",
+    "output": "computercraft:speaker"
+  },
+  {
+    "id": "computercraft:turtle_advanced",
+    "output": "computercraft:turtle_advanced"
+  },
+  {
+    "id": "computercraft:turtle_advanced_upgrade",
+    "output": "computercraft:turtle_advanced"
+  },
+  {
+    "id": "computercraft:turtle_normal",
+    "output": "computercraft:turtle_normal"
+  },
+  {
+    "id": "computercraft:wired_modem",
+    "output": "computercraft:wired_modem"
+  },
+  {
+    "id": "computercraft:wireless_modem_advanced",
+    "output": "computercraft:wireless_modem_advanced"
+  },
+  {
+    "id": "computercraft:wireless_modem_normal",
+    "output": "computercraft:wireless_modem_normal"
+  },
+  {
+    "id": "ee_extras:cc/advanced_computer_case",
+    "output": "ee_extras:advanced_computer_case"
+  },
+  {
+    "id": "ee_extras:cc/advanced_display_driver",
+    "output": "ee_extras:advanced_display_driver"
+  },
+  {
+    "id": "ee_extras:cc/advanced_motherboard",
+    "output": "ee_extras:advanced_motherboard"
+  },
+  {
+    "id": "ee_extras:cc/advanced_turtle_controller",
+    "output": "ee_extras:advanced_turtle_controller"
+  },
+  {
+    "id": "ee_extras:cc/audio_amplifier",
+    "output": "ee_extras:audio_amplifier"
+  },
+  {
+    "id": "ee_extras:cc/battery_module",
+    "output": "ee_extras:battery_module"
+  },
+  {
+    "id": "ee_extras:cc/computer_case",
+    "output": "ee_extras:computer_case"
+  },
+  {
+    "id": "ee_extras:cc/computer_motherboard",
+    "output": "ee_extras:computer_motherboard"
+  },
+  {
+    "id": "ee_extras:cc/control_board_l1",
+    "output": "ee_extras:control_board_l1"
+  },
+  {
+    "id": "ee_extras:cc/disk_transport",
+    "output": "ee_extras:disk_transport"
+  },
+  {
+    "id": "ee_extras:cc/display_advanced",
+    "output": "ee_extras:display_advanced"
+  },
+  {
+    "id": "ee_extras:cc/display_crt",
+    "output": "ee_extras:display_crt"
+  },
+  {
+    "id": "ee_extras:cc/display_driver",
+    "output": "ee_extras:display_driver"
+  },
+  {
+    "id": "ee_extras:cc/ender_transceiver",
+    "output": "ee_extras:ender_transceiver"
+  },
+  {
+    "id": "ee_extras:cc/keyboard",
+    "output": "ee_extras:keyboard"
+  },
+  {
+    "id": "ee_extras:cc/magnetic_disk_medium",
+    "output": "ee_extras:magnetic_disk_medium"
+  },
+  {
+    "id": "ee_extras:cc/network_port",
+    "output": "ee_extras:network_port"
+  },
+  {
+    "id": "ee_extras:cc/network_transceiver",
+    "output": "ee_extras:network_transceiver"
+  },
+  {
+    "id": "ee_extras:cc/peripheral_case",
+    "output": "ee_extras:peripheral_case"
+  },
+  {
+    "id": "ee_extras:cc/pocket_case",
+    "output": "ee_extras:pocket_case"
+  },
+  {
+    "id": "ee_extras:cc/pocket_display",
+    "output": "ee_extras:pocket_display"
+  },
+  {
+    "id": "ee_extras:cc/pocket_input",
+    "output": "ee_extras:pocket_input"
+  },
+  {
+    "id": "ee_extras:cc/power_supply",
+    "output": "ee_extras:power_supply"
+  },
+  {
+    "id": "ee_extras:cc/precision_actuator",
+    "output": "ee_extras:precision_actuator"
+  },
+  {
+    "id": "ee_extras:cc/print_mechanism",
+    "output": "ee_extras:print_mechanism"
+  },
+  {
+    "id": "ee_extras:cc/robot_chassis",
+    "output": "ee_extras:robot_chassis"
+  },
+  {
+    "id": "ee_extras:cc/small_motor",
+    "output": "ee_extras:small_motor"
+  },
+  {
+    "id": "ee_extras:cc/speaker_driver",
+    "output": "ee_extras:speaker_driver"
+  },
+  {
+    "id": "ee_extras:cc/storage_bay",
+    "output": "ee_extras:storage_bay"
+  },
+  {
+    "id": "ee_extras:cc/turtle_controller",
+    "output": "ee_extras:turtle_controller"
+  }
+]

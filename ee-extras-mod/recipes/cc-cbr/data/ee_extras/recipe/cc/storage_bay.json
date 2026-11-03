@@ -1,0 +1,30 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    "R R",
+    "SAS",
+    "CCT"
+  ],
+  "key": {
+    "R": {
+      "tag": "c:rods/steel"
+    },
+    "S": {
+      "tag": "c:plates/steel"
+    },
+    "A": {
+      "tag": "c:chests/wooden"
+    },
+    "C": {
+      "item": "ee_extras:connector"
+    },
+    "T": {
+      "tag": "tfc:insulation"
+    }
+  },
+  "result": {
+    "id": "ee_extras:storage_bay",
+    "count": 1
+  }
+}

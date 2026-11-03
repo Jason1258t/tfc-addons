@@ -1,0 +1,30 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    "TRT",
+    "BMB",
+    " C "
+  ],
+  "key": {
+    "T": {
+      "item": "ee_extras:connector"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "B": {
+      "item": "ee_extras:control_board_l1"
+    },
+    "M": {
+      "item": "computercraft:wired_modem"
+    },
+    "C": {
+      "item": "ee_extras:peripheral_case"
+    }
+  },
+  "result": {
+    "id": "computercraft:redstone_relay",
+    "count": 1
+  }
+}

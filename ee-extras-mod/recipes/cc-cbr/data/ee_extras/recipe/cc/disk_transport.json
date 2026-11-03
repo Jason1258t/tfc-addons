@@ -1,0 +1,33 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    "M R",
+    "HAC",
+    "M T"
+  ],
+  "key": {
+    "M": {
+      "item": "ee_extras:small_motor"
+    },
+    "R": {
+      "tag": "c:rods/steel"
+    },
+    "H": {
+      "item": "ee_extras:inductor"
+    },
+    "A": {
+      "item": "ee_extras:precision_actuator"
+    },
+    "C": {
+      "item": "ee_extras:control_board_l1"
+    },
+    "T": {
+      "item": "ee_extras:connector"
+    }
+  },
+  "result": {
+    "id": "ee_extras:disk_transport",
+    "count": 1
+  }
+}

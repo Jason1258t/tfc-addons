@@ -1,0 +1,24 @@
+{
+  "type": "morered:soldering",
+  "ingredients": [
+    {
+      "item": "ee_extras:l2_board"
+    },
+    {
+      "item": "ee_extras:basic_ic"
+    },
+    {
+      "item": "ee_extras:resistor"
+    },
+    {
+      "item": "ee_extras:capacitor"
+    },
+    {
+      "item": "ee_extras:connector"
+    }
+  ],
+  "result": {
+    "id": "ccbr:basic_integrated_circuit",
+    "count": 1
+  }
+}

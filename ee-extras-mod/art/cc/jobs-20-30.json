@@ -1,0 +1,122 @@
+[
+  {
+    "name": "robot_chassis",
+    "description": "Create one original Minecraft inventory item texture: a square open industrial robot chassis viewed from above, straight steel outer frame, four small motor housings and brass cross reinforcement, empty centre.\nReferences supplied as images: the first image shows the actual EE Extras integrated circuits and inductor plus CC: Tweaked computer and disk; match their restrained palette, simple silhouettes and functional detail. The second image is the approved addon module style; match its straight rectangular construction and readability, but do not copy its brass palette.\nView the object straight from above or at a very slight three-quarter angle only where needed to show housing depth. Use simple pixel-art forms, clear dark outline, flat planes and a small palette of material shades. Use steel gray for normal housings, light aluminum for advanced housings, dark green for ordinary circuitry, dark desaturated purple and restrained gold for advanced circuitry. The item must remain readable when reduced to 32x32 pixels.\nNo words, letters, numbers, logos or watermark. No glossy bevels, rounded illustrative shoulders, ornamental trim, noise, dense tiny highlights or ground shadow. One complete isolated object, centered with a transparent margin of about 10 percent on every side, no cropped edges. True transparent background; do not draw a checkerboard or scene. Use a consistent logical pixel grid and deliver an enlarged source suitable for mechanical reduction.",
+    "output": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/robot_chassis.png",
+    "references": [
+      "https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2Fb74ddeb2385b1c6fd2939de2a547388aaa231d361f75c025d98ca5f2106c0f7b?filename=pack-reference-sheet.png&sig=-xur-jlwIX17Mg1oKVwPDm5LuBrxYwsfh9GspXZvySo=&t=o",
+      "https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2F2519c65d44bec61e429213cc53b143805565173adc75d87afb3e846d3d7cb1f7?filename=approved-modules.png&sig=Jutn2CRWxQ6vMtOxfYVE-h78tKFQltVgSIvTtc_nI08=&t=o"
+    ],
+    "size": "1024x1024",
+    "background": "transparent",
+    "launcher_stdout": "Job log: /var/folders/x6/3d5mczwn1hsgl2mnzkk_cs7h0000gn/T/image_generation-job-bn7erlu3/worker.log\nJob PID file: /var/folders/x6/3d5mczwn1hsgl2mnzkk_cs7h0000gn/T/image_generation-job-bn7erlu3/worker.pid\n"
+  },
+  {
+    "name": "disk_transport",
+    "description": "Create one original Minecraft inventory item texture: a floppy-disk drive transport mechanism without outer case, two straight steel guide rails, tiny read head, dark rectangular slot and small copper motor.\nReferences supplied as images: the first image shows the actual EE Extras integrated circuits and inductor plus CC: Tweaked computer and disk; match their restrained palette, simple silhouettes and functional detail. The second image is the approved addon module style; match its straight rectangular construction and readability, but do not copy its brass palette.\nView the object straight from above or at a very slight three-quarter angle only where needed to show housing depth. Use simple pixel-art forms, clear dark outline, flat planes and a small palette of material shades. Use steel gray for normal housings, light aluminum for advanced housings, dark green for ordinary circuitry, dark desaturated purple and restrained gold for advanced circuitry. The item must remain readable when reduced to 32x32 pixels.\nNo words, letters, numbers, logos or watermark. No glossy bevels, rounded illustrative shoulders, ornamental trim, noise, dense tiny highlights or ground shadow. One complete isolated object, centered with a transparent margin of about 10 percent on every side, no cropped edges. True transparent background; do not draw a checkerboard or scene. Use a consistent logical pixel grid and deliver an enlarged source suitable for mechanical reduction.",
+    "output": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/disk_transport.png",
+    "references": [
+      "https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2Fb74ddeb2385b1c6fd2939de2a547388aaa231d361f75c025d98ca5f2106c0f7b?filename=pack-reference-sheet.png&sig=-xur-jlwIX17Mg1oKVwPDm5LuBrxYwsfh9GspXZvySo=&t=o",
+      "https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2F2519c65d44bec61e429213cc53b143805565173adc75d87afb3e846d3d7cb1f7?filename=approved-modules.png&sig=Jutn2CRWxQ6vMtOxfYVE-h78tKFQltVgSIvTtc_nI08=&t=o"
+    ],
+    "size": "1024x1024",
+    "background": "transparent",
+    "launcher_stdout": "Job log: /var/folders/x6/3d5mczwn1hsgl2mnzkk_cs7h0000gn/T/image_generation-job-uhvu8_9k/worker.log\nJob PID file: /var/folders/x6/3d5mczwn1hsgl2mnzkk_cs7h0000gn/T/image_generation-job-uhvu8_9k/worker.pid\n"
+  },
+  {
+    "name": "print_mechanism",
+    "description": "Create one original Minecraft inventory item texture: a compact printer mechanism without outer case, straight steel roller, small ink carriage, two guide rails and tiny copper motor.\nReferences supplied as images: the first image shows the actual EE Extras integrated circuits and inductor plus CC: Tweaked computer and disk; match their restrained palette, simple silhouettes and functional detail. The second image is the approved addon module style; match its straight rectangular construction and readability, but do not copy its brass palette.\nView the object straight from above or at a very slight three-quarter angle only where needed to show housing depth. Use simple pixel-art forms, clear dark outline, flat planes and a small palette of material shades. Use steel gray for normal housings, light aluminum for advanced housings, dark green for ordinary circuitry, dark desaturated purple and restrained gold for advanced circuitry. The item must remain readable when reduced to 32x32 pixels.\nNo words, letters, numbers, logos or watermark. No glossy bevels, rounded illustrative shoulders, ornamental trim, noise, dense tiny highlights or ground shadow. One complete isolated object, centered with a transparent margin of about 10 percent on every side, no cropped edges. True transparent background; do not draw a checkerboard or scene. Use a consistent logical pixel grid and deliver an enlarged source suitable for mechanical reduction.",
+    "output": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/print_mechanism.png",
+    "references": [
+      "https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2Fb74ddeb2385b1c6fd2939de2a547388aaa231d361f75c025d98ca5f2106c0f7b?filename=pack-reference-sheet.png&sig=-xur-jlwIX17Mg1oKVwPDm5LuBrxYwsfh9GspXZvySo=&t=o",
+      "https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2F2519c65d44bec61e429213cc53b143805565173adc75d87afb3e846d3d7cb1f7?filename=approved-modules.png&sig=Jutn2CRWxQ6vMtOxfYVE-h78tKFQltVgSIvTtc_nI08=&t=o"
+    ],
+    "size": "1024x1024",
+    "background": "transparent",
+    "launcher_stdout": "Job log: /var/folders/x6/3d5mczwn1hsgl2mnzkk_cs7h0000gn/T/image_generation-job-0s9isdh7/worker.log\nJob PID file: /var/folders/x6/3d5mczwn1hsgl2mnzkk_cs7h0000gn/T/image_generation-job-0s9isdh7/worker.pid\n"
+  },
+  {
+    "name": "network_transceiver",
+    "description": "Create one original Minecraft inventory item texture: a dark-green wireless network transceiver circuit board, black radio chip, small copper coil antenna and short straight metal aerial.\nReferences supplied as images: the first image shows the actual EE Extras integrated circuits and inductor plus CC: Tweaked computer and disk; match their restrained palette, simple silhouettes and functional detail. The second image is the approved addon module style; match its straight rectangular construction and readability, but do not copy its brass palette.\nView the object straight from above or at a very slight three-quarter angle only where needed to show housing depth. Use simple pixel-art forms, clear dark outline, flat planes and a small palette of material shades. Use steel gray for normal housings, light aluminum for advanced housings, dark green for ordinary circuitry, dark desaturated purple and restrained gold for advanced circuitry. The item must remain readable when reduced to 32x32 pixels.\nNo words, letters, numbers, logos or watermark. No glossy bevels, rounded illustrative shoulders, ornamental trim, noise, dense tiny highlights or ground shadow. One complete isolated object, centered with a transparent margin of about 10 percent on every side, no cropped edges. True transparent background; do not draw a checkerboard or scene. Use a consistent logical pixel grid and deliver an enlarged source suitable for mechanical reduction.",
+    "output": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/network_transceiver.png",
+    "references": [
+      "https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2Fb74ddeb2385b1c6fd2939de2a547388aaa231d361f75c025d98ca5f2106c0f7b?filename=pack-reference-sheet.png&sig=-xur-jlwIX17Mg1oKVwPDm5LuBrxYwsfh9GspXZvySo=&t=o",
+      "https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2F2519c65d44bec61e429213cc53b143805565173adc75d87afb3e846d3d7cb1f7?filename=approved-modules.png&sig=Jutn2CRWxQ6vMtOxfYVE-h78tKFQltVgSIvTtc_nI08=&t=o"
+    ],
+    "size": "1024x1024",
+    "background": "transparent",
+    "launcher_stdout": "Job log: /var/folders/x6/3d5mczwn1hsgl2mnzkk_cs7h0000gn/T/image_generation-job-111v3x74/worker.log\nJob PID file: /var/folders/x6/3d5mczwn1hsgl2mnzkk_cs7h0000gn/T/image_generation-job-111v3x74/worker.pid\n"
+  },
+  {
+    "name": "ender_transceiver",
+    "description": "Create one original Minecraft inventory item texture: a dark-purple advanced ender transceiver circuit board, black gold-pin chip, small muted-green ender pearl centre and copper coil antenna.\nReferences supplied as images: the first image shows the actual EE Extras integrated circuits and inductor plus CC: Tweaked computer and disk; match their restrained palette, simple silhouettes and functional detail. The second image is the approved addon module style; match its straight rectangular construction and readability, but do not copy its brass palette.\nView the object straight from above or at a very slight three-quarter angle only where needed to show housing depth. Use simple pixel-art forms, clear dark outline, flat planes and a small palette of material shades. Use steel gray for normal housings, light aluminum for advanced housings, dark green for ordinary circuitry, dark desaturated purple and restrained gold for advanced circuitry. The item must remain readable when reduced to 32x32 pixels.\nNo words, letters, numbers, logos or watermark. No glossy bevels, rounded illustrative shoulders, ornamental trim, noise, dense tiny highlights or ground shadow. One complete isolated object, centered with a transparent margin of about 10 percent on every side, no cropped edges. True transparent background; do not draw a checkerboard or scene. Use a consistent logical pixel grid and deliver an enlarged source suitable for mechanical reduction.",
+    "output": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/ender_transceiver.png",
+    "references": [
+      "https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2Fb74ddeb2385b1c6fd2939de2a547388aaa231d361f75c025d98ca5f2106c0f7b?filename=pack-reference-sheet.png&sig=-xur-jlwIX17Mg1oKVwPDm5LuBrxYwsfh9GspXZvySo=&t=o",
+      "https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2F2519c65d44bec61e429213cc53b143805565173adc75d87afb3e846d3d7cb1f7?filename=approved-modules.png&sig=Jutn2CRWxQ6vMtOxfYVE-h78tKFQltVgSIvTtc_nI08=&t=o"
+    ],
+    "size": "1024x1024",
+    "background": "transparent",
+    "launcher_stdout": "Job log: /var/folders/x6/3d5mczwn1hsgl2mnzkk_cs7h0000gn/T/image_generation-job-ytwfpxdm/worker.log\nJob PID file: /var/folders/x6/3d5mczwn1hsgl2mnzkk_cs7h0000gn/T/image_generation-job-ytwfpxdm/worker.pid\n"
+  },
+  {
+    "name": "speaker_driver",
+    "description": "Create one original Minecraft inventory item texture: a single small industrial speaker driver, square dark-steel mounting frame, simple dark circular cone, copper winding detail and two terminals.\nReferences supplied as images: the first image shows the actual EE Extras integrated circuits and inductor plus CC: Tweaked computer and disk; match their restrained palette, simple silhouettes and functional detail. The second image is the approved addon module style; match its straight rectangular construction and readability, but do not copy its brass palette.\nView the object straight from above or at a very slight three-quarter angle only where needed to show housing depth. Use simple pixel-art forms, clear dark outline, flat planes and a small palette of material shades. Use steel gray for normal housings, light aluminum for advanced housings, dark green for ordinary circuitry, dark desaturated purple and restrained gold for advanced circuitry. The item must remain readable when reduced to 32x32 pixels.\nNo words, letters, numbers, logos or watermark. No glossy bevels, rounded illustrative shoulders, ornamental trim, noise, dense tiny highlights or ground shadow. One complete isolated object, centered with a transparent margin of about 10 percent on every side, no cropped edges. True transparent background; do not draw a checkerboard or scene. Use a consistent logical pixel grid and deliver an enlarged source suitable for mechanical reduction.",
+    "output": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/speaker_driver.png",
+    "references": [
+      "https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2Fb74ddeb2385b1c6fd2939de2a547388aaa231d361f75c025d98ca5f2106c0f7b?filename=pack-reference-sheet.png&sig=-xur-jlwIX17Mg1oKVwPDm5LuBrxYwsfh9GspXZvySo=&t=o",
+      "https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2F2519c65d44bec61e429213cc53b143805565173adc75d87afb3e846d3d7cb1f7?filename=approved-modules.png&sig=Jutn2CRWxQ6vMtOxfYVE-h78tKFQltVgSIvTtc_nI08=&t=o"
+    ],
+    "size": "1024x1024",
+    "background": "transparent",
+    "launcher_stdout": "Job log: /var/folders/x6/3d5mczwn1hsgl2mnzkk_cs7h0000gn/T/image_generation-job-b8lmw7fm/worker.log\nJob PID file: /var/folders/x6/3d5mczwn1hsgl2mnzkk_cs7h0000gn/T/image_generation-job-b8lmw7fm/worker.pid\n"
+  },
+  {
+    "name": "audio_amplifier",
+    "description": "Create one original Minecraft inventory item texture: a small dark-green audio amplifier circuit board, one black transistor, two cylindrical capacitors, copper inductor and pale output terminals.\nReferences supplied as images: the first image shows the actual EE Extras integrated circuits and inductor plus CC: Tweaked computer and disk; match their restrained palette, simple silhouettes and functional detail. The second image is the approved addon module style; match its straight rectangular construction and readability, but do not copy its brass palette.\nView the object straight from above or at a very slight three-quarter angle only where needed to show housing depth. Use simple pixel-art forms, clear dark outline, flat planes and a small palette of material shades. Use steel gray for normal housings, light aluminum for advanced housings, dark green for ordinary circuitry, dark desaturated purple and restrained gold for advanced circuitry. The item must remain readable when reduced to 32x32 pixels.\nNo words, letters, numbers, logos or watermark. No glossy bevels, rounded illustrative shoulders, ornamental trim, noise, dense tiny highlights or ground shadow. One complete isolated object, centered with a transparent margin of about 10 percent on every side, no cropped edges. True transparent background; do not draw a checkerboard or scene. Use a consistent logical pixel grid and deliver an enlarged source suitable for mechanical reduction.",
+    "output": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/audio_amplifier.png",
+    "references": [
+      "https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2Fb74ddeb2385b1c6fd2939de2a547388aaa231d361f75c025d98ca5f2106c0f7b?filename=pack-reference-sheet.png&sig=-xur-jlwIX17Mg1oKVwPDm5LuBrxYwsfh9GspXZvySo=&t=o",
+      "https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2F2519c65d44bec61e429213cc53b143805565173adc75d87afb3e846d3d7cb1f7?filename=approved-modules.png&sig=Jutn2CRWxQ6vMtOxfYVE-h78tKFQltVgSIvTtc_nI08=&t=o"
+    ],
+    "size": "1024x1024",
+    "background": "transparent",
+    "launcher_stdout": "Job log: /var/folders/x6/3d5mczwn1hsgl2mnzkk_cs7h0000gn/T/image_generation-job-0_6hojsl/worker.log\nJob PID file: /var/folders/x6/3d5mczwn1hsgl2mnzkk_cs7h0000gn/T/image_generation-job-0_6hojsl/worker.pid\n"
+  },
+  {
+    "name": "power_supply",
+    "description": "Create one original Minecraft inventory item texture: a compact open steel power-supply module, copper transformer winding, two dark cylindrical capacitors, small dark-green board and output terminals.\nReferences supplied as images: the first image shows the actual EE Extras integrated circuits and inductor plus CC: Tweaked computer and disk; match their restrained palette, simple silhouettes and functional detail. The second image is the approved addon module style; match its straight rectangular construction and readability, but do not copy its brass palette.\nView the object straight from above or at a very slight three-quarter angle only where needed to show housing depth. Use simple pixel-art forms, clear dark outline, flat planes and a small palette of material shades. Use steel gray for normal housings, light aluminum for advanced housings, dark green for ordinary circuitry, dark desaturated purple and restrained gold for advanced circuitry. The item must remain readable when reduced to 32x32 pixels.\nNo words, letters, numbers, logos or watermark. No glossy bevels, rounded illustrative shoulders, ornamental trim, noise, dense tiny highlights or ground shadow. One complete isolated object, centered with a transparent margin of about 10 percent on every side, no cropped edges. True transparent background; do not draw a checkerboard or scene. Use a consistent logical pixel grid and deliver an enlarged source suitable for mechanical reduction.",
+    "output": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/power_supply.png",
+    "references": [
+      "https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2Fb74ddeb2385b1c6fd2939de2a547388aaa231d361f75c025d98ca5f2106c0f7b?filename=pack-reference-sheet.png&sig=-xur-jlwIX17Mg1oKVwPDm5LuBrxYwsfh9GspXZvySo=&t=o",
+      "https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2F2519c65d44bec61e429213cc53b143805565173adc75d87afb3e846d3d7cb1f7?filename=approved-modules.png&sig=Jutn2CRWxQ6vMtOxfYVE-h78tKFQltVgSIvTtc_nI08=&t=o"
+    ],
+    "size": "1024x1024",
+    "background": "transparent",
+    "launcher_stdout": "Job log: /var/folders/x6/3d5mczwn1hsgl2mnzkk_cs7h0000gn/T/image_generation-job-p2e4qru0/worker.log\nJob PID file: /var/folders/x6/3d5mczwn1hsgl2mnzkk_cs7h0000gn/T/image_generation-job-p2e4qru0/worker.pid\n"
+  },
+  {
+    "name": "battery_module",
+    "description": "Create one original Minecraft inventory item texture: a compact rectangular lead-acid battery module, dark-gray straight case, visible lead-gray plates, muted red and black terminals and small brass contacts.\nReferences supplied as images: the first image shows the actual EE Extras integrated circuits and inductor plus CC: Tweaked computer and disk; match their restrained palette, simple silhouettes and functional detail. The second image is the approved addon module style; match its straight rectangular construction and readability, but do not copy its brass palette.\nView the object straight from above or at a very slight three-quarter angle only where needed to show housing depth. Use simple pixel-art forms, clear dark outline, flat planes and a small palette of material shades. Use steel gray for normal housings, light aluminum for advanced housings, dark green for ordinary circuitry, dark desaturated purple and restrained gold for advanced circuitry. The item must remain readable when reduced to 32x32 pixels.\nNo words, letters, numbers, logos or watermark. No glossy bevels, rounded illustrative shoulders, ornamental trim, noise, dense tiny highlights or ground shadow. One complete isolated object, centered with a transparent margin of about 10 percent on every side, no cropped edges. True transparent background; do not draw a checkerboard or scene. Use a consistent logical pixel grid and deliver an enlarged source suitable for mechanical reduction.",
+    "output": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/battery_module.png",
+    "references": [
+      "https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2Fb74ddeb2385b1c6fd2939de2a547388aaa231d361f75c025d98ca5f2106c0f7b?filename=pack-reference-sheet.png&sig=-xur-jlwIX17Mg1oKVwPDm5LuBrxYwsfh9GspXZvySo=&t=o",
+      "https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2F2519c65d44bec61e429213cc53b143805565173adc75d87afb3e846d3d7cb1f7?filename=approved-modules.png&sig=Jutn2CRWxQ6vMtOxfYVE-h78tKFQltVgSIvTtc_nI08=&t=o"
+    ],
+    "size": "1024x1024",
+    "background": "transparent",
+    "launcher_stdout": "Job log: /var/folders/x6/3d5mczwn1hsgl2mnzkk_cs7h0000gn/T/image_generation-job-tqzv8nn6/worker.log\nJob PID file: /var/folders/x6/3d5mczwn1hsgl2mnzkk_cs7h0000gn/T/image_generation-job-tqzv8nn6/worker.pid\n"
+  },
+  {
+    "name": "magnetic_disk_medium",
+    "description": "Create one original Minecraft inventory item texture: a square magnetic floppy-disk storage medium, dark charcoal rigid frame, central dark magnetic circular disc visible through a simple opening and small steel shutter.\nReferences supplied as images: the first image shows the actual EE Extras integrated circuits and inductor plus CC: Tweaked computer and disk; match their restrained palette, simple silhouettes and functional detail. The second image is the approved addon module style; match its straight rectangular construction and readability, but do not copy its brass palette.\nView the object straight from above or at a very slight three-quarter angle only where needed to show housing depth. Use simple pixel-art forms, clear dark outline, flat planes and a small palette of material shades. Use steel gray for normal housings, light aluminum for advanced housings, dark green for ordinary circuitry, dark desaturated purple and restrained gold for advanced circuitry. The item must remain readable when reduced to 32x32 pixels.\nNo words, letters, numbers, logos or watermark. No glossy bevels, rounded illustrative shoulders, ornamental trim, noise, dense tiny highlights or ground shadow. One complete isolated object, centered with a transparent margin of about 10 percent on every side, no cropped edges. True transparent background; do not draw a checkerboard or scene. Use a consistent logical pixel grid and deliver an enlarged source suitable for mechanical reduction.",
+    "output": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/magnetic_disk_medium.png",
+    "references": [
+      "https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2Fb74ddeb2385b1c6fd2939de2a547388aaa231d361f75c025d98ca5f2106c0f7b?filename=pack-reference-sheet.png&sig=-xur-jlwIX17Mg1oKVwPDm5LuBrxYwsfh9GspXZvySo=&t=o",
+      "https://www.kimi.com/apiv2-files/sign-obj/kimi-fs%2Ffiles%2Fblob%2F2519c65d44bec61e429213cc53b143805565173adc75d87afb3e846d3d7cb1f7?filename=approved-modules.png&sig=Jutn2CRWxQ6vMtOxfYVE-h78tKFQltVgSIvTtc_nI08=&t=o"
+    ],
+    "size": "1024x1024",
+    "background": "transparent",
+    "launcher_stdout": "Job log: /var/folders/x6/3d5mczwn1hsgl2mnzkk_cs7h0000gn/T/image_generation-job-feipb2ka/worker.log\nJob PID file: /var/folders/x6/3d5mczwn1hsgl2mnzkk_cs7h0000gn/T/image_generation-job-feipb2ka/worker.pid\n"
+  }
+]

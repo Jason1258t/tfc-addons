@@ -1,0 +1,24 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    "PPP",
+    "PPP",
+    "CFC"
+  ],
+  "key": {
+    "P": {
+      "tag": "tfc:insulation"
+    },
+    "C": {
+      "item": "ee_extras:control_board_l1"
+    },
+    "F": {
+      "item": "ee_extras:copper_foil"
+    }
+  },
+  "result": {
+    "id": "ee_extras:keyboard",
+    "count": 1
+  }
+}

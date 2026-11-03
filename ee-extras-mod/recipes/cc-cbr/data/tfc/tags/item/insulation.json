@@ -1,0 +1,26 @@
+{
+  "replace": false,
+  "values": [
+    "#c:plates/plastic",
+    {
+      "id": "afc:rubber_bar",
+      "required": false
+    },
+    {
+      "id": "destroy:polystyrene_butadiene",
+      "required": false
+    },
+    {
+      "id": "destroy:polyethene",
+      "required": false
+    },
+    {
+      "id": "destroy:polypropene",
+      "required": false
+    },
+    {
+      "id": "destroy:polyvinyl_chloride",
+      "required": false
+    }
+  ]
+}

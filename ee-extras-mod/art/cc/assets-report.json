@@ -1,0 +1,572 @@
+[
+  {
+    "id": "advanced_computer_case",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/advanced_computer_case.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/advanced_computer_case.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      0,
+      63,
+      1012,
+      986
+    ]
+  },
+  {
+    "id": "advanced_display_driver",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/advanced_display_driver.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/advanced_display_driver.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      99,
+      37,
+      1002,
+      983
+    ]
+  },
+  {
+    "id": "advanced_motherboard",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/advanced_motherboard.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/advanced_motherboard.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      62,
+      19,
+      964,
+      999
+    ]
+  },
+  {
+    "id": "advanced_turtle_controller",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/advanced_turtle_controller.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/advanced_turtle_controller.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      94,
+      33,
+      1012,
+      946
+    ]
+  },
+  {
+    "id": "audio_amplifier",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/audio_amplifier.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/audio_amplifier.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      0,
+      37,
+      894,
+      866
+    ]
+  },
+  {
+    "id": "battery_module",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/battery_module.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/battery_module.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      81,
+      150,
+      948,
+      846
+    ]
+  },
+  {
+    "id": "computer_case",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/computer_case.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/computer_case.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      163,
+      25,
+      946,
+      908
+    ]
+  },
+  {
+    "id": "computer_motherboard",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/computer_motherboard.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/computer_motherboard.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      60,
+      33,
+      964,
+      962
+    ]
+  },
+  {
+    "id": "control_board_l1",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/control_board_l1.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/control_board_l1.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      49,
+      33,
+      990,
+      872
+    ]
+  },
+  {
+    "id": "disk_transport",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/disk_transport.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/disk_transport.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      94,
+      37,
+      964,
+      885
+    ]
+  },
+  {
+    "id": "display_advanced",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/display_advanced.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/display_advanced.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      77,
+      182,
+      945,
+      888
+    ]
+  },
+  {
+    "id": "display_crt",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/display_crt.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/display_crt.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      0,
+      103,
+      952,
+      880
+    ]
+  },
+  {
+    "id": "display_driver",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/display_driver.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/display_driver.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      0,
+      174,
+      1004,
+      962
+    ]
+  },
+  {
+    "id": "ender_transceiver",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/ender_transceiver.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/ender_transceiver.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      64,
+      3,
+      1002,
+      984
+    ]
+  },
+  {
+    "id": "keyboard",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/keyboard.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/keyboard.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      0,
+      36,
+      963,
+      838
+    ]
+  },
+  {
+    "id": "magnetic_disk_medium",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/magnetic_disk_medium.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/magnetic_disk_medium.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      0,
+      60,
+      954,
+      916
+    ]
+  },
+  {
+    "id": "network_port",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/network_port.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/network_port.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      129,
+      36,
+      1010,
+      984
+    ]
+  },
+  {
+    "id": "network_transceiver",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/network_transceiver.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/network_transceiver.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      106,
+      100,
+      996,
+      911
+    ]
+  },
+  {
+    "id": "peripheral_case",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/peripheral_case.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/peripheral_case.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      107,
+      68,
+      916,
+      1024
+    ]
+  },
+  {
+    "id": "pocket_case",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/pocket_case.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/pocket_case.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      76,
+      61,
+      972,
+      936
+    ]
+  },
+  {
+    "id": "pocket_display",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/pocket_display.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/pocket_display.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      118,
+      37,
+      876,
+      898
+    ]
+  },
+  {
+    "id": "pocket_input",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/pocket_input.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/pocket_input.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      48,
+      37,
+      917,
+      896
+    ]
+  },
+  {
+    "id": "power_supply",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/power_supply.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/power_supply.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      0,
+      36,
+      1006,
+      998
+    ]
+  },
+  {
+    "id": "precision_actuator",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/precision_actuator.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/precision_actuator.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      0,
+      19,
+      1010,
+      962
+    ]
+  },
+  {
+    "id": "print_mechanism",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/print_mechanism.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/print_mechanism.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      46,
+      35,
+      977,
+      894
+    ]
+  },
+  {
+    "id": "robot_chassis",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/robot_chassis.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/robot_chassis.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      0,
+      49,
+      944,
+      1024
+    ]
+  },
+  {
+    "id": "small_motor",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/small_motor.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/small_motor.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      79,
+      23,
+      1004,
+      994
+    ]
+  },
+  {
+    "id": "speaker_driver",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/speaker_driver.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/speaker_driver.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      123,
+      41,
+      860,
+      934
+    ]
+  },
+  {
+    "id": "storage_bay",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/storage_bay.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/storage_bay.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      29,
+      63,
+      936,
+      864
+    ]
+  },
+  {
+    "id": "turtle_controller",
+    "source": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/art/cc/src/turtle_controller.png",
+    "runtime": "/Users/ivan/vscodeProjects/tfc-taskmanager/.claude/worktrees/cc-cbr-rework/tools/ee-extras-mod/src/main/resources/assets/ee_extras/textures/item/turtle_controller.png",
+    "source_size": [
+      1024,
+      1024
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "alpha_bbox": [
+      0,
+      9,
+      899,
+      992
+    ]
+  }
+]

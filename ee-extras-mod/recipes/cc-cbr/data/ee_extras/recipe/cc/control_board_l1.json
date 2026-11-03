@@ -1,0 +1,21 @@
+{
+  "type": "morered:soldering",
+  "ingredients": [
+    {
+      "item": "ee_extras:l1_board"
+    },
+    {
+      "item": "ee_extras:resistor"
+    },
+    {
+      "item": "ee_extras:capacitor"
+    },
+    {
+      "item": "ee_extras:connector"
+    }
+  ],
+  "result": {
+    "id": "ee_extras:control_board_l1",
+    "count": 1
+  }
+}
