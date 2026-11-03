@@ -33,6 +33,11 @@ public final class HydrochloricAcidAdapter {
         return MixtureFluid.of(amount, result);
     }
 
+    /** Принимается только чистый HCl в газовой фазе: без примесей и воды. */
+    public static boolean isPureAcidGas(FluidStack stack) {
+        return isPure(stack, DestroyMolecules.HYDROCHLORIC_ACID);
+    }
+
     private static boolean isPure(FluidStack stack, LegacySpecies molecule) {
         return !stack.isEmpty() && mixture(stack).getContents(false).size() == 1
             && concentration(stack, molecule) > 0;
