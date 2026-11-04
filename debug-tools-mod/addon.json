@@ -1,0 +1,13 @@
+{
+  "id": "debug_tools",
+  "name": "Debug Tools — отладочные команды",
+  "version": "1.0.0",
+  "jar": "debug-tools-1.0.0.jar",
+  "sha256": "e6cfe916a0a0186593d906fa39e6d871677d5507cff7078639f9effdb80e9869",
+  "order": 910,
+  "side": "both",
+  "manual": true,
+  "summary": "Команды /tfcdebug для проверки сборки: какие жилы есть в игре, где ближайшие (по сиду мира, без поиска вручную), сколько в них настоящей руды и сколько нужного блока вокруг.",
+  "needs": "Только хосту и только по имени: tfc addons install debug_tools. Нужны права оператора. NeoForge 21.1.234+, TerraFirmaCraft 4.2.9+. check и ore генерируют чанки — запускать в копии мира.",
+  "blocks": []
+}

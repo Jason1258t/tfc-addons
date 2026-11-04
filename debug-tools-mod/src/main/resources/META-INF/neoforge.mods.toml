@@ -1,0 +1,24 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+license = "MIT"
+
+[[mods]]
+modId = "debug_tools"
+version = "1.0.0"
+displayName = "Debug Tools"
+description = "Отладочные команды /tfcdebug для проверки сборки: где жилы TFC, есть ли они в игре, сколько руды вокруг."
+
+[[dependencies.debug_tools]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.234,)"
+ordering = "NONE"
+side = "BOTH"
+
+# VeinFeature.getVeinsAtChunk и IVeinConfig проверены по байткоду TFC 4.2.9; новая версия — сверить
+[[dependencies.debug_tools]]
+modId = "tfc"
+type = "required"
+versionRange = "[4.2.9,)"
+ordering = "AFTER"
+side = "BOTH"
