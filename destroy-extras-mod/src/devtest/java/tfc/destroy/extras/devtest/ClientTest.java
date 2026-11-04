@@ -4,21 +4,29 @@ import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.common.Internal;
 import net.createmod.ponder.foundation.PonderIndex;
 import net.createmod.ponder.foundation.ui.PonderUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.LevelSettings;
 import net.minecraft.world.level.WorldDataConfiguration;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.presets.WorldPresets;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
@@ -26,6 +34,7 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import tfc.destroy.extras.DestroyExtras;
 import tfc.destroy.extras.compat.ponder.DestroyExtrasPonder;
+import tfc.destroy.extras.electrolyzer.MembraneElectrolyzerBlock;
 
 /** Автоматический клиентский прогон JEI, EMI/Jemi и Ponder с настоящими экранами и скриншотами. */
 public final class ClientTest {
@@ -81,6 +90,7 @@ public final class ClientTest {
         step(30, "скриншот EMI электролиза", () -> shot("emi-electrolysis"));
         step(5, "EMI травление", () -> emi("etching"));
         step(25, "скриншот EMI травления", () -> shot("emi-etching"));
+        step(5, "поворот машины на клиенте", this::rotationChecks);
         step(5, "Ponder", () -> mc().setScreen(PonderUI.of(new ItemStack(DestroyExtras.ELECTROLYZER_ITEM.get()))));
         step(180, "скриншот Ponder", () -> {
             check("Ponder открыт для контроллера", mc().screen instanceof PonderUI);
@@ -133,6 +143,26 @@ public final class ClientTest {
             check("EMI/Jemi содержит рецепты " + category, !EmiApi.getRecipeManager().getRecipes(found).isEmpty());
             EmiApi.displayRecipeCategory(found);
         }
+    }
+
+    private void rotationChecks() {
+        var block = DestroyExtras.ELECTROLYZER_BLOCK.get();
+        var renderer = mc().getBlockRenderer();
+        var missing = mc().getModelManager().getMissingModel();
+        Map<Direction, BakedModel> models = new LinkedHashMap<>();
+        for (Direction facing : List.of(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST)) {
+            BakedModel model = renderer.getBlockModel(block.defaultBlockState().setValue(MembraneElectrolyzerBlock.FACING, facing));
+            check("модель машины загружена для " + facing, model != null && model != missing);
+            models.put(facing, model);
+        }
+        check("модели севера и востока различаются (поворот виден)",
+            models.get(Direction.NORTH) != models.get(Direction.EAST));
+        BlockState rotated = block.getRotatedBlockState(block.defaultBlockState(), Direction.UP);
+        check("ключ поворачивает машину с севера на восток", rotated.getValue(MembraneElectrolyzerBlock.FACING) == Direction.EAST);
+        List<Component> tooltip = new ItemStack(DestroyExtras.ELECTROLYZER_ITEM.get()).getTooltipLines(
+            Item.TooltipContext.of(mc().level), mc().player, TooltipFlag.NORMAL);
+        check("подсказка описывает выходы относительно передней грани", tooltip.stream()
+            .anyMatch(line -> line.getString().contains("передней грани")));
     }
 
     private void step(int delay, String name, Runnable action) {

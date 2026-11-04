@@ -4,6 +4,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.simibubi.create.AllBlocks;
+import com.simibubi.create.content.fluids.pipes.FluidPipeBlock;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -39,7 +40,39 @@ final class M12Test {
             .then(Commands.literal("m12assert").then(Commands.argument("facing", StringArgumentType.word())
                 .executes(ctx -> assertFacing(ctx, facing(ctx)))))
             .then(Commands.literal("m12rotate").executes(M12Test::rotateWithWrench))
-            .then(Commands.literal("m12assertrotated").executes(M12Test::assertRotated)));
+            .then(Commands.literal("m12assertrotated").executes(M12Test::assertRotated))
+            .then(Commands.literal("m12pipeplace").then(Commands.argument("side", StringArgumentType.word())
+                .executes(ctx -> placePipe(ctx.getSource(), facing(ctx, "side")))))
+            .then(Commands.literal("m12pipeassert").then(Commands.argument("side", StringArgumentType.word())
+                .executes(ctx -> assertPipe(ctx, facing(ctx, "side"))))));
+    }
+
+    private static Direction facing(CommandContext<CommandSourceStack> ctx, String argument) {
+        return switch (StringArgumentType.getString(ctx, argument)) {
+            case "north" -> Direction.NORTH;
+            case "east" -> Direction.EAST;
+            case "south" -> Direction.SOUTH;
+            case "west" -> Direction.WEST;
+            default -> throw new IllegalArgumentException("сторона: north|east|south|west");
+        };
+    }
+
+    /** Труба у стороны блока: соединение проверяется по открытости в сторону контроллера. */
+    private static int placePipe(CommandSourceStack source, Direction side) {
+        source.getLevel().setBlock(ROT.relative(side), AllBlocks.FLUID_PIPE.getDefaultState(), 3);
+        source.sendSuccess(() -> Component.literal("труба у стороны " + side), false);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int assertPipe(CommandContext<CommandSourceStack> ctx, Direction side) {
+        reset();
+        ServerLevel level = ctx.getSource().getLevel();
+        BlockPos pipe = ROT.relative(side);
+        BlockState state = level.getBlockState(pipe);
+        check(ctx, FluidPipeBlock.isPipe(state), "у стороны " + side + " стоит труба");
+        check(ctx, FluidPipeBlock.isOpenAt(state, side.getOpposite()),
+            "труба у стороны " + side + " открыта к блоку (переподключена)");
+        return report(ctx);
     }
 
     private static Direction facing(CommandContext<CommandSourceStack> ctx) {
