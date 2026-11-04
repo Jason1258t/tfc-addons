@@ -1,0 +1,38 @@
+{
+  "type": "computercraft:transform_shaped",
+  "category": "redstone",
+  "function": [
+    {
+      "type": "computercraft:copy_components",
+      "from": {
+        "item": "computercraft:pocket_computer_normal"
+      }
+    }
+  ],
+  "pattern": [
+    "AMA",
+    "DCD",
+    " B "
+  ],
+  "key": {
+    "A": {
+      "item": "ee_extras:pocket_case"
+    },
+    "M": {
+      "item": "ee_extras:advanced_motherboard"
+    },
+    "D": {
+      "item": "ee_extras:pocket_display"
+    },
+    "C": {
+      "item": "computercraft:pocket_computer_normal"
+    },
+    "B": {
+      "item": "ee_extras:battery_module"
+    }
+  },
+  "result": {
+    "id": "computercraft:pocket_computer_advanced",
+    "count": 1
+  }
+}

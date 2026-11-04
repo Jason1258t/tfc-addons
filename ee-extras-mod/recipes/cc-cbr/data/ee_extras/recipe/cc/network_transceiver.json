@@ -1,0 +1,28 @@
+{
+  "type": "morered:soldering",
+  "ingredients": [
+    {
+      "item": "ee_extras:l2_board"
+    },
+    {
+      "item": "ee_extras:basic_ic"
+    },
+    {
+      "item": "ee_extras:inductor"
+    },
+    {
+      "item": "create:transmitter"
+    },
+    {
+      "item": "ee_extras:network_port"
+    },
+    {
+      "item": "ee_extras:copper_foil",
+      "count": 2
+    }
+  ],
+  "result": {
+    "id": "ee_extras:network_transceiver",
+    "count": 1
+  }
+}

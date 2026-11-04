@@ -1,0 +1,61 @@
+{
+  "type": "destroy_extras:metallurgy",
+  "ingredients": [
+    {
+      "type": "neoforge:single",
+      "amount": 250,
+      "components": {
+        "destroy:mixture": {
+          "TranslationKey": "destroy_extras.fluid.sodium_aluminate",
+          "Contents": [
+            {
+              "Molecule": "destroy:sodium_ion",
+              "Concentration": 1
+            },
+            {
+              "Molecule": "destroy:hydroxide",
+              "Concentration": 1
+            },
+            {
+              "Molecule": "destroy:water",
+              "Concentration": 4
+            }
+          ]
+        }
+      },
+      "fluid": "destroy:mixture"
+    }
+  ],
+  "results": [
+    {
+      "id": "destroy_extras:aluminum_hydroxide"
+    },
+    {
+      "id": "destroy:mixture",
+      "amount": 200,
+      "components": {
+        "destroy:mixture": {
+          "TranslationKey": "destroy_extras.fluid.recovered_sodium_hydroxide",
+          "Contents": [
+            {
+              "Molecule": "destroy:sodium_ion",
+              "Concentration": 1
+            },
+            {
+              "Molecule": "destroy:hydroxide",
+              "Concentration": 1
+            },
+            {
+              "Molecule": "destroy:water",
+              "Concentration": 4
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "processing_time": 400,
+  "voltage": 240,
+  "current": 2,
+  "priority": -10
+}

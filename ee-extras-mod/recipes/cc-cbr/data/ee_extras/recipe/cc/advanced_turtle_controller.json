@@ -1,0 +1,23 @@
+{
+  "type": "morered:soldering",
+  "ingredients": [
+    {
+      "item": "ee_extras:advanced_motherboard"
+    },
+    {
+      "item": "ee_extras:transistor",
+      "count": 4
+    },
+    {
+      "item": "ee_extras:inductor",
+      "count": 2
+    },
+    {
+      "item": "ee_extras:connector"
+    }
+  ],
+  "result": {
+    "id": "ee_extras:advanced_turtle_controller",
+    "count": 1
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    "PPP",
+    "DF ",
+    " C "
+  ],
+  "key": {
+    "P": {
+      "tag": "c:glass_panes"
+    },
+    "D": {
+      "item": "ee_extras:display_driver"
+    },
+    "F": {
+      "item": "ee_extras:copper_foil"
+    },
+    "C": {
+      "item": "ee_extras:connector"
+    }
+  },
+  "result": {
+    "id": "ee_extras:pocket_display",
+    "count": 1
+  }
+}

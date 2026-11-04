@@ -1,3 +1,6 @@
 {
-  "parent": "create:item/copper_sheet"
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "ee_extras:item/l1_board_blank"
+  }
 }

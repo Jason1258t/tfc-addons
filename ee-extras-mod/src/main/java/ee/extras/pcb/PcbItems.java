@@ -91,10 +91,48 @@ public final class PcbItems {
     public static final DeferredItem<Item> ADVANCED_IC = item("advanced_ic", 16);
     public static final DeferredItem<Item> SILICON_WAFER = item("silicon_wafer", 16);
 
+    // Функциональные модули компьютеров и периферии CC. Это обычные предметы: поведение и данные устройств
+    // остаются у CC, а новые идентификаторы нужны только для физической производственной цепочки.
+    public static final DeferredItem<Item> CONTROL_BOARD_L1 = item("control_board_l1", 16);
+    public static final DeferredItem<Item> COMPUTER_MOTHERBOARD = item("computer_motherboard", 16);
+    public static final DeferredItem<Item> ADVANCED_MOTHERBOARD = item("advanced_motherboard", 16);
+    public static final DeferredItem<Item> TURTLE_CONTROLLER = item("turtle_controller", 16);
+    public static final DeferredItem<Item> ADVANCED_TURTLE_CONTROLLER = item("advanced_turtle_controller", 16);
+    public static final DeferredItem<Item> KEYBOARD = item("keyboard", 16);
+    public static final DeferredItem<Item> POCKET_INPUT = item("pocket_input", 16);
+    public static final DeferredItem<Item> DISPLAY_DRIVER = item("display_driver", 16);
+    public static final DeferredItem<Item> ADVANCED_DISPLAY_DRIVER = item("advanced_display_driver", 16);
+    public static final DeferredItem<Item> DISPLAY_CRT = item("display_crt", 16);
+    public static final DeferredItem<Item> DISPLAY_ADVANCED = item("display_advanced", 16);
+    public static final DeferredItem<Item> POCKET_DISPLAY = item("pocket_display", 16);
+    public static final DeferredItem<Item> NETWORK_PORT = item("network_port", 32);
+    public static final DeferredItem<Item> COMPUTER_CASE = item("computer_case", 8);
+    public static final DeferredItem<Item> ADVANCED_COMPUTER_CASE = item("advanced_computer_case", 8);
+    public static final DeferredItem<Item> POCKET_CASE = item("pocket_case", 16);
+    public static final DeferredItem<Item> PERIPHERAL_CASE = item("peripheral_case", 16);
+    public static final DeferredItem<Item> SMALL_MOTOR = item("small_motor", 16);
+    public static final DeferredItem<Item> PRECISION_ACTUATOR = item("precision_actuator", 16);
+    public static final DeferredItem<Item> STORAGE_BAY = item("storage_bay", 8);
+    public static final DeferredItem<Item> ROBOT_CHASSIS = item("robot_chassis", 4);
+    public static final DeferredItem<Item> DISK_TRANSPORT = item("disk_transport", 8);
+    public static final DeferredItem<Item> PRINT_MECHANISM = item("print_mechanism", 8);
+    public static final DeferredItem<Item> NETWORK_TRANSCEIVER = item("network_transceiver", 16);
+    public static final DeferredItem<Item> ENDER_TRANSCEIVER = item("ender_transceiver", 16);
+    public static final DeferredItem<Item> SPEAKER_DRIVER = item("speaker_driver", 16);
+    public static final DeferredItem<Item> AUDIO_AMPLIFIER = item("audio_amplifier", 16);
+    public static final DeferredItem<Item> POWER_SUPPLY = item("power_supply", 16);
+    public static final DeferredItem<Item> BATTERY_MODULE = item("battery_module", 16);
+    public static final DeferredItem<Item> MAGNETIC_DISK_MEDIUM = item("magnetic_disk_medium", 32);
+
     private static final List<DeferredItem<? extends Item>> ELECTRONICS = List.of(COPPER_FOIL, GLASS_FIBER, GLASS_FABRIC,
             EPOXY_LAMINATE, PHOTORESIST, L2_BOARD_BLANK, L3_BOARD_BLANK, L2_PREPARED_BLANK, L3_PREPARED_BLANK,
             L2_ETCHED_BOARD, L3_ETCHED_BOARD, L2_BOARD, L3_BOARD, SOLDER_WIRE, ROSIN_FLUX, RESISTOR, CAPACITOR, INDUCTOR,
-            CONNECTOR, SILICON_DIODE, TRANSISTOR, BASIC_IC, ADVANCED_IC, SILICON_WAFER);
+            CONNECTOR, SILICON_DIODE, TRANSISTOR, BASIC_IC, ADVANCED_IC, SILICON_WAFER, CONTROL_BOARD_L1,
+            COMPUTER_MOTHERBOARD, ADVANCED_MOTHERBOARD, TURTLE_CONTROLLER, ADVANCED_TURTLE_CONTROLLER, KEYBOARD,
+            POCKET_INPUT, DISPLAY_DRIVER, ADVANCED_DISPLAY_DRIVER, DISPLAY_CRT, DISPLAY_ADVANCED, POCKET_DISPLAY,
+            NETWORK_PORT, COMPUTER_CASE, ADVANCED_COMPUTER_CASE, POCKET_CASE, PERIPHERAL_CASE, SMALL_MOTOR,
+            PRECISION_ACTUATOR, STORAGE_BAY, ROBOT_CHASSIS, DISK_TRANSPORT, PRINT_MECHANISM, NETWORK_TRANSCEIVER,
+            ENDER_TRANSCEIVER, SPEAKER_DRIVER, AUDIO_AMPLIFIER, POWER_SUPPLY, BATTERY_MODULE, MAGNETIC_DISK_MEDIUM);
 
     private PcbItems() {}
 

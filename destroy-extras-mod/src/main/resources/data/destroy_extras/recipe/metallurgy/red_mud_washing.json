@@ -1,0 +1,45 @@
+{
+  "type": "destroy_extras:metallurgy",
+  "ingredients": [
+    {
+      "item": "destroy_extras:red_mud"
+    },
+    {
+      "type": "neoforge:single",
+      "fluid": "minecraft:water",
+      "amount": 250
+    }
+  ],
+  "results": [
+    {
+      "id": "destroy_extras:iron_residue"
+    },
+    {
+      "id": "destroy:mixture",
+      "amount": 100,
+      "components": {
+        "destroy:mixture": {
+          "TranslationKey": "destroy_extras.fluid.recovered_sodium_hydroxide",
+          "Contents": [
+            {
+              "Molecule": "destroy:sodium_ion",
+              "Concentration": 1
+            },
+            {
+              "Molecule": "destroy:hydroxide",
+              "Concentration": 1
+            },
+            {
+              "Molecule": "destroy:water",
+              "Concentration": 4
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "processing_time": 200,
+  "voltage": 240,
+  "current": 2,
+  "priority": 0
+}

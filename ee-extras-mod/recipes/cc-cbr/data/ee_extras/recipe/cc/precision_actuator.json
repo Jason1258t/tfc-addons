@@ -1,0 +1,33 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    "G R",
+    "MC ",
+    "D T"
+  ],
+  "key": {
+    "G": {
+      "item": "create:cogwheel"
+    },
+    "R": {
+      "tag": "c:rods/steel"
+    },
+    "M": {
+      "item": "ee_extras:small_motor"
+    },
+    "C": {
+      "item": "ee_extras:control_board_l1"
+    },
+    "D": {
+      "item": "ee_extras:silicon_diode"
+    },
+    "T": {
+      "tag": "tfc:insulation"
+    }
+  },
+  "result": {
+    "id": "ee_extras:precision_actuator",
+    "count": 1
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    " D ",
+    "MNC",
+    "P T"
+  ],
+  "key": {
+    "D": {
+      "item": "ee_extras:disk_transport"
+    },
+    "M": {
+      "item": "ee_extras:computer_motherboard"
+    },
+    "N": {
+      "item": "ee_extras:network_port"
+    },
+    "C": {
+      "item": "ee_extras:peripheral_case"
+    },
+    "P": {
+      "item": "ee_extras:power_supply"
+    },
+    "T": {
+      "item": "ee_extras:connector"
+    }
+  },
+  "result": {
+    "id": "computercraft:disk_drive",
+    "count": 1
+  }
+}

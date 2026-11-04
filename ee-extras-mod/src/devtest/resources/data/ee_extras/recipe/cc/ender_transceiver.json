@@ -1,0 +1,28 @@
+{
+  "type": "morered:soldering",
+  "ingredients": [
+    {
+      "item": "ee_extras:network_transceiver"
+    },
+    {
+      "item": "ee_extras:l3_board"
+    },
+    {
+      "item": "ccbr:integrated_circuit"
+    },
+    {
+      "item": "ee_extras:inductor"
+    },
+    {
+      "item": "minecraft:ghast_tear"
+    },
+    {
+      "item": "ee_extras:copper_foil",
+      "count": 2
+    }
+  ],
+  "result": {
+    "id": "ee_extras:ender_transceiver",
+    "count": 1
+  }
+}

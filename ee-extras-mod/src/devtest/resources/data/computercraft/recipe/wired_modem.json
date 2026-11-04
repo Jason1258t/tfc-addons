@@ -1,0 +1,27 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    " N ",
+    "BCB",
+    " T "
+  ],
+  "key": {
+    "N": {
+      "item": "ee_extras:network_port"
+    },
+    "B": {
+      "item": "ee_extras:control_board_l1"
+    },
+    "C": {
+      "item": "ee_extras:peripheral_case"
+    },
+    "T": {
+      "item": "ee_extras:connector"
+    }
+  },
+  "result": {
+    "id": "computercraft:wired_modem",
+    "count": 1
+  }
+}

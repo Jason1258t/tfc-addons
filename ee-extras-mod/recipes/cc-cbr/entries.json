@@ -1,0 +1,2138 @@
+[
+  {
+    "path": "data/ccbr/recipe/basic_integrated_circuit_crafting.json",
+    "content": {
+      "type": "morered:soldering",
+      "ingredients": [
+        {
+          "item": "ee_extras:l2_board"
+        },
+        {
+          "item": "ee_extras:basic_ic"
+        },
+        {
+          "item": "ee_extras:resistor"
+        },
+        {
+          "item": "ee_extras:capacitor"
+        },
+        {
+          "item": "ee_extras:connector"
+        }
+      ],
+      "result": {
+        "id": "ccbr:basic_integrated_circuit",
+        "count": 1
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/ccbr/recipe/mechanical_crafting/integrated_circuit.json",
+    "content": {
+      "type": "morered:soldering",
+      "ingredients": [
+        {
+          "item": "ee_extras:l3_board"
+        },
+        {
+          "item": "ee_extras:advanced_ic"
+        },
+        {
+          "item": "ee_extras:transistor",
+          "count": 2
+        },
+        {
+          "item": "ee_extras:connector"
+        }
+      ],
+      "result": {
+        "id": "ccbr:integrated_circuit",
+        "count": 1
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/ccbr/recipe/pressing/lapis_block.json",
+    "content": {
+      "neoforge:conditions": [
+        {
+          "type": "neoforge:false"
+        }
+      ]
+    },
+    "kind": "remove"
+  },
+  {
+    "path": "data/computercraft/recipe/cable.json",
+    "content": {
+      "type": "create:compacting",
+      "ingredients": [
+        {
+          "tag": "c:wires/copper",
+          "count": 2
+        },
+        {
+          "tag": "tfc:insulation"
+        }
+      ],
+      "results": [
+        {
+          "id": "computercraft:cable",
+          "count": 6
+        }
+      ]
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/computer_advanced.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "KKK",
+        "DMD",
+        "CPT"
+      ],
+      "key": {
+        "K": {
+          "item": "ee_extras:keyboard"
+        },
+        "D": {
+          "item": "ee_extras:display_advanced"
+        },
+        "M": {
+          "item": "ee_extras:advanced_motherboard"
+        },
+        "C": {
+          "item": "ee_extras:advanced_computer_case"
+        },
+        "P": {
+          "item": "ee_extras:power_supply"
+        },
+        "T": {
+          "item": "ee_extras:network_port"
+        }
+      },
+      "result": {
+        "id": "computercraft:computer_advanced",
+        "count": 1
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/computer_advanced_upgrade.json",
+    "content": {
+      "type": "computercraft:transform_shaped",
+      "category": "redstone",
+      "function": [
+        {
+          "type": "computercraft:copy_components",
+          "from": {
+            "item": "computercraft:computer_normal"
+          }
+        }
+      ],
+      "pattern": [
+        "AMA",
+        "DCD",
+        "KPK"
+      ],
+      "key": {
+        "A": {
+          "item": "ee_extras:advanced_computer_case"
+        },
+        "M": {
+          "item": "ee_extras:advanced_motherboard"
+        },
+        "D": {
+          "item": "ee_extras:display_advanced"
+        },
+        "C": {
+          "item": "computercraft:computer_normal"
+        },
+        "K": {
+          "item": "ee_extras:keyboard"
+        },
+        "P": {
+          "item": "ee_extras:power_supply"
+        }
+      },
+      "result": {
+        "id": "computercraft:computer_advanced",
+        "count": 1
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/computer_normal.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "KKK",
+        "DMD",
+        "CPT"
+      ],
+      "key": {
+        "K": {
+          "item": "ee_extras:keyboard"
+        },
+        "D": {
+          "item": "ee_extras:display_crt"
+        },
+        "M": {
+          "item": "ee_extras:computer_motherboard"
+        },
+        "C": {
+          "item": "ee_extras:computer_case"
+        },
+        "P": {
+          "item": "ee_extras:power_supply"
+        },
+        "T": {
+          "item": "ee_extras:network_port"
+        }
+      },
+      "result": {
+        "id": "computercraft:computer_normal",
+        "count": 1
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_1.json",
+    "content": {
+      "type": "computercraft:impostor_shapeless",
+      "category": "redstone",
+      "group": "computercraft:disk",
+      "ingredients": [
+        {
+          "item": "computercraft:disk"
+        },
+        {
+          "item": "minecraft:black_dye"
+        }
+      ],
+      "result": {
+        "components": {
+          "minecraft:dyed_color": {
+            "rgb": 1118481,
+            "show_in_tooltip": false
+          }
+        },
+        "count": 1,
+        "id": "computercraft:disk"
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_10.json",
+    "content": {
+      "type": "computercraft:impostor_shapeless",
+      "category": "redstone",
+      "group": "computercraft:disk",
+      "ingredients": [
+        {
+          "item": "computercraft:disk"
+        },
+        {
+          "item": "minecraft:pink_dye"
+        }
+      ],
+      "result": {
+        "components": {
+          "minecraft:dyed_color": {
+            "rgb": 15905484,
+            "show_in_tooltip": false
+          }
+        },
+        "count": 1,
+        "id": "computercraft:disk"
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_11.json",
+    "content": {
+      "type": "computercraft:impostor_shapeless",
+      "category": "redstone",
+      "group": "computercraft:disk",
+      "ingredients": [
+        {
+          "item": "computercraft:disk"
+        },
+        {
+          "item": "minecraft:lime_dye"
+        }
+      ],
+      "result": {
+        "components": {
+          "minecraft:dyed_color": {
+            "rgb": 8375321,
+            "show_in_tooltip": false
+          }
+        },
+        "count": 1,
+        "id": "computercraft:disk"
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_12.json",
+    "content": {
+      "type": "computercraft:impostor_shapeless",
+      "category": "redstone",
+      "group": "computercraft:disk",
+      "ingredients": [
+        {
+          "item": "computercraft:disk"
+        },
+        {
+          "item": "minecraft:yellow_dye"
+        }
+      ],
+      "result": {
+        "components": {
+          "minecraft:dyed_color": {
+            "rgb": 14605932,
+            "show_in_tooltip": false
+          }
+        },
+        "count": 1,
+        "id": "computercraft:disk"
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_13.json",
+    "content": {
+      "type": "computercraft:impostor_shapeless",
+      "category": "redstone",
+      "group": "computercraft:disk",
+      "ingredients": [
+        {
+          "item": "computercraft:disk"
+        },
+        {
+          "item": "minecraft:light_blue_dye"
+        }
+      ],
+      "result": {
+        "components": {
+          "minecraft:dyed_color": {
+            "rgb": 10072818,
+            "show_in_tooltip": false
+          }
+        },
+        "count": 1,
+        "id": "computercraft:disk"
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_14.json",
+    "content": {
+      "type": "computercraft:impostor_shapeless",
+      "category": "redstone",
+      "group": "computercraft:disk",
+      "ingredients": [
+        {
+          "item": "computercraft:disk"
+        },
+        {
+          "item": "minecraft:magenta_dye"
+        }
+      ],
+      "result": {
+        "components": {
+          "minecraft:dyed_color": {
+            "rgb": 15040472,
+            "show_in_tooltip": false
+          }
+        },
+        "count": 1,
+        "id": "computercraft:disk"
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_15.json",
+    "content": {
+      "type": "computercraft:impostor_shapeless",
+      "category": "redstone",
+      "group": "computercraft:disk",
+      "ingredients": [
+        {
+          "item": "computercraft:disk"
+        },
+        {
+          "item": "minecraft:orange_dye"
+        }
+      ],
+      "result": {
+        "components": {
+          "minecraft:dyed_color": {
+            "rgb": 15905331,
+            "show_in_tooltip": false
+          }
+        },
+        "count": 1,
+        "id": "computercraft:disk"
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_16.json",
+    "content": {
+      "type": "computercraft:impostor_shapeless",
+      "category": "redstone",
+      "group": "computercraft:disk",
+      "ingredients": [
+        {
+          "item": "computercraft:disk"
+        },
+        {
+          "item": "minecraft:white_dye"
+        }
+      ],
+      "result": {
+        "components": {
+          "minecraft:dyed_color": {
+            "rgb": 15790320,
+            "show_in_tooltip": false
+          }
+        },
+        "count": 1,
+        "id": "computercraft:disk"
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_2.json",
+    "content": {
+      "type": "computercraft:impostor_shapeless",
+      "category": "redstone",
+      "group": "computercraft:disk",
+      "ingredients": [
+        {
+          "item": "computercraft:disk"
+        },
+        {
+          "item": "minecraft:red_dye"
+        }
+      ],
+      "result": {
+        "components": {
+          "minecraft:dyed_color": {
+            "rgb": 13388876,
+            "show_in_tooltip": false
+          }
+        },
+        "count": 1,
+        "id": "computercraft:disk"
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_3.json",
+    "content": {
+      "type": "computercraft:impostor_shapeless",
+      "category": "redstone",
+      "group": "computercraft:disk",
+      "ingredients": [
+        {
+          "item": "computercraft:disk"
+        },
+        {
+          "item": "minecraft:green_dye"
+        }
+      ],
+      "result": {
+        "components": {
+          "minecraft:dyed_color": {
+            "rgb": 5744206,
+            "show_in_tooltip": false
+          }
+        },
+        "count": 1,
+        "id": "computercraft:disk"
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_4.json",
+    "content": {
+      "type": "computercraft:impostor_shapeless",
+      "category": "redstone",
+      "group": "computercraft:disk",
+      "ingredients": [
+        {
+          "item": "computercraft:disk"
+        },
+        {
+          "item": "minecraft:brown_dye"
+        }
+      ],
+      "result": {
+        "components": {
+          "minecraft:dyed_color": {
+            "rgb": 8349260,
+            "show_in_tooltip": false
+          }
+        },
+        "count": 1,
+        "id": "computercraft:disk"
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_5.json",
+    "content": {
+      "type": "computercraft:impostor_shapeless",
+      "category": "redstone",
+      "group": "computercraft:disk",
+      "ingredients": [
+        {
+          "item": "computercraft:disk"
+        },
+        {
+          "item": "minecraft:blue_dye"
+        }
+      ],
+      "result": {
+        "components": {
+          "minecraft:dyed_color": {
+            "rgb": 3368652,
+            "show_in_tooltip": false
+          }
+        },
+        "count": 1,
+        "id": "computercraft:disk"
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_6.json",
+    "content": {
+      "type": "computercraft:impostor_shapeless",
+      "category": "redstone",
+      "group": "computercraft:disk",
+      "ingredients": [
+        {
+          "item": "computercraft:disk"
+        },
+        {
+          "item": "minecraft:purple_dye"
+        }
+      ],
+      "result": {
+        "components": {
+          "minecraft:dyed_color": {
+            "rgb": 11691749,
+            "show_in_tooltip": false
+          }
+        },
+        "count": 1,
+        "id": "computercraft:disk"
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_7.json",
+    "content": {
+      "type": "computercraft:impostor_shapeless",
+      "category": "redstone",
+      "group": "computercraft:disk",
+      "ingredients": [
+        {
+          "item": "computercraft:disk"
+        },
+        {
+          "item": "minecraft:cyan_dye"
+        }
+      ],
+      "result": {
+        "components": {
+          "minecraft:dyed_color": {
+            "rgb": 5020082,
+            "show_in_tooltip": false
+          }
+        },
+        "count": 1,
+        "id": "computercraft:disk"
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_8.json",
+    "content": {
+      "type": "computercraft:impostor_shapeless",
+      "category": "redstone",
+      "group": "computercraft:disk",
+      "ingredients": [
+        {
+          "item": "computercraft:disk"
+        },
+        {
+          "item": "minecraft:light_gray_dye"
+        }
+      ],
+      "result": {
+        "components": {
+          "minecraft:dyed_color": {
+            "rgb": 10066329,
+            "show_in_tooltip": false
+          }
+        },
+        "count": 1,
+        "id": "computercraft:disk"
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_9.json",
+    "content": {
+      "type": "computercraft:impostor_shapeless",
+      "category": "redstone",
+      "group": "computercraft:disk",
+      "ingredients": [
+        {
+          "item": "computercraft:disk"
+        },
+        {
+          "item": "minecraft:gray_dye"
+        }
+      ],
+      "result": {
+        "components": {
+          "minecraft:dyed_color": {
+            "rgb": 5000268,
+            "show_in_tooltip": false
+          }
+        },
+        "count": 1,
+        "id": "computercraft:disk"
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_drive.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        " D ",
+        "MNC",
+        "P T"
+      ],
+      "key": {
+        "D": {
+          "item": "ee_extras:disk_transport"
+        },
+        "M": {
+          "item": "ee_extras:computer_motherboard"
+        },
+        "N": {
+          "item": "ee_extras:network_port"
+        },
+        "C": {
+          "item": "ee_extras:peripheral_case"
+        },
+        "P": {
+          "item": "ee_extras:power_supply"
+        },
+        "T": {
+          "item": "ee_extras:connector"
+        }
+      },
+      "result": {
+        "id": "computercraft:disk_drive",
+        "count": 1
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/monitor_advanced.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        " D ",
+        "CPT",
+        " S "
+      ],
+      "key": {
+        "D": {
+          "item": "ee_extras:display_advanced"
+        },
+        "C": {
+          "item": "ee_extras:peripheral_case"
+        },
+        "P": {
+          "item": "ee_extras:power_supply"
+        },
+        "T": {
+          "item": "ee_extras:network_port"
+        },
+        "S": {
+          "tag": "c:plates/aluminum"
+        }
+      },
+      "result": {
+        "id": "computercraft:monitor_advanced",
+        "count": 4
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/monitor_normal.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        " D ",
+        "CPT",
+        " S "
+      ],
+      "key": {
+        "D": {
+          "item": "ee_extras:display_crt"
+        },
+        "C": {
+          "item": "ee_extras:peripheral_case"
+        },
+        "P": {
+          "item": "ee_extras:power_supply"
+        },
+        "T": {
+          "item": "ee_extras:network_port"
+        },
+        "S": {
+          "tag": "c:plates/steel"
+        }
+      },
+      "result": {
+        "id": "computercraft:monitor_normal",
+        "count": 1
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/pocket_computer_advanced.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "PDP",
+        "IMI",
+        "CBT"
+      ],
+      "key": {
+        "P": {
+          "item": "ee_extras:pocket_case"
+        },
+        "D": {
+          "item": "ee_extras:pocket_display"
+        },
+        "I": {
+          "item": "ee_extras:pocket_input"
+        },
+        "M": {
+          "item": "ee_extras:advanced_motherboard"
+        },
+        "C": {
+          "item": "ee_extras:connector"
+        },
+        "B": {
+          "item": "ee_extras:battery_module"
+        },
+        "T": {
+          "item": "ee_extras:network_port"
+        }
+      },
+      "result": {
+        "id": "computercraft:pocket_computer_advanced",
+        "count": 1
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/pocket_computer_advanced_upgrade.json",
+    "content": {
+      "type": "computercraft:transform_shaped",
+      "category": "redstone",
+      "function": [
+        {
+          "type": "computercraft:copy_components",
+          "from": {
+            "item": "computercraft:pocket_computer_normal"
+          }
+        }
+      ],
+      "pattern": [
+        "AMA",
+        "DCD",
+        " B "
+      ],
+      "key": {
+        "A": {
+          "item": "ee_extras:pocket_case"
+        },
+        "M": {
+          "item": "ee_extras:advanced_motherboard"
+        },
+        "D": {
+          "item": "ee_extras:pocket_display"
+        },
+        "C": {
+          "item": "computercraft:pocket_computer_normal"
+        },
+        "B": {
+          "item": "ee_extras:battery_module"
+        }
+      },
+      "result": {
+        "id": "computercraft:pocket_computer_advanced",
+        "count": 1
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/pocket_computer_normal.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "PDP",
+        "IMI",
+        "CBT"
+      ],
+      "key": {
+        "P": {
+          "item": "ee_extras:pocket_case"
+        },
+        "D": {
+          "item": "ee_extras:pocket_display"
+        },
+        "I": {
+          "item": "ee_extras:pocket_input"
+        },
+        "M": {
+          "item": "ee_extras:computer_motherboard"
+        },
+        "C": {
+          "item": "ee_extras:connector"
+        },
+        "B": {
+          "item": "ee_extras:battery_module"
+        },
+        "T": {
+          "item": "ee_extras:network_port"
+        }
+      },
+      "result": {
+        "id": "computercraft:pocket_computer_normal",
+        "count": 1
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/printer.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        " M ",
+        "BNC",
+        "P T"
+      ],
+      "key": {
+        "M": {
+          "item": "ee_extras:print_mechanism"
+        },
+        "B": {
+          "item": "ee_extras:computer_motherboard"
+        },
+        "N": {
+          "item": "ee_extras:network_port"
+        },
+        "C": {
+          "item": "ee_extras:peripheral_case"
+        },
+        "P": {
+          "item": "ee_extras:power_supply"
+        },
+        "T": {
+          "item": "ee_extras:connector"
+        }
+      },
+      "result": {
+        "id": "computercraft:printer",
+        "count": 1
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/redstone_relay.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "TRT",
+        "BMB",
+        " C "
+      ],
+      "key": {
+        "T": {
+          "item": "ee_extras:connector"
+        },
+        "R": {
+          "item": "minecraft:redstone"
+        },
+        "B": {
+          "item": "ee_extras:control_board_l1"
+        },
+        "M": {
+          "item": "computercraft:wired_modem"
+        },
+        "C": {
+          "item": "ee_extras:peripheral_case"
+        }
+      },
+      "result": {
+        "id": "computercraft:redstone_relay",
+        "count": 1
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/speaker.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        " D ",
+        "ANC",
+        " T "
+      ],
+      "key": {
+        "D": {
+          "item": "ee_extras:speaker_driver"
+        },
+        "A": {
+          "item": "ee_extras:audio_amplifier"
+        },
+        "N": {
+          "item": "ee_extras:network_port"
+        },
+        "C": {
+          "item": "ee_extras:peripheral_case"
+        },
+        "T": {
+          "item": "ee_extras:connector"
+        }
+      },
+      "result": {
+        "id": "computercraft:speaker",
+        "count": 1
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_advanced.json",
+    "content": {
+      "type": "computercraft:transform_shaped",
+      "pattern": [
+        "RCR",
+        "SMT",
+        " A "
+      ],
+      "key": {
+        "R": {
+          "item": "ee_extras:robot_chassis"
+        },
+        "C": {
+          "item": "computercraft:computer_advanced"
+        },
+        "S": {
+          "item": "ee_extras:storage_bay"
+        },
+        "M": {
+          "item": "ee_extras:advanced_turtle_controller"
+        },
+        "T": {
+          "item": "ee_extras:network_port"
+        },
+        "A": {
+          "item": "ee_extras:precision_actuator"
+        }
+      },
+      "result": {
+        "id": "computercraft:turtle_advanced",
+        "count": 1
+      },
+      "function": [
+        {
+          "type": "computercraft:copy_components",
+          "from": {
+            "item": "computercraft:computer_advanced"
+          }
+        }
+      ],
+      "category": "redstone"
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_advanced_upgrade.json",
+    "content": {
+      "type": "computercraft:transform_shaped",
+      "category": "redstone",
+      "function": [
+        {
+          "type": "computercraft:copy_components",
+          "from": {
+            "item": "computercraft:turtle_normal"
+          }
+        }
+      ],
+      "pattern": [
+        " R ",
+        "ACP",
+        " S "
+      ],
+      "key": {
+        "R": {
+          "item": "ee_extras:robot_chassis"
+        },
+        "A": {
+          "item": "ee_extras:advanced_turtle_controller"
+        },
+        "C": {
+          "item": "computercraft:turtle_normal"
+        },
+        "P": {
+          "item": "ee_extras:precision_actuator"
+        },
+        "S": {
+          "item": "ee_extras:storage_bay"
+        }
+      },
+      "result": {
+        "id": "computercraft:turtle_advanced",
+        "count": 1
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_normal.json",
+    "content": {
+      "type": "computercraft:transform_shaped",
+      "pattern": [
+        "RCR",
+        "SMT",
+        " A "
+      ],
+      "key": {
+        "R": {
+          "item": "ee_extras:robot_chassis"
+        },
+        "C": {
+          "item": "computercraft:computer_normal"
+        },
+        "S": {
+          "item": "ee_extras:storage_bay"
+        },
+        "M": {
+          "item": "ee_extras:turtle_controller"
+        },
+        "T": {
+          "item": "ee_extras:network_port"
+        },
+        "A": {
+          "item": "ee_extras:precision_actuator"
+        }
+      },
+      "result": {
+        "id": "computercraft:turtle_normal",
+        "count": 1
+      },
+      "function": [
+        {
+          "type": "computercraft:copy_components",
+          "from": {
+            "item": "computercraft:computer_normal"
+          }
+        }
+      ],
+      "category": "redstone"
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/wired_modem.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        " N ",
+        "BCB",
+        " T "
+      ],
+      "key": {
+        "N": {
+          "item": "ee_extras:network_port"
+        },
+        "B": {
+          "item": "ee_extras:control_board_l1"
+        },
+        "C": {
+          "item": "ee_extras:peripheral_case"
+        },
+        "T": {
+          "item": "ee_extras:connector"
+        }
+      },
+      "result": {
+        "id": "computercraft:wired_modem",
+        "count": 1
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/wireless_modem_advanced.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        " R ",
+        "NC ",
+        " T "
+      ],
+      "key": {
+        "R": {
+          "item": "ee_extras:ender_transceiver"
+        },
+        "N": {
+          "item": "ee_extras:network_port"
+        },
+        "C": {
+          "item": "ee_extras:peripheral_case"
+        },
+        "T": {
+          "item": "ee_extras:connector"
+        }
+      },
+      "result": {
+        "id": "computercraft:wireless_modem_advanced",
+        "count": 1
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/computercraft/recipe/wireless_modem_normal.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        " R ",
+        "NCE",
+        " T "
+      ],
+      "key": {
+        "R": {
+          "item": "ee_extras:network_transceiver"
+        },
+        "N": {
+          "item": "ee_extras:network_port"
+        },
+        "C": {
+          "item": "ee_extras:peripheral_case"
+        },
+        "E": {
+          "item": "minecraft:ender_pearl"
+        },
+        "T": {
+          "item": "ee_extras:connector"
+        }
+      },
+      "result": {
+        "id": "computercraft:wireless_modem_normal",
+        "count": 1
+      }
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/advanced_computer_case.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "ABA",
+        "A A",
+        "AAA"
+      ],
+      "key": {
+        "A": {
+          "tag": "c:plates/aluminum"
+        },
+        "B": {
+          "tag": "c:plates/brass"
+        }
+      },
+      "result": {
+        "id": "ee_extras:advanced_computer_case",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/advanced_display_driver.json",
+    "content": {
+      "type": "morered:soldering",
+      "ingredients": [
+        {
+          "item": "ee_extras:l3_board"
+        },
+        {
+          "item": "ee_extras:basic_ic",
+          "count": 2
+        },
+        {
+          "item": "ee_extras:transistor",
+          "count": 2
+        },
+        {
+          "item": "ee_extras:connector"
+        }
+      ],
+      "result": {
+        "id": "ee_extras:advanced_display_driver",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/advanced_motherboard.json",
+    "content": {
+      "type": "morered:soldering",
+      "ingredients": [
+        {
+          "item": "ee_extras:l3_board"
+        },
+        {
+          "item": "ccbr:integrated_circuit"
+        },
+        {
+          "item": "ee_extras:transistor",
+          "count": 2
+        },
+        {
+          "item": "ee_extras:capacitor",
+          "count": 2
+        },
+        {
+          "item": "ee_extras:connector"
+        }
+      ],
+      "result": {
+        "id": "ee_extras:advanced_motherboard",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/advanced_turtle_controller.json",
+    "content": {
+      "type": "morered:soldering",
+      "ingredients": [
+        {
+          "item": "ee_extras:advanced_motherboard"
+        },
+        {
+          "item": "ee_extras:transistor",
+          "count": 4
+        },
+        {
+          "item": "ee_extras:inductor",
+          "count": 2
+        },
+        {
+          "item": "ee_extras:connector"
+        }
+      ],
+      "result": {
+        "id": "ee_extras:advanced_turtle_controller",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/audio_amplifier.json",
+    "content": {
+      "type": "morered:soldering",
+      "ingredients": [
+        {
+          "item": "ee_extras:control_board_l1"
+        },
+        {
+          "item": "ee_extras:transistor"
+        },
+        {
+          "item": "ee_extras:capacitor"
+        },
+        {
+          "item": "ee_extras:inductor"
+        },
+        {
+          "item": "ee_extras:resistor",
+          "count": 2
+        }
+      ],
+      "result": {
+        "id": "ee_extras:audio_amplifier",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/battery_module.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "L L",
+        "SCS",
+        "DCT"
+      ],
+      "key": {
+        "L": {
+          "tag": "c:plates/lead"
+        },
+        "S": {
+          "item": "tfc:powder/sulfur"
+        },
+        "C": {
+          "item": "ee_extras:capacitor"
+        },
+        "D": {
+          "item": "ee_extras:silicon_diode"
+        },
+        "T": {
+          "item": "ee_extras:connector"
+        }
+      },
+      "result": {
+        "id": "ee_extras:battery_module",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/computer_case.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "SPS",
+        "S S",
+        "SSS"
+      ],
+      "key": {
+        "S": {
+          "tag": "c:plates/steel"
+        },
+        "P": {
+          "tag": "tfc:insulation"
+        }
+      },
+      "result": {
+        "id": "ee_extras:computer_case",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/computer_motherboard.json",
+    "content": {
+      "type": "morered:soldering",
+      "ingredients": [
+        {
+          "item": "ee_extras:l2_board"
+        },
+        {
+          "item": "ccbr:basic_integrated_circuit"
+        },
+        {
+          "item": "ee_extras:resistor",
+          "count": 2
+        },
+        {
+          "item": "ee_extras:capacitor",
+          "count": 2
+        },
+        {
+          "item": "ee_extras:connector"
+        }
+      ],
+      "result": {
+        "id": "ee_extras:computer_motherboard",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/control_board_l1.json",
+    "content": {
+      "type": "morered:soldering",
+      "ingredients": [
+        {
+          "item": "ee_extras:l1_board"
+        },
+        {
+          "item": "ee_extras:resistor"
+        },
+        {
+          "item": "ee_extras:capacitor"
+        },
+        {
+          "item": "ee_extras:connector"
+        }
+      ],
+      "result": {
+        "id": "ee_extras:control_board_l1",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/disk_transport.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "M R",
+        "HAC",
+        "M T"
+      ],
+      "key": {
+        "M": {
+          "item": "ee_extras:small_motor"
+        },
+        "R": {
+          "tag": "c:rods/steel"
+        },
+        "H": {
+          "item": "ee_extras:inductor"
+        },
+        "A": {
+          "item": "ee_extras:precision_actuator"
+        },
+        "C": {
+          "item": "ee_extras:control_board_l1"
+        },
+        "T": {
+          "item": "ee_extras:connector"
+        }
+      },
+      "result": {
+        "id": "ee_extras:disk_transport",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/display_advanced.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "PPP",
+        "RGB",
+        "CFC"
+      ],
+      "key": {
+        "P": {
+          "tag": "c:glass_panes"
+        },
+        "R": {
+          "item": "minecraft:red_dye"
+        },
+        "G": {
+          "item": "minecraft:green_dye"
+        },
+        "B": {
+          "item": "minecraft:blue_dye"
+        },
+        "C": {
+          "item": "ee_extras:advanced_display_driver"
+        },
+        "F": {
+          "item": "ee_extras:copper_foil"
+        }
+      },
+      "result": {
+        "id": "ee_extras:display_advanced",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/display_crt.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "GGG",
+        "TIT",
+        "CFC"
+      ],
+      "key": {
+        "G": {
+          "tag": "c:glass_panes"
+        },
+        "T": {
+          "item": "create:electron_tube"
+        },
+        "I": {
+          "item": "ee_extras:inductor"
+        },
+        "C": {
+          "item": "ee_extras:display_driver"
+        },
+        "F": {
+          "item": "ee_extras:copper_foil"
+        }
+      },
+      "result": {
+        "id": "ee_extras:display_crt",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/display_driver.json",
+    "content": {
+      "type": "morered:soldering",
+      "ingredients": [
+        {
+          "item": "ee_extras:l1_board"
+        },
+        {
+          "item": "ee_extras:silicon_diode"
+        },
+        {
+          "item": "ee_extras:resistor",
+          "count": 2
+        },
+        {
+          "item": "ee_extras:connector"
+        }
+      ],
+      "result": {
+        "id": "ee_extras:display_driver",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/ender_transceiver.json",
+    "content": {
+      "type": "morered:soldering",
+      "ingredients": [
+        {
+          "item": "ee_extras:network_transceiver"
+        },
+        {
+          "item": "ee_extras:l3_board"
+        },
+        {
+          "item": "ccbr:integrated_circuit"
+        },
+        {
+          "item": "ee_extras:inductor"
+        },
+        {
+          "item": "minecraft:ghast_tear"
+        },
+        {
+          "item": "ee_extras:copper_foil",
+          "count": 2
+        }
+      ],
+      "result": {
+        "id": "ee_extras:ender_transceiver",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/keyboard.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "PPP",
+        "PPP",
+        "CFC"
+      ],
+      "key": {
+        "P": {
+          "tag": "tfc:insulation"
+        },
+        "C": {
+          "item": "ee_extras:control_board_l1"
+        },
+        "F": {
+          "item": "ee_extras:copper_foil"
+        }
+      },
+      "result": {
+        "id": "ee_extras:keyboard",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/magnetic_disk_medium.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        " S ",
+        "IMI",
+        "PPP"
+      ],
+      "key": {
+        "S": {
+          "tag": "c:plates/steel"
+        },
+        "I": {
+          "item": "minecraft:iron_nugget"
+        },
+        "M": {
+          "item": "tfc:powder/magnetite"
+        },
+        "P": {
+          "tag": "tfc:insulation"
+        }
+      },
+      "result": {
+        "id": "ee_extras:magnetic_disk_medium",
+        "count": 4
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/network_port.json",
+    "content": {
+      "type": "morered:soldering",
+      "ingredients": [
+        {
+          "item": "ee_extras:control_board_l1"
+        },
+        {
+          "item": "ee_extras:connector",
+          "count": 2
+        },
+        {
+          "item": "ee_extras:inductor"
+        },
+        {
+          "item": "ee_extras:copper_foil"
+        }
+      ],
+      "result": {
+        "id": "ee_extras:network_port",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/network_transceiver.json",
+    "content": {
+      "type": "morered:soldering",
+      "ingredients": [
+        {
+          "item": "ee_extras:l2_board"
+        },
+        {
+          "item": "ee_extras:basic_ic"
+        },
+        {
+          "item": "ee_extras:inductor"
+        },
+        {
+          "item": "create:transmitter"
+        },
+        {
+          "item": "ee_extras:network_port"
+        },
+        {
+          "item": "ee_extras:copper_foil",
+          "count": 2
+        }
+      ],
+      "result": {
+        "id": "ee_extras:network_transceiver",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/peripheral_case.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "S S",
+        "SPS",
+        "SSS"
+      ],
+      "key": {
+        "S": {
+          "tag": "c:plates/steel"
+        },
+        "P": {
+          "tag": "tfc:insulation"
+        }
+      },
+      "result": {
+        "id": "ee_extras:peripheral_case",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/pocket_case.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "APA",
+        "T T",
+        "AAA"
+      ],
+      "key": {
+        "A": {
+          "tag": "c:plates/aluminum"
+        },
+        "P": {
+          "tag": "c:glass_panes"
+        },
+        "T": {
+          "tag": "tfc:insulation"
+        }
+      },
+      "result": {
+        "id": "ee_extras:pocket_case",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/pocket_display.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "PPP",
+        "DF ",
+        " C "
+      ],
+      "key": {
+        "P": {
+          "tag": "c:glass_panes"
+        },
+        "D": {
+          "item": "ee_extras:display_driver"
+        },
+        "F": {
+          "item": "ee_extras:copper_foil"
+        },
+        "C": {
+          "item": "ee_extras:connector"
+        }
+      },
+      "result": {
+        "id": "ee_extras:pocket_display",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/pocket_input.json",
+    "content": {
+      "type": "morered:soldering",
+      "ingredients": [
+        {
+          "item": "ee_extras:control_board_l1"
+        },
+        {
+          "item": "ee_extras:connector"
+        },
+        {
+          "item": "ee_extras:copper_foil",
+          "count": 2
+        }
+      ],
+      "result": {
+        "id": "ee_extras:pocket_input",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/power_supply.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "S S",
+        "ICI",
+        "DCT"
+      ],
+      "key": {
+        "S": {
+          "tag": "c:plates/steel"
+        },
+        "I": {
+          "item": "ee_extras:inductor"
+        },
+        "C": {
+          "item": "ee_extras:capacitor"
+        },
+        "D": {
+          "item": "ee_extras:silicon_diode"
+        },
+        "T": {
+          "item": "ee_extras:connector"
+        }
+      },
+      "result": {
+        "id": "ee_extras:power_supply",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/precision_actuator.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "G R",
+        "MC ",
+        "D T"
+      ],
+      "key": {
+        "G": {
+          "item": "create:cogwheel"
+        },
+        "R": {
+          "tag": "c:rods/steel"
+        },
+        "M": {
+          "item": "ee_extras:small_motor"
+        },
+        "C": {
+          "item": "ee_extras:control_board_l1"
+        },
+        "D": {
+          "item": "ee_extras:silicon_diode"
+        },
+        "T": {
+          "tag": "tfc:insulation"
+        }
+      },
+      "result": {
+        "id": "ee_extras:precision_actuator",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/print_mechanism.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "M R",
+        "DAC",
+        "TDT"
+      ],
+      "key": {
+        "M": {
+          "item": "ee_extras:small_motor"
+        },
+        "R": {
+          "tag": "c:rods/steel"
+        },
+        "D": {
+          "tag": "c:dyes"
+        },
+        "A": {
+          "item": "ee_extras:precision_actuator"
+        },
+        "C": {
+          "item": "ee_extras:control_board_l1"
+        },
+        "T": {
+          "item": "ee_extras:connector"
+        }
+      },
+      "result": {
+        "id": "ee_extras:print_mechanism",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/robot_chassis.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "SSSSS",
+        "S M S",
+        "SMBCS",
+        "S M S",
+        "SSSSS"
+      ],
+      "key": {
+        "S": {
+          "tag": "c:plates/steel"
+        },
+        "M": {
+          "item": "ee_extras:small_motor"
+        },
+        "B": {
+          "tag": "c:plates/brass"
+        },
+        "C": {
+          "item": "ee_extras:control_board_l1"
+        }
+      },
+      "result": {
+        "id": "ee_extras:robot_chassis",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/small_motor.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "WCW",
+        "RSR",
+        " T "
+      ],
+      "key": {
+        "W": {
+          "tag": "c:wires/copper"
+        },
+        "C": {
+          "item": "ee_extras:inductor"
+        },
+        "R": {
+          "tag": "c:rods/steel"
+        },
+        "S": {
+          "tag": "c:plates/steel"
+        },
+        "T": {
+          "tag": "tfc:insulation"
+        }
+      },
+      "result": {
+        "id": "ee_extras:small_motor",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/speaker_driver.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "S S",
+        "IPI",
+        " T "
+      ],
+      "key": {
+        "S": {
+          "tag": "c:plates/steel"
+        },
+        "I": {
+          "item": "ee_extras:inductor"
+        },
+        "P": {
+          "tag": "tfc:insulation"
+        },
+        "T": {
+          "tag": "c:rods/steel"
+        }
+      },
+      "result": {
+        "id": "ee_extras:speaker_driver",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/storage_bay.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "R R",
+        "SAS",
+        "CCT"
+      ],
+      "key": {
+        "R": {
+          "tag": "c:rods/steel"
+        },
+        "S": {
+          "tag": "c:plates/steel"
+        },
+        "A": {
+          "tag": "c:chests/wooden"
+        },
+        "C": {
+          "item": "ee_extras:connector"
+        },
+        "T": {
+          "tag": "tfc:insulation"
+        }
+      },
+      "result": {
+        "id": "ee_extras:storage_bay",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/turtle_controller.json",
+    "content": {
+      "type": "morered:soldering",
+      "ingredients": [
+        {
+          "item": "ee_extras:computer_motherboard"
+        },
+        {
+          "item": "ee_extras:transistor",
+          "count": 2
+        },
+        {
+          "item": "ee_extras:inductor"
+        },
+        {
+          "item": "ee_extras:connector"
+        }
+      ],
+      "result": {
+        "id": "ee_extras:turtle_controller",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/tfc/tags/item/insulation.json",
+    "content": {
+      "replace": false,
+      "values": [
+        "#c:plates/plastic",
+        {
+          "id": "afc:rubber_bar",
+          "required": false
+        },
+        {
+          "id": "destroy:polystyrene_butadiene",
+          "required": false
+        },
+        {
+          "id": "destroy:polyethene",
+          "required": false
+        },
+        {
+          "id": "destroy:polypropene",
+          "required": false
+        },
+        {
+          "id": "destroy:polyvinyl_chloride",
+          "required": false
+        }
+      ]
+    },
+    "kind": "file"
+  }
+]

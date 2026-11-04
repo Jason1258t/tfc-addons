@@ -1,0 +1,35 @@
+{
+  "type": "destroy_extras:metallurgy",
+  "ingredients": [
+    {
+      "item": "destroy_extras:precious_residue"
+    },
+    {
+      "item": "tfc:powder/lime"
+    },
+    {
+      "type": "destroy:mixture_with_salt",
+      "cation": "destroy:proton",
+      "anion": "destroy:nitrate",
+      "concentration": 1.0,
+      "amount": 250
+    }
+  ],
+  "results": [
+    {
+      "id": "destroy_extras:stabilized_tailings"
+    },
+    {
+      "id": "tfc:metal/gold",
+      "amount": 1
+    },
+    {
+      "id": "tfc:metal/silver",
+      "amount": 2
+    }
+  ],
+  "processing_time": 400,
+  "voltage": 600,
+  "current": 8,
+  "priority": 0
+}

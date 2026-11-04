@@ -1,0 +1,30 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    " D ",
+    "CPT",
+    " S "
+  ],
+  "key": {
+    "D": {
+      "item": "ee_extras:display_crt"
+    },
+    "C": {
+      "item": "ee_extras:peripheral_case"
+    },
+    "P": {
+      "item": "ee_extras:power_supply"
+    },
+    "T": {
+      "item": "ee_extras:network_port"
+    },
+    "S": {
+      "tag": "c:plates/steel"
+    }
+  },
+  "result": {
+    "id": "computercraft:monitor_normal",
+    "count": 1
+  }
+}

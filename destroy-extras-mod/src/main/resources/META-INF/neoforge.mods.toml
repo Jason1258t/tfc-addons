@@ -47,7 +47,7 @@ side = "BOTH"
 [[dependencies.destroy_extras]]
 modId = "destroy_bridge"
 type = "required"
-versionRange = "[0.1.0,0.2.0)"
+versionRange = "[0.2.0,0.3.0)"
 ordering = "AFTER"
 side = "BOTH"
 

@@ -1,0 +1,29 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    "SSSSS",
+    "S M S",
+    "SMBCS",
+    "S M S",
+    "SSSSS"
+  ],
+  "key": {
+    "S": {
+      "tag": "c:plates/steel"
+    },
+    "M": {
+      "item": "ee_extras:small_motor"
+    },
+    "B": {
+      "tag": "c:plates/brass"
+    },
+    "C": {
+      "item": "ee_extras:control_board_l1"
+    }
+  },
+  "result": {
+    "id": "ee_extras:robot_chassis",
+    "count": 1
+  }
+}

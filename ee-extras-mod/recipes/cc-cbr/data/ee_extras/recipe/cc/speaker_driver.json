@@ -1,0 +1,27 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    "S S",
+    "IPI",
+    " T "
+  ],
+  "key": {
+    "S": {
+      "tag": "c:plates/steel"
+    },
+    "I": {
+      "item": "ee_extras:inductor"
+    },
+    "P": {
+      "tag": "tfc:insulation"
+    },
+    "T": {
+      "tag": "c:rods/steel"
+    }
+  },
+  "result": {
+    "id": "ee_extras:speaker_driver",
+    "count": 1
+  }
+}

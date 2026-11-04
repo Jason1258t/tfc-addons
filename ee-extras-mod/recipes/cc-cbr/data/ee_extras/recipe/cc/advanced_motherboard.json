@@ -1,0 +1,26 @@
+{
+  "type": "morered:soldering",
+  "ingredients": [
+    {
+      "item": "ee_extras:l3_board"
+    },
+    {
+      "item": "ccbr:integrated_circuit"
+    },
+    {
+      "item": "ee_extras:transistor",
+      "count": 2
+    },
+    {
+      "item": "ee_extras:capacitor",
+      "count": 2
+    },
+    {
+      "item": "ee_extras:connector"
+    }
+  ],
+  "result": {
+    "id": "ee_extras:advanced_motherboard",
+    "count": 1
+  }
+}

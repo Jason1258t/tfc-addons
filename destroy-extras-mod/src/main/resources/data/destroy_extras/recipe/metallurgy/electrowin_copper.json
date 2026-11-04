@@ -1,0 +1,45 @@
+{
+  "type": "destroy_extras:metallurgy",
+  "ingredients": [
+    {
+      "type": "destroy:mixture_with_salt",
+      "cation": "destroy:copper_ii",
+      "anion": "destroy:sulfate",
+      "concentration": 1.0,
+      "amount": 250
+    }
+  ],
+  "results": [
+    {
+      "id": "tfc:metal/copper",
+      "amount": 5
+    },
+    {
+      "id": "destroy:mixture",
+      "amount": 200,
+      "components": {
+        "destroy:mixture": {
+          "TranslationKey": "destroy_extras.fluid.dilute_sulfuric_acid",
+          "Contents": [
+            {
+              "Molecule": "destroy:proton",
+              "Concentration": 2
+            },
+            {
+              "Molecule": "destroy:sulfate",
+              "Concentration": 1
+            },
+            {
+              "Molecule": "destroy:water",
+              "Concentration": 10
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "processing_time": 300,
+  "voltage": 600,
+  "current": 8,
+  "priority": 0
+}

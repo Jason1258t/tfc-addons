@@ -1,0 +1,33 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    "PPP",
+    "RGB",
+    "CFC"
+  ],
+  "key": {
+    "P": {
+      "tag": "c:glass_panes"
+    },
+    "R": {
+      "item": "minecraft:red_dye"
+    },
+    "G": {
+      "item": "minecraft:green_dye"
+    },
+    "B": {
+      "item": "minecraft:blue_dye"
+    },
+    "C": {
+      "item": "ee_extras:advanced_display_driver"
+    },
+    "F": {
+      "item": "ee_extras:copper_foil"
+    }
+  },
+  "result": {
+    "id": "ee_extras:display_advanced",
+    "count": 1
+  }
+}

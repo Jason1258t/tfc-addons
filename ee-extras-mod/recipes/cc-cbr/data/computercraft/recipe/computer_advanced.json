@@ -1,0 +1,33 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    "KKK",
+    "DMD",
+    "CPT"
+  ],
+  "key": {
+    "K": {
+      "item": "ee_extras:keyboard"
+    },
+    "D": {
+      "item": "ee_extras:display_advanced"
+    },
+    "M": {
+      "item": "ee_extras:advanced_motherboard"
+    },
+    "C": {
+      "item": "ee_extras:advanced_computer_case"
+    },
+    "P": {
+      "item": "ee_extras:power_supply"
+    },
+    "T": {
+      "item": "ee_extras:network_port"
+    }
+  },
+  "result": {
+    "id": "computercraft:computer_advanced",
+    "count": 1
+  }
+}

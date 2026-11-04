@@ -45,6 +45,7 @@ public class DevTest {
         Sync.register(d);
         ElectronicsTest.register(d);
         SolarTest.register(d);
+        if (net.neoforged.fml.ModList.get().isLoaded("computercraft")) ComputerCraftTest.register(d);
         if (net.neoforged.fml.ModList.get().isLoaded("tfc")) ThermometerTest.register(d);
         d.register(Commands.literal("rectest")
                 .then(Commands.literal("build").executes(c -> build(c.getSource())))

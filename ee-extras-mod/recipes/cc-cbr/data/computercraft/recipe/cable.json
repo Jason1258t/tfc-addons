@@ -1,0 +1,18 @@
+{
+  "type": "create:compacting",
+  "ingredients": [
+    {
+      "tag": "c:wires/copper",
+      "count": 2
+    },
+    {
+      "tag": "tfc:insulation"
+    }
+  ],
+  "results": [
+    {
+      "id": "computercraft:cable",
+      "count": 6
+    }
+  ]
+}

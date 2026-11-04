@@ -8,7 +8,7 @@ export JAVA_HOME="${JAVA_HOME:-$HOME/.gradle/local-tools/jdk21/Contents/Home}"
 VERSION=$(sed -n 's/^mod_version=//p' gradle.properties)
 rm -f destroy-extras-*.jar
 cp "build/libs/destroy-extras-$VERSION.jar" .
-ICONS="membrane_electrolyzer etching_bath membrane"
+ICONS="membrane_electrolyzer etching_bath membrane metallurgical_processor roasted_tetrahedrite roasted_sphalerite gangue iron_residue red_mud aluminum_hydroxide alumina cement_copper nickel_sulfide electronic_scrap precious_residue stabilized_tailings"
 (cd ../.. && node scripts/mcp/render.mjs tools/destroy-extras-mod $(printf 'destroy_extras:%s ' $ICONS) --out tools/destroy-extras-mod/icons --size 192)
 shasum -a 256 "destroy-extras-$VERSION.jar"
 echo "готово: destroy-extras-$VERSION.jar → tools/destroy-extras-mod; обновите addon.json и проверьте MCP addon_check"

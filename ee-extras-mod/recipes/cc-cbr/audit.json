@@ -1,0 +1,542 @@
+[
+  {
+    "path": "data/ccbr/recipe/basic_integrated_circuit_crafting.json",
+    "status": "changed",
+    "note": "Old gold/redstone shortcut removed; L2 board and silicon IC"
+  },
+  {
+    "path": "data/ccbr/recipe/mechanical_crafting/integrated_circuit.json",
+    "status": "changed",
+    "note": "Old lapis/redstone shortcut removed; L3 board and advanced silicon IC"
+  },
+  {
+    "path": "data/ccbr/recipe/pressing/lapis_block.json",
+    "status": "removed",
+    "note": "After the IC replacement the lapis plate has no remaining active consumers"
+  },
+  {
+    "path": "data/computercraft/recipe/cable.json",
+    "status": "changed",
+    "note": "Copper conductors and insulation, six cables per cycle"
+  },
+  {
+    "path": "data/computercraft/recipe/clear_colour.json",
+    "status": "unchanged",
+    "note": "special: clears colour without deleting disk data"
+  },
+  {
+    "path": "data/computercraft/recipe/colour.json",
+    "status": "unchanged",
+    "note": "special: dyes an existing disk/device and preserves components"
+  },
+  {
+    "path": "data/computercraft/recipe/computer_advanced.json",
+    "status": "changed",
+    "note": "L2/L3 motherboard, keyboard, display, case, PSU and network"
+  },
+  {
+    "path": "data/computercraft/recipe/computer_advanced_upgrade.json",
+    "status": "changed",
+    "note": "Normal → Advanced with a real L3 motherboard/controller and copied device data"
+  },
+  {
+    "path": "data/computercraft/recipe/computer_command.json",
+    "status": "unchanged",
+    "note": "creative/admin-only: requires a command block; no Survival command-block recipe added"
+  },
+  {
+    "path": "data/computercraft/recipe/computer_normal.json",
+    "status": "changed",
+    "note": "L2/L3 motherboard, keyboard, display, case, PSU and network"
+  },
+  {
+    "path": "data/computercraft/recipe/disk.json",
+    "status": "unchanged",
+    "note": "special: manufactures a disk from the new magnetic medium through the EE Extras mixin"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_1.json",
+    "status": "changed",
+    "note": "Dye an existing disk without deleting its files"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_10.json",
+    "status": "changed",
+    "note": "Dye an existing disk without deleting its files"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_11.json",
+    "status": "changed",
+    "note": "Dye an existing disk without deleting its files"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_12.json",
+    "status": "changed",
+    "note": "Dye an existing disk without deleting its files"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_13.json",
+    "status": "changed",
+    "note": "Dye an existing disk without deleting its files"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_14.json",
+    "status": "changed",
+    "note": "Dye an existing disk without deleting its files"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_15.json",
+    "status": "changed",
+    "note": "Dye an existing disk without deleting its files"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_16.json",
+    "status": "changed",
+    "note": "Dye an existing disk without deleting its files"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_2.json",
+    "status": "changed",
+    "note": "Dye an existing disk without deleting its files"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_3.json",
+    "status": "changed",
+    "note": "Dye an existing disk without deleting its files"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_4.json",
+    "status": "changed",
+    "note": "Dye an existing disk without deleting its files"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_5.json",
+    "status": "changed",
+    "note": "Dye an existing disk without deleting its files"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_6.json",
+    "status": "changed",
+    "note": "Dye an existing disk without deleting its files"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_7.json",
+    "status": "changed",
+    "note": "Dye an existing disk without deleting its files"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_8.json",
+    "status": "changed",
+    "note": "Dye an existing disk without deleting its files"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_9.json",
+    "status": "changed",
+    "note": "Dye an existing disk without deleting its files"
+  },
+  {
+    "path": "data/computercraft/recipe/disk_drive.json",
+    "status": "changed",
+    "note": "Two motors, head, actuator and L2 controller in the transport"
+  },
+  {
+    "path": "data/computercraft/recipe/monitor_advanced.json",
+    "status": "changed",
+    "note": "Colour display and driver, not an advanced computer"
+  },
+  {
+    "path": "data/computercraft/recipe/monitor_normal.json",
+    "status": "changed",
+    "note": "CRT panel without a computer motherboard"
+  },
+  {
+    "path": "data/computercraft/recipe/pocket_advanced/computercraft/speaker.json",
+    "status": "unchanged",
+    "note": "Pocket impostor upgrade; special recipe preserves data and upgrades"
+  },
+  {
+    "path": "data/computercraft/recipe/pocket_advanced/computercraft/wireless_modem_advanced.json",
+    "status": "unchanged",
+    "note": "Pocket impostor upgrade; special recipe preserves data and upgrades"
+  },
+  {
+    "path": "data/computercraft/recipe/pocket_advanced/computercraft/wireless_modem_normal.json",
+    "status": "unchanged",
+    "note": "Pocket impostor upgrade; special recipe preserves data and upgrades"
+  },
+  {
+    "path": "data/computercraft/recipe/pocket_computer_advanced.json",
+    "status": "changed",
+    "note": "Pocket display/input, battery and L2/L3 motherboard"
+  },
+  {
+    "path": "data/computercraft/recipe/pocket_computer_advanced_upgrade.json",
+    "status": "changed",
+    "note": "Normal → Advanced with a real L3 motherboard/controller and copied device data"
+  },
+  {
+    "path": "data/computercraft/recipe/pocket_computer_normal.json",
+    "status": "changed",
+    "note": "Pocket display/input, battery and L2/L3 motherboard"
+  },
+  {
+    "path": "data/computercraft/recipe/pocket_computer_upgrade.json",
+    "status": "unchanged",
+    "note": "special pocket upgrade mechanics"
+  },
+  {
+    "path": "data/computercraft/recipe/pocket_normal/computercraft/speaker.json",
+    "status": "unchanged",
+    "note": "Pocket impostor upgrade; special recipe preserves data and upgrades"
+  },
+  {
+    "path": "data/computercraft/recipe/pocket_normal/computercraft/wireless_modem_advanced.json",
+    "status": "unchanged",
+    "note": "Pocket impostor upgrade; special recipe preserves data and upgrades"
+  },
+  {
+    "path": "data/computercraft/recipe/pocket_normal/computercraft/wireless_modem_normal.json",
+    "status": "unchanged",
+    "note": "Pocket impostor upgrade; special recipe preserves data and upgrades"
+  },
+  {
+    "path": "data/computercraft/recipe/printed_book.json",
+    "status": "unchanged",
+    "note": "output-only printed-product assembly"
+  },
+  {
+    "path": "data/computercraft/recipe/printed_pages.json",
+    "status": "unchanged",
+    "note": "output-only printed-product assembly"
+  },
+  {
+    "path": "data/computercraft/recipe/printer.json",
+    "status": "changed",
+    "note": "Mechanism and starter cartridge; printing still consumes ink and paper"
+  },
+  {
+    "path": "data/computercraft/recipe/redstone_relay.json",
+    "status": "changed",
+    "note": "Wired modem and separate L1 redstone interface"
+  },
+  {
+    "path": "data/computercraft/recipe/skull_cloudy.json",
+    "status": "unchanged",
+    "note": "easter egg, outside progression"
+  },
+  {
+    "path": "data/computercraft/recipe/skull_dan200.json",
+    "status": "unchanged",
+    "note": "easter egg, outside progression"
+  },
+  {
+    "path": "data/computercraft/recipe/speaker.json",
+    "status": "changed",
+    "note": "Real driver and amplifier"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_advanced.json",
+    "status": "changed",
+    "note": "Transform keeps computer data; real chassis, storage and drives"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_advanced/computercraft/speaker.json",
+    "status": "unchanged",
+    "note": "Existing Turtle upgrade/display handling remains"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_advanced/computercraft/wireless_modem_advanced.json",
+    "status": "unchanged",
+    "note": "Existing Turtle upgrade/display handling remains"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_advanced/computercraft/wireless_modem_normal.json",
+    "status": "unchanged",
+    "note": "Existing Turtle upgrade/display handling remains"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_advanced/minecraft/crafting_table.json",
+    "status": "unchanged",
+    "note": "Existing Turtle upgrade/display handling remains"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_advanced/minecraft/diamond_axe.json",
+    "status": "unchanged",
+    "note": "Pack override maps Normal to red steel and Advanced to blue steel"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_advanced/minecraft/diamond_hoe.json",
+    "status": "unchanged",
+    "note": "Pack override maps Normal to red steel and Advanced to blue steel"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_advanced/minecraft/diamond_pickaxe.json",
+    "status": "unchanged",
+    "note": "Pack override maps Normal to red steel and Advanced to blue steel"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_advanced/minecraft/diamond_shovel.json",
+    "status": "unchanged",
+    "note": "Pack override maps Normal to red steel and Advanced to blue steel"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_advanced/minecraft/diamond_sword.json",
+    "status": "unchanged",
+    "note": "Pack override maps Normal to red steel and Advanced to blue steel"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_advanced_overlays/rainbow_flag.json",
+    "status": "unchanged",
+    "note": "Cosmetic transform recipe"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_advanced_overlays/trans_flag.json",
+    "status": "unchanged",
+    "note": "Cosmetic transform recipe"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_advanced_upgrade.json",
+    "status": "changed",
+    "note": "Normal → Advanced with a real L3 motherboard/controller and copied device data"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_normal.json",
+    "status": "changed",
+    "note": "Transform keeps computer data; real chassis, storage and drives"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_normal/computercraft/speaker.json",
+    "status": "unchanged",
+    "note": "Existing Turtle upgrade/display handling remains"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_normal/computercraft/wireless_modem_advanced.json",
+    "status": "unchanged",
+    "note": "Existing Turtle upgrade/display handling remains"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_normal/computercraft/wireless_modem_normal.json",
+    "status": "unchanged",
+    "note": "Existing Turtle upgrade/display handling remains"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_normal/minecraft/crafting_table.json",
+    "status": "unchanged",
+    "note": "Existing Turtle upgrade/display handling remains"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_normal/minecraft/diamond_axe.json",
+    "status": "unchanged",
+    "note": "Pack override maps Normal to red steel and Advanced to blue steel"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_normal/minecraft/diamond_hoe.json",
+    "status": "unchanged",
+    "note": "Pack override maps Normal to red steel and Advanced to blue steel"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_normal/minecraft/diamond_pickaxe.json",
+    "status": "unchanged",
+    "note": "Pack override maps Normal to red steel and Advanced to blue steel"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_normal/minecraft/diamond_shovel.json",
+    "status": "unchanged",
+    "note": "Pack override maps Normal to red steel and Advanced to blue steel"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_normal/minecraft/diamond_sword.json",
+    "status": "unchanged",
+    "note": "Pack override maps Normal to red steel and Advanced to blue steel"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_normal_overlays/rainbow_flag.json",
+    "status": "unchanged",
+    "note": "Cosmetic transform recipe"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_normal_overlays/trans_flag.json",
+    "status": "unchanged",
+    "note": "Cosmetic transform recipe"
+  },
+  {
+    "path": "data/computercraft/recipe/turtle_upgrade.json",
+    "status": "unchanged",
+    "note": "special turtle upgrade mechanics"
+  },
+  {
+    "path": "data/computercraft/recipe/wired_modem.json",
+    "status": "changed",
+    "note": "Network port and L1 communication board"
+  },
+  {
+    "path": "data/computercraft/recipe/wired_modem_full_from.json",
+    "status": "unchanged",
+    "note": "form conversion, no new modem production"
+  },
+  {
+    "path": "data/computercraft/recipe/wired_modem_full_to.json",
+    "status": "unchanged",
+    "note": "form conversion, no new modem production"
+  },
+  {
+    "path": "data/computercraft/recipe/wireless_modem_advanced.json",
+    "status": "changed",
+    "note": "L3 ender transceiver retains CC range magic"
+  },
+  {
+    "path": "data/computercraft/recipe/wireless_modem_normal.json",
+    "status": "changed",
+    "note": "L2 transceiver, antenna and ender pearl"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/advanced_computer_case.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/advanced_display_driver.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/advanced_motherboard.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/advanced_turtle_controller.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/audio_amplifier.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/battery_module.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/computer_case.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/computer_motherboard.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/control_board_l1.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/disk_transport.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/display_advanced.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/display_crt.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/display_driver.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/ender_transceiver.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/keyboard.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/magnetic_disk_medium.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/network_port.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/network_transceiver.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/peripheral_case.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/pocket_case.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/pocket_display.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/pocket_input.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/power_supply.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/precision_actuator.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/print_mechanism.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/robot_chassis.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/small_motor.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/speaker_driver.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/storage_bay.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/turtle_controller.json",
+    "status": "new",
+    "note": ""
+  }
+]

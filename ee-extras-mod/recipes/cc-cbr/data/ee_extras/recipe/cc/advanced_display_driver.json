@@ -1,0 +1,23 @@
+{
+  "type": "morered:soldering",
+  "ingredients": [
+    {
+      "item": "ee_extras:l3_board"
+    },
+    {
+      "item": "ee_extras:basic_ic",
+      "count": 2
+    },
+    {
+      "item": "ee_extras:transistor",
+      "count": 2
+    },
+    {
+      "item": "ee_extras:connector"
+    }
+  ],
+  "result": {
+    "id": "ee_extras:advanced_display_driver",
+    "count": 1
+  }
+}

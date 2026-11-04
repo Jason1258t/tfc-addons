@@ -23,6 +23,10 @@ ICONS="compact_kinetic_generator three_phase_rectifier single_phase_rectifier he
   copper_foil glass_fiber glass_fabric epoxy_laminate l2_board_blank l3_board_blank solder_wire rosin_flux
   resistor capacitor inductor connector silicon_diode transistor basic_ic advanced_ic silicon_wafer pcb_design
   solar_panel thermometer pcb_design_table pcb_photolithographer pcb_via_metallizer photoresist
-  l2_prepared_blank l3_prepared_blank l2_etched_board l3_etched_board l2_board l3_board"
+  l2_prepared_blank l3_prepared_blank l2_etched_board l3_etched_board l2_board l3_board
+  control_board_l1 computer_motherboard advanced_motherboard turtle_controller advanced_turtle_controller keyboard pocket_input
+  display_driver advanced_display_driver display_crt display_advanced pocket_display network_port computer_case advanced_computer_case
+  pocket_case peripheral_case small_motor precision_actuator storage_bay robot_chassis disk_transport print_mechanism
+  network_transceiver ender_transceiver speaker_driver audio_amplifier power_supply battery_module magnetic_disk_medium"
 (cd ../.. && node scripts/mcp/render.mjs tools/ee-extras-mod $(printf 'ee_extras:%s ' $ICONS) --out tools/ee-extras-mod/icons --size 192)
 echo "готово: ee-extras-$VERSION.jar → tools/ee-extras-mod; обновите addon.json и проверьте MCP addon_check"

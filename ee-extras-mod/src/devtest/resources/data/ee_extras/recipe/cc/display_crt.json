@@ -1,0 +1,30 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    "GGG",
+    "TIT",
+    "CFC"
+  ],
+  "key": {
+    "G": {
+      "tag": "c:glass_panes"
+    },
+    "T": {
+      "item": "create:electron_tube"
+    },
+    "I": {
+      "item": "ee_extras:inductor"
+    },
+    "C": {
+      "item": "ee_extras:display_driver"
+    },
+    "F": {
+      "item": "ee_extras:copper_foil"
+    }
+  },
+  "result": {
+    "id": "ee_extras:display_crt",
+    "count": 1
+  }
+}

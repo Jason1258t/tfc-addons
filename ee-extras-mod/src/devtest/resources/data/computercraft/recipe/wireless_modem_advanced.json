@@ -1,0 +1,27 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    " R ",
+    "NC ",
+    " T "
+  ],
+  "key": {
+    "R": {
+      "item": "ee_extras:ender_transceiver"
+    },
+    "N": {
+      "item": "ee_extras:network_port"
+    },
+    "C": {
+      "item": "ee_extras:peripheral_case"
+    },
+    "T": {
+      "item": "ee_extras:connector"
+    }
+  },
+  "result": {
+    "id": "computercraft:wireless_modem_advanced",
+    "count": 1
+  }
+}

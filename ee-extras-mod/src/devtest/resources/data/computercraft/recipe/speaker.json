@@ -1,0 +1,30 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    " D ",
+    "ANC",
+    " T "
+  ],
+  "key": {
+    "D": {
+      "item": "ee_extras:speaker_driver"
+    },
+    "A": {
+      "item": "ee_extras:audio_amplifier"
+    },
+    "N": {
+      "item": "ee_extras:network_port"
+    },
+    "C": {
+      "item": "ee_extras:peripheral_case"
+    },
+    "T": {
+      "item": "ee_extras:connector"
+    }
+  },
+  "result": {
+    "id": "computercraft:speaker",
+    "count": 1
+  }
+}
