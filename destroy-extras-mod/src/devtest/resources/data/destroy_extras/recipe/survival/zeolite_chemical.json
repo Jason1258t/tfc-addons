@@ -1,0 +1,27 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "item": "tfc:powder/kaolinite"
+    },
+    {
+      "item": "tfc:powder/kaolinite"
+    },
+    {
+      "item": "destroy:silica"
+    },
+    {
+      "type": "destroy:mixture_with_salt",
+      "cation": "destroy:sodium_ion",
+      "anion": "destroy:hydroxide",
+      "amount": 250,
+      "concentration": 1.0
+    }
+  ],
+  "results": [
+    {
+      "id": "destroy:zeolite"
+    }
+  ],
+  "heat_requirement": "heated"
+}

@@ -2,11 +2,14 @@ package tfc.destroy.extras.devtest;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
+import com.simibubi.create.content.processing.recipe.HeatCondition;
+import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
 import ee.extras.pcb.PcbItems;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -24,10 +27,12 @@ import petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid;
 import tfc.destroy.extras.DestroyExtras;
 import tfc.destroy.extras.etching.EtchingBathBlockEntity;
 import tfc.destroy.extras.etching.EtchingChemistry;
+import tfc.destroy.extras.recipe.MembraneElectrolysisRecipe;
 
 /** Survival-рецепты, реальное поглощение HCl и сохранение старого состояния в M6. */
 final class M6Test {
     private static final BlockPos BATH = new BlockPos(0, -60, 20);
+    private static final ResourceLocation SALT_WATER = DestroyExtras.rl("electrolysis/salt_water");
     private static int checks;
     private static int failures;
 
@@ -37,7 +42,68 @@ final class M6Test {
         event.getDispatcher().register(Commands.literal("destroyextratest")
             .then(Commands.literal("m6recipes").executes(M6Test::recipes))
             .then(Commands.literal("m6absorption").executes(M6Test::absorption))
-            .then(Commands.literal("m6assert").executes(M6Test::assertAbsorption)));
+            .then(Commands.literal("m6assert").executes(M6Test::assertAbsorption))
+            .then(Commands.literal("m6zeolite").executes(M6Test::zeolite))
+            .then(Commands.literal("m6south").executes(M6Test::southRejectsImpurities)));
+    }
+
+    private static int zeolite(CommandContext<CommandSourceStack> ctx) {
+        reset();
+        var level = ctx.getSource().getLevel();
+        var manager = level.getRecipeManager();
+        RecipeHolder<?> natural = manager.byKey(ResourceLocation.parse("destroy_extras:survival/zeolite_natural_mixing"))
+            .orElse(null);
+        RecipeHolder<?> crafting = manager.byKey(ResourceLocation.parse("destroy_extras:survival/zeolite_natural_crafting"))
+            .orElse(null);
+        RecipeHolder<?> chemical = manager.byKey(ResourceLocation.parse("destroy_extras:survival/zeolite_chemical"))
+            .orElse(null);
+        check(ctx, natural != null && crafting != null && chemical != null, "оба рецепта цеолита загружены, ещё один — ручной");
+        if (natural != null && natural.value() instanceof ProcessingRecipe<?, ?> recipe) {
+            check(ctx, recipe.getIngredients().get(0).test(stack("tfc:rock/loose/tuff")),
+                "природный рецепт принимает камешек туфа TFC");
+            check(ctx, recipe.getIngredients().get(2).test(stack("destroy:silica")), "природный рецепт принимает кремнезём");
+        } else {
+            check(ctx, false, "природный рецепт — не Create-процесс");
+        }
+        if (chemical != null && chemical.value() instanceof ProcessingRecipe<?, ?> recipe) {
+            check(ctx, recipe.getRequiredHeat() == HeatCondition.HEATED, "химический рецепт требует нагрев");
+            check(ctx, recipe.getIngredients().get(0).test(stack("tfc:powder/kaolinite")),
+                "химический рецепт принимает каолинитовый порошок TFC");
+            RecipeHolder<?> salt = manager.byKey(SALT_WATER).orElse(null);
+            if (salt != null && salt.value() instanceof MembraneElectrolysisRecipe electrolysis) {
+                FluidStack naoh = electrolysis.products()[2];
+                check(ctx, recipe.getFluidIngredients().getFirst().test(naoh),
+                    "химический рецепт принимает настоящий NaOH из электролизёра M2");
+            } else {
+                check(ctx, false, "JSON-рецепт электролиза M2 не загружен");
+            }
+        } else {
+            check(ctx, false, "химический рецепт — не Create-процесс");
+        }
+        return report(ctx);
+    }
+
+    private static int southRejectsImpurities(CommandContext<CommandSourceStack> ctx) {
+        reset();
+        ctx.getSource().getLevel().setBlock(BATH, DestroyExtras.ETCHING_BATH_BLOCK.get().defaultBlockState(),
+            Block.UPDATE_ALL);
+        EtchingBathBlockEntity bath = bath(ctx);
+        IFluidHandler acidPort = Capabilities.FluidHandler.BLOCK.getCapability(
+            ctx.getSource().getLevel(), BATH, bath.getBlockState(), bath, Direction.SOUTH);
+        LegacyMixture impure = new LegacyMixture()
+            .addMolecule(DestroyMolecules.HYDROCHLORIC_ACID, DestroyMolecules.HYDROCHLORIC_ACID.getPureConcentration())
+            .addMolecule(DestroyMolecules.WATER, DestroyMolecules.WATER.getPureConcentration());
+        check(ctx, acidPort != null && acidPort.fill(MixtureFluid.of(25, impure), IFluidHandler.FluidAction.EXECUTE) == 0,
+            "южный порт отказывает смеси HCl с водой");
+        check(ctx, bath.hydrochloricAcid.isEmpty(), "отказ не оставляет примесей в баке HCl");
+        check(ctx, acidPort != null && acidPort.fill(MixtureFluid.of(25, new LegacyMixture().addMolecule(
+            DestroyMolecules.HYDROCHLORIC_ACID, DestroyMolecules.HYDROCHLORIC_ACID.getPureConcentration())),
+            IFluidHandler.FluidAction.EXECUTE) == 25, "чистый HCl по-прежнему принимается");
+        return report(ctx);
+    }
+
+    private static ItemStack stack(String id) {
+        return new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(id)));
     }
 
     private static int recipes(CommandContext<CommandSourceStack> ctx) {

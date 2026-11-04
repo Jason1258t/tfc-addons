@@ -1,0 +1,22 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "item": "tfc:rock/loose/tuff"
+    },
+    {
+      "item": "tfc:rock/loose/tuff"
+    },
+    {
+      "item": "destroy:silica"
+    },
+    {
+      "item": "destroy:silica"
+    }
+  ],
+  "results": [
+    {
+      "id": "destroy:zeolite"
+    }
+  ]
+}
