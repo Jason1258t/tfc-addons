@@ -5,6 +5,7 @@ import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
@@ -153,8 +154,9 @@ public final class MembraneElectrolyzerBlockEntity extends BlockEntity implement
     private void refreshStructure(ServerLevel level) {
         if (level.getGameTime() < nextStructureCheck) return;
         nextStructureCheck = level.getGameTime() + 20;
-        formed = ElectrolyzerStructure.hasShell(level, worldPosition);
-        pumpRpm = formed ? ElectrolyzerStructure.pumpRpm(level, worldPosition) : 0.0F;
+        Direction facing = getBlockState().getValue(MembraneElectrolyzerBlock.FACING);
+        formed = ElectrolyzerStructure.hasShell(level, worldPosition, facing);
+        pumpRpm = formed ? ElectrolyzerStructure.pumpRpm(level, worldPosition, facing) : 0.0F;
     }
 
     private void syncStatus(ElectrolyzerStatus previousStatus) {

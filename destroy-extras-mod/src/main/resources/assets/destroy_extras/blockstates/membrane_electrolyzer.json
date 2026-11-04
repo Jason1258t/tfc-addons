@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "facing=north": {
       "model": "destroy_extras:block/membrane_electrolyzer"
+    },
+    "facing=east": {
+      "model": "destroy_extras:block/membrane_electrolyzer",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "destroy_extras:block/membrane_electrolyzer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "destroy_extras:block/membrane_electrolyzer",
+      "y": 270
     }
   }
 }

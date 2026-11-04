@@ -22,6 +22,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import tfc.destroy.extras.electrolyzer.ElectrolyzerStructure;
 import tfc.destroy.extras.electrolyzer.MembraneElectrolyzerBlock;
 import tfc.destroy.extras.electrolyzer.MembraneElectrolyzerBlockEntity;
 import tfc.destroy.extras.etching.EtchingBathBlock;
@@ -80,17 +81,21 @@ public final class DestroyExtras {
 
     private static void capabilities(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ELECTROLYZER_BE.get(), (be, side) -> {
-            if (side == Direction.NORTH) return be.hydrogen;
+            Direction facing = be.getBlockState().getValue(MembraneElectrolyzerBlock.FACING);
+            Direction local = ElectrolyzerStructure.toLocal(facing, side);
+            if (local == Direction.NORTH) return be.hydrogen;
             // Южную грань закрывает корпус 3×3×2, труба к хлору подходит снизу.
-            if (side == Direction.DOWN || side == Direction.SOUTH) return be.chlorine;
-            if (side == Direction.EAST) return be.sodiumHydroxide;
+            if (local == Direction.DOWN || local == Direction.SOUTH) return be.chlorine;
+            if (local == Direction.EAST) return be.sodiumHydroxide;
             return be.input;
         });
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ELECTROLYZER_BE.get(), (be, side) -> be.membrane);
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ETCHING_BATH_BE.get(), (be, side) -> {
-            if (side == Direction.NORTH) return be.spent;
-            if (side == Direction.SOUTH) return be.hydrochloricAcid;
-            if (side == Direction.EAST) return be.water;
+            Direction facing = be.getBlockState().getValue(EtchingBathBlock.FACING);
+            Direction local = ElectrolyzerStructure.toLocal(facing, side);
+            if (local == Direction.NORTH) return be.spent;
+            if (local == Direction.SOUTH) return be.hydrochloricAcid;
+            if (local == Direction.EAST) return be.water;
             return be.input;
         });
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ETCHING_BATH_BE.get(), (be, side) -> be.items);
