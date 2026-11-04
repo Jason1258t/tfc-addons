@@ -1,5 +1,7 @@
 {
   "variants": {
-    "": { "model": "create:block/mechanical_press/block" }
+    "": {
+      "model": "ee_extras:block/pcb_photolithographer"
+    }
   }
 }

@@ -4,8 +4,9 @@
     "top": "ee_extras:block/solar_panel_top",
     "side": "ee_extras:block/solar_panel_side",
     "particle": "ee_extras:block/solar_panel_side",
-    "red": "minecraft:block/redstone_block",
-    "blue": "minecraft:block/lapis_block"
+    "red": "ee_extras:block/electronics_terminal_red",
+    "blue": "ee_extras:block/electronics_terminal_blue",
+    "bottom": "ee_extras:block/electronics_bottom"
   },
   "elements": [
     {
@@ -66,7 +67,7 @@
           ]
         },
         "down": {
-          "texture": "#side",
+          "texture": "#bottom",
           "uv": [
             0,
             0,
