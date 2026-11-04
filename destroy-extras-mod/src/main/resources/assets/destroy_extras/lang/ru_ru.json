@@ -34,5 +34,17 @@
   "tooltip.destroy_extras.etching.mixer": "Мешалка Create сверху от 16 об/мин сокращает травление с 400 до 200 тиков",
   "destroy_extras.ponder.industrial_electrolyzer.header": "Промышленный мембранный электролизёр",
   "destroy_extras.ponder.industrial_electrolyzer.text_1": "Два отсека из баков Create разделяют контуры. Контроллер и насос устанавливаются в медную перегородку.",
-  "destroy_extras.ponder.industrial_electrolyzer.text_2": "Подайте EE 300 В / 8 А и вращение насосу от 16 об/мин. H₂, Cl₂ и NaOH выводятся раздельно; полный выход останавливает всю установку."
+  "destroy_extras.ponder.industrial_electrolyzer.text_2": "Подайте EE 300 В / 8 А и вращение насосу от 16 об/мин. H₂, Cl₂ и NaOH выводятся раздельно; полный выход останавливает всю установку.",
+  "item.destroy_extras.copper_dust": "Чистая медная пыль",
+  "item.destroy_extras.iron_dust": "Чистая железная пыль",
+  "item.destroy_extras.zinc_dust": "Чистая цинковая пыль",
+  "item.destroy_extras.tin_dust": "Чистая оловянная пыль",
+  "item.destroy_extras.bismuth_dust": "Чистая висмутовая пыль",
+  "item.destroy_extras.nickel_dust": "Чистая никелевая пыль",
+  "item.destroy_extras.silver_dust": "Чистая серебряная пыль",
+  "item.destroy_extras.gold_dust": "Чистая золотая пыль",
+  "item.destroy_extras.lead_dust": "Чистая свинцовая пыль",
+  "item.destroy_extras.aluminum_dust": "Чистая алюминиевая пыль",
+  "item.destroy_extras.chromium_dust": "Чистая хромовая пыль",
+  "item.destroy_extras.uranium_dust": "Чистая урановая пыль"
 }

@@ -25,6 +25,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import tfc.destroy.extras.electrolyzer.MembraneElectrolyzerBlock;
 import tfc.destroy.extras.electrolyzer.MembraneElectrolyzerBlockEntity;
 import tfc.destroy.extras.etching.EtchingBathBlock;
+import tfc.destroy.extras.dust.MetalDusts;
 import tfc.destroy.extras.etching.EtchingBathBlockEntity;
 import tfc.destroy.extras.recipe.ExtrasRecipeTypes;
 
@@ -70,6 +71,7 @@ public final class DestroyExtras {
         ITEMS.register(modBus);
         BLOCK_ENTITIES.register(modBus);
         ExtrasRecipeTypes.register(modBus);
+        MetalDusts.register(modBus);
         modBus.addListener(DestroyExtras::capabilities);
         modBus.addListener(DestroyExtras::creativeTab);
     }

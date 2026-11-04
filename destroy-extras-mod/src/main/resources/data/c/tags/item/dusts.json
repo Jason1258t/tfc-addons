@@ -1,0 +1,16 @@
+{
+  "values": [
+    "destroy_extras:copper_dust",
+    "destroy_extras:iron_dust",
+    "destroy_extras:zinc_dust",
+    "destroy_extras:tin_dust",
+    "destroy_extras:bismuth_dust",
+    "destroy_extras:nickel_dust",
+    "destroy_extras:silver_dust",
+    "destroy_extras:gold_dust",
+    "destroy_extras:lead_dust",
+    "destroy_extras:aluminum_dust",
+    "destroy_extras:chromium_dust",
+    "destroy_extras:uranium_dust"
+  ]
+}

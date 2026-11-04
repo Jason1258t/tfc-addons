@@ -34,5 +34,17 @@
   "tooltip.destroy_extras.etching.mixer": "A 16+ RPM Create mixer above reduces etching from 400 to 200 ticks",
   "destroy_extras.ponder.industrial_electrolyzer.header": "Industrial Membrane Electrolyzer",
   "destroy_extras.ponder.industrial_electrolyzer.text_1": "Two Create tank compartments separate the circuits. Install the controller and pump in the copper divider.",
-  "destroy_extras.ponder.industrial_electrolyzer.text_2": "Supply 300 V / 8 A EE and at least 16 RPM to the pump. H₂, Cl₂ and NaOH stay separate; any full output stops the whole unit."
+  "destroy_extras.ponder.industrial_electrolyzer.text_2": "Supply 300 V / 8 A EE and at least 16 RPM to the pump. H₂, Cl₂ and NaOH stay separate; any full output stops the whole unit.",
+  "item.destroy_extras.copper_dust": "Pure Copper Dust",
+  "item.destroy_extras.iron_dust": "Pure Iron Dust",
+  "item.destroy_extras.zinc_dust": "Pure Zinc Dust",
+  "item.destroy_extras.tin_dust": "Pure Tin Dust",
+  "item.destroy_extras.bismuth_dust": "Pure Bismuth Dust",
+  "item.destroy_extras.nickel_dust": "Pure Nickel Dust",
+  "item.destroy_extras.silver_dust": "Pure Silver Dust",
+  "item.destroy_extras.gold_dust": "Pure Gold Dust",
+  "item.destroy_extras.lead_dust": "Pure Lead Dust",
+  "item.destroy_extras.aluminum_dust": "Pure Aluminum Dust",
+  "item.destroy_extras.chromium_dust": "Pure Chromium Dust",
+  "item.destroy_extras.uranium_dust": "Pure Uranium Dust"
 }
