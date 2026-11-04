@@ -1,0 +1,47 @@
+{
+  "type": "destroy_extras:metallurgy",
+  "ingredients": [
+    {
+      "item": "destroy_extras:roasted_sphalerite"
+    },
+    {
+      "type": "destroy:mixture_with_salt",
+      "cation": "destroy:proton",
+      "anion": "destroy:sulfate",
+      "concentration": 1.0,
+      "amount": 250
+    }
+  ],
+  "results": [
+    {
+      "id": "destroy_extras:gangue"
+    },
+    {
+      "id": "destroy:mixture",
+      "amount": 250,
+      "components": {
+        "destroy:mixture": {
+          "TranslationKey": "destroy_extras.fluid.zinc_sulfate",
+          "Contents": [
+            {
+              "Molecule": "destroy:zinc_ion",
+              "Concentration": 2
+            },
+            {
+              "Molecule": "destroy:sulfate",
+              "Concentration": 2
+            },
+            {
+              "Molecule": "destroy:water",
+              "Concentration": 10
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "processing_time": 200,
+  "voltage": 240,
+  "current": 4,
+  "priority": 0
+}

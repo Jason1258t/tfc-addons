@@ -1,13 +1,13 @@
 {
   "id": "destroy_bridge",
   "name": "Destroy Bridge — ранний прототип",
-  "version": "0.1.0",
-  "jar": "destroy-bridge-0.1.0.jar",
-  "sha256": "15341369163a9d15c456e74e5cc23d3231fc048dfb225273d8885b9529ccc2bc",
+  "version": "0.2.0",
+  "jar": "destroy-bridge-0.2.0.jar",
+  "sha256": "10cca73ce745a1e485915b72dccb553468f066c13c1f3d0fe1945600e8d116e1",
   "order": 800,
   "side": "both",
-  "summary": "Среда разработки моста Destroy с TFC, Create и EE; не для установки игроками.",
-  "needs": "Только разработчики: сервер и клиент тестового стенда, вместе с Destroy и Petrolpark. В мир сервера не ставить.",
+  "summary": "Техническая зависимость Destroy Extras: адаптеры TFC/Destroy, атомарные операции и настраиваемые режимы питания EE 240/300/600 В.",
+  "needs": "Сервер и все игроки вместе с Destroy Extras 0.5.0, Destroy 0.4.6-eligibbs, Petrolpark 1.5.11 и Electro Energetics 1.1.2+. Самостоятельных блоков и рецептов нет.",
   "manual": true,
   "blocks": []
 }

@@ -1,0 +1,37 @@
+{
+  "type": "destroy_extras:metallurgy",
+  "ingredients": [
+    {
+      "item": "destroy_extras:alumina"
+    },
+    {
+      "item": "tfc:powder/coke"
+    }
+  ],
+  "results": [
+    {
+      "id": "tfc_ie_addon:metal/aluminum",
+      "amount": 5
+    },
+    {
+      "id": "destroy:mixture",
+      "amount": 50,
+      "components": {
+        "destroy:mixture": {
+          "TranslationKey": "destroy_extras.fluid.carbon_dioxide",
+          "Contents": [
+            {
+              "Molecule": "destroy:carbon_dioxide",
+              "Concentration": 1
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "processing_time": 400,
+  "voltage": 600,
+  "current": 16,
+  "priority": 0,
+  "catalyst": "tfc:ore/cryolite"
+}

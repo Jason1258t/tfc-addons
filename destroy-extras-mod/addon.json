@@ -1,25 +1,21 @@
 {
   "id": "destroy_extras",
   "name": "Destroy Extras — химические машины",
-  "version": "0.4.0",
-  "jar": "destroy-extras-0.4.0.jar",
-  "sha256": "230bf3896b0a749632216e8a74c6d01ee04fd8104d34127cd35b7fe9bd835f36",
+  "version": "0.5.0",
+  "jar": "destroy-extras-0.5.0.jar",
+  "sha256": "248eb808d2413f4ae58144b49c3994a9c34150b2f54753f0a98ff9d888b2f2c8",
   "order": 801,
   "side": "both",
   "manual": true,
-  "summary": "Мембранный электролизёр для получения H₂, Cl₂ и NaOH из солёной воды и травильная ванна для плат L1–L3. Поддерживаются промышленная форма 3×3×2, насос и мешалка Create, JEI/EMI и Ponder. Показывает в EMI все рецепты Destroy, включая центрифугу.",
-  "needs": "Сервер и все игроки. NeoForge 21.1.251+, Destroy 0.4.6-eligibbs, Petrolpark 1.5.11, Destroy Bridge 0.1.0, EE Extras 2.9.0, Create 6.0.10 и Electro Energetics 1.1.2+. Survival-рецепты электролизёра, мембраны и заготовки плат также используют Immersive Engineering.",
+  "summary": "Химические машины Destroy: электролиз солёной воды, травление плат L1–L3 и металлургический процессор. Выщелачивание и электроэкстракция Cu/Ni/Zn, Bayer и Hall–Héroult, регенерация FeCl₃ и переработка электронного лома. Рецепты загружаются из datapack, питание — 240/600 В EE.",
+  "needs": "Сервер и все игроки. NeoForge 21.1.251+, Destroy 0.4.6-eligibbs, Petrolpark 1.5.11, Destroy Bridge 0.2.0, EE Extras 2.9.0+, Create 6.0.10 и Electro Energetics 1.1.2+. Survival-рецепты также используют Immersive Engineering и TFC.",
   "blocks": [
     {
       "id": "destroy_extras:membrane_electrolyzer",
       "name": "Мембранный электролизёр",
       "image": "membrane_electrolyzer.png",
       "recipe": {
-        "pattern": [
-          "GEG",
-          "CTC",
-          "GGG"
-        ],
+        "pattern": ["GEG", "CTC", "GGG"],
         "key": {
           "G": {
             "item": "immersiveengineering:graphite_electrode"
@@ -46,11 +42,7 @@
       "name": "Травильная ванна L1–L3",
       "image": "etching_bath.png",
       "recipe": {
-        "pattern": [
-          "CCC",
-          "TFT",
-          "CCC"
-        ],
+        "pattern": ["CCC", "TFT", "CCC"],
         "key": {
           "C": {
             "item": "create:copper_sheet",
@@ -64,6 +56,39 @@
           }
         }
       }
+    },
+    {
+      "id": "destroy_extras:metallurgical_processor",
+      "name": "Металлургический процессор",
+      "image": "metallurgical_processor.png",
+      "recipe": {
+        "pattern": ["SCS", "CEC", "SCS"],
+        "key": {
+          "S": { "item": "tfc:metal/sheet/steel" },
+          "C": { "item": "create:copper_casing" },
+          "E": { "item": "create:electron_tube" }
+        }
+      }
+    },
+    {
+      "id": "destroy_extras:roasted_tetrahedrite",
+      "name": "Обожжённый тетраэдрит",
+      "image": "roasted_tetrahedrite.png"
+    },
+    { "id": "destroy_extras:roasted_sphalerite", "name": "Обожжённый сфалерит", "image": "roasted_sphalerite.png" },
+    { "id": "destroy_extras:gangue", "name": "Промытая пустая порода", "image": "gangue.png" },
+    { "id": "destroy_extras:iron_residue", "name": "Железный остаток", "image": "iron_residue.png" },
+    { "id": "destroy_extras:red_mud", "name": "Красный шлам", "image": "red_mud.png" },
+    { "id": "destroy_extras:aluminum_hydroxide", "name": "Гидроксид алюминия", "image": "aluminum_hydroxide.png" },
+    { "id": "destroy_extras:alumina", "name": "Глинозём", "image": "alumina.png" },
+    { "id": "destroy_extras:cement_copper", "name": "Цементная медь", "image": "cement_copper.png" },
+    { "id": "destroy_extras:nickel_sulfide", "name": "Сульфидный концентрат никеля", "image": "nickel_sulfide.png" },
+    { "id": "destroy_extras:electronic_scrap", "name": "Электронный лом", "image": "electronic_scrap.png" },
+    { "id": "destroy_extras:precious_residue", "name": "Благородный анодный остаток", "image": "precious_residue.png" },
+    {
+      "id": "destroy_extras:stabilized_tailings",
+      "name": "Стабилизированные хвосты",
+      "image": "stabilized_tailings.png"
     }
   ]
 }

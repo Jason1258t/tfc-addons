@@ -1,0 +1,20 @@
+{
+  "type": "destroy_extras:metallurgy",
+  "ingredients": [
+    {
+      "item": "destroy_extras:red_mud"
+    },
+    {
+      "item": "tfc:powder/lime"
+    }
+  ],
+  "results": [
+    {
+      "id": "destroy_extras:stabilized_tailings"
+    }
+  ],
+  "processing_time": 100,
+  "voltage": 240,
+  "current": 1,
+  "priority": 0
+}

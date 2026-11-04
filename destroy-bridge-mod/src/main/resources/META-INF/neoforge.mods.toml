@@ -4,7 +4,7 @@ license = "MIT"
 
 [[mods]]
 modId = "destroy_bridge"
-version = "0.1.0"
+version = "0.2.0"
 displayName = "Destroy Bridge"
 authors = "TFC Studio"
 description = "Мост Destroy с TFC, Create и Electro Energetics."
