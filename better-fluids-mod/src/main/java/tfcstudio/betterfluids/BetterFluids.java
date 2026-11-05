@@ -25,8 +25,21 @@ public final class BetterFluids {
     static final Supplier<FluidTankBlock> TANK = BLOCKS.register("iron_tank", () ->
         new IronTankBlock(BlockBehaviour.Properties.of().strength(3.0f, 6.0f)
             .sound(SoundType.METAL).requiresCorrectToolForDrops().noOcclusion()));
+    static final Supplier<FluidTankBlock> PLATE = BLOCKS.register("iron_tank_plate", () -> new IronTankSlabBlock(sectionProperties()));
+    static final Supplier<FluidTankBlock> QUARTER = section("iron_tank_quarter", TankSection.QUARTER);
+    static final Supplier<FluidTankBlock> BEVEL = section("iron_tank_bevel", TankSection.BEVEL);
+
+    private static Supplier<FluidTankBlock> section(String name, TankSection section) {
+        return BLOCKS.register(name, () -> new IronTankBlock(sectionProperties(), section));
+    }
+
+    private static BlockBehaviour.Properties sectionProperties() {
+        return BlockBehaviour.Properties.of().strength(3.0f, 6.0f)
+            .sound(SoundType.METAL).requiresCorrectToolForDrops().noOcclusion();
+    }
+
     static final Supplier<BlockEntityType<IronTankEntity>> TANK_ENTITY = ENTITIES.register("iron_tank", () ->
-        BlockEntityType.Builder.of((pos, state) -> new IronTankEntity(tankEntityType(), pos, state), TANK.get()).build(null));
+        BlockEntityType.Builder.of((pos, state) -> new IronTankEntity(tankEntityType(), pos, state), TANK.get(), PLATE.get(), QUARTER.get(), BEVEL.get()).build(null));
 
     private static BlockEntityType<IronTankEntity> tankEntityType() {
         return TANK_ENTITY.get();
@@ -34,6 +47,9 @@ public final class BetterFluids {
 
     public BetterFluids(IEventBus bus) {
         ITEMS.register("iron_tank", () -> new IronTankItem(TANK.get(), new Item.Properties()));
+        ITEMS.register("iron_tank_plate", () -> new IronTankItem(PLATE.get(), new Item.Properties()));
+        ITEMS.register("iron_tank_quarter", () -> new IronTankItem(QUARTER.get(), new Item.Properties()));
+        ITEMS.register("iron_tank_bevel", () -> new IronTankItem(BEVEL.get(), new Item.Properties()));
         BLOCKS.register(bus);
         ITEMS.register(bus);
         ENTITIES.register(bus);

@@ -14,8 +14,8 @@ abstract class TankCapacityMixin {
         require = 5
     )
     private int betterFluids$capacityPerBlock() {
-        return (Object) this instanceof IronTankEntity
-            ? IronTankEntity.CAPACITY
+        return (Object) this instanceof IronTankEntity tank
+            ? tank.sectionCapacity()
             : FluidTankBlockEntity.getCapacityMultiplier();
     }
 }

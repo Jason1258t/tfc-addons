@@ -26,6 +26,9 @@ final class IronTankRenderer extends FluidTankRenderer {
         }
 
         var state = tank.getBlockState();
+        if (state.getBlock() instanceof IronTankBlock block && block.section != TankSection.FULL) {
+            return;
+        }
         var fluid = tank.getTankInventory().getFluid();
         var level = tank.getFluidLevel();
         if (state.getValue(IronTankBlock.SHAPE) == IronTankBlock.Shape.PLAIN || fluid.isEmpty() || level == null) {
@@ -49,6 +52,6 @@ final class IronTankRenderer extends FluidTankRenderer {
     }
 
     private static float inset(IronTankEntity tank, Direction direction) {
-        return tank.getLevel() != null && IronTankEntity.connected(tank.getLevel(), tank.getBlockPos(), direction) ? 0 : WALL;
+        return tank.getLevel() != null && IronTankEntity.shellConnected(tank.getLevel(), tank.getBlockPos(), direction) ? 0 : WALL;
     }
 }

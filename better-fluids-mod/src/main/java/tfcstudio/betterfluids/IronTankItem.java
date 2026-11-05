@@ -76,7 +76,7 @@ final class IronTankItem extends BlockItem {
         var layer = new ArrayList<BlockPlaceContext>();
         for (IronTankEntity member : part.connectedParts(direction -> direction.getAxis().isHorizontal())) {
             BlockPos target = member.getBlockPos().relative(face);
-            if (target.equals(pos) || level.getBlockState(target).is(getBlock())) {
+            if (target.equals(pos) || level.getBlockState(target).getBlock() instanceof IronTankBlock) {
                 continue;
             }
             if (layer.size() >= available) {
@@ -85,7 +85,7 @@ final class IronTankItem extends BlockItem {
             var extra = BlockPlaceContext.at(context, target, face);
             if (!extra.getClickedPos().equals(target) || !extra.canPlace()
                 || !level.mayInteract(player, target) || !player.mayUseItemAt(target, face, context.getItemInHand())
-                || !canPlace(extra, getBlock().defaultBlockState())) {
+                || getPlacementState(extra) == null) {
                 return List.of();
             }
             layer.add(extra);

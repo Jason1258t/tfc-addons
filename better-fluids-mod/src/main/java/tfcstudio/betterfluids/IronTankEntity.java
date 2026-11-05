@@ -29,6 +29,10 @@ public final class IronTankEntity extends FluidTankBlockEntity {
         super(type, pos, state);
     }
 
+    public int sectionCapacity() {
+        return getBlockState().getBlock() instanceof IronTankBlock block ? block.section.capacity : CAPACITY;
+    }
+
     IFluidHandler fluidHandler() {
         return handler;
     }
@@ -113,7 +117,7 @@ public final class IronTankEntity extends FluidTankBlockEntity {
         if (!parts.isEmpty() && snapshot != null && !snapshot.comparatorsUpdated) {
             snapshot.comparatorsUpdated = true;
             for (IronTankEntity part : parts) {
-                level.updateNeighbourForOutputSignal(part.getBlockPos(), getBlockState().getBlock());
+                level.updateNeighbourForOutputSignal(part.getBlockPos(), part.getBlockState().getBlock());
             }
         }
     }
@@ -121,7 +125,7 @@ public final class IronTankEntity extends FluidTankBlockEntity {
     double networkFillFraction() {
         var parts = networkParts();
         return parts.isEmpty() ? 0.0 : parts.stream().mapToLong(part -> part.getTankInventory().getFluidAmount()).sum()
-            / ((double) parts.size() * CAPACITY);
+            / (double) parts.stream().mapToLong(IronTankEntity::sectionCapacity).sum();
     }
 
     void invalidateNetwork() {
@@ -243,8 +247,8 @@ public final class IronTankEntity extends FluidTankBlockEntity {
             return;
         }
         BlockState state = getBlockState();
-        BlockState updated = state.setValue(IronTankBlock.TOP, !connected(level, worldPosition, Direction.UP))
-            .setValue(IronTankBlock.BOTTOM, !connected(level, worldPosition, Direction.DOWN))
+        BlockState updated = state.setValue(IronTankBlock.TOP, !shellConnected(level, worldPosition, Direction.UP))
+            .setValue(IronTankBlock.BOTTOM, !shellConnected(level, worldPosition, Direction.DOWN))
             .setValue(IronTankBlock.SHAPE, window ? IronTankBlock.Shape.WINDOW : IronTankBlock.Shape.PLAIN);
         if (updated != state) {
             level.setBlock(worldPosition, updated, 3);
@@ -288,6 +292,12 @@ public final class IronTankEntity extends FluidTankBlockEntity {
             }
         }
         return parts;
+    }
+
+    public static boolean shellConnected(BlockGetter world, BlockPos pos, Direction direction) {
+        return world.getBlockState(pos).is(BetterFluids.TANK.get())
+            && connected(world, pos, direction)
+            && world.getBlockState(pos.relative(direction)).is(BetterFluids.TANK.get());
     }
 
     public static boolean connected(BlockGetter world, BlockPos pos, Direction direction) {

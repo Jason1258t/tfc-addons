@@ -39,7 +39,7 @@ final class TankNetwork implements IFluidHandler {
 
     @Override
     public int getTankCapacity(int tank) {
-        return tank == 0 ? parts().size() * IronTankEntity.CAPACITY : 0;
+        return tank == 0 ? parts().stream().mapToInt(IronTankEntity::sectionCapacity).sum() : 0;
     }
 
     @Override

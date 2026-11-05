@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "better_fluids:iron_tank"
+  },
+  "result": {
+    "id": "better_fluids:iron_tank_quarter",
+    "count": 1
+  }
+}

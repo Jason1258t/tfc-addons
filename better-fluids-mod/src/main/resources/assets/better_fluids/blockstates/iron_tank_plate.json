@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=down": { "model": "better_fluids:block/iron_tank_plate" },
+    "facing=up": { "model": "better_fluids:block/iron_tank_plate", "x": 180 },
+    "facing=north": { "model": "better_fluids:block/iron_tank_plate", "x": 90, "y": 180 },
+    "facing=south": { "model": "better_fluids:block/iron_tank_plate", "x": 90 },
+    "facing=west": { "model": "better_fluids:block/iron_tank_plate", "x": 90, "y": 90 },
+    "facing=east": { "model": "better_fluids:block/iron_tank_plate", "x": 90, "y": 270 }
+  }
+}

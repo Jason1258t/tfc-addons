@@ -60,6 +60,19 @@ public final class TankTest {
                 ctx.getSource().sendSuccess(() -> Component.literal("OK: связи и 42 ведра после перезапуска"), false);
                 return 1;
             }))
+            .then(Commands.literal("shapes").executes(ctx -> {
+                shapes(ctx.getSource().getLevel());
+                ctx.getSource().sendSuccess(() -> Component.literal("OK: фасонные секции, 31500 мБ, разделение ключом"), false);
+                return 1;
+            }))
+            .then(Commands.literal("shapes_reload").executes(ctx -> {
+                var level = ctx.getSource().getLevel();
+                var pos = BASE.offset(2, 0, 8);
+                checkTank(level, pos, 31_500, 31_500);
+                checkTank(level, pos.east(3), 31_500, 31_500);
+                ctx.getSource().sendSuccess(() -> Component.literal("OK: фасонный бак сохранил 31500 мБ"), false);
+                return 1;
+            }))
             .then(Commands.literal("reload").executes(ctx -> {
                 var level = ctx.getSource().getLevel();
                 var handler = level.getCapability(Capabilities.FluidHandler.BLOCK, BASE.above().east().south(), Direction.UP);
@@ -68,6 +81,51 @@ public final class TankTest {
                 ctx.getSource().sendSuccess(() -> Component.literal("OK: 112 вёдер воды после перезапуска"), false);
                 return 1;
             })));
+    }
+
+    private static void shapes(ServerLevel level) {
+        var pos = BASE.offset(2, 0, 8);
+        String[] names = {"iron_tank", "iron_tank_plate", "iron_tank_quarter", "iron_tank_bevel"};
+        for (int i = 0; i < names.length; i++) {
+            level.setBlockAndUpdate(pos.east(i), Blocks.AIR.defaultBlockState());
+        }
+        for (int i = 0; i < names.length; i++) {
+            var id = ResourceLocation.fromNamespaceAndPath("better_fluids", names[i]);
+            level.setBlockAndUpdate(pos.east(i), BuiltInRegistries.BLOCK.get(id).defaultBlockState());
+        }
+        var slab = (BlockItem) BuiltInRegistries.ITEM.get(ResourceLocation.parse("better_fluids:iron_tank_plate"));
+        var slabPlayer = FakePlayerFactory.getMinecraft(level);
+        for (Direction face : Direction.values()) {
+            var support = BASE.offset(10, 0, 10);
+            var target = support.relative(face);
+            level.setBlockAndUpdate(support, Blocks.STONE.defaultBlockState());
+            level.setBlockAndUpdate(target, Blocks.AIR.defaultBlockState());
+            var stack = new ItemStack(slab);
+            slabPlayer.setItemInHand(InteractionHand.MAIN_HAND, stack);
+            var hit = new BlockHitResult(Vec3.atCenterOf(support), face, support, false);
+            var place = new BlockPlaceContext(slabPlayer, InteractionHand.MAIN_HAND, stack, hit);
+            check(slab.place(place).consumesAction(), "Установка полублока: " + face);
+            var placed = level.getBlockState(target);
+            check(placed.getValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING)
+                == face.getOpposite(), "Ориентация полублока: " + face);
+            checkTank(level, target, 7_000, 0);
+            level.setBlockAndUpdate(target, Blocks.AIR.defaultBlockState());
+        }
+        var port = level.getCapability(Capabilities.FluidHandler.BLOCK, pos.east(3), Direction.UP);
+        check(port != null && port.getTankCapacity(0) == 31_500, "Ёмкость смешанного бака");
+        check(port.fill(new FluidStack(Fluids.WATER, 35_000), FluidAction.EXECUTE) == 31_500,
+            "Заполнение смешанного бака");
+        var bevel = pos.east(3);
+        var player = FakePlayerFactory.getMinecraft(level);
+        var hit = new BlockHitResult(Vec3.atCenterOf(bevel), Direction.EAST, bevel, false);
+        var context = new UseOnContext(player, InteractionHand.MAIN_HAND, hit);
+        var state = level.getBlockState(bevel);
+        var block = (FluidTankBlock) state.getBlock();
+        block.onWrenched(state, context);
+        checkTank(level, bevel, 7_000, 7_000);
+        checkTank(level, pos, 24_500, 24_500);
+        block.onWrenched(state, context);
+        checkTank(level, pos, 31_500, 31_500);
     }
 
     private static void build(ServerLevel level) {

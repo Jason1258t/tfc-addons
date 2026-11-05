@@ -13,9 +13,23 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-final class IronTankBlock extends FluidTankBlock {
+class IronTankBlock extends FluidTankBlock {
+    final TankSection section;
+
     IronTankBlock(Properties properties) {
+        this(properties, TankSection.FULL);
+    }
+
+    IronTankBlock(Properties properties, TankSection section) {
         super(properties, false);
+        this.section = section;
+    }
+
+    @Override
+    protected net.minecraft.world.phys.shapes.VoxelShape getShape(BlockState state,
+        net.minecraft.world.level.BlockGetter level, BlockPos pos,
+        net.minecraft.world.phys.shapes.CollisionContext context) {
+        return section.shape;
     }
 
     @Override
@@ -69,7 +83,7 @@ final class IronTankBlock extends FluidTankBlock {
 
     @Override
     public InteractionResult onWrenched(BlockState state, UseOnContext context) {
-        if (context.getClickedFace().getAxis().isVertical()) {
+        if (section == TankSection.FULL && context.getClickedFace().getAxis().isVertical()) {
             return super.onWrenched(state, context);
         }
         Level level = context.getLevel();

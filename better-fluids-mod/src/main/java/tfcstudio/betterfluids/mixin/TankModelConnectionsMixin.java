@@ -23,14 +23,14 @@ abstract class TankModelConnectionsMixin {
     private static boolean connected(BlockGetter world, BlockPos from, BlockPos to) {
         for (Direction direction : Direction.values()) {
             BlockPos step = from.relative(direction);
-            if (step.distManhattan(to) >= from.distManhattan(to) || !IronTankEntity.connected(world, from, direction)) {
+            if (step.distManhattan(to) >= from.distManhattan(to) || !IronTankEntity.shellConnected(world, from, direction)) {
                 continue;
             }
             if (step.equals(to)) {
                 return true;
             }
             for (Direction second : Direction.values()) {
-                if (step.relative(second).equals(to) && IronTankEntity.connected(world, step, second)) {
+                if (step.relative(second).equals(to) && IronTankEntity.shellConnected(world, step, second)) {
                     return true;
                 }
             }
