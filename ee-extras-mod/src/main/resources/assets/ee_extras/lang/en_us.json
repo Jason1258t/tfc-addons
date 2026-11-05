@@ -1,4 +1,12 @@
 {
+  "ee_extras.pcb.assemble": "Assemble",
+  "item.ee_extras.burnt_board": "Burnt circuit board",
+  "ee_extras.pcb.salvage": "Salvage",
+  "ee_extras.pcb.meter": "Board meter",
+  "ee_extras.pcb.meter_amps": "%s A",
+  "ee_extras.pcb.meter_volts": "%s V",
+  "ee_extras.pcb.terminal": "Terminal %s",
+  "ee_extras.pcb.rating": "Board limits: %s V, %s W, %s A",
   "block.ee_extras.pcb_circuit": "Circuit board",
   "ee_extras.computer_power.battery": "Battery charge: %s%%",
   "block.ee_extras.computer_power_inlet.tooltip": "Place with the back against a desktop computer and connect a duplex cable. Nominal input: 300 V.",

@@ -1,6 +1,175 @@
 {
-  "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "ee_extras:item/l1_board"
-  }
+    "particle": "#base",
+    "base": "minecraft:block/copper_block",
+    "contact": "minecraft:block/cut_copper",
+    "board": "ee_extras:item/l1_board"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        2,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#base"
+        },
+        "east": {
+          "texture": "#base"
+        },
+        "south": {
+          "texture": "#base"
+        },
+        "west": {
+          "texture": "#base"
+        },
+        "up": {
+          "texture": "#base"
+        },
+        "down": {
+          "texture": "#base"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        2.01,
+        0
+      ],
+      "to": [
+        16,
+        2.01,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#board"
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        2,
+        3
+      ],
+      "to": [
+        5,
+        4,
+        5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#contact"
+        },
+        "east": {
+          "texture": "#contact"
+        },
+        "south": {
+          "texture": "#contact"
+        },
+        "west": {
+          "texture": "#contact"
+        },
+        "up": {
+          "texture": "#contact"
+        }
+      }
+    },
+    {
+      "from": [
+        11,
+        2,
+        3
+      ],
+      "to": [
+        13,
+        4,
+        5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#contact"
+        },
+        "east": {
+          "texture": "#contact"
+        },
+        "south": {
+          "texture": "#contact"
+        },
+        "west": {
+          "texture": "#contact"
+        },
+        "up": {
+          "texture": "#contact"
+        }
+      }
+    },
+    {
+      "from": [
+        11,
+        2,
+        11
+      ],
+      "to": [
+        13,
+        4,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#contact"
+        },
+        "east": {
+          "texture": "#contact"
+        },
+        "south": {
+          "texture": "#contact"
+        },
+        "west": {
+          "texture": "#contact"
+        },
+        "up": {
+          "texture": "#contact"
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        2,
+        11
+      ],
+      "to": [
+        5,
+        4,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#contact"
+        },
+        "east": {
+          "texture": "#contact"
+        },
+        "south": {
+          "texture": "#contact"
+        },
+        "west": {
+          "texture": "#contact"
+        },
+        "up": {
+          "texture": "#contact"
+        }
+      }
+    }
+  ]
 }

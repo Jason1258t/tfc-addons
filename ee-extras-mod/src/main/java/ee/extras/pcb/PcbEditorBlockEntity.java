@@ -43,6 +43,12 @@ public class PcbEditorBlockEntity extends BlockEntity implements MenuProvider, C
         sync();
     }
 
+    public void setPart(int layer, int cell, int definition) {
+        PcbTopology.set(topology, layer, cell, PcbTopology.COMPONENT);
+        PcbTopology.setPart(topology, layer, cell, definition);
+        sync();
+    }
+
     public void setLevel(int level) {
         PcbTopology.setLevel(topology, level);
         sync();
@@ -55,17 +61,39 @@ public class PcbEditorBlockEntity extends BlockEntity implements MenuProvider, C
 
     public void loadDesign() {
         ItemStack stack = items.getItem(0);
-        if (!(stack.getItem() instanceof PcbDesignItem design)) return;
+        int fallback = stack.getItem() instanceof PcbDesignItem design
+                ? design.fallbackLevel() : PcbBoardItem.level(stack);
+        if (fallback == 0) return;
         CompoundTag tag = stack.get(PcbItems.PCB_TOPOLOGY.get());
-        topology = tag == null ? PcbTopology.create(design.fallbackLevel()) : PcbTopology.normalize(tag, design.fallbackLevel());
+        topology = tag == null ? PcbTopology.create(fallback) : PcbTopology.normalize(tag, fallback);
         sync();
     }
 
     public String saveDesign() {
+        return saveDesign(null);
+    }
+
+    public String saveDesign(Player player) {
         String error = PcbTopology.validate(topology);
         if (error != null) return error;
         ItemStack stack = items.getItem(0);
         int level = PcbTopology.level(topology);
+        int boardLevel = PcbBoardItem.level(stack);
+        if (boardLevel != 0) {
+            var original = stack.get(PcbItems.PCB_TOPOLOGY.get());
+            if (!PcbWiring.active(topology) || boardLevel != level || stack.getCount() != 1
+                    || (original != null && original.getBoolean(PcbAssembly.ASSEMBLED))) return PcbBoardItem.EDITOR_ERROR;
+            var parts = PcbWiring.compile(topology);
+            if (parts == null || !PcbAssembly.consume(player, parts)) return PcbAssembly.MISSING;
+            ItemStack result = stack.copy();
+            PcbTopology.attach(result, topology);
+            CompoundTag assembled = result.get(PcbItems.PCB_TOPOLOGY.get()).copy();
+            assembled.putBoolean(PcbAssembly.ASSEMBLED, true);
+            result.set(PcbItems.PCB_TOPOLOGY.get(), assembled);
+            items.setItem(0, result);
+            sync();
+            return null;
+        }
         if (stack.isEmpty() || (!stack.is(net.minecraft.world.item.Items.PAPER)
                 && !(stack.getItem() instanceof PcbDesignItem))) return "Положите бумагу или чертёж в ячейку";
         if (stack.getItem() instanceof PcbDesignItem design && design.fallbackLevel() != level)
@@ -81,6 +109,17 @@ public class PcbEditorBlockEntity extends BlockEntity implements MenuProvider, C
         items.setItem(0, result);
         sync();
         return null;
+    }
+
+    String salvage(Player player) {
+        ItemStack stack = items.getItem(0);
+        if (!stack.is(PcbItems.BURNT_BOARD.get()) || player == null) return PcbAssembly.NO_RECOVERY;
+        CompoundTag design = stack.get(PcbItems.PCB_TOPOLOGY.get());
+        var parts = design == null ? null : PcbWiring.compile(design);
+        items.removeItem(0, 1);
+        if (parts == null || !design.getBoolean(PcbAssembly.ASSEMBLED)) return PcbAssembly.NO_RECOVERY;
+        return PcbAssembly.salvage(player, parts, design.getLong("BlownFuses")) > 0
+                ? PcbAssembly.RECOVERED : PcbAssembly.NO_RECOVERY;
     }
 
     private void sync() {

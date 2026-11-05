@@ -20,6 +20,11 @@ public class PcbEditorMenu extends AbstractContainerMenu {
     public static final int SAVE = 1004;
     public static final int CLEAR = 1005;
     public static final int LOAD = 1006;
+    public static final int PART = 1007;
+    public static final int ROTATE = 1008;
+    public static final int OHMS = 1009;
+    public static final int VOLTS = 1010;
+    public static final int CONTACT = 1011;
 
     private final ContainerLevelAccess access;
     private final PcbEditorBlockEntity editor;
@@ -27,12 +32,18 @@ public class PcbEditorMenu extends AbstractContainerMenu {
     private final DataSlot layer = DataSlot.standalone();
     private final DataSlot level = DataSlot.standalone();
     private final DataSlot status = DataSlot.standalone();
+    private final DataSlot part = DataSlot.standalone();
+    private final DataSlot rotation = DataSlot.standalone();
+    private final DataSlot resistance = DataSlot.standalone();
+    private final DataSlot threshold = DataSlot.standalone();
+    private final DataSlot contact = DataSlot.standalone();
     private static final String[] STATUS_TEXT = {
             "Проект ещё не проверен", "Топология проверена", "Проект очищен", "Чертёж загружен в редактор",
             "Положите бумагу или чертёж в ячейку", "Для другого уровня нужен новый лист бумаги",
             "Выводы должны быть на краю нижнего слоя", "Нужно компонентов: не менее 2",
             "Нужно компонентов: не менее 4", "Нужно компонентов: не менее 8",
-            "Нужно не менее двух выводов на краю платы", "Пустой проект", "Есть обрыв или неподключённый вывод"
+            "Нужно не менее двух выводов на краю платы", "Пустой проект", "Есть обрыв или неподключённый вывод",
+            PcbWiring.ERROR, PcbBoardItem.EDITOR_ERROR, PcbAssembly.MISSING, PcbAssembly.RECOVERED, PcbAssembly.NO_RECOVERY
     };
 
     /** Клиентская фабрика MenuType. */
@@ -49,7 +60,7 @@ public class PcbEditorMenu extends AbstractContainerMenu {
         addSlot(new Slot(container, 0, 244, 8) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return stack.is(net.minecraft.world.item.Items.PAPER) || stack.getItem() instanceof PcbDesignItem;
+                return stack.is(net.minecraft.world.item.Items.PAPER) || stack.getItem() instanceof PcbDesignItem || PcbBoardItem.level(stack) != 0 || stack.is(PcbItems.BURNT_BOARD.get());
             }
         });
         for (int row = 0; row < 3; row++) {
@@ -61,7 +72,18 @@ public class PcbEditorMenu extends AbstractContainerMenu {
         addDataSlot(layer);
         addDataSlot(level);
         addDataSlot(status);
+        addDataSlot(part);
+        addDataSlot(rotation);
+        addDataSlot(resistance);
+        addDataSlot(threshold);
+        addDataSlot(contact);
     }
+
+    int part() { return part.get(); }
+    int rotation() { return rotation.get(); }
+    int resistance() { return resistance.get(); }
+    int threshold() { return threshold.get(); }
+    boolean normallyClosed() { return contact.get() != 0; }
 
     public int tool() { return tool.get(); }
     public int layer() { return layer.get(); }
@@ -88,6 +110,11 @@ public class PcbEditorMenu extends AbstractContainerMenu {
     public boolean clickMenuButton(Player player, int id) {
         if (editor == null) return false;
         if (id >= 0 && id < PcbTopology.CELLS) {
+            if (tool.get() == 5) {
+                editor.setPart(layer.get(), id, PcbWiring.component(part(), rotation(), resistance(), threshold(), normallyClosed()));
+                status.set(0);
+                return true;
+            }
             int value = switch (tool.get()) {
                 case 0 -> PcbTopology.TRACE;
                 case 1 -> PcbTopology.COMPONENT;
@@ -100,7 +127,15 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             return true;
         }
         switch (id) {
-            case TOOL -> tool.set((tool.get() + 1) % 5);
+            case TOOL -> tool.set((tool.get() + 1) % 6);
+            case PART -> {
+                tool.set(5);
+                part.set((part.get() + 1) % PcbWiring.KINDS.length);
+            }
+            case CONTACT -> contact.set(1 - contact.get());
+            case ROTATE -> rotation.set((rotation.get() + 1) % 4);
+            case OHMS -> resistance.set((resistance.get() + 1) % PcbWiring.OHMS.length);
+            case VOLTS -> threshold.set((threshold.get() + 1) % PcbWiring.VOLTS.length);
             case LAYER -> layer.set((layer.get() + 1) % level.get());
             case LEVEL -> {
                 int newLevel = level.get() % PcbTopology.MAX_LAYERS + 1;
@@ -110,7 +145,8 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             }
             case CHECK -> check();
             case SAVE -> {
-                String error = editor.saveDesign();
+                String error = getSlot(0).getItem().is(PcbItems.BURNT_BOARD.get())
+                        ? editor.salvage(player) : editor.saveDesign(player);
                 setStatus(error);
             }
             case CLEAR -> {

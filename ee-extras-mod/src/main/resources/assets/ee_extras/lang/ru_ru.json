@@ -1,4 +1,12 @@
 {
+  "ee_extras.pcb.assemble": "Собрать",
+  "item.ee_extras.burnt_board": "Сгоревшая печатная плата",
+  "ee_extras.pcb.salvage": "Разобрать",
+  "ee_extras.pcb.meter": "Измеритель платы",
+  "ee_extras.pcb.meter_amps": "%s А",
+  "ee_extras.pcb.meter_volts": "%s В",
+  "ee_extras.pcb.terminal": "Клемма %s",
+  "ee_extras.pcb.rating": "Пределы платы: %s В, %s Вт, %s А",
   "block.ee_extras.pcb_circuit": "Схемная плата",
   "ee_extras.computer_power.battery": "Заряд аккумулятора: %s%%",
   "block.ee_extras.computer_power_inlet.tooltip": "Поставьте задней стороной вплотную к ПК и подключите двухжильный кабель. Номинал 300 В.",

@@ -1,7 +1,6 @@
 {
   "variants": {
-    "": {
-      "model": "ee_extras:block/pcb_circuit"
-    }
+    "burnt=false": { "model": "ee_extras:block/pcb_circuit" },
+    "burnt=true": { "model": "ee_extras:block/pcb_circuit_burnt" }
   }
 }

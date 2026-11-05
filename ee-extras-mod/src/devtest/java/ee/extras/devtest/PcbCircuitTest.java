@@ -4,17 +4,34 @@ import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.mojang.brigadier.CommandDispatcher;
+import com.simibubi.create.AllBlocks;
+import com.simibubi.create.api.behaviour.display.DisplaySource;
+import com.simibubi.create.content.redstone.displayLink.DisplayLinkBlockEntity;
+import com.simibubi.create.content.redstone.displayLink.DisplayLinkContext;
+import com.simibubi.create.content.redstone.displayLink.target.DisplayTargetStats;
 import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import ee.extras.pcb.PcbCircuitBlock;
 import ee.extras.pcb.PcbCircuitDevice;
 import ee.extras.pcb.PcbCircuitDevice.Kind;
 import ee.extras.pcb.PcbCircuitDevice.Part;
 import ee.extras.pcb.PcbItems;
+import ee.extras.pcb.PcbEditorMenu;
+import ee.extras.pcb.PcbTopology;
+import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -23,10 +40,34 @@ import net.minecraft.world.level.block.Blocks;
 final class PcbCircuitTest {
     private static final BlockPos BOARD = new BlockPos(8, -60, 8);
     private static final BlockPos BATTERY = BOARD.offset(0, 0, 4);
+    private static final BlockPos RESERVE = BOARD.offset(0, 0, -4);
 
     static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("pcbcircuit").requires(source -> source.hasPermission(2))
                 .then(Commands.literal("build").executes(context -> build(context.getSource().getLevel())))
+                .then(Commands.literal("advanced").then(Commands.argument("circuit", StringArgumentType.word())
+                        .executes(context -> advanced(context.getSource(), StringArgumentType.getString(context, "circuit")))))
+                .then(Commands.literal("meter").then(Commands.argument("value", DoubleArgumentType.doubleArg(0))
+                        .executes(context -> meter(context.getSource(), DoubleArgumentType.getDouble(context, "value")))))
+                .then(Commands.literal("display").executes(context -> display(context.getSource())))
+                .then(Commands.literal("stress").executes(context -> stress(context.getSource())))
+                .then(Commands.literal("salvage").executes(context -> salvage(context.getSource())))
+                .then(Commands.literal("editor").executes(context -> editor(context.getSource())))
+                .then(Commands.literal("nominal").executes(context -> nominal(context.getSource().getLevel())))
+                .then(Commands.literal("overload").executes(context -> overload(context.getSource().getLevel())))
+                .then(Commands.literal("reserve_power").executes(context -> {
+                    var battery = DevicesSavedData.load(context.getSource().getLevel()).getDevice(RESERVE, CreativeBatteryDevice.class);
+                    battery.voltage = 24;
+                    battery.acFrequency = 0;
+                    return 1;
+                }))
+                .then(Commands.literal("power").then(Commands.argument("volts", DoubleArgumentType.doubleArg(0))
+                        .executes(context -> {
+                            power(context.getSource().getLevel(), DoubleArgumentType.getDouble(context, "volts"));
+                            return 1;
+                        })))
+                .then(Commands.literal("expect_burnt").then(Commands.argument("burnt", BoolArgumentType.bool())
+                        .executes(context -> expectBurnt(context.getSource(), BoolArgumentType.getBool(context, "burnt")))))
                 .then(Commands.literal("press").executes(context -> {
                     ServerLevel level = context.getSource().getLevel();
                     DevicesSavedData.load(level).getDevice(BOARD, PcbCircuitDevice.class)
@@ -53,14 +94,220 @@ final class PcbCircuitTest {
         DevTest.place(level, BATTERY, CEEBlocks.CREATIVE_BATTERY.getDefaultState());
         DevTest.wire(level, BATTERY, 0, BOARD, 0);
         DevTest.wire(level, BATTERY, 1, BOARD, 1);
+        return 1;
+    }
+
+    private static int editor(CommandSourceStack source) {
+        ServerLevel level = source.getLevel();
+        BlockPos table = BOARD.offset(0, 0, 2);
+        DevTest.place(level, table, PcbItems.EDITOR_BLOCK.get().defaultBlockState());
+        var player = FakePlayerFactory.getMinecraft(level);
+        ItemStack[] boards = {PcbItems.L1_BOARD.toStack(), PcbItems.L2_BOARD.toStack(), PcbItems.L3_BOARD.toStack()};
+        for (int tier = 0; tier < boards.length; tier++) {
+            var editor = (ee.extras.pcb.PcbEditorBlockEntity) level.getBlockEntity(table);
+            editor.clear(tier + 1);
+            editor.setItem(0, boards[tier]);
+            var menu = new PcbEditorMenu(1, player.getInventory(), ContainerLevelAccess.create(level, table), editor);
+            // Два вывода по краям строки и резистор между дорожками.
+            for (int cell = 1; cell < 15; cell++) if (cell != 7) menu.clickMenuButton(player, cell);
+            for (int i = 0; i < 3; i++) menu.clickMenuButton(player, PcbEditorMenu.TOOL);
+            menu.clickMenuButton(player, 0);
+            menu.clickMenuButton(player, 15);
+            menu.clickMenuButton(player, PcbEditorMenu.TOOL);
+            menu.clickMenuButton(player, PcbEditorMenu.TOOL);
+            for (int i = 0; i < 5; i++) menu.clickMenuButton(player, PcbEditorMenu.OHMS);
+            menu.clickMenuButton(player, 7);
+            menu.clickMenuButton(player, PcbEditorMenu.SAVE);
+            if (menu.status() == 1) throw new IllegalStateException("Сборка прошла без резистора");
+            player.getInventory().setItem(1, PcbItems.RESISTOR.toStack());
+            menu.clickMenuButton(player, PcbEditorMenu.SAVE);
+            if (!player.getInventory().getItem(1).isEmpty()) throw new IllegalStateException("Резистор не списан");
+            ItemStack active = editor.getItem(0).copy();
+            CompoundTag topology = active.get(PcbItems.PCB_TOPOLOGY.get());
+            if (menu.status() != 1 || topology == null || PcbTopology.level(topology) != tier + 1)
+                throw new IllegalStateException("Редактор не сохранил плату L" + (tier + 1));
+            BlockPos target = BOARD.east(tier + 1);
+            DevTest.place(level, target, Blocks.AIR.defaultBlockState());
+            DevTest.place(level, target.below(), Blocks.STONE.defaultBlockState());
+            var hit = new BlockHitResult(Vec3.atBottomCenterOf(target), Direction.UP, target.below(), false);
+            player.setItemInHand(InteractionHand.MAIN_HAND, boards[tier].copy());
+            if (player.getMainHandItem().useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit)).consumesAction())
+                throw new IllegalStateException("Пассивная плата поставилась как блок");
+            player.setItemInHand(InteractionHand.MAIN_HAND, active.copy());
+            if (!player.getMainHandItem().useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit)).consumesAction()
+                    || !level.getBlockState(target).is(PcbItems.CIRCUIT_BLOCK.get()))
+                throw new IllegalStateException("Готовая плата не поставилась из предмета");
+            var device = DevicesSavedData.load(level).getDevice(target, PcbCircuitDevice.class);
+            CompoundTag snapshot = new CompoundTag();
+            device.write(snapshot);
+            if (!snapshot.getString("Rating").equals("L" + (tier + 1)) || snapshot.getList("Circuit", 10).size() != 1)
+                throw new IllegalStateException("При установке потеряны схема или уровень платы");
+            var drops = net.minecraft.world.level.block.Block.getDrops(level.getBlockState(target), level, target,
+                    level.getBlockEntity(target));
+            if (drops.size() != 1 || !ItemStack.isSameItemSameComponents(drops.getFirst(), active))
+                throw new IllegalStateException("Снятая плата потеряла схему");
+        }
+        source.sendSuccess(() -> Component.literal("Редактор, установка и снятие L1–L3 подтверждены"), false);
+        return 1;
+    }
+
+    private static int salvage(CommandSourceStack source) {
+        ServerLevel level = source.getLevel();
+        BlockPos pos = BOARD.east();
+        var state = level.getBlockState(pos);
+        if (!state.is(PcbItems.CIRCUIT_BLOCK.get()) || !state.getValue(PcbCircuitBlock.BURNT))
+            throw new IllegalStateException("Установленная плата не сгорела");
+        ItemStack burnt = net.minecraft.world.level.block.Block.getDrops(state, level, pos, level.getBlockEntity(pos)).getFirst();
+        if (!burnt.is(PcbItems.BURNT_BOARD.get())) throw new IllegalStateException("Не выпала сгоревшая плата");
+        var player = FakePlayerFactory.getMinecraft(level);
+        var table = BOARD.offset(0, 0, 2);
+        var editor = (ee.extras.pcb.PcbEditorBlockEntity) level.getBlockEntity(table);
+        var menu = new PcbEditorMenu(1, player.getInventory(), ContainerLevelAccess.create(level, table), editor);
+        player.getInventory().clearContent();
+        player.getRandom().setSeed(272);
+        for (int i = 0; i < 32; i++) {
+            editor.setItem(0, burnt.copy());
+            menu.clickMenuButton(player, PcbEditorMenu.SAVE);
+            if (!editor.getItem(0).isEmpty()) throw new IllegalStateException("Сгоревшая плата не списана");
+        }
+        menu.clickMenuButton(player, PcbEditorMenu.SAVE);
+        int recovered = player.getInventory().items.stream()
+                .filter(stack -> stack.is(PcbItems.RESISTOR.get())).mapToInt(ItemStack::getCount).sum();
+        if (recovered == 0 || recovered >= 32) throw new IllegalStateException("Неверный возврат деталей: " + recovered);
+        source.sendSuccess(() -> Component.literal("Утилизация: возвращено " + recovered + " из 32 резисторов"), false);
+        return 1;
+    }
+
+    private static int advanced(CommandSourceStack source, String mode) {
+        ServerLevel level = source.getLevel();
+        power(level, 48);
+        List<Part> parts = switch (mode) {
+            case "timer" -> List.of(part(Kind.RESISTOR, 0, 4, 220, 1),
+                    part(Kind.CAPACITOR, 4, 1, 10, 1), part(Kind.VOLTMETER, 4, 1, 1, 48),
+                    part(Kind.LAMP, 4, 1, 10000, 24));
+            case "diode" -> List.of(part(Kind.DIODE, 0, 4, 1, 1),
+                    part(Kind.RESISTOR, 4, 1, 1000, 1), part(Kind.VOLTMETER, 4, 1, 1, 48));
+            case "reverse" -> List.of(part(Kind.DIODE, 4, 0, 1, 1),
+                    part(Kind.RESISTOR, 4, 1, 1000, 1), part(Kind.VOLTMETER, 4, 1, 1, 48));
+            case "fuse", "ammeter" -> List.of(part(Kind.FUSE, 0, 4, 1, mode.equals("fuse") ? 24 : 48),
+                    part(Kind.RESISTOR, 4, 5, 150, 1), part(Kind.AMMETER, 5, 1, 1, 48));
+            case "transistor" -> List.of(part(Kind.BUTTON, 0, 4, 1, 1),
+                    part(Kind.RESISTOR, 1, 4, 1000, 1),
+                    new Part(Kind.TRANSISTOR, 0, 5, 1, 4, 0, 12),
+                    part(Kind.RESISTOR, 5, 1, 1000, 1), part(Kind.VOLTMETER, 5, 1, 1, 48));
+            case "reserve" -> {
+                DevTest.place(level, RESERVE, Blocks.AIR.defaultBlockState());
+                DevTest.place(level, RESERVE, CEEBlocks.CREATIVE_BATTERY.getDefaultState());
+                DevTest.wire(level, RESERVE, 0, BOARD, 2);
+                DevTest.wire(level, RESERVE, 1, BOARD, 1);
+                yield List.of(new Part(Kind.RELAY, 0, 3, 10000, 0, 1, 24),
+                        new Part(Kind.RELAY, 2, 3, 10000, 0, 1, 24, true),
+                        part(Kind.RESISTOR, 3, 1, 1000, 1), part(Kind.VOLTMETER, 3, 1, 1, 48));
+            }
+            case "salvage" -> {
+                DevTest.wire(level, BATTERY, 0, BOARD.east(), 0);
+                DevTest.wire(level, BATTERY, 1, BOARD.east(), 1);
+                power(level, 60);
+                yield List.of();
+            }
+            default -> throw new IllegalArgumentException("Неизвестный стенд " + mode);
+        };
+        DevicesSavedData.load(level).getDevice(BOARD, PcbCircuitDevice.class).setCircuit(parts);
+        return 1;
+    }
+
+    private static int display(CommandSourceStack source) {
+        ServerLevel level = source.getLevel();
+        BlockPos linkPos = BOARD.south();
+        var linkBlock = AllBlocks.DISPLAY_LINK.get();
+        for (Direction direction : Direction.values()) {
+            DevTest.place(level, linkPos, linkBlock.defaultBlockState()
+                    .setValue(net.minecraft.world.level.block.DirectionalBlock.FACING, direction));
+            var link = (DisplayLinkBlockEntity) level.getBlockEntity(linkPos);
+            var context = new DisplayLinkContext(level, link);
+            if (!context.getSourcePos().equals(BOARD)) continue;
+            var display = DisplaySource.getAll(level, BOARD).stream()
+                    .filter(entry -> entry.getName().getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents translation
+                            && translation.getKey().equals("ee_extras.pcb.meter")).findFirst().orElseThrow();
+            String line = display.provideText(context, new DisplayTargetStats(1, 32, null)).getFirst().getString();
+            if (line.isBlank() || !line.matches(".*[0-9].*")) throw new IllegalStateException("Табло: " + line);
+            source.sendSuccess(() -> Component.literal("Табло Create получает «" + line + "»"), false);
+            return 1;
+        }
+        throw new IllegalStateException("Табло не нашло плату");
+    }
+
+    private static int stress(CommandSourceStack source) {
+        ServerLevel level = source.getLevel();
+        List<Part> parts = new ArrayList<>();
+        int node = 0;
+        for (int next = 4; next < 32; next++) {
+            parts.add(part(Kind.RESISTOR, node, next, 100, 1));
+            node = next;
+        }
+        parts.add(part(Kind.RESISTOR, node, 1, 100, 1));
+        while (parts.size() < 64) parts.add(new Part(Kind.RELAY, 0, 1, 10000, 0, 1, 96));
+        for (int z = 16; z < 32; z += 4) {
+            for (int x = 16; x < 32; x += 4) {
+                BlockPos pos = new BlockPos(x, -60, z);
+                BlockPos supply = pos.above(3);
+                DevTest.place(level, pos, PcbItems.CIRCUIT_BLOCK.get().defaultBlockState());
+                DevTest.place(level, supply, CEEBlocks.CREATIVE_BATTERY.getDefaultState());
+                DevTest.wire(level, supply, 0, pos, 0);
+                DevTest.wire(level, supply, 1, pos, 1);
+                DevicesSavedData.load(level).getDevice(pos, PcbCircuitDevice.class)
+                        .setCircuit(parts, PcbCircuitDevice.Rating.L3);
+            }
+        }
+        source.sendSuccess(() -> Component.literal("16 плат: 32 узла и 64 компонента на каждой"), false);
+        return 1;
+    }
+
+    private static int meter(CommandSourceStack source, double expected) {
+        var device = DevicesSavedData.load(source.getLevel()).getDevice(BOARD, PcbCircuitDevice.class);
+        CompoundTag snapshot = new CompoundTag();
+        device.write(snapshot);
+        double actual = snapshot.getDouble("Meter");
+        if (!Double.isFinite(actual) || Math.abs(actual - expected) > (expected < 1 ? 0.03 : 1)) {
+            source.sendFailure(Component.literal("Измеритель: ожидалось " + expected + ", получено " + actual));
+            return 0;
+        }
+        source.sendSuccess(() -> Component.literal("Измеритель: " + actual), false);
+        return 1;
+    }
+
+    private static void power(ServerLevel level, double volts) {
+        var battery = DevicesSavedData.load(level).getDevice(BATTERY, CreativeBatteryDevice.class);
+        battery.voltage = volts;
+        battery.acFrequency = 0;
+    }
+
+    private static int nominal(ServerLevel level) {
+        power(level, 48);
         DevicesSavedData data = DevicesSavedData.load(level);
-        data.getDevice(BATTERY, CreativeBatteryDevice.class).voltage = 300;
-        // Кнопка питает катушку, реле включает делитель. На лампе ожидается 150 В.
+        // Кнопка питает катушку, реле включает делитель. На лампе ожидается 24 В.
         data.getDevice(BOARD, PcbCircuitDevice.class).setCircuit(List.of(
                 part(Kind.BUTTON, 0, 4, 1, 1),
-                new Part(Kind.RELAY, 0, 5, 1000, 4, 1, 60),
+                new Part(Kind.RELAY, 0, 5, 1000, 4, 1, 30),
                 part(Kind.RESISTOR, 5, 6, 1000, 1),
-                part(Kind.LAMP, 6, 1, 1000, 140)));
+                part(Kind.LAMP, 6, 1, 1000, 22)));
+        return 1;
+    }
+
+    private static int overload(ServerLevel level) {
+        power(level, 48);
+        DevicesSavedData.load(level).getDevice(BOARD, PcbCircuitDevice.class)
+                .setCircuit(List.of(part(Kind.RESISTOR, 0, 1, 120, 1)));
+        return 1;
+    }
+
+    private static int expectBurnt(CommandSourceStack source, boolean expected) {
+        boolean actual = source.getLevel().getBlockState(BOARD).getValue(PcbCircuitBlock.BURNT);
+        if (actual != expected) {
+            source.sendFailure(Component.literal("Плата: ожидалось перегорание " + expected + ", получено " + actual));
+            return 0;
+        }
+        source.sendSuccess(() -> Component.literal("Плата: перегорание " + actual + " подтверждено"), false);
         return 1;
     }
 
@@ -69,7 +316,7 @@ final class PcbCircuitTest {
                 part(Kind.TRACE, 0, 4, 1, 1),
                 part(Kind.REDSTONE_IN, 4, 5, 1, 1),
                 part(Kind.SWITCH, 5, 6, 1, 1),
-                part(Kind.REDSTONE_OUT, 6, 1, 1000, 140)));
+                part(Kind.REDSTONE_OUT, 6, 1, 1000, 22)));
         return 1;
     }
 
@@ -92,7 +339,7 @@ final class PcbCircuitTest {
         CompoundTag diagnostics = new CompoundTag();
         DevicesSavedData.load(source.getLevel()).getDevice(BOARD, PcbCircuitDevice.class).write(diagnostics);
         double volts = diagnostics.getDouble("IndicatorVoltage");
-        double target = expected ? 150 : 0;
+        double target = expected ? 24 : 0;
         if (!Double.isFinite(volts) || Math.abs(volts - target) > 1) {
             source.sendFailure(Component.literal("Плата: ожидалось " + target + " В, измерено " + volts + " В"));
             return 0;

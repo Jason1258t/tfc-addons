@@ -38,6 +38,13 @@ public final class PcbTopology {
             if (cells[i] < EMPTY || cells[i] > TERMINAL) cells[i] = EMPTY;
         }
         result.putByteArray("Cells", cells);
+        if (source.contains(PcbWiring.KEY)) {
+            int[] parts = Arrays.copyOf(source.getIntArray(PcbWiring.KEY), CELLS * MAX_LAYERS);
+            for (int i = 0; i < parts.length; i++) {
+                if (cells[i] != COMPONENT || i >= level * CELLS) parts[i] = 0;
+            }
+            result.putIntArray(PcbWiring.KEY, parts);
+        }
         return result;
     }
 
@@ -57,6 +64,13 @@ public final class PcbTopology {
         tag.putByteArray("Cells", cells);
         tag.putInt("Level", level(tag));
         tag.putInt("Version", VERSION);
+        if (tag.contains(PcbWiring.KEY)) setPart(tag, layer, cell, 0);
+    }
+
+    static void setPart(CompoundTag tag, int layer, int cell, int definition) {
+        int[] parts = Arrays.copyOf(tag.getIntArray(PcbWiring.KEY), CELLS * MAX_LAYERS);
+        parts[layer * CELLS + cell] = definition;
+        tag.putIntArray(PcbWiring.KEY, parts);
     }
 
     public static void setLevel(CompoundTag tag, int level) {
@@ -72,13 +86,15 @@ public final class PcbTopology {
             }
         }
         normalized.putByteArray("Cells", cells);
-        copyInto(normalized, tag);
+        copyInto(normalize(normalized, level), tag);
     }
 
     public static void copyInto(CompoundTag source, CompoundTag target) {
         target.putInt("Level", level(source));
         target.putInt("Version", VERSION);
         target.putByteArray("Cells", source.getByteArray("Cells").clone());
+        if (source.contains(PcbWiring.KEY)) target.putIntArray(PcbWiring.KEY, source.getIntArray(PcbWiring.KEY).clone());
+        else target.remove(PcbWiring.KEY);
     }
 
     public static void attach(ItemStack stack, CompoundTag topology) {
@@ -90,6 +106,7 @@ public final class PcbTopology {
     /** Ошибка — русский текст для журнала/подсказки; null — проект пригоден к производству. */
     public static String validate(CompoundTag source) {
         CompoundTag tag = normalize(source, 1);
+        if (PcbWiring.active(tag)) return PcbWiring.compile(tag) == null ? PcbWiring.ERROR : null;
         int level = level(tag);
         int components = 0;
         int terminals = 0;
