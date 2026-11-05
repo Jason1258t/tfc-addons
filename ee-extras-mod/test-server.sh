@@ -30,7 +30,7 @@ if [ -n "${CC:-}" ]; then
 {"pack":{"pack_format":48,"description":"EE Extras CC test recipes"}}
 JSON
 fi
-# DESTROY=1 — проверка PET и материалов дисплея; перед запуском DESTROY=1 ./libs.sh.
+# DESTROY=1 TFC=1 — проверка PET и материалов дисплея (моды набора требуют TFC); перед запуском DESTROY=1 ./libs.sh.
 if [ -n "${DESTROY:-}" ]; then
   cp libs/destroy-*.jar libs/petrolpark-*.jar run/mods/
   cp "$MODS"/tfc_aeronautics-*.jar "$MODS"/tfcorewashing-*.jar \

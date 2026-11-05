@@ -40,13 +40,22 @@ public class DevTest {
         Power.register();
     }
 
+    /** PetTest собирается только с jar Destroy в libs/, поэтому прямой ссылки на него здесь нет */
+    private static void registerPetTest(CommandDispatcher<CommandSourceStack> d) {
+        try {
+            Class.forName("ee.extras.devtest.PetTest").getDeclaredMethod("register", CommandDispatcher.class).invoke(null, d);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("PetTest не собран: нужен DESTROY=1 ./libs.sh", e);
+        }
+    }
+
     static void commands(RegisterCommandsEvent e) {
         CommandDispatcher<CommandSourceStack> d = e.getDispatcher();
         Sync.register(d);
         ElectronicsTest.register(d);
         SolarTest.register(d);
         if (net.neoforged.fml.ModList.get().isLoaded("computercraft")) ComputerCraftTest.register(d);
-        if (net.neoforged.fml.ModList.get().isLoaded("destroy")) PetTest.register(d);
+        if (net.neoforged.fml.ModList.get().isLoaded("destroy")) registerPetTest(d);
         if (net.neoforged.fml.ModList.get().isLoaded("tfc")) ThermometerTest.register(d);
         d.register(Commands.literal("rectest")
                 .then(Commands.literal("build").executes(c -> build(c.getSource())))

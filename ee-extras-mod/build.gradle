@@ -12,6 +12,8 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 // Проверочный мод (только для runServer): собирает цепи с выпрямителями командой /rectest. В jar не попадает.
 sourceSets {
     devtest {
+        // Проверка PET нужна только с Destroy (DESTROY=1 ./libs.sh): без его jar класс не компилируем
+        if (!file('libs').list()?.any { it.startsWith('destroy-') }) java.exclude '**/PetTest.java'
         compileClasspath += sourceSets.main.output
         runtimeClasspath += sourceSets.main.output
     }
