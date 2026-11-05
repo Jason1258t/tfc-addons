@@ -1,7 +1,6 @@
 package tfcstudio.betterfluids;
 
 import com.simibubi.create.content.fluids.tank.FluidTankBlock;
-import com.simibubi.create.content.fluids.tank.FluidTankBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.SoundType;
@@ -24,13 +23,8 @@ public final class BetterFluids {
         DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, ID);
 
     static final Supplier<FluidTankBlock> TANK = BLOCKS.register("iron_tank", () ->
-        new FluidTankBlock(BlockBehaviour.Properties.of().strength(3.0f, 6.0f)
-            .sound(SoundType.METAL).requiresCorrectToolForDrops().noOcclusion(), false) {
-            @Override
-            public BlockEntityType<? extends FluidTankBlockEntity> getBlockEntityType() {
-                return TANK_ENTITY.get();
-            }
-        });
+        new IronTankBlock(BlockBehaviour.Properties.of().strength(3.0f, 6.0f)
+            .sound(SoundType.METAL).requiresCorrectToolForDrops().noOcclusion()));
     static final Supplier<BlockEntityType<IronTankEntity>> TANK_ENTITY = ENTITIES.register("iron_tank", () ->
         BlockEntityType.Builder.of((pos, state) -> new IronTankEntity(tankEntityType(), pos, state), TANK.get()).build(null));
 

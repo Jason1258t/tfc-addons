@@ -4,10 +4,10 @@ license = "MIT"
 
 [[mods]]
 modId = "better_fluids"
-version = "1.0.0"
+version = "1.1.0"
 displayName = "Better Fluids"
 authors = "TFC Studio"
-description = "Железный многоблочный бак на 14 вёдер за секцию."
+description = "Железный резервуар произвольной формы на 14 вёдер за секцию."
 
 [[mixins]]
 config = "better_fluids.mixins.json"

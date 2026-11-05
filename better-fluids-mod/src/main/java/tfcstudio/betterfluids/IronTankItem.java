@@ -8,6 +8,8 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.List;
 
 final class IronTankItem extends BlockItem {
@@ -18,15 +20,43 @@ final class IronTankItem extends BlockItem {
     @Override
     public InteractionResult place(BlockPlaceContext context) {
         List<BlockPlaceContext> layer = findLayer(context);
-        InteractionResult result = super.place(context);
+        Set<BlockPos> group = attachmentGroup(context);
+        InteractionResult result = placeSection(context, group);
         if (result.consumesAction()) {
             for (BlockPlaceContext extra : layer) {
-                if (!super.place(extra).consumesAction()) {
+                if (!placeSection(extra, group).consumesAction()) {
                     break;
                 }
             }
         }
         return result;
+    }
+
+    private InteractionResult placeSection(BlockPlaceContext context, Set<BlockPos> group) {
+        BlockPos pos = context.getClickedPos();
+        InteractionResult result = super.place(context);
+        if (result.consumesAction() && group != null && context.getLevel().getBlockEntity(pos) instanceof IronTankEntity part) {
+            part.preserveBoundary(group);
+            group.add(pos);
+        }
+        return result;
+    }
+
+    private Set<BlockPos> attachmentGroup(BlockPlaceContext context) {
+        var level = context.getLevel();
+        var support = context.getClickedPos().relative(context.getClickedFace().getOpposite());
+        if (level.isClientSide || !(level.getBlockEntity(support) instanceof IronTankEntity part)) {
+            return null;
+        }
+        var parts = part.networkParts();
+        if (parts.stream().noneMatch(IronTankEntity::hasCutNeighbor)) {
+            return null;
+        }
+        var group = new HashSet<BlockPos>();
+        for (IronTankEntity member : parts) {
+            group.add(member.getBlockPos());
+        }
+        return group;
     }
 
     private List<BlockPlaceContext> findLayer(BlockPlaceContext context) {
@@ -38,34 +68,28 @@ final class IronTankItem extends BlockItem {
         }
 
         var pos = context.getClickedPos();
-        if (!(level.getBlockEntity(pos.relative(face.getOpposite())) instanceof IronTankEntity part)
-            || !(part.getControllerBE() instanceof IronTankEntity controller)) {
+        if (!(level.getBlockEntity(pos.relative(face.getOpposite())) instanceof IronTankEntity part)) {
             return List.of();
         }
 
-        BlockPos base = controller.getBlockPos();
-        BlockPos start = face == Direction.UP ? base.above(controller.getHeight()) : base.below();
-        int width = controller.getWidth();
-        if (pos.getY() != start.getY() || controller.getHeight() >= controller.getMaxLength(Direction.Axis.Y, width)) {
-            return List.of();
-        }
-
+        int available = player.isCreative() ? Integer.MAX_VALUE : context.getItemInHand().getCount() - 1;
         var layer = new ArrayList<BlockPlaceContext>();
-        for (int x = 0; x < width; x++) {
-            for (int z = 0; z < width; z++) {
-                BlockPos target = start.offset(x, 0, z);
-                if (target.equals(pos) || level.getBlockState(target).is(getBlock())) {
-                    continue;
-                }
-                var extra = BlockPlaceContext.at(context, target, face);
-                if (!extra.getClickedPos().equals(target) || !extra.canPlace()
-                    || !level.mayInteract(player, target) || !player.mayUseItemAt(target, face, context.getItemInHand())
-                    || !canPlace(extra, getBlock().defaultBlockState())) {
-                    return List.of();
-                }
-                layer.add(extra);
+        for (IronTankEntity member : part.connectedParts(direction -> direction.getAxis().isHorizontal())) {
+            BlockPos target = member.getBlockPos().relative(face);
+            if (target.equals(pos) || level.getBlockState(target).is(getBlock())) {
+                continue;
             }
+            if (layer.size() >= available) {
+                break;
+            }
+            var extra = BlockPlaceContext.at(context, target, face);
+            if (!extra.getClickedPos().equals(target) || !extra.canPlace()
+                || !level.mayInteract(player, target) || !player.mayUseItemAt(target, face, context.getItemInHand())
+                || !canPlace(extra, getBlock().defaultBlockState())) {
+                return List.of();
+            }
+            layer.add(extra);
         }
-        return player.isCreative() || context.getItemInHand().getCount() > layer.size() ? layer : List.of();
+        return layer;
     }
 }

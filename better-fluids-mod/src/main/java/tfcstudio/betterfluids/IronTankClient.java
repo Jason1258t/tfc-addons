@@ -1,7 +1,6 @@
 package tfcstudio.betterfluids;
 
 import com.simibubi.create.AllSpriteShifts;
-import com.simibubi.create.content.fluids.tank.FluidTankRenderer;
 import com.simibubi.create.foundation.block.connected.CTSpriteShiftEntry;
 import com.simibubi.create.foundation.block.connected.CTSpriteShifter;
 import net.minecraft.resources.ResourceLocation;
@@ -20,7 +19,7 @@ final class IronTankClient {
 
     @SubscribeEvent
     static void registerRenderer(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerBlockEntityRenderer(BetterFluids.TANK_ENTITY.get(), FluidTankRenderer::new);
+        event.registerBlockEntityRenderer(BetterFluids.TANK_ENTITY.get(), IronTankRenderer::new);
     }
 
     @SubscribeEvent
