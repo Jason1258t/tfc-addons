@@ -80,5 +80,11 @@
   "item.destroy_extras.lead_dust": "Чистая свинцовая пыль",
   "item.destroy_extras.aluminum_dust": "Чистая алюминиевая пыль",
   "item.destroy_extras.chromium_dust": "Чистая хромовая пыль",
-  "item.destroy_extras.uranium_dust": "Чистая урановая пыль"
+  "item.destroy_extras.uranium_dust": "Чистая урановая пыль",
+  "item.destroy_extras.constantan_dust": "Константановая пыль",
+  "item.destroy_extras.electrum_dust": "Электрумовая пыль",
+  "item.destroy_extras.steel_dust": "Стальная пыль",
+  "item.destroy_extras.platinum_dust": "Платиновая пыль",
+  "item.destroy_extras.palladium_dust": "Палладиевая пыль",
+  "item.destroy_extras.rhodium_dust": "Родиевая пыль"
 }

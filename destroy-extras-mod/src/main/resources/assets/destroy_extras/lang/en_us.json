@@ -80,5 +80,11 @@
   "item.destroy_extras.lead_dust": "Pure Lead Dust",
   "item.destroy_extras.aluminum_dust": "Pure Aluminum Dust",
   "item.destroy_extras.chromium_dust": "Pure Chromium Dust",
-  "item.destroy_extras.uranium_dust": "Pure Uranium Dust"
+  "item.destroy_extras.uranium_dust": "Pure Uranium Dust",
+  "item.destroy_extras.constantan_dust": "Constantan Dust",
+  "item.destroy_extras.electrum_dust": "Electrum Dust",
+  "item.destroy_extras.steel_dust": "Steel Dust",
+  "item.destroy_extras.platinum_dust": "Platinum Dust",
+  "item.destroy_extras.palladium_dust": "Palladium Dust",
+  "item.destroy_extras.rhodium_dust": "Rhodium Dust"
 }

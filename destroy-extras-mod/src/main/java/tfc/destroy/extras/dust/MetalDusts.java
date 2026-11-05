@@ -26,7 +26,13 @@ public final class MetalDusts {
         new Metal("lead", 0x5F5F6A),
         new Metal("aluminum", 0xABB3B6),
         new Metal("chromium", 0xE6E5E2),
-        new Metal("uranium", 0x5FA35A));
+        new Metal("uranium", 0x5FA35A),
+        new Metal("constantan", 0xC59E83),
+        new Metal("electrum", 0xE8D080),
+        new Metal("steel", 0x777983),
+        new Metal("platinum", 0xD6D6CB),
+        new Metal("palladium", 0xCAC9D2),
+        new Metal("rhodium", 0xB7BBC1));
 
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(DestroyExtras.MOD_ID);
     private static final List<DeferredItem<Item>> DUSTS = new ArrayList<>();
