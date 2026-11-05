@@ -15,7 +15,7 @@ final class PcbWiring {
     static final Kind[] KINDS = {Kind.RESISTOR, Kind.RELAY, Kind.BUTTON, Kind.SWITCH,
             Kind.LAMP, Kind.REDSTONE_IN, Kind.REDSTONE_OUT, Kind.CAPACITOR, Kind.DIODE,
             Kind.FUSE, Kind.VOLTMETER, Kind.AMMETER, Kind.TRANSISTOR};
-    static final String ERROR = "Проверьте выводы и контакты электрической схемы";
+    static final String ERROR = "Проверьте выводы и контакты";
     private static final int CELLS = PcbTopology.CELLS;
     private static final int SIZE = PcbTopology.SIZE;
 

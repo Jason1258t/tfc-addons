@@ -3,6 +3,7 @@ package ee.extras.pcb;
 import com.george_vi.electroenergetics.CEEBlocks;
 import ee.extras.pcb.PcbCircuitDevice.Kind;
 import ee.extras.pcb.PcbCircuitDevice.Part;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,10 +67,12 @@ final class PcbAssembly {
 
     static int salvage(Player player, List<Part> parts, long blownFuses) {
         int recovered = 0;
+        List<Item> candidates = new ArrayList<>();
         for (int i = 0; i < parts.size(); i++) {
             Kind kind = parts.get(i).kind();
             Item item = item(kind);
             if (item == Items.AIR || (kind == Kind.FUSE && (blownFuses & (1L << i)) != 0)) continue;
+            candidates.add(item);
             float chance = switch (kind) {
                 case BUTTON, SWITCH, REDSTONE_IN, REDSTONE_OUT -> 0.70f;
                 case TRANSISTOR, DIODE, LAMP -> 0.45f;
@@ -79,6 +82,11 @@ final class PcbAssembly {
                 player.getInventory().placeItemBackInInventory(new ItemStack(item));
                 recovered++;
             }
+        }
+        if (recovered == 0 && !candidates.isEmpty() && player.getRandom().nextFloat() < 0.85f) {
+            Item spared = candidates.get(player.getRandom().nextInt(candidates.size()));
+            player.getInventory().placeItemBackInInventory(new ItemStack(spared));
+            return 1;
         }
         return recovered;
     }

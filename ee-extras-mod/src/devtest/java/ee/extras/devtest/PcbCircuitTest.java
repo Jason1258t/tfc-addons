@@ -50,11 +50,14 @@ final class PcbCircuitTest {
                 .then(Commands.literal("meter").then(Commands.argument("value", DoubleArgumentType.doubleArg(0))
                         .executes(context -> meter(context.getSource(), DoubleArgumentType.getDouble(context, "value")))))
                 .then(Commands.literal("display").executes(context -> display(context.getSource())))
-                .then(Commands.literal("stress").executes(context -> stress(context.getSource())))
+                .then(Commands.literal("stress").executes(context -> stress(context.getSource(), false)))
+                .then(Commands.literal("stress_activate").executes(context -> stress(context.getSource(), true)))
+                .then(Commands.literal("stress_check").executes(context -> stressCheck(context.getSource())))
                 .then(Commands.literal("salvage").executes(context -> salvage(context.getSource())))
                 .then(Commands.literal("editor").executes(context -> editor(context.getSource())))
                 .then(Commands.literal("nominal").executes(context -> nominal(context.getSource().getLevel())))
-                .then(Commands.literal("overload").executes(context -> overload(context.getSource().getLevel())))
+                .then(Commands.literal("overload").executes(context -> overload(context.getSource().getLevel(), false)))
+                .then(Commands.literal("overcurrent").executes(context -> overload(context.getSource().getLevel(), true)))
                 .then(Commands.literal("reserve_power").executes(context -> {
                     var battery = DevicesSavedData.load(context.getSource().getLevel()).getDevice(RESERVE, CreativeBatteryDevice.class);
                     battery.voltage = 24;
@@ -92,6 +95,8 @@ final class PcbCircuitTest {
         DevTest.place(level, BATTERY, Blocks.AIR.defaultBlockState());
         DevTest.place(level, BOARD, PcbItems.CIRCUIT_BLOCK.get().defaultBlockState());
         DevTest.place(level, BATTERY, CEEBlocks.CREATIVE_BATTERY.getDefaultState());
+        DevTest.place(level, RESERVE, Blocks.AIR.defaultBlockState());
+        DevTest.place(level, RESERVE, CEEBlocks.CREATIVE_BATTERY.getDefaultState());
         DevTest.wire(level, BATTERY, 0, BOARD, 0);
         DevTest.wire(level, BATTERY, 1, BOARD, 1);
         return 1;
@@ -195,9 +200,12 @@ final class PcbCircuitTest {
                     part(Kind.RESISTOR, 1, 4, 1000, 1),
                     new Part(Kind.TRANSISTOR, 0, 5, 1, 4, 0, 12),
                     part(Kind.RESISTOR, 5, 1, 1000, 1), part(Kind.VOLTMETER, 5, 1, 1, 48));
+            case "cutoff" -> {
+                power(level, 16);
+                yield List.of(new Part(Kind.RELAY, 0, 4, 1000, 0, 1, 24, true),
+                        part(Kind.RESISTOR, 4, 1, 1000, 1), part(Kind.VOLTMETER, 4, 1, 1, 48));
+            }
             case "reserve" -> {
-                DevTest.place(level, RESERVE, Blocks.AIR.defaultBlockState());
-                DevTest.place(level, RESERVE, CEEBlocks.CREATIVE_BATTERY.getDefaultState());
                 DevTest.wire(level, RESERVE, 0, BOARD, 2);
                 DevTest.wire(level, RESERVE, 1, BOARD, 1);
                 yield List.of(new Part(Kind.RELAY, 0, 3, 10000, 0, 1, 24),
@@ -237,7 +245,7 @@ final class PcbCircuitTest {
         throw new IllegalStateException("Табло не нашло плату");
     }
 
-    private static int stress(CommandSourceStack source) {
+    private static int stress(CommandSourceStack source, boolean activate) {
         ServerLevel level = source.getLevel();
         List<Part> parts = new ArrayList<>();
         int node = 0;
@@ -251,15 +259,39 @@ final class PcbCircuitTest {
             for (int x = 16; x < 32; x += 4) {
                 BlockPos pos = new BlockPos(x, -60, z);
                 BlockPos supply = pos.above(3);
-                DevTest.place(level, pos, PcbItems.CIRCUIT_BLOCK.get().defaultBlockState());
-                DevTest.place(level, supply, CEEBlocks.CREATIVE_BATTERY.getDefaultState());
+                if (!activate) {
+                    DevTest.place(level, pos, PcbItems.CIRCUIT_BLOCK.get().defaultBlockState());
+                    DevTest.place(level, supply, CEEBlocks.CREATIVE_BATTERY.getDefaultState());
+                    continue;
+                }
+                var battery = DevicesSavedData.load(level).getDevice(supply, CreativeBatteryDevice.class);
+                battery.voltage = 48;
+                battery.acFrequency = 0;
                 DevTest.wire(level, supply, 0, pos, 0);
                 DevTest.wire(level, supply, 1, pos, 1);
                 DevicesSavedData.load(level).getDevice(pos, PcbCircuitDevice.class)
                         .setCircuit(parts, PcbCircuitDevice.Rating.L3);
             }
         }
-        source.sendSuccess(() -> Component.literal("16 плат: 32 узла и 64 компонента на каждой"), false);
+        source.sendSuccess(() -> Component.literal(activate
+                ? "16 плат подключены: 32 узла и 64 компонента на каждой" : "16 плат и источников установлены"), false);
+        return 1;
+    }
+
+    private static int stressCheck(CommandSourceStack source) {
+        ServerLevel level = source.getLevel();
+        for (int z = 16; z < 32; z += 4) {
+            for (int x = 16; x < 32; x += 4) {
+                var pos = new BlockPos(x, -60, z);
+                var device = DevicesSavedData.load(level).getDevice(pos, PcbCircuitDevice.class);
+                var snapshot = new CompoundTag();
+                device.write(snapshot);
+                if (snapshot.getBoolean("Burnt") || snapshot.getDouble("Watts") < 7) {
+                    throw new IllegalStateException("Плата стенда не работает: " + pos);
+                }
+            }
+        }
+        source.sendSuccess(() -> Component.literal("Все 16 плат под нагрузкой"), false);
         return 1;
     }
 
@@ -294,10 +326,10 @@ final class PcbCircuitTest {
         return 1;
     }
 
-    private static int overload(ServerLevel level) {
-        power(level, 48);
+    private static int overload(ServerLevel level, boolean current) {
+        power(level, current ? 2 : 48);
         DevicesSavedData.load(level).getDevice(BOARD, PcbCircuitDevice.class)
-                .setCircuit(List.of(part(Kind.RESISTOR, 0, 1, 120, 1)));
+                .setCircuit(List.of(part(Kind.RESISTOR, 0, 1, current ? 2.5 : 120, 1)));
         return 1;
     }
 

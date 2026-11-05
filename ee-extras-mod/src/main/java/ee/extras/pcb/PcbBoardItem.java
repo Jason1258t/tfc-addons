@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.Block;
 
 /** Предмет готовой платы. Пассивная плата остаётся материалом для рецептов. */
 final class PcbBoardItem extends BlockItem {
-    static final String EDITOR_ERROR = "Нужна одна плата того же уровня и электрическая схема";
+    static final String EDITOR_ERROR = "Нужна одна чистая плата нужного уровня";
     private final int level;
 
     PcbBoardItem(int level) {

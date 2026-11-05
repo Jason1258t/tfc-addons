@@ -107,6 +107,31 @@ final class PcbClientTest {
             check("уровень L2 и второй слой выбраны", menu.level() == 2 && menu.layer() == 1);
             check("via поставлен кликом на втором слое", PcbTopology.get(menu.editor().topology(), 1, 3) == PcbTopology.VIA);
             Screenshot.grab(mc.gameDirectory, "pcb_l2_via.png", mc.getMainRenderTarget(), c -> {});
+        }
+        if (tick == 560) mc.player.closeContainer();
+        if (tick == 565) server.execute(() -> {
+            var editor = (PcbEditorBlockEntity) server.overworld().getBlockEntity(TABLE);
+            editor.clear(1);
+            editor.setItem(0, PcbItems.L1_BOARD.toStack());
+        });
+        if (tick == 575) open(mc);
+        if (tick == 590 && screen(mc) != null) {
+            for (int x = 1; x < 15; x++) if (x != 7) cell(screen(mc), x, 0);
+            for (int i = 0; i < 3; i++) click(screen(mc), 145, 33);
+            cell(screen(mc), 0, 0);
+            cell(screen(mc), 15, 0);
+            for (int i = 0; i < 2; i++) click(screen(mc), 145, 33);
+            for (int i = 0; i < 5; i++) click(screen(mc), 200, 195);
+            cell(screen(mc), 7, 0);
+            Screenshot.grab(mc.gameDirectory, "pcb_electrical.png", mc.getMainRenderTarget(), c -> {});
+        }
+        if (tick == 605 && screen(mc) != null) click(screen(mc), 145, 105);
+        if (tick == 620) {
+            var current = screen(mc);
+            check("электрическая схема собрана кликами", current != null && current.getMenu().status() == 1
+                    && current.getMenu().getSlot(0).getItem().is(PcbItems.L1_BOARD.get())
+                    && current.getMenu().getSlot(0).getItem().get(PcbItems.PCB_TOPOLOGY.get()) != null
+                    && current.getMenu().getSlot(0).getItem().get(PcbItems.PCB_TOPOLOGY.get()).getBoolean("Assembled"));
             System.out.println("EECLIENT PCB ИТОГ: ошибок " + fails);
             mc.stop();
         }
