@@ -2,6 +2,7 @@ package ee.extras.wire;
 
 import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
+import ee.extras.cable.CableCapGeometry;
 import ee.extras.cable.CableEnd;
 import ee.extras.cable.CableKind;
 import java.util.ArrayList;
@@ -110,6 +111,10 @@ public sealed interface WireEnd {
             CableEnd end = end(level);
             BlockState state = level.getBlockState(pos);
             if (end != null && state.getBlock() instanceof ElectricalDeviceBlock<?> b) {
+                if (end.contacts() != null) {
+                    var cover = CableCapGeometry.of(level, pos, state, end.contacts());
+                    if (cover != null) return Vec3.atLowerCornerOf(pos).add(cover.front());
+                }
                 Vec3 local = b.getNodePosition(level, pos, state, end.cable().id());
                 if (local != null) return Vec3.atLowerCornerOf(pos).add(local);
             }

@@ -270,9 +270,11 @@ public class EeExtras {
         modBus.addListener((FMLCommonSetupEvent e) -> e.enqueueWork(() -> BlockStressValues.IMPACTS.register(
                 KINETIC_GENERATOR.get(), () -> KineticGeneratorBlockEntity.STRESS_PER_RPM)));
         modBus.addListener(EeExtras::capabilities);
+        ee.extras.cable.CableCapSync.register(modBus, NeoForge.EVENT_BUS);
         CableEvents.register(NeoForge.EVENT_BUS);
         NeoForge.EVENT_BUS.addListener(PocketCharge::addTooltip);
         if (FMLEnvironment.dist == Dist.CLIENT) {
+            ee.extras.cable.CableCapRender.register(NeoForge.EVENT_BUS);
             CableHud.register(modBus, NeoForge.EVENT_BUS);
             ee.extras.wire.client.WireClient.register(modBus, NeoForge.EVENT_BUS);
             LinesClient.register(modBus, NeoForge.EVENT_BUS);

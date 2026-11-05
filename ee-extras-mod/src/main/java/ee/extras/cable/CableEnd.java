@@ -3,7 +3,6 @@ package ee.extras.cable;
 import com.george_vi.electroenergetics.content.bundled_wire.BundledWireTerminationBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -24,11 +23,10 @@ public record CableEnd(BlockPos pos, CableKind kind, boolean eeTermination, int 
         this(pos, kind, eeTermination, base, null);
     }
 
-    /** Как of(pos, state), но знает и приборы с крышкой — про крышки знает только сервер */
+    /** Как of(pos, state), но знает и приборы с крышкой */
     public static CableEnd of(Level level, BlockPos pos, BlockState state) {
         CableEnd end = of(pos, state);
-        if (end == null && level instanceof ServerLevel sl) return CableCap.end(sl, pos, state);
-        return end;
+        return end == null ? CableCap.end(level, pos, state) : end;
     }
 
     public static CableEnd of(BlockPos pos, BlockState state) {

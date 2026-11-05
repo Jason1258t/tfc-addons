@@ -48,11 +48,9 @@ public final class CableLaying {
         }
         BlockState state = level.getBlockState(pos);
         CableEnd end = CableEnd.of(level, pos, state);
-        // Про крышки приборов клиент не знает: прибор с двумя контактами — ждём ответа сервера
-        if (end == null && level.isClientSide && CableCap.isTwoContact(level, pos, state)) return InteractionResult.SUCCESS;
         if (end == null) return CableCap.isTwoContact(level, pos, state) ? deny(level, player, pos, "cap.needed") : null;
-        if (!(level instanceof ServerLevel sl)) return InteractionResult.SUCCESS;
         if (!fits(kind, end)) return deny(level, player, pos, kind == CableKind.DUPLEX ? "needs_duplex" : "needs_four_core");
+        if (!(level instanceof ServerLevel sl)) return InteractionResult.SUCCESS;
 
         BundledWireTerminationState selected = stack.get(CEEDataComponents.SELECTED_WIRE_TERMINATION);
         if (selected == null) {

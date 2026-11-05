@@ -54,13 +54,13 @@ public final class CableHud {
         ItemStack stack = mc.player.getMainHandItem();
         if (!(stack.getItem() instanceof BundledWireItem) || !(mc.hitResult instanceof BlockHitResult hit)) return;
         BlockState state = mc.level.getBlockState(hit.getBlockPos());
-        CableEnd end = CableEnd.of(hit.getBlockPos(), state);
+        CableEnd end = CableEnd.of(mc.level, hit.getBlockPos(), state);
         if (end == null) return;
 
         CableKind spool = stack.getItem() instanceof FourCoreSpoolItem ? CableKind.FOUR_CORE : CableKind.DUPLEX;
         boolean fits = CableLaying.fits(spool, end);
         BundledWireTerminationState selected = stack.get(CEEDataComponents.SELECTED_WIRE_TERMINATION);
-        MutableComponent title = Component.translatable("ee_extras.nodes.cable").withStyle(ChatFormatting.BOLD);
+        MutableComponent title = (end.contacts() == null ? Component.translatable("ee_extras.nodes.cable") : EeExtras.CABLE_CAP.get().getDescription().copy()).withStyle(ChatFormatting.BOLD);
         MutableComponent line;
         if (!fits) line = Component.translatable("ee_extras.cable." + (spool == CableKind.DUPLEX ? "needs_duplex" : "needs_four_core"));
         else if (selected != null && selected.pos().equals(end.pos())) line = Component.translatable("ee_extras.cable.selected");

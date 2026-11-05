@@ -42,7 +42,7 @@ public final class CableEvents {
     /**
      * Крышка на прибор (CableCap) — раньше обработчиков Create (HIGH): у приборов с окном значения (вольтметр EE) клик
      * по нему иначе забирает ValueSettingsInputHandler. Там же: Shift + пустая рука снимает крышку, провод EE на контакты
-     * под крышкой не подключить. Про крышки знает только сервер.
+     * под крышкой не подключить.
      */
     static void capClick(PlayerInteractEvent.RightClickBlock e) {
         ItemStack stack = e.getItemStack();
@@ -63,10 +63,10 @@ public final class CableEvents {
             }
             return;
         }
-        if (level instanceof ServerLevel sl && CableCap.get(sl).has(pos)) {
+        if (CableCap.present(level, pos)) {
             // Shift + пустая рука — снять крышку; обычный провод на контакты под крышкой не подключить
             if (stack.isEmpty() && e.getHand() == InteractionHand.MAIN_HAND && e.getEntity().isShiftKeyDown()) {
-                if (CableCap.take(sl, pos, e.getEntity())) {
+                if (!(level instanceof ServerLevel sl) || CableCap.take(sl, pos, e.getEntity())) {
                     e.setCanceled(true);
                     e.setCancellationResult(InteractionResult.SUCCESS);
                 }

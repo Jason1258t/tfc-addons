@@ -67,8 +67,12 @@ public class CableCap extends SavedData {
     }
 
     /** Прибор с крышкой как конец кабеля; null — крышки нет или у прибора уже не два контакта */
-    static CableEnd end(ServerLevel level, BlockPos pos, BlockState state) {
-        if (!get(level).has(pos)) return null;
+    static boolean present(Level level, BlockPos pos) {
+        return level instanceof ServerLevel server ? get(server).has(pos) : CableCapRender.has(level, pos);
+    }
+
+    static CableEnd end(Level level, BlockPos pos, BlockState state) {
+        if (!present(level, pos)) return null;
         int[] c = contacts(level, pos, state);
         if (c == null || c.length != 2) return null;
         return new CableEnd(pos, CableKind.DUPLEX, false, c[0], c);
@@ -78,7 +82,9 @@ public class CableCap extends SavedData {
     public static InteractionResult put(Level level, BlockPos pos, Player player, ItemStack stack) {
         BlockState state = level.getBlockState(pos);
         int[] c = contacts(level, pos, state);
-        if (!(level instanceof ServerLevel sl)) return c != null && c.length == 2 ? InteractionResult.SUCCESS : InteractionResult.FAIL;
+        if (!(level instanceof ServerLevel sl))
+            return c != null && c.length == 2 && !present(level, pos) && !CableClient.hasWires(pos, c)
+                    ? InteractionResult.SUCCESS : InteractionResult.FAIL;
         if (c == null) return CableLaying.deny(level, player, pos, "cap.not_device");
         if (c.length != 2) return deny(level, player, pos, Component.translatable("ee_extras.cable.cap.contacts", c.length));
         CableCap caps = get(sl);
@@ -90,6 +96,7 @@ public class CableCap extends SavedData {
 
         caps.caps.add(pos);
         caps.setDirty();
+        CableCapSync.changed(sl, pos);
         if (player == null || !player.isCreative()) stack.shrink(1);
         AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos);
         if (player != null)
@@ -114,6 +121,7 @@ public class CableCap extends SavedData {
         CableCap caps = get(level);
         if (!caps.caps.remove(pos)) return false;
         caps.setDirty();
+        CableCapSync.changed(level, pos);
         int cables = CableData.get(level).removeAt(level, pos);
         if (!player.isCreative()) {
             player.getInventory().placeItemBackInInventory(new ItemStack(EeExtras.CABLE_CAP.get()));
@@ -135,6 +143,7 @@ public class CableCap extends SavedData {
             if (c != null && c.length == 2) continue;
             it.remove();
             changed = true;
+            CableCapSync.changed(level, pos);
             CableData.get(level).removeAt(level, pos);
             Block.popResource(level, pos, new ItemStack(EeExtras.CABLE_CAP.get()));
         }
