@@ -28,6 +28,6 @@ ICONS="compact_kinetic_generator three_phase_rectifier single_phase_rectifier he
   display_driver advanced_display_driver display_crt display_advanced pocket_display network_port computer_case advanced_computer_case
   pocket_case peripheral_case small_motor precision_actuator storage_bay robot_chassis disk_transport print_mechanism
   network_transceiver ender_transceiver speaker_driver audio_amplifier power_supply battery_module magnetic_disk_medium
-  abs_sheet abs_keyboard_blank pet_film rgb_phosphor shadow_mask permanent_magnet speaker_cone battery_electrolyte ink_cartridge"
+  abs_sheet abs_keyboard_blank pet_film rgb_phosphor shadow_mask permanent_magnet speaker_cone battery_electrolyte ink_cartridge antenna pocket_color_display"
 (cd ../.. && node scripts/mcp/render.mjs tools/ee-extras-mod $(printf 'ee_extras:%s ' $ICONS) --out tools/ee-extras-mod/icons --size 192)
 echo "готово: ee-extras-$VERSION.jar → tools/ee-extras-mod; обновите addon.json и проверьте MCP addon_check"

@@ -65,6 +65,160 @@
     "kind": "remove"
   },
   {
+    "path": "data/cccbridge/recipe/animatronic_block.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        " D ",
+        "HBH",
+        " C "
+      ],
+      "key": {
+        "D": {
+          "item": "ee_extras:display_crt"
+        },
+        "H": {
+          "item": "create:brass_hand"
+        },
+        "B": {
+          "item": "ee_extras:precision_actuator"
+        },
+        "C": {
+          "item": "ee_extras:peripheral_case"
+        }
+      },
+      "result": {
+        "id": "cccbridge:animatronic_block",
+        "count": 1
+      },
+      "neoforge:conditions": [
+        {
+          "type": "neoforge:mod_loaded",
+          "modid": "cccbridge"
+        }
+      ]
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/cccbridge/recipe/redrouter_block.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        " R ",
+        "TBT",
+        " C "
+      ],
+      "key": {
+        "R": {
+          "item": "minecraft:redstone"
+        },
+        "T": {
+          "item": "ee_extras:connector"
+        },
+        "B": {
+          "item": "ee_extras:control_board_l1"
+        },
+        "C": {
+          "item": "ee_extras:peripheral_case"
+        }
+      },
+      "result": {
+        "id": "cccbridge:redrouter_block",
+        "count": 1
+      },
+      "neoforge:conditions": [
+        {
+          "type": "neoforge:mod_loaded",
+          "modid": "cccbridge"
+        }
+      ]
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/cccbridge/recipe/scroller_block.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        " G ",
+        "BMT",
+        " C "
+      ],
+      "key": {
+        "G": {
+          "item": "create:cogwheel"
+        },
+        "B": {
+          "item": "ee_extras:control_board_l1"
+        },
+        "M": {
+          "item": "ee_extras:small_motor"
+        },
+        "T": {
+          "item": "ee_extras:connector"
+        },
+        "C": {
+          "item": "ee_extras:peripheral_case"
+        }
+      },
+      "result": {
+        "id": "cccbridge:scroller_block",
+        "count": 1
+      },
+      "neoforge:conditions": [
+        {
+          "type": "neoforge:mod_loaded",
+          "modid": "cccbridge"
+        }
+      ]
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/cccbridge/recipe/source_block.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        " G ",
+        "LBT",
+        " C "
+      ],
+      "key": {
+        "G": {
+          "tag": "c:glass_panes"
+        },
+        "L": {
+          "item": "create:rose_quartz_lamp"
+        },
+        "B": {
+          "item": "ee_extras:control_board_l1"
+        },
+        "T": {
+          "item": "ee_extras:connector"
+        },
+        "C": {
+          "item": "ee_extras:abs_sheet"
+        }
+      },
+      "result": {
+        "id": "cccbridge:source_block",
+        "count": 2
+      },
+      "neoforge:conditions": [
+        {
+          "type": "neoforge:mod_loaded",
+          "modid": "cccbridge"
+        }
+      ]
+    },
+    "kind": "replace"
+  },
+  {
     "path": "data/computercraft/recipe/cable.json",
     "content": {
       "type": "create:compacting",
@@ -757,7 +911,7 @@
           "item": "ee_extras:pocket_case"
         },
         "D": {
-          "item": "ee_extras:pocket_display"
+          "item": "ee_extras:pocket_color_display"
         },
         "I": {
           "item": "ee_extras:pocket_input"
@@ -808,7 +962,7 @@
           "item": "ee_extras:advanced_motherboard"
         },
         "D": {
-          "item": "ee_extras:pocket_display"
+          "item": "ee_extras:pocket_color_display"
         },
         "C": {
           "item": "computercraft:pocket_computer_normal"
@@ -1724,6 +1878,27 @@
     "kind": "add"
   },
   {
+    "path": "data/ee_extras/recipe/cc/materials/antenna.json",
+    "content": {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "tag": "c:rods/steel"
+        },
+        {
+          "tag": "c:wires/copper"
+        }
+      ],
+      "results": [
+        {
+          "id": "ee_extras:antenna",
+          "count": 1
+        }
+      ]
+    },
+    "kind": "add"
+  },
+  {
     "path": "data/ee_extras/recipe/cc/materials/battery_electrolyte.json",
     "content": {
       "type": "create:filling",
@@ -1938,7 +2113,7 @@
           "item": "ee_extras:inductor"
         },
         {
-          "item": "create:transmitter"
+          "item": "ee_extras:antenna"
         },
         {
           "item": "ee_extras:network_port"
@@ -2003,6 +2178,40 @@
       },
       "result": {
         "id": "ee_extras:pocket_case",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/pocket_color_display.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "PGP",
+        "RDR",
+        " C "
+      ],
+      "key": {
+        "P": {
+          "item": "ee_extras:abs_sheet"
+        },
+        "G": {
+          "tag": "c:glass_panes"
+        },
+        "R": {
+          "item": "ee_extras:rgb_phosphor"
+        },
+        "D": {
+          "item": "ee_extras:advanced_display_driver"
+        },
+        "C": {
+          "item": "ee_extras:connector"
+        }
+      },
+      "result": {
+        "id": "ee_extras:pocket_color_display",
         "count": 1
       }
     },
@@ -2373,7 +2582,11 @@
     "content": {
       "replace": false,
       "values": [
-        "#c:plates/plastic",
+        {
+          "id": "#c:plates/plastic",
+          "required": false
+        },
+        "ee_extras:abs_sheet",
         {
           "id": "afc:rubber_bar",
           "required": false

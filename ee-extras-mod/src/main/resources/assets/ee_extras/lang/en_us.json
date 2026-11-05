@@ -273,6 +273,8 @@
   "item.ee_extras.advanced_display_driver": "Advanced Display Driver",
   "item.ee_extras.display_crt": "CRT Display",
   "item.ee_extras.display_advanced": "Colour Display",
+  "item.ee_extras.antenna": "Whip Antenna",
+  "item.ee_extras.pocket_color_display": "Miniature Color Display",
   "item.ee_extras.pocket_display": "Pocket Display",
   "item.ee_extras.network_port": "Network Port",
   "item.ee_extras.computer_case": "Computer Case",

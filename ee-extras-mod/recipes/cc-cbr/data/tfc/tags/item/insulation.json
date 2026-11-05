@@ -1,7 +1,11 @@
 {
   "replace": false,
   "values": [
-    "#c:plates/plastic",
+    {
+      "id": "#c:plates/plastic",
+      "required": false
+    },
+    "ee_extras:abs_sheet",
     {
       "id": "afc:rubber_bar",
       "required": false

@@ -113,6 +113,8 @@ public final class PcbItems {
     public static final DeferredItem<Item> ADVANCED_DISPLAY_DRIVER = item("advanced_display_driver", 16);
     public static final DeferredItem<Item> DISPLAY_CRT = item("display_crt", 16);
     public static final DeferredItem<Item> DISPLAY_ADVANCED = item("display_advanced", 16);
+    public static final DeferredItem<Item> ANTENNA = item("antenna", 32);
+    public static final DeferredItem<Item> POCKET_COLOR_DISPLAY = item("pocket_color_display", 16);
     public static final DeferredItem<Item> POCKET_DISPLAY = item("pocket_display", 16);
     public static final DeferredItem<Item> NETWORK_PORT = item("network_port", 32);
     public static final DeferredItem<Item> COMPUTER_CASE = item("computer_case", 8);
@@ -140,7 +142,7 @@ public final class PcbItems {
             PET_FILM, RGB_PHOSPHOR, SHADOW_MASK, PERMANENT_MAGNET, SPEAKER_CONE, BATTERY_ELECTROLYTE, INK_CARTRIDGE,
             CONTROL_BOARD_L1,
             COMPUTER_MOTHERBOARD, ADVANCED_MOTHERBOARD, TURTLE_CONTROLLER, ADVANCED_TURTLE_CONTROLLER, KEYBOARD,
-            POCKET_INPUT, DISPLAY_DRIVER, ADVANCED_DISPLAY_DRIVER, DISPLAY_CRT, DISPLAY_ADVANCED, POCKET_DISPLAY,
+            POCKET_INPUT, DISPLAY_DRIVER, ADVANCED_DISPLAY_DRIVER, DISPLAY_CRT, DISPLAY_ADVANCED, POCKET_DISPLAY, POCKET_COLOR_DISPLAY, ANTENNA,
             NETWORK_PORT, COMPUTER_CASE, ADVANCED_COMPUTER_CASE, POCKET_CASE, PERIPHERAL_CASE, SMALL_MOTOR,
             PRECISION_ACTUATOR, STORAGE_BAY, ROBOT_CHASSIS, DISK_TRANSPORT, PRINT_MECHANISM, NETWORK_TRANSCEIVER,
             ENDER_TRANSCEIVER, SPEAKER_DRIVER, AUDIO_AMPLIFIER, POWER_SUPPLY, BATTERY_MODULE, MAGNETIC_DISK_MEDIUM);

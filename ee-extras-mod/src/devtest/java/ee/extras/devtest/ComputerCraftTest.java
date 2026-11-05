@@ -54,6 +54,11 @@ final class ComputerCraftTest {
         ServerLevel level = src.getLevel();
         boolean restored = checkMigration(level);
         verifyManifest(level);
+        for (String id : List.of("computercraft:cable", "ee_extras:cc/storage_bay")) {
+            Recipe<?> recipe = level.getRecipeManager().byKey(ResourceLocation.parse(id)).orElseThrow().value();
+            require(recipe.getIngredients().stream().anyMatch(i -> i.test(item(PcbItems.ABS_SHEET))),
+                    "ABS-лист не принят как изоляция: " + id);
+        }
         ResourceLocation magnetId = ResourceLocation.parse("ee_extras:cc/materials/permanent_magnet");
         Recipe<?> magnet = level.getRecipeManager().byKey(magnetId).orElseThrow().value();
         require(magnet instanceof DeployerApplicationRecipe deploying && deploying.shouldKeepHeldItem(),
@@ -65,7 +70,7 @@ final class ComputerCraftTest {
         verifyComputer(level);
         ItemStack turtle = verifyTurtle(level);
         if (!restored) saveMigration(level, turtle, pocket, disk);
-        String message = "CC PASS: " + checks + " проверок; рецепты 77/77; миграция=" + (restored ? "восстановлена" : "создана");
+        String message = "CC PASS: " + checks + " проверок; рецепты 83/83; миграция=" + (restored ? "восстановлена" : "создана");
         src.sendSuccess(() -> Component.literal(message), false);
         return checks;
     }
@@ -95,7 +100,7 @@ final class ComputerCraftTest {
         } catch (Exception e) {
             throw new IllegalStateException("CC FAIL: не прочитан манифест", e);
         }
-        require(count == 77, "манифест содержит " + count + " вместо 77 рецептов");
+        require(count == 83, "манифест содержит " + count + " вместо 83 рецептов");
     }
 
     private static void verifyOldIds() {
@@ -194,10 +199,15 @@ final class ComputerCraftTest {
 
         CraftingInput upgrade = input(3, 3, List.of(
                 item(PcbItems.POCKET_CASE), item(PcbItems.ADVANCED_MOTHERBOARD), item(PcbItems.POCKET_CASE),
-                item(PcbItems.POCKET_DISPLAY), withSpeaker, item(PcbItems.POCKET_DISPLAY),
+                item(PcbItems.POCKET_COLOR_DISPLAY), withSpeaker, item(PcbItems.POCKET_COLOR_DISPLAY),
                 ItemStack.EMPTY, item(PcbItems.BATTERY_MODULE), ItemStack.EMPTY));
         Recipe<CraftingInput> recipe = crafting(level, "computercraft:pocket_computer_advanced_upgrade");
         require(recipe.matches(upgrade, level), "промышленный upgrade карманного компьютера не совпал с сеткой");
+        CraftingInput monochrome = input(3, 3, List.of(
+                item(PcbItems.POCKET_CASE), item(PcbItems.ADVANCED_MOTHERBOARD), item(PcbItems.POCKET_CASE),
+                item(PcbItems.POCKET_DISPLAY), withSpeaker, item(PcbItems.POCKET_DISPLAY),
+                ItemStack.EMPTY, item(PcbItems.BATTERY_MODULE), ItemStack.EMPTY));
+        require(!recipe.matches(monochrome, level), "улучшение приняло обычный экран вместо цветной матрицы");
         ItemStack result = recipe.assemble(upgrade, level.registryAccess());
         require(result.is(ModRegistry.Items.POCKET_COMPUTER_ADVANCED.get()), "upgrade не выдал продвинутый карманный компьютер");
         same(normal, result, ModRegistry.DataComponents.COMPUTER_ID.get(), "upgrade карманного компьютера изменил COMPUTER_ID");

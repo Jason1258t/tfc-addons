@@ -1,0 +1,30 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    "PGP",
+    "RDR",
+    " C "
+  ],
+  "key": {
+    "P": {
+      "item": "ee_extras:abs_sheet"
+    },
+    "G": {
+      "tag": "c:glass_panes"
+    },
+    "R": {
+      "item": "ee_extras:rgb_phosphor"
+    },
+    "D": {
+      "item": "ee_extras:advanced_display_driver"
+    },
+    "C": {
+      "item": "ee_extras:connector"
+    }
+  },
+  "result": {
+    "id": "ee_extras:pocket_color_display",
+    "count": 1
+  }
+}

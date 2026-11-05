@@ -12,6 +12,22 @@
     "output": ""
   },
   {
+    "id": "cccbridge:animatronic_block",
+    "output": "cccbridge:animatronic_block"
+  },
+  {
+    "id": "cccbridge:redrouter_block",
+    "output": "cccbridge:redrouter_block"
+  },
+  {
+    "id": "cccbridge:scroller_block",
+    "output": "cccbridge:scroller_block"
+  },
+  {
+    "id": "cccbridge:source_block",
+    "output": "cccbridge:source_block"
+  },
+  {
     "id": "computercraft:cable",
     "output": "computercraft:cable"
   },
@@ -224,6 +240,10 @@
     "output": "ee_extras:abs_sheet"
   },
   {
+    "id": "ee_extras:cc/materials/antenna",
+    "output": "ee_extras:antenna"
+  },
+  {
     "id": "ee_extras:cc/materials/battery_electrolyte",
     "output": "ee_extras:battery_electrolyte"
   },
@@ -266,6 +286,10 @@
   {
     "id": "ee_extras:cc/pocket_case",
     "output": "ee_extras:pocket_case"
+  },
+  {
+    "id": "ee_extras:cc/pocket_color_display",
+    "output": "ee_extras:pocket_color_display"
   },
   {
     "id": "ee_extras:cc/pocket_display",

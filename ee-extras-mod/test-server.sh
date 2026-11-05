@@ -21,7 +21,7 @@ if [ -n "${IE:-}" ]; then cp "$MODS"/ImmersiveEngineering-*.jar run/mods/; fi
 if [ -n "${TFC:-}" ]; then cp "$MODS"/TerraFirmaCraft-NeoForge-*.jar "$MODS"/Patchouli-*.jar run/mods/; fi
 # CC=1 — CC:Tweaked, CCBR и More Red для проверки промышленных рецептов и сохранения данных устройств.
 if [ -n "${CC:-}" ]; then
-  cp "$MODS"/cc-tweaked-*.jar "$MODS"/ccbr-*.jar "$MODS"/morered-*.jar run/mods/
+  cp "$MODS"/cc-tweaked-*.jar "$MODS"/ccbr-*.jar "$MODS"/cccbridge-*.jar "$MODS"/morered-*.jar run/mods/
   # Как у игрока: datapack мира имеет приоритет над рецептами модов, включая удаление через neoforge:false.
   mkdir -p run/world/datapacks/cc-cbr
   rm -rf run/world/datapacks/cc-cbr/data

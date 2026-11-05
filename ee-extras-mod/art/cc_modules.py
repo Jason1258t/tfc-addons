@@ -16,6 +16,7 @@ DEVTEST = ROOT / "src" / "devtest" / "resources"
 
 ITEMS = [
     "abs_sheet", "abs_keyboard_blank", "pet_film", "rgb_phosphor", "shadow_mask",
+    "antenna", "pocket_color_display",
     "permanent_magnet", "speaker_cone", "battery_electrolyte", "ink_cartridge",
     "control_board_l1", "computer_motherboard", "advanced_motherboard", "turtle_controller",
     "advanced_turtle_controller", "keyboard", "pocket_input", "display_driver", "advanced_display_driver",
@@ -102,7 +103,7 @@ solder("advanced_display_driver", ["ee_extras:l3_board", ("ee_extras:basic_ic", 
        "ee_extras:connector"])
 solder("network_port", ["ee_extras:control_board_l1", ("ee_extras:connector", 2), "ee_extras:inductor",
        "ee_extras:copper_foil"])
-solder("network_transceiver", ["ee_extras:l2_board", "ee_extras:basic_ic", "ee_extras:inductor", "create:transmitter",
+solder("network_transceiver", ["ee_extras:l2_board", "ee_extras:basic_ic", "ee_extras:inductor", "ee_extras:antenna",
        "ee_extras:network_port", ("ee_extras:copper_foil", 2)])
 solder("ender_transceiver", ["ee_extras:network_transceiver", "ee_extras:l3_board", "ccbr:integrated_circuit",
        "ee_extras:inductor", "minecraft:ghast_tear", ("ee_extras:copper_foil", 2)])
@@ -176,6 +177,16 @@ mechanical("data/ee_extras/recipe/cc/materials/ink_cartridge.json", [" P ", "AIA
            {"P": "ee_extras:pet_film", "A": "ee_extras:abs_sheet", "I": "minecraft:ink_sac"},
            "ee_extras:ink_cartridge")
 
+add("data/ee_extras/recipe/cc/materials/antenna.json", {
+    "type": "create:deploying",
+    "ingredients": [ingredient("#c:rods/steel"), ingredient("#c:wires/copper")],
+    "results": [result("ee_extras:antenna")],
+})
+module("pocket_color_display", ["PGP", "RDR", " C "], {
+    "P": "ee_extras:abs_sheet", "G": "#c:glass_panes", "R": "ee_extras:rgb_phosphor",
+    "D": "ee_extras:advanced_display_driver", "C": "ee_extras:connector",
+})
+
 # Электромеханика, связь, звук и питание.
 module("small_motor", [" C ", "RMR", " S "], {"C": "ee_extras:inductor", "R": "#c:rods/steel",
        "M": "ee_extras:permanent_magnet", "S": "#c:plates/steel"})
@@ -227,7 +238,7 @@ for tier in ("normal", "advanced"):
 for tier in ("normal", "advanced"):
     motherboard = "advanced_motherboard" if tier == "advanced" else "computer_motherboard"
     mechanical(f"{CC}/pocket_computer_{tier}.json", ["PDP", "IMI", "CBT"], {
-        "P": "ee_extras:pocket_case", "D": "ee_extras:pocket_display", "I": "ee_extras:pocket_input",
+        "P": "ee_extras:pocket_case", "D": "ee_extras:pocket_color_display" if tier == "advanced" else "ee_extras:pocket_display", "I": "ee_extras:pocket_input",
         "M": f"ee_extras:{motherboard}", "C": "ee_extras:connector", "B": "ee_extras:battery_module",
         "T": "ee_extras:network_port",
     }, f"computercraft:pocket_computer_{tier}", status="changed", note="Pocket display/input, battery and L2/L3 motherboard")
@@ -272,7 +283,7 @@ upgrades = {
         "C": "computercraft:computer_normal", "K": "ee_extras:keyboard", "P": "ee_extras:power_supply",
     }, "computercraft:computer_normal", "computercraft:computer_advanced"),
     "pocket_computer_advanced_upgrade": (["AMA", "DCD", " B "], {
-        "A": "ee_extras:pocket_case", "M": "ee_extras:advanced_motherboard", "D": "ee_extras:pocket_display",
+        "A": "ee_extras:pocket_case", "M": "ee_extras:advanced_motherboard", "D": "ee_extras:pocket_color_display",
         "C": "computercraft:pocket_computer_normal", "B": "ee_extras:battery_module",
     }, "computercraft:pocket_computer_normal", "computercraft:pocket_computer_advanced"),
     "turtle_advanced_upgrade": ([" R ", "ACP", " S "], {
@@ -323,6 +334,29 @@ for entry in audit:
 add("data/ccbr/recipe/pressing/lapis_block.json", {"neoforge:conditions": [{"type": "neoforge:false"}]}, "removed",
     "After the IC replacement the lapis plate has no remaining active consumers")
 
+# CC:C Bridge: производство базового блока Source и штатное обратимое переключение Source/Target.
+BRIDGE = "data/cccbridge/recipe"
+for block, pattern, parts, count in [
+    ("redrouter_block", [" R ", "TBT", " C "], {
+        "R": "minecraft:redstone", "T": "ee_extras:connector", "B": "ee_extras:control_board_l1",
+        "C": "ee_extras:peripheral_case",
+    }, 1),
+    ("animatronic_block", [" D ", "HBH", " C "], {
+        "D": "ee_extras:display_crt", "H": "create:brass_hand", "B": "ee_extras:precision_actuator",
+        "C": "ee_extras:peripheral_case",
+    }, 1),
+    ("scroller_block", [" G ", "BMT", " C "], {
+        "G": "create:cogwheel", "B": "ee_extras:control_board_l1", "M": "ee_extras:small_motor",
+        "T": "ee_extras:connector", "C": "ee_extras:peripheral_case",
+    }, 1),
+    ("source_block", [" G ", "LBT", " C "], {
+        "G": "#c:glass_panes", "L": "create:rose_quartz_lamp", "B": "ee_extras:control_board_l1",
+        "T": "ee_extras:connector", "C": "ee_extras:abs_sheet",
+    }, 2),
+]:
+    mechanical(f"{BRIDGE}/{block}.json", pattern, parts, f"cccbridge:{block}", count, "changed")
+    recipes[f"{BRIDGE}/{block}.json"]["neoforge:conditions"] = [{"type": "neoforge:mod_loaded", "modid": "cccbridge"}]
+
 # Полный аудит неизменённых 40 файлов CC: special/output-only/cosmetic/creative и upgrades.
 unchanged = {
     "clear_colour.json": "special: clears colour without deleting disk data",
@@ -356,7 +390,7 @@ for tier in ("normal", "advanced"):
                       "note": "Cosmetic transform recipe"})
 
 # Общий тег изоляции: доступный IE/AFC базовый вариант + необязательные полимеры Destroy M9.
-tag = {"replace": False, "values": ["#c:plates/plastic", {"id": "afc:rubber_bar", "required": False},
+tag = {"replace": False, "values": [{"id": "#c:plates/plastic", "required": False}, "ee_extras:abs_sheet", {"id": "afc:rubber_bar", "required": False},
        {"id": "destroy:polystyrene_butadiene", "required": False},
        {"id": "destroy:polyethene", "required": False}, {"id": "destroy:polypropene", "required": False},
        {"id": "destroy:polyvinyl_chloride", "required": False}]}
@@ -365,7 +399,7 @@ tag = {"replace": False, "values": ["#c:plates/plastic", {"id": "afc:rubber_bar"
 def main() -> None:
     if len([x for x in audit if x["path"].startswith(CC)]) != 75:
         raise ValueError("CC audit must contain exactly 75 files")
-    if len(ITEMS) != 39 or len(recipes) != 77 or len(data_files) != 1:
+    if len(ITEMS) != 41 or len(recipes) != 83 or len(data_files) != 1:
         raise ValueError(f"unexpected size: {len(ITEMS)} items, {len(recipes)} recipes, {len(data_files)} data files")
     if OUT.exists():
         shutil.rmtree(OUT)
@@ -403,7 +437,7 @@ def main() -> None:
     for path in [p for p in DEVTEST.rglob("*.json") if p.is_file()]:
         relative = path.relative_to(DEVTEST).as_posix()
         if relative.startswith("data/computercraft/") or relative.startswith("data/ccbr/") or relative == tag_path \
-                or relative.startswith("data/ee_extras/recipe/cc/") or relative in data_files:
+                or relative.startswith(("data/ee_extras/recipe/cc/", "data/cccbridge/recipe/")) or relative in data_files:
             path.unlink()
     for path, recipe in (recipes | data_files).items():
         target = DEVTEST / path

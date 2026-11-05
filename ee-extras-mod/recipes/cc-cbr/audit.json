@@ -15,6 +15,26 @@
     "note": "After the IC replacement the lapis plate has no remaining active consumers"
   },
   {
+    "path": "data/cccbridge/recipe/animatronic_block.json",
+    "status": "changed",
+    "note": ""
+  },
+  {
+    "path": "data/cccbridge/recipe/redrouter_block.json",
+    "status": "changed",
+    "note": ""
+  },
+  {
+    "path": "data/cccbridge/recipe/scroller_block.json",
+    "status": "changed",
+    "note": ""
+  },
+  {
+    "path": "data/cccbridge/recipe/source_block.json",
+    "status": "changed",
+    "note": ""
+  },
+  {
     "path": "data/computercraft/recipe/cable.json",
     "status": "changed",
     "note": "Copper conductors and insulation, six cables per cycle"
@@ -480,6 +500,11 @@
     "note": ""
   },
   {
+    "path": "data/ee_extras/recipe/cc/materials/antenna.json",
+    "status": "new",
+    "note": ""
+  },
+  {
     "path": "data/ee_extras/recipe/cc/materials/battery_electrolyte.json",
     "status": "new",
     "note": ""
@@ -531,6 +556,11 @@
   },
   {
     "path": "data/ee_extras/recipe/cc/pocket_case.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/pocket_color_display.json",
     "status": "new",
     "note": ""
   },
