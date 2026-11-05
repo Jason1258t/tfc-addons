@@ -4,7 +4,7 @@ license = "MIT"
 
 [[mods]]
 modId = "destroy_extras"
-version = "0.6.0"
+version = "0.7.0"
 displayName = "Destroy Extras"
 authors = "TFC Studio"
 description = "Недостающие химические машины и процессы для Destroy."
