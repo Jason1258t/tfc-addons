@@ -57,6 +57,10 @@ public final class ClientTest {
         tick++;
         var server = mc.getSingleplayerServer();
         try {
+            if (System.getenv("WIRE") != null) {
+                WireClientTest.tick(mc, server, tick);
+                return;
+            }
             if (tick == 40) server.execute(() -> {
                 var p = server.getPlayerList().getPlayer(mc.player.getUUID());
                 p.teleportTo(p.serverLevel(), 11.5, -58, 84, 0f, 20f);
