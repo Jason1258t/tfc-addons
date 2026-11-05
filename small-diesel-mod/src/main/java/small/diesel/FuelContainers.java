@@ -21,10 +21,12 @@ public final class FuelContainers {
             return FluidUtil.interactWithFluidHandler(player, hand, level, pos, null);
         }
 
-        // Канистра с топливом заправляет бак, даже если в канистре ещё есть свободное место.
+        // Канистра с топливом заправляет бак, если в баке есть место. Из полного бака канистра забирает топливо.
         return FluidUtil.getFluidHandler(level, pos, null).map(tank -> {
-            var transfer = FluidUtil.tryEmptyContainerAndStow(stack, tank,
-                    player.getCapability(Capabilities.ItemHandler.ENTITY), Integer.MAX_VALUE, player, true);
+            var inventory = player.getCapability(Capabilities.ItemHandler.ENTITY);
+            var transfer = tank.getFluidInTank(0).getAmount() >= tank.getTankCapacity(0)
+                    ? FluidUtil.tryFillContainerAndStow(stack, tank, inventory, Integer.MAX_VALUE, player, true)
+                    : FluidUtil.tryEmptyContainerAndStow(stack, tank, inventory, Integer.MAX_VALUE, player, true);
             if (transfer.isSuccess()) player.setItemInHand(hand, transfer.getResult());
             return transfer.isSuccess();
         }).orElse(false);

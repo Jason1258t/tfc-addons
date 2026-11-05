@@ -92,7 +92,7 @@ public class SdTest {
             var tank = FluidUtil.getFluidHandler(level, pos, null).orElseThrow();
             tank.drain(Integer.MAX_VALUE, FluidAction.EXECUTE);
             tank.fill(new FluidStack(diesel(), 400), FluidAction.EXECUTE);
-            for (int[] amounts : new int[][] {{1500, 1000, 900}, {900, 1000, 900}, {0, 0, 1000}}) {
+            for (int[] amounts : new int[][] {{1500, 1000, 900}, {10000, 1000, 10000}, {9500, 500, 10000}, {0, 0, 500}}) {
                 var can = FluidUtil.getFluidHandler(new ItemStack(item)).orElseThrow();
                 if (amounts[0] > 0) can.fill(new FluidStack(diesel(), amounts[0]), FluidAction.EXECUTE);
                 player.setItemInHand(InteractionHand.MAIN_HAND, can.getContainer());
@@ -106,7 +106,7 @@ public class SdTest {
                 }
             }
         }
-        src.sendSuccess(() -> Component.literal("Канистра: оба блока заправлены до 1000 мБ, остаток 900 мБ; полный бак защищён, пустая канистра забирает топливо."), false);
+        src.sendSuccess(() -> Component.literal("Канистра: оба блока приняли 600 мБ; из полного бака неполная канистра забрала 500 мБ, из неполного бака пустая канистра забрала остаток."), false);
         return 1;
     }
 
