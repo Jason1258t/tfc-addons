@@ -255,18 +255,21 @@ final class PcbCircuitTest {
         }
         parts.add(part(Kind.RESISTOR, node, 1, 100, 1));
         while (parts.size() < 64) parts.add(new Part(Kind.RELAY, 0, 1, 10000, 0, 1, 96));
+        BlockPos supply = new BlockPos(24, -57, 24);
+        if (activate) {
+            var battery = DevicesSavedData.load(level).getDevice(supply, CreativeBatteryDevice.class);
+            battery.voltage = 48;
+            battery.acFrequency = 0;
+        } else {
+            DevTest.place(level, supply, CEEBlocks.CREATIVE_BATTERY.getDefaultState());
+        }
         for (int z = 16; z < 32; z += 4) {
             for (int x = 16; x < 32; x += 4) {
                 BlockPos pos = new BlockPos(x, -60, z);
-                BlockPos supply = pos.above(3);
                 if (!activate) {
                     DevTest.place(level, pos, PcbItems.CIRCUIT_BLOCK.get().defaultBlockState());
-                    DevTest.place(level, supply, CEEBlocks.CREATIVE_BATTERY.getDefaultState());
                     continue;
                 }
-                var battery = DevicesSavedData.load(level).getDevice(supply, CreativeBatteryDevice.class);
-                battery.voltage = 48;
-                battery.acFrequency = 0;
                 DevTest.wire(level, supply, 0, pos, 0);
                 DevTest.wire(level, supply, 1, pos, 1);
                 DevicesSavedData.load(level).getDevice(pos, PcbCircuitDevice.class)
@@ -274,7 +277,7 @@ final class PcbCircuitTest {
             }
         }
         source.sendSuccess(() -> Component.literal(activate
-                ? "16 плат подключены: 32 узла и 64 компонента на каждой" : "16 плат и источников установлены"), false);
+                ? "16 плат на общей шине: 32 узла и 64 компонента на каждой" : "16 плат и общий источник установлены"), false);
         return 1;
     }
 
