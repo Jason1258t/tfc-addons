@@ -48,6 +48,10 @@ public class MinerTools {
     public static final Supplier<DataComponentType<Boolean>> ANY_VARIANT = COMPONENTS.registerComponentType(
             "any_variant", b -> b.persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL));
 
+    /** Биты групп и режима списка. Отсутствие компонента означает настройки старой версии. */
+    public static final Supplier<DataComponentType<Integer>> BELT_SETTINGS = COMPONENTS.registerComponentType(
+            "belt_settings", b -> b.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
+
     public static final DeferredItem<MinerBeltItem> BELT = ITEMS.register("miner_belt",
             () -> new MinerBeltItem(new Item.Properties().stacksTo(1)));
     public static final DeferredHolder<MenuType<?>, MenuType<BeltMenu>> MENU = MENUS.register("miner_belt",

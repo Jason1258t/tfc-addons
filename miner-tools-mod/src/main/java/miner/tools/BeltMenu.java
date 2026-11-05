@@ -16,16 +16,16 @@ import net.minecraft.world.item.component.ItemContainerContents;
 /**
  * Окно фильтра пояса: 9 ячеек-образцов («призраки»: клик предметом кладёт его копию, пустой рукой — убирает; предметы
  * игрока остаются у игрока) и инвентарь. Пояс открыт из руки — эта ячейка заблокирована, чтобы его не переложили.
- * Кнопки: 0 — «все породы и почвы», 1 — работает/выключен.
+ * Группы и режим списка синхронизируются вместе с состоянием пояса.
  */
 public class BeltMenu extends AbstractContainerMenu {
     public static final int SLOTS = 9;
-    public static final int BUTTON_ANY = 0, BUTTON_ENABLED = 1;
+    public static final int BUTTON_MODE = 0, BUTTON_ENABLED = 1, BUTTON_GROUP = 2;
 
     private final Player player;
     private final InteractionHand hand;
     private final Container filter = new SimpleContainer(SLOTS);
-    /** Флаги для кнопок окна: бит 0 — работает, бит 1 — все породы (на сервере читаются с пояса) */
+    /** Флаги для кнопок окна: бит 0 — работает, остальные биты — настройки фильтра (на сервере читаются с пояса) */
     private final DataSlot flags;
 
     /** Клиент: рука приходит от сервера */
@@ -38,17 +38,18 @@ public class BeltMenu extends AbstractContainerMenu {
         this.player = inv.player;
         this.hand = hand;
         ItemStack belt = belt();
+        if (!player.level().isClientSide && belt.is(MinerTools.BELT.get())) BeltFilter.migrate(belt);
         net.minecraft.core.NonNullList<ItemStack> items = net.minecraft.core.NonNullList.withSize(SLOTS, ItemStack.EMPTY);
         belt.getOrDefault(MinerTools.FILTER.get(), ItemContainerContents.EMPTY).copyInto(items);
         for (int i = 0; i < SLOTS; i++) filter.setItem(i, items.get(i));
 
-        for (int i = 0; i < SLOTS; i++) addSlot(new GhostSlot(filter, i, 8 + i * 18, 18));
+        for (int i = 0; i < SLOTS; i++) addSlot(new GhostSlot(filter, i, 8 + i * 18, 90));
         int locked = hand == InteractionHand.MAIN_HAND ? inv.selected : -1;
         for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 9; col++) addSlot(new Slot(inv, col + row * 9 + 9, 8 + col * 18, 49 + row * 18));
+            for (int col = 0; col < 9; col++) addSlot(new Slot(inv, col + row * 9 + 9, 8 + col * 18, 121 + row * 18));
         }
         for (int col = 0; col < 9; col++) {
-            addSlot(col == locked ? new LockedSlot(inv, col, 8 + col * 18, 107) : new Slot(inv, col, 8 + col * 18, 107));
+            addSlot(col == locked ? new LockedSlot(inv, col, 8 + col * 18, 179) : new Slot(inv, col, 8 + col * 18, 179));
         }
         flags = addDataSlot(new DataSlot() {
             int client;
@@ -57,7 +58,7 @@ public class BeltMenu extends AbstractContainerMenu {
             public int get() {
                 if (player.level().isClientSide) return client;
                 ItemStack b = belt();
-                return (BeltFilter.enabled(b) ? 1 : 0) | (BeltFilter.anyVariant(b) ? 2 : 0);
+                return (BeltFilter.enabled(b) ? 1 : 0) | (BeltFilter.settings(b) << 1);
             }
 
             @Override
@@ -71,8 +72,12 @@ public class BeltMenu extends AbstractContainerMenu {
         return (flags.get() & 1) != 0;
     }
 
-    public boolean anyVariant() {
-        return (flags.get() & 2) != 0;
+    public boolean allowsListedItems() {
+        return ((flags.get() >> 1) & BeltFilter.ALLOW_LIST) != 0;
+    }
+
+    public boolean blocksGroup(BeltFilter.Group group) {
+        return ((flags.get() >> 1) & group.bit()) != 0;
     }
 
     private ItemStack belt() {
@@ -87,9 +92,20 @@ public class BeltMenu extends AbstractContainerMenu {
     @Override
     public boolean clickMenuButton(Player player, int id) {
         ItemStack b = belt();
-        if (id == BUTTON_ANY) b.set(MinerTools.ANY_VARIANT.get(), !BeltFilter.anyVariant(b));
-        else if (id == BUTTON_ENABLED) b.set(MinerTools.ENABLED.get(), !BeltFilter.enabled(b));
-        else return false;
+        if (!stillValid(player)) return false;
+        if (id == BUTTON_ENABLED) {
+            b.set(MinerTools.ENABLED.get(), !BeltFilter.enabled(b));
+            return true;
+        }
+        int bit;
+        if (id == BUTTON_MODE) {
+            bit = BeltFilter.ALLOW_LIST;
+        } else {
+            int group = id - BUTTON_GROUP;
+            if (group < 0 || group >= BeltFilter.Group.values().length) return false;
+            bit = BeltFilter.Group.values()[group].bit();
+        }
+        b.set(MinerTools.BELT_SETTINGS.get(), BeltFilter.settings(b) ^ bit);
         return true;
     }
 
@@ -119,7 +135,7 @@ public class BeltMenu extends AbstractContainerMenu {
         int free = -1;
         for (int i = 0; i < SLOTS; i++) {
             ItemStack s = filter.getItem(i);
-            if (ItemStack.isSameItemSameComponents(s, stack)) return ItemStack.EMPTY;
+            if (s.is(stack.getItem())) return ItemStack.EMPTY;
             if (s.isEmpty() && free < 0) free = i;
         }
         if (free >= 0) setSample(free, stack);

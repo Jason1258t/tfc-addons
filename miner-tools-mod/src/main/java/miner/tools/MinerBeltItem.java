@@ -36,7 +36,7 @@ public class MinerBeltItem extends Item {
     /** Блестит, пока работает */
     @Override
     public boolean isFoil(ItemStack stack) {
-        return BeltFilter.enabled(stack) && !BeltFilter.samples(stack).isEmpty();
+        return BeltFilter.enabled(stack) && BeltFilter.configured(stack);
     }
 
     @Override
@@ -44,11 +44,18 @@ public class MinerBeltItem extends Item {
         List<ItemStack> samples = BeltFilter.samples(stack);
         lines.add(Component.translatable(BeltFilter.enabled(stack) ? "miner_belt.tooltip.on" : "miner_belt.tooltip.off")
                 .withStyle(BeltFilter.enabled(stack) ? ChatFormatting.GREEN : ChatFormatting.RED));
-        if (samples.isEmpty()) {
+        if (!BeltFilter.configured(stack)) {
             lines.add(Component.translatable("miner_belt.tooltip.empty").withStyle(ChatFormatting.GRAY));
         } else {
-            lines.add(Component.translatable(BeltFilter.anyVariant(stack)
-                    ? "miner_belt.tooltip.filter_any" : "miner_belt.tooltip.filter").withStyle(ChatFormatting.GRAY));
+            int settings = BeltFilter.settings(stack);
+            for (BeltFilter.Group group : BeltFilter.Group.values()) {
+                if ((settings & group.bit()) != 0) {
+                    lines.add(Component.translatable("miner_belt.group." + group.name().toLowerCase(java.util.Locale.ROOT))
+                            .withStyle(ChatFormatting.GRAY));
+                }
+            }
+            if (!samples.isEmpty()) lines.add(Component.translatable((settings & BeltFilter.ALLOW_LIST) != 0
+                    ? "miner_belt.gui.allow" : "miner_belt.gui.deny").withStyle(ChatFormatting.GRAY));
             for (ItemStack s : samples) {
                 lines.add(Component.literal(" • ").append(s.getHoverName()).withStyle(ChatFormatting.DARK_GRAY));
             }

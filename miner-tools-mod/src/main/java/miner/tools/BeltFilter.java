@@ -14,6 +14,57 @@ import net.minecraft.world.item.component.ItemContainerContents;
 public final class BeltFilter {
     private BeltFilter() {}
 
+    public enum Group {
+        DIRT("minecraft:dirt"),
+        PEBBLES("c:stones/loose"),
+        COBBLESTONE("c:cobblestones"),
+        GRAVEL("c:gravels"),
+        SAND("minecraft:sand");
+
+        private final TagKey<net.minecraft.world.item.Item> tag;
+
+        Group(String tag) {
+            this.tag = ItemTags.create(ResourceLocation.parse(tag));
+        }
+
+        public int bit() {
+            return 1 << ordinal();
+        }
+    }
+
+    public static final int ALLOW_LIST = 1 << Group.values().length;
+    private static final int GROUP_MASK = ALLOW_LIST - 1;
+
+    public static int settings(ItemStack belt) {
+        return belt.getOrDefault(MinerTools.BELT_SETTINGS.get(), 0);
+    }
+
+    public static boolean configured(ItemStack belt) {
+        return (settings(belt) & GROUP_MASK) != 0 || !samples(belt).isEmpty();
+    }
+
+    /** Старые образцы с обобщением становятся группами, остальные остаются точными запретами. */
+    static void migrate(ItemStack belt) {
+        if (belt.has(MinerTools.BELT_SETTINGS.get())) return;
+        int groups = 0;
+        List<ItemStack> exact = new java.util.ArrayList<>();
+        for (ItemStack sample : samples(belt)) {
+            int sampleGroups = anyVariant(belt) ? groups(sample) : 0;
+            groups |= sampleGroups;
+            if (sampleGroups == 0) exact.add(sample);
+        }
+        belt.set(MinerTools.FILTER.get(), ItemContainerContents.fromItems(exact));
+        belt.set(MinerTools.BELT_SETTINGS.get(), groups);
+    }
+
+    private static int groups(ItemStack stack) {
+        int mask = 0;
+        for (Group group : Group.values()) {
+            if (stack.is(group.tag)) mask |= group.bit();
+        }
+        return mask;
+    }
+
     /**
      * Теги «одного рода»: замшелый камешек и обычный, гравий TFC и ванильный. Работают только при «все породы».
      */
@@ -41,6 +92,13 @@ public final class BeltFilter {
     /** Не подбирать ли {@code drop} из-за этого пояса */
     public static boolean blocks(ItemStack belt, ItemStack drop) {
         if (!enabled(belt)) return false;
+        if (belt.has(MinerTools.BELT_SETTINGS.get())) {
+            int settings = settings(belt);
+            for (ItemStack sample : belt.getOrDefault(MinerTools.FILTER.get(), ItemContainerContents.EMPTY).nonEmptyItems()) {
+                if (sample.is(drop.getItem())) return (settings & ALLOW_LIST) == 0;
+            }
+            return (settings & groups(drop)) != 0;
+        }
         boolean any = anyVariant(belt);
         for (ItemStack sample : belt.getOrDefault(MinerTools.FILTER.get(), ItemContainerContents.EMPTY).nonEmptyItems()) {
             if (matches(sample, drop, any)) return true;
