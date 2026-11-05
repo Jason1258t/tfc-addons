@@ -79,6 +79,7 @@ public class IeTest {
     static void commands(RegisterCommandsEvent e) {
         CommandDispatcher<CommandSourceStack> d = e.getDispatcher();
         d.register(Commands.literal("ietest")
+                .then(Commands.literal("earmuffs").executes(c -> EarmuffsCheck.run(c.getSource())))
                 .then(Commands.literal("setup").then(Commands.argument("signal", IntegerArgumentType.integer(0, 15))
                         .executes(c -> setup(c.getSource(), IntegerArgumentType.getInteger(c, "signal")))))
                 .then(Commands.literal("signal").then(Commands.argument("signal", IntegerArgumentType.integer(0, 15))

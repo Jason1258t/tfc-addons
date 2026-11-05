@@ -4,6 +4,6 @@
   "package": "ie.extras.mixin",
   "plugin": "ie.extras.mixin.IeExtrasMixinPlugin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": ["BasinBlockEntityMixin"],
+  "mixins": ["BasinBlockEntityMixin", "EarmuffsRecipeMixin"],
   "injectors": { "defaultRequire": 1 }
 }
