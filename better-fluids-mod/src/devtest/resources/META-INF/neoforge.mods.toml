@@ -1,0 +1,8 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+license = "MIT"
+
+[[mods]]
+modId = "better_fluids_devtest"
+version = "1.0.0"
+displayName = "Стенд Better Fluids"

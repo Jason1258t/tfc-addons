@@ -1,0 +1,34 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+license = "MIT"
+
+[[mods]]
+modId = "better_fluids"
+version = "1.0.0"
+displayName = "Better Fluids"
+authors = "TFC Studio"
+description = "Железный многоблочный бак на 14 вёдер за секцию."
+
+[[mixins]]
+config = "better_fluids.mixins.json"
+
+[[dependencies.better_fluids]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.219,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.better_fluids]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1]"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.better_fluids]]
+modId = "create"
+type = "required"
+versionRange = "[6.0.10]"
+ordering = "AFTER"
+side = "BOTH"

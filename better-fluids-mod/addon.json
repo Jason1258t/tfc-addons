@@ -1,0 +1,31 @@
+{
+  "id": "better_fluids",
+  "name": "Better Fluids",
+  "version": "1.0.0",
+  "jar": "better-fluids-1.0.0.jar",
+  "sha256": "64905596d78b554e842524f1ba91350b7dea2f3e8bc1baeba94a430525fb80d6",
+  "order": 130,
+  "side": "both",
+  "summary": "Железный резервуар вмещает 14 вёдер на секцию. Секции складываются в прямоугольный бак с квадратным основанием, который можно достраивать целыми слоями.",
+  "needs": "Установить на сервер и клиент. Minecraft 1.21.1, NeoForge 21.1.219+, Create 6.0.10.",
+  "blocks": [
+    {
+      "id": "better_fluids:iron_tank",
+      "name": "Железный резервуар",
+      "image": "iron_tank.png",
+      "recipe": {
+        "pattern": ["III", "IGI", "III"],
+        "key": {
+          "I": {
+            "item": "create:iron_sheet",
+            "tag": "c:plates/iron"
+          },
+          "G": {
+            "item": "minecraft:glass_pane",
+            "tag": "c:glass_panes"
+          }
+        }
+      }
+    }
+  ]
+}
