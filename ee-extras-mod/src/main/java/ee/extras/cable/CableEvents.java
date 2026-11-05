@@ -4,13 +4,16 @@ import com.george_vi.electroenergetics.content.bundled_wire.BundledWireItem;
 import com.george_vi.electroenergetics.content.bundled_wire.BundledWireTerminationBlock;
 import com.george_vi.electroenergetics.simulation.infrastructure.InWorldNodeData;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
+import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
 import com.simibubi.create.AllSoundEvents;
+import ee.extras.EeExtras;
 import ee.extras.lantern.LanternConversion;
 import ee.extras.lines.Tension;
 import com.simibubi.create.content.equipment.wrench.WrenchItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -18,20 +21,63 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 /**
- * События игры: катушка двухпроводного кабеля EE (и по фонарю и прожектору IE — LanternConversion), ключ и установка
+ * События игры: крышка на прибор (CableCap), катушка двухпроводного кабеля EE (и по фонарю и прожектору IE — LanternConversion), ключ и установка
  * двухпроводного соединителя EE (фаза, четыре положения вместо двух), сверка кабелей
  */
 public final class CableEvents {
     public static void register(IEventBus bus) {
+        bus.addListener(EventPriority.HIGH, CableEvents::capClick);
         bus.addListener(CableEvents::rightClick);
         bus.addListener(CableEvents::placed);
         bus.addListener(CableEvents::tick);
+    }
+
+    /**
+     * Крышка на прибор (CableCap) — раньше обработчиков Create (HIGH): у приборов с окном значения (вольтметр EE) клик
+     * по нему иначе забирает ValueSettingsInputHandler. Там же: Shift + пустая рука снимает крышку, провод EE на контакты
+     * под крышкой не подключить. Про крышки знает только сервер.
+     */
+    static void capClick(PlayerInteractEvent.RightClickBlock e) {
+        ItemStack stack = e.getItemStack();
+        Level level = e.getLevel();
+        BlockPos pos = e.getPos();
+        if (stack.is(EeExtras.CABLE_CAP.get())) {
+            e.setCanceled(true);
+            e.setCancellationResult(CableCap.put(level, pos, e.getEntity(), stack));
+            return;
+        }
+        // Катушка кабеля по прибору с двумя контактами — сразу в прокладку, по той же причине
+        if (stack.getItem() instanceof BundledWireItem && !(stack.getItem() instanceof FourCoreSpoolItem)
+                && CableCap.isTwoContact(level, pos, level.getBlockState(pos))) {
+            InteractionResult r = CableLaying.use(level, e.getEntity(), stack, pos, CableKind.DUPLEX);
+            if (r != null) {
+                e.setCanceled(true);
+                e.setCancellationResult(r);
+            }
+            return;
+        }
+        if (level instanceof ServerLevel sl && CableCap.get(sl).has(pos)) {
+            // Shift + пустая рука — снять крышку; обычный провод на контакты под крышкой не подключить
+            if (stack.isEmpty() && e.getHand() == InteractionHand.MAIN_HAND && e.getEntity().isShiftKeyDown()) {
+                if (CableCap.take(sl, pos, e.getEntity())) {
+                    e.setCanceled(true);
+                    e.setCancellationResult(InteractionResult.SUCCESS);
+                }
+                return;
+            }
+            if (stack.getItem() instanceof WireSpoolItem) {
+                e.setCanceled(true);
+                e.setCancellationResult(CableLaying.deny(level, e.getEntity(), pos, "cap.covered"));
+                return;
+            }
+        }
     }
 
     /**
@@ -113,6 +159,7 @@ public final class CableEvents {
     static void tick(LevelTickEvent.Post e) {
         if (e.getLevel() instanceof ServerLevel sl && sl.getGameTime() % CableData.CHECK_TICKS == 0)
             CableData.get(sl).check(sl);
+        if (e.getLevel() instanceof ServerLevel sl && sl.getGameTime() % CableCap.CHECK_TICKS == 0) CableCap.get(sl).check(sl);
         if (e.getLevel() instanceof ServerLevel sl && sl.getGameTime() % Tension.CHECK_TICKS == 0) Tension.check(sl);
     }
 

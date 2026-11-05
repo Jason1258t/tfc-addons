@@ -11,6 +11,7 @@ import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.george_vi.electroenergetics.simulation.WireType;
 import ee.extras.ac.AcBlocks;
+import ee.extras.cable.CableCapItem;
 import ee.extras.cable.CableEvents;
 import ee.extras.cable.CableHud;
 import ee.extras.cable.CableInsulatorBlock;
@@ -188,6 +189,9 @@ public class EeExtras {
 
     public static final DeferredItem<FourCoreSpoolItem> FOUR_CORE_SPOOL = ITEMS.register("four_core_cable_spool",
             () -> new FourCoreSpoolItem(new Item.Properties().stacksTo(16)));
+    /** Крышка двухжильного кабеля (cable/CableCap): модификатор прибора EE с двумя контактами, своего блока нет */
+    public static final DeferredItem<CableCapItem> CABLE_CAP = ITEMS.register("duplex_cable_cap",
+            () -> new CableCapItem(new Item.Properties()));
 
     /** Устройство EE выпрямителя или инвертора */
     interface Factory<D extends SimulatedDevice> {
@@ -290,7 +294,7 @@ public class EeExtras {
         for (Kind<?> k : POWER) event.accept(k.item.get());
         AcBlocks.addToTab(event);
         for (Supplier<? extends Item> item : new Supplier[] {KINETIC_GENERATOR_ITEM, CONVERTER_ITEM, CABLE_CONVERTER_ITEM,
-                FOUR_CORE_TERMINATION_ITEM, PHASE_TAP_ITEM, DUPLEX_INSULATOR_ITEM, FOUR_CORE_INSULATOR_ITEM, FOUR_CORE_SPOOL})
+                FOUR_CORE_TERMINATION_ITEM, PHASE_TAP_ITEM, DUPLEX_INSULATOR_ITEM, FOUR_CORE_INSULATOR_ITEM, FOUR_CORE_SPOOL, CABLE_CAP})
             event.accept(item.get());
         for (LineWire w : LineWire.values()) {
             if (w.wire != null) event.accept(w.wire.get());

@@ -92,6 +92,21 @@ public class CableData extends SavedData {
         if (changed) setDirty();
     }
 
+    /** Убрать без выпадения все кабели, подведённые к блоку pos (снята крышка прибора); сколько убрано */
+    int removeAt(ServerLevel level, BlockPos pos) {
+        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
+        int n = 0;
+        for (Iterator<Cable> it = cables.iterator(); it.hasNext(); ) {
+            Cable c = it.next();
+            if (!c.a.sourcePos().equals(pos) && !c.b.sourcePos().equals(pos)) continue;
+            remove(sd, c);
+            it.remove();
+            n++;
+        }
+        if (n > 0) setDirty();
+        return n;
+    }
+
     static void remove(InfrastructureSavedData sd, Cable c) {
         if (sd.isConnected(c.a, c.b)) sd.removeConnectionNoDrops(new InWorldNodeConnection(c.a, c.b));
         for (InWorldNode[] core : c.cores)

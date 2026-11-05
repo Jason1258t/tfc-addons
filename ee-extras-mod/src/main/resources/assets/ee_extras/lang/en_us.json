@@ -36,7 +36,7 @@
   "ee_extras.goggles.charge": "Charge (grid → FE):",
   "ee_extras.goggles.discharge": "Discharge (FE → grid):",
   "ee_extras.cable.phase": "Neutral and phase %s",
-  "ee_extras.cable.needs_duplex": "Duplex cable only goes to duplex terminations and their insulators",
+  "ee_extras.cable.needs_duplex": "Duplex cable only goes to duplex terminations, their insulators and capped devices",
   "ee_extras.cable.needs_four_core": "Four-core cable goes to four-core blocks (one end may be a duplex termination)",
   "ee_extras.cable.lost_selection": "The first block of the cable is gone, start again",
   "ee_extras.cable.same_block": "A cable cannot loop back to the same block",
@@ -302,5 +302,17 @@
   "item.ee_extras.permanent_magnet": "Steel Permanent Magnet",
   "item.ee_extras.speaker_cone": "Paper Speaker Cone",
   "item.ee_extras.battery_electrolyte": "Battery Electrolyte",
-  "item.ee_extras.ink_cartridge": "Ink Cartridge"
+  "item.ee_extras.ink_cartridge": "Ink Cartridge",
+  "item.ee_extras.duplex_cable_cap": "Duplex Cable Cap",
+  "item.ee_extras.duplex_cable_cap.tooltip": "Click an EE device with exactly two contacts (lamp, motor, heater…) to cap it: the device then takes one duplex cable — core 1 to contact 1, core 2 to contact 2.",
+  "item.ee_extras.duplex_cable_cap.tooltip.nodes": "Becomes part of the device, takes no block space. Shift + empty-hand click removes it; it drops when the device is broken. Crafts from a duplex termination and back.",
+  "ee_extras.cable.cap.not_device": "The cap only fits EE devices with wire contacts",
+  "ee_extras.cable.cap.contacts": "The cap needs a device with two contacts, this one has %s",
+  "ee_extras.cable.cap.already": "This device already has a cap",
+  "ee_extras.cable.cap.busy": "Remove the wires from the device contacts first",
+  "ee_extras.cable.cap.placed": "Cap fitted: core 1 to %s, core 2 to %s",
+  "ee_extras.cable.cap.contact": "contact %s",
+  "ee_extras.cable.cap.removed": "Cap removed",
+  "ee_extras.cable.cap.needed": "Fit a duplex cable cap on the device first",
+  "ee_extras.cable.cap.covered": "The contacts are under a cable cap: Shift + empty-hand click removes it"
 }
