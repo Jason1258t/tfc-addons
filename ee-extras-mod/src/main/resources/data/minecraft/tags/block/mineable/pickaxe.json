@@ -1,5 +1,6 @@
 {
   "values": [
+    "ee_extras:junction_box",
     "ee_extras:three_phase_rectifier",
     "ee_extras:single_phase_rectifier",
     "ee_extras:bidirectional_converter",
