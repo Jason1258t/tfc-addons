@@ -44,6 +44,18 @@
 зажима — не короче пролёта). Железному проводу EE провис 1 → 0,6 (отражением, поле final). `lines/LinesClient` —
 подсказки катушек (характеристики — механизмом EE через реестр подсказок Create). Графика и рецепты — `art/lines.py`.
 
+## Декоративный провод (2.16, dev #205)
+
+Пакет `wire/` — перенос поверхностного провода Create: Power Grid 0.6.2 (Apache-2.0, `NOTICE`; в каждом классе — откуда и
+что изменено). `SurfaceWireEntity` — кусок провода (позиция + отрезки `Point` по сетке 1/16), `WireEnd` — концы
+(прибор `CableEnd` вида DUPLEX, узел ответвления, край провода, точка на поверхности, будущий узел), `BlockTrace` —
+поиск пути (A*), `SurfaceWireItem` — прокладка, `WirePackets` — синхронизация, ответвление, резка, `JunctionData` — узлы
+ответвлений: по FIXED-узлу EE без блока на жилу (`createDetachedNode`, EE 1.1.2). Кусок с двумя подключёнными концами
+— две жилы EE длиной маршрута. Своя проверка опоры (в Power Grid её нет). Распределительная коробка `JunctionBoxBlock`
+(как изолятор). Тонкий изолированный провод — `cable/ThinSpoolItem`, оболочка `CableWires.THIN`, между двумя
+изоляторами не тянется. Настройки: `ee_extras-server.toml`, `surface_wire`. Проверка: `/wiretest build|power|report|
+cut|unbranch|wall|breakb|long|lantern|thin|thinreport` на сервере (`IE=1` для фонаря), `WIRE=1 ./test-client.sh`.
+
 ## Устройство
 
 - `lantern/` (2.4) — фонарь IE в сети EE. `LanternConversion` (из `CableEvents`): клик катушкой двухпроводного кабеля

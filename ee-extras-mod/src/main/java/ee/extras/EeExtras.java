@@ -187,6 +187,8 @@ public class EeExtras {
     public static final DeferredItem<Item> POCKET_CHARGER_ITEM = ITEMS.register("pocket_charger",
             () -> new TooltipBlockItem(POCKET_CHARGER.get(), new Item.Properties()));
 
+    public static final DeferredItem<ee.extras.cable.ThinSpoolItem> THIN_SPOOL = ITEMS.register("thin_insulated_wire_spool",
+            () -> new ee.extras.cable.ThinSpoolItem(new Item.Properties().stacksTo(16)));
     public static final DeferredItem<FourCoreSpoolItem> FOUR_CORE_SPOOL = ITEMS.register("four_core_cable_spool",
             () -> new FourCoreSpoolItem(new Item.Properties().stacksTo(16)));
     /** Крышка двухжильного кабеля (cable/CableCap): модификатор прибора EE с двумя контактами, своего блока нет */
@@ -245,7 +247,7 @@ public class EeExtras {
         DEVICES.addAlias(from, rl(id));
     }
 
-    public EeExtras(IEventBus modBus) {
+    public EeExtras(IEventBus modBus, net.neoforged.fml.ModContainer container) {
         AcBlocks.init();
         CableWires.init();
         LineWire.register();
@@ -255,6 +257,8 @@ public class EeExtras {
         if (ModList.get().isLoaded("immersiveengineering")) EeFloodlight.init(modBus);
         Tension.register(modBus);
         PcbItems.register(modBus);
+        ee.extras.wire.SurfaceWires.register(modBus, container);
+        ee.extras.wire.WireComponents.register(modBus);
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
         DEVICES.register(modBus);
@@ -270,6 +274,7 @@ public class EeExtras {
         NeoForge.EVENT_BUS.addListener(PocketCharge::addTooltip);
         if (FMLEnvironment.dist == Dist.CLIENT) {
             CableHud.register(modBus, NeoForge.EVENT_BUS);
+            ee.extras.wire.client.WireClient.register(modBus, NeoForge.EVENT_BUS);
             LinesClient.register(modBus, NeoForge.EVENT_BUS);
             LanternConversion.registerTooltip(NeoForge.EVENT_BUS);
             GeneratorClient.register(modBus);
@@ -294,7 +299,7 @@ public class EeExtras {
         for (Kind<?> k : POWER) event.accept(k.item.get());
         AcBlocks.addToTab(event);
         for (Supplier<? extends Item> item : new Supplier[] {KINETIC_GENERATOR_ITEM, CONVERTER_ITEM, CABLE_CONVERTER_ITEM,
-                FOUR_CORE_TERMINATION_ITEM, PHASE_TAP_ITEM, DUPLEX_INSULATOR_ITEM, FOUR_CORE_INSULATOR_ITEM, FOUR_CORE_SPOOL, CABLE_CAP})
+                FOUR_CORE_TERMINATION_ITEM, PHASE_TAP_ITEM, DUPLEX_INSULATOR_ITEM, FOUR_CORE_INSULATOR_ITEM, FOUR_CORE_SPOOL, THIN_SPOOL, CABLE_CAP})
             event.accept(item.get());
         for (LineWire w : LineWire.values()) {
             if (w.wire != null) event.accept(w.wire.get());
@@ -304,6 +309,8 @@ public class EeExtras {
         event.accept(POCKET_CHARGER_ITEM.get());
         event.accept(Tension.CLAMP_ITEM.get());
         event.accept(SOLAR_PANEL_ITEM.get());
+        event.accept(ee.extras.wire.SurfaceWires.DUPLEX_ITEM.get());
+        event.accept(ee.extras.wire.SurfaceWires.JUNCTION_BOX_ITEM.get());
         if (ModList.get().isLoaded("tfc")) Thermometer.addToTab(event);
         PcbItems.addToTab(event);
         // EE 1.1.2 сам не кладёт во вкладку двухпроводной кабель и соединитель, а переменный ток — только с

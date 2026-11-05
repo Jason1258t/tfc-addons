@@ -1,0 +1,13 @@
+EE Extras (ee_extras) — MIT License, TFC Studio.
+
+Part of this addon is derived from Create: Power Grid 0.6.2
+(https://github.com/patryk3211/powergrid), Copyright patryk3211, Da-Negy, rvndm, casvara,
+licensed under the Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0).
+
+Derived files (package ee.extras.wire and ee.extras.mixin.WireRaycastMixin) carry a note in their class
+comment saying which Power Grid classes they come from and what was changed. Main changes: Power Grid's
+electrical simulation replaced with Electro Energetics wires; Sable, Architectury and Registrate removed;
+NeoForge networking; branch nodes stored as Electro Energetics detached nodes; support check added.
+The junction box shape follows powergrid:cord_junction.
+
+Distributed under the Apache License 2.0 terms for the derived parts; the rest of the addon is MIT.

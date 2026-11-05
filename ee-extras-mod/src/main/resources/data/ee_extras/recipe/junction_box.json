@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    { "tag": "c:plates/iron" },
+    { "item": "electroenergetics:insulated_wire" }
+  ],
+  "result": { "count": 2, "id": "ee_extras:junction_box" }
+}

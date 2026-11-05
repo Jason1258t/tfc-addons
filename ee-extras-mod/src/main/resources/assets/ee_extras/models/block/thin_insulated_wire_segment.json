@@ -1,0 +1,75 @@
+{
+  "credit": "ee_extras: \u0442\u043e\u043d\u043a\u0438\u0439 \u0438\u0437\u043e\u043b\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0432\u043e\u0434 \u2014 \u043a\u0430\u043a wire_segment EE, 1 \u043f\u0438\u043a\u0441\u0435\u043b\u044c",
+  "textures": {
+    "0": "ee_extras:entity/thin_insulated_wire",
+    "particle": "ee_extras:entity/thin_insulated_wire"
+  },
+  "elements": [
+    {
+      "from": [
+        -0.5,
+        0,
+        0
+      ],
+      "to": [
+        0.5,
+        0,
+        8
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            16,
+            0,
+            0,
+            16
+          ],
+          "rotation": 90,
+          "texture": "#0"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "rotation": 90,
+          "texture": "#0"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        -0.5,
+        0
+      ],
+      "to": [
+        0,
+        0.5,
+        8
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [
+            16,
+            0,
+            0,
+            16
+          ],
+          "texture": "#0"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    { "item": "electroenergetics:insulated_wire" },
+    { "item": "electroenergetics:insulated_wire" }
+  ],
+  "result": { "count": 4, "id": "ee_extras:surface_wire" }
+}
