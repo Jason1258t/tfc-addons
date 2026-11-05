@@ -1,0 +1,276 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "up",
+        "flip": "false",
+        "roll": "false"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block"
+      }
+    },
+    {
+      "when": {
+        "facing": "up",
+        "flip": "false",
+        "roll": "true"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block_roll"
+      }
+    },
+    {
+      "when": {
+        "facing": "up",
+        "flip": "true",
+        "roll": "false"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block_flip"
+      }
+    },
+    {
+      "when": {
+        "facing": "up",
+        "flip": "true",
+        "roll": "true"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block_flip_roll"
+      }
+    },
+    {
+      "when": {
+        "facing": "down",
+        "flip": "false",
+        "roll": "false"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block",
+        "x": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "down",
+        "flip": "false",
+        "roll": "true"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block_roll",
+        "x": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "down",
+        "flip": "true",
+        "roll": "false"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block_flip",
+        "x": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "down",
+        "flip": "true",
+        "roll": "true"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block_flip_roll",
+        "x": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "flip": "false",
+        "roll": "false"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "flip": "false",
+        "roll": "true"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block_roll",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "flip": "true",
+        "roll": "false"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block_flip",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "flip": "true",
+        "roll": "true"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block_flip_roll",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "flip": "false",
+        "roll": "false"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block",
+        "x": 270,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "flip": "false",
+        "roll": "true"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block_roll",
+        "x": 270,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "flip": "true",
+        "roll": "false"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block_flip",
+        "x": 270,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "flip": "true",
+        "roll": "true"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block_flip_roll",
+        "x": 270,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "flip": "false",
+        "roll": "false"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block",
+        "x": 270,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "flip": "false",
+        "roll": "true"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block_roll",
+        "x": 270,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "flip": "true",
+        "roll": "false"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block_flip",
+        "x": 270,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "flip": "true",
+        "roll": "true"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block_flip_roll",
+        "x": 270,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "flip": "false",
+        "roll": "false"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block",
+        "x": 270,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "flip": "false",
+        "roll": "true"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block_roll",
+        "x": 270,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "flip": "true",
+        "roll": "false"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block_flip",
+        "x": 270,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "flip": "true",
+        "roll": "true"
+      },
+      "apply": {
+        "model": "ee_extras:block/pocket_charger/block_flip_roll",
+        "x": 270,
+        "y": 90
+      }
+    }
+  ]
+}
