@@ -29,7 +29,7 @@ public enum LineWire {
     /** Силовой кабель: медь в толстой изоляции до 10 кВ, большой ток, короткие пролёты (гнётся, как кабель) */
     POWER_CABLE("power_cable", "power_cable", null, 0.0015, 700, 24, 0.7f, 0.6f, 0.1875f, 10000, true),
     /** М — медный многопроволочный: лучший по потерям для ЛЭП, но тяжёлый и дорогой */
-    STRANDED_COPPER("stranded_copper", "stranded_copper_wire", null, 0.003, 300, 128, 1.0f, 0.5f, 0.09f, 0, false),
+    STRANDED_COPPER("stranded_copper", "stranded_copper_wire", null, 0.003, 300, 128, 0.6f, 0.5f, 0.09f, 0, false),
     /** АС — сталеалюминиевый: стальной сердечник держит длинный пролёт и сильную натяжку, основной провод дальних ЛЭП */
     ACSR("acsr", "acsr_wire", null, 0.007, 330, 192, 0.6f, 0.3f, 0.09f, 0, false),
     /** А — алюминиевый без сердечника: дешёвый, но короче пролёт и сильнее провисает */
@@ -37,7 +37,7 @@ public enum LineWire {
     /** Бр — бронзовый: до алюминия, прочный (длинный пролёт), но с заметными потерями */
     BRONZE("bronze", "bronze_wire", null, 0.012, 270, 160, 0.8f, 0.4f, 0.0625f, 0, false),
     /** ПС — стальной: самые длинные пролёты и почти без провиса, но большие потери — для малой мощности */
-    STEEL("steel", null, "c:wires/steel", 0.02, 230, 256, 0.4f, 0.2f, 0.0625f, 0, false);
+    STEEL("steel", null, "c:wires/steel", 0.02, 230, 256, 0.4f / 3, 0.2f, 0.0625f, 0, false);
 
     /** Id типа провода EE (ee_extras:&lt;id&gt;), модели отрезка (block/line/&lt;id&gt;) и катушки (&lt;id&gt;_spool) */
     public final String id;

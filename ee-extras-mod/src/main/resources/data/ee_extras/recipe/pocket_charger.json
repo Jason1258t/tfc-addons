@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "electroenergetics:duplex_wire_termination"
+    },
+    {
+      "item": "ee_extras:power_supply"
+    },
+    {
+      "item": "ee_extras:connector"
+    },
+    {
+      "item": "minecraft:copper_ingot"
+    }
+  ],
+  "result": {
+    "id": "ee_extras:pocket_charger",
+    "count": 1
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "computercraft"
+    }
+  ]
+}

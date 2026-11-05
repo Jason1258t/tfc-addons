@@ -1,0 +1,11 @@
+{
+  "parent": "create:block/mechanical_press/block",
+  "textures": {
+    "4": "ee_extras:block/pcb_photolithographer_side",
+    "particle": "ee_extras:block/pcb_photolithographer_side",
+    "gearbox_top": "ee_extras:block/solar_panel_side",
+    "gearbox": "ee_extras:block/pcb_photolithographer_port",
+    "mechanical_press_top": "ee_extras:block/pcb_photolithographer_top",
+    "mechanical_press_bottom": "ee_extras:block/electronics_bottom"
+  }
+}

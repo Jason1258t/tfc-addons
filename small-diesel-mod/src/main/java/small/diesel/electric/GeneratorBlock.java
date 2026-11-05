@@ -22,7 +22,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.fluids.FluidUtil;
+import small.diesel.FuelContainers;
 
 /**
  * Малый дизельный генератор: направленный блок EE с креном (как преобразователь EE), клеммы постоянного тока на
@@ -65,7 +65,7 @@ public class GeneratorBlock extends DirectionalRolledDeviceBlock<GeneratorDevice
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
             InteractionHand hand, BlockHitResult hit) {
-        return FluidUtil.interactWithFluidHandler(player, hand, level, pos, null)
+        return FuelContainers.interact(player, hand, level, pos)
                 ? ItemInteractionResult.sidedSuccess(level.isClientSide)
                 : super.useItemOn(stack, state, level, pos, player, hand, hit);
     }

@@ -65,6 +65,160 @@
     "kind": "remove"
   },
   {
+    "path": "data/cccbridge/recipe/animatronic_block.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        " D ",
+        "HBH",
+        " C "
+      ],
+      "key": {
+        "D": {
+          "item": "ee_extras:display_crt"
+        },
+        "H": {
+          "item": "create:brass_hand"
+        },
+        "B": {
+          "item": "ee_extras:precision_actuator"
+        },
+        "C": {
+          "item": "ee_extras:peripheral_case"
+        }
+      },
+      "result": {
+        "id": "cccbridge:animatronic_block",
+        "count": 1
+      },
+      "neoforge:conditions": [
+        {
+          "type": "neoforge:mod_loaded",
+          "modid": "cccbridge"
+        }
+      ]
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/cccbridge/recipe/redrouter_block.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        " R ",
+        "TBT",
+        " C "
+      ],
+      "key": {
+        "R": {
+          "item": "minecraft:redstone"
+        },
+        "T": {
+          "item": "ee_extras:connector"
+        },
+        "B": {
+          "item": "ee_extras:control_board_l1"
+        },
+        "C": {
+          "item": "ee_extras:peripheral_case"
+        }
+      },
+      "result": {
+        "id": "cccbridge:redrouter_block",
+        "count": 1
+      },
+      "neoforge:conditions": [
+        {
+          "type": "neoforge:mod_loaded",
+          "modid": "cccbridge"
+        }
+      ]
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/cccbridge/recipe/scroller_block.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        " G ",
+        "BMT",
+        " C "
+      ],
+      "key": {
+        "G": {
+          "item": "create:cogwheel"
+        },
+        "B": {
+          "item": "ee_extras:control_board_l1"
+        },
+        "M": {
+          "item": "ee_extras:small_motor"
+        },
+        "T": {
+          "item": "ee_extras:connector"
+        },
+        "C": {
+          "item": "ee_extras:peripheral_case"
+        }
+      },
+      "result": {
+        "id": "cccbridge:scroller_block",
+        "count": 1
+      },
+      "neoforge:conditions": [
+        {
+          "type": "neoforge:mod_loaded",
+          "modid": "cccbridge"
+        }
+      ]
+    },
+    "kind": "replace"
+  },
+  {
+    "path": "data/cccbridge/recipe/source_block.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        " G ",
+        "LBT",
+        " C "
+      ],
+      "key": {
+        "G": {
+          "tag": "c:glass_panes"
+        },
+        "L": {
+          "item": "create:rose_quartz_lamp"
+        },
+        "B": {
+          "item": "ee_extras:control_board_l1"
+        },
+        "T": {
+          "item": "ee_extras:connector"
+        },
+        "C": {
+          "item": "ee_extras:abs_sheet"
+        }
+      },
+      "result": {
+        "id": "cccbridge:source_block",
+        "count": 2
+      },
+      "neoforge:conditions": [
+        {
+          "type": "neoforge:mod_loaded",
+          "modid": "cccbridge"
+        }
+      ]
+    },
+    "kind": "replace"
+  },
+  {
     "path": "data/computercraft/recipe/cable.json",
     "content": {
       "type": "create:compacting",
@@ -757,7 +911,7 @@
           "item": "ee_extras:pocket_case"
         },
         "D": {
-          "item": "ee_extras:pocket_display"
+          "item": "ee_extras:pocket_color_display"
         },
         "I": {
           "item": "ee_extras:pocket_input"
@@ -808,7 +962,7 @@
           "item": "ee_extras:advanced_motherboard"
         },
         "D": {
-          "item": "ee_extras:pocket_display"
+          "item": "ee_extras:pocket_color_display"
         },
         "C": {
           "item": "computercraft:pocket_computer_normal"
@@ -1205,7 +1359,7 @@
       "pattern": [
         "ABA",
         "A A",
-        "AAA"
+        "APA"
       ],
       "key": {
         "A": {
@@ -1213,6 +1367,9 @@
         },
         "B": {
           "tag": "c:plates/brass"
+        },
+        "P": {
+          "item": "ee_extras:abs_sheet"
         }
       },
       "result": {
@@ -1341,19 +1498,22 @@
       "type": "create:mechanical_crafting",
       "accept_mirrored": false,
       "pattern": [
-        "L L",
-        "SCS",
-        "DCT"
+        "LEL",
+        "APA",
+        " DT"
       ],
       "key": {
         "L": {
           "tag": "c:plates/lead"
         },
-        "S": {
-          "item": "tfc:powder/sulfur"
+        "E": {
+          "item": "ee_extras:battery_electrolyte"
         },
-        "C": {
-          "item": "ee_extras:capacitor"
+        "A": {
+          "item": "ee_extras:abs_sheet"
+        },
+        "P": {
+          "item": "ee_extras:pet_film"
         },
         "D": {
           "item": "ee_extras:silicon_diode"
@@ -1377,14 +1537,17 @@
       "pattern": [
         "SPS",
         "S S",
-        "SSS"
+        "SAS"
       ],
       "key": {
         "S": {
           "tag": "c:plates/steel"
         },
         "P": {
-          "tag": "tfc:insulation"
+          "item": "ee_extras:abs_sheet"
+        },
+        "A": {
+          "item": "ee_extras:abs_sheet"
         }
       },
       "result": {
@@ -1493,21 +1656,18 @@
       "accept_mirrored": false,
       "pattern": [
         "PPP",
-        "RGB",
+        "LS ",
         "CFC"
       ],
       "key": {
         "P": {
           "tag": "c:glass_panes"
         },
-        "R": {
-          "item": "minecraft:red_dye"
+        "L": {
+          "item": "ee_extras:rgb_phosphor"
         },
-        "G": {
-          "item": "minecraft:green_dye"
-        },
-        "B": {
-          "item": "minecraft:blue_dye"
+        "S": {
+          "item": "ee_extras:shadow_mask"
         },
         "C": {
           "item": "ee_extras:advanced_display_driver"
@@ -1627,7 +1787,7 @@
       ],
       "key": {
         "P": {
-          "tag": "tfc:insulation"
+          "item": "ee_extras:abs_keyboard_blank"
         },
         "C": {
           "item": "ee_extras:control_board_l1"
@@ -1649,7 +1809,7 @@
       "type": "create:mechanical_crafting",
       "accept_mirrored": false,
       "pattern": [
-        " S ",
+        "ASA",
         "IMI",
         "PPP"
       ],
@@ -1664,13 +1824,251 @@
           "item": "tfc:powder/magnetite"
         },
         "P": {
-          "tag": "tfc:insulation"
+          "item": "ee_extras:pet_film"
+        },
+        "A": {
+          "item": "ee_extras:abs_sheet"
         }
       },
       "result": {
         "id": "ee_extras:magnetic_disk_medium",
         "count": 4
       }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/abs_keyboard_blank.json",
+    "content": {
+      "type": "create:compacting",
+      "ingredients": [
+        {
+          "item": "destroy:abs",
+          "count": 3
+        }
+      ],
+      "heat_requirement": "heated",
+      "results": [
+        {
+          "id": "ee_extras:abs_keyboard_blank",
+          "count": 1
+        }
+      ]
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/abs_sheet.json",
+    "content": {
+      "type": "create:compacting",
+      "ingredients": [
+        {
+          "item": "destroy:abs",
+          "count": 2
+        }
+      ],
+      "heat_requirement": "heated",
+      "results": [
+        {
+          "id": "ee_extras:abs_sheet",
+          "count": 1
+        }
+      ]
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/antenna.json",
+    "content": {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "tag": "c:rods/steel"
+        },
+        {
+          "tag": "c:wires/copper"
+        }
+      ],
+      "results": [
+        {
+          "id": "ee_extras:antenna",
+          "count": 1
+        }
+      ]
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/battery_electrolyte.json",
+    "content": {
+      "type": "create:filling",
+      "ingredients": [
+        {
+          "item": "minecraft:glass_bottle"
+        },
+        {
+          "type": "destroy:mixture_with_molecule",
+          "molecule": "destroy:sulfuric_acid",
+          "amount": 125,
+          "min_concentration": 4.0,
+          "max_concentration": 5.0
+        }
+      ],
+      "neoforge:conditions": [
+        {
+          "type": "neoforge:mod_loaded",
+          "modid": "destroy"
+        }
+      ],
+      "results": [
+        {
+          "id": "ee_extras:battery_electrolyte",
+          "count": 1
+        }
+      ]
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/ink_cartridge.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        " P ",
+        "AIA"
+      ],
+      "key": {
+        "P": {
+          "item": "ee_extras:pet_film"
+        },
+        "A": {
+          "item": "ee_extras:abs_sheet"
+        },
+        "I": {
+          "item": "minecraft:ink_sac"
+        }
+      },
+      "result": {
+        "id": "ee_extras:ink_cartridge",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/permanent_magnet.json",
+    "content": {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "tag": "c:rods/steel"
+        },
+        {
+          "item": "ee_extras:inductor"
+        }
+      ],
+      "keep_held_item": true,
+      "results": [
+        {
+          "id": "ee_extras:permanent_magnet",
+          "count": 1
+        }
+      ]
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/pet_film.json",
+    "content": {
+      "type": "create:compacting",
+      "ingredients": [
+        {
+          "item": "destroy:polyethene_terephthalate"
+        }
+      ],
+      "heat_requirement": "heated",
+      "results": [
+        {
+          "id": "ee_extras:pet_film",
+          "count": 2
+        }
+      ]
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/rgb_phosphor.json",
+    "content": {
+      "type": "create:mixing",
+      "ingredients": [
+        {
+          "item": "tfc_aeronautics:powder/zinc",
+          "count": 2
+        },
+        {
+          "item": "tfc:powder/sulfur"
+        },
+        {
+          "item": "tfcorewashing:chromium_powder"
+        },
+        {
+          "item": "tfc_aeronautics:powder/copper"
+        },
+        {
+          "item": "tfc_aeronautics:powder/silver"
+        }
+      ],
+      "heat_requirement": "superheated",
+      "results": [
+        {
+          "id": "ee_extras:rgb_phosphor",
+          "count": 3
+        }
+      ]
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/shadow_mask.json",
+    "content": {
+      "type": "create:pressing",
+      "ingredients": [
+        {
+          "tag": "c:plates/steel"
+        }
+      ],
+      "results": [
+        {
+          "id": "ee_extras:shadow_mask",
+          "count": 1
+        }
+      ]
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/speaker_cone.json",
+    "content": {
+      "type": "create:compacting",
+      "ingredients": [
+        {
+          "item": "minecraft:paper",
+          "count": 2
+        },
+        {
+          "type": "neoforge:single",
+          "fluid": "minecraft:water",
+          "amount": 50
+        }
+      ],
+      "heat_requirement": "heated",
+      "results": [
+        {
+          "id": "ee_extras:speaker_cone",
+          "count": 1
+        }
+      ]
     },
     "kind": "add"
   },
@@ -1715,7 +2113,7 @@
           "item": "ee_extras:inductor"
         },
         {
-          "item": "create:transmitter"
+          "item": "ee_extras:antenna"
         },
         {
           "item": "ee_extras:network_port"
@@ -1740,14 +2138,17 @@
       "pattern": [
         "S S",
         "SPS",
-        "SSS"
+        "SAS"
       ],
       "key": {
         "S": {
           "tag": "c:plates/steel"
         },
         "P": {
-          "tag": "tfc:insulation"
+          "item": "ee_extras:abs_sheet"
+        },
+        "A": {
+          "item": "ee_extras:abs_sheet"
         }
       },
       "result": {
@@ -1764,7 +2165,7 @@
       "accept_mirrored": false,
       "pattern": [
         "APA",
-        "T T",
+        "P P",
         "AAA"
       ],
       "key": {
@@ -1772,14 +2173,45 @@
           "tag": "c:plates/aluminum"
         },
         "P": {
-          "tag": "c:glass_panes"
-        },
-        "T": {
-          "tag": "tfc:insulation"
+          "item": "ee_extras:abs_sheet"
         }
       },
       "result": {
         "id": "ee_extras:pocket_case",
+        "count": 1
+      }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/pocket_color_display.json",
+    "content": {
+      "type": "create:mechanical_crafting",
+      "accept_mirrored": false,
+      "pattern": [
+        "PGP",
+        "RDR",
+        " C "
+      ],
+      "key": {
+        "P": {
+          "item": "ee_extras:abs_sheet"
+        },
+        "G": {
+          "tag": "c:glass_panes"
+        },
+        "R": {
+          "item": "ee_extras:rgb_phosphor"
+        },
+        "D": {
+          "item": "ee_extras:advanced_display_driver"
+        },
+        "C": {
+          "item": "ee_extras:connector"
+        }
+      },
+      "result": {
+        "id": "ee_extras:pocket_color_display",
         "count": 1
       }
     },
@@ -1900,7 +2332,7 @@
           "item": "ee_extras:silicon_diode"
         },
         "T": {
-          "tag": "tfc:insulation"
+          "item": "ee_extras:abs_sheet"
         }
       },
       "result": {
@@ -1917,8 +2349,8 @@
       "accept_mirrored": false,
       "pattern": [
         "M R",
-        "DAC",
-        "TDT"
+        "KAC",
+        " T "
       ],
       "key": {
         "M": {
@@ -1927,8 +2359,8 @@
         "R": {
           "tag": "c:rods/steel"
         },
-        "D": {
-          "tag": "c:dyes"
+        "K": {
+          "item": "ee_extras:ink_cartridge"
         },
         "A": {
           "item": "ee_extras:precision_actuator"
@@ -1986,25 +2418,22 @@
       "type": "create:mechanical_crafting",
       "accept_mirrored": false,
       "pattern": [
-        "WCW",
-        "RSR",
-        " T "
+        " C ",
+        "RMR",
+        " S "
       ],
       "key": {
-        "W": {
-          "tag": "c:wires/copper"
-        },
         "C": {
           "item": "ee_extras:inductor"
         },
         "R": {
           "tag": "c:rods/steel"
         },
+        "M": {
+          "item": "ee_extras:permanent_magnet"
+        },
         "S": {
           "tag": "c:plates/steel"
-        },
-        "T": {
-          "tag": "tfc:insulation"
         }
       },
       "result": {
@@ -2020,19 +2449,22 @@
       "type": "create:mechanical_crafting",
       "accept_mirrored": false,
       "pattern": [
-        "S S",
-        "IPI",
+        "SPS",
+        "IMI",
         " T "
       ],
       "key": {
         "S": {
           "tag": "c:plates/steel"
         },
+        "P": {
+          "item": "ee_extras:speaker_cone"
+        },
         "I": {
           "item": "ee_extras:inductor"
         },
-        "P": {
-          "tag": "tfc:insulation"
+        "M": {
+          "item": "ee_extras:permanent_magnet"
         },
         "T": {
           "tag": "c:rods/steel"
@@ -2106,11 +2538,55 @@
     "kind": "add"
   },
   {
+    "path": "data/ee_extras/destroy/reactions/pet_overall_synthesis.json",
+    "content": {
+      "reactants": [
+        {
+          "molecule": "destroy:paraxylene",
+          "ratio": 1,
+          "order": 1
+        },
+        {
+          "molecule": "destroy:ethene",
+          "ratio": 1,
+          "order": 1
+        },
+        {
+          "molecule": "destroy:oxygen",
+          "ratio": 3,
+          "order": 1
+        }
+      ],
+      "products": [
+        {
+          "molecule": "destroy:water",
+          "ratio": 3
+        }
+      ],
+      "result": {
+        "type": "destroy:precipitate_item",
+        "moles": 1.0,
+        "item": "destroy:polyethene_terephthalate",
+        "count": 1
+      },
+      "kinetics": {
+        "activation_energy": 50.0,
+        "preexponential_factor": 10000000000.0,
+        "enthalpy_change": -100.0
+      }
+    },
+    "kind": "file"
+  },
+  {
     "path": "data/tfc/tags/item/insulation.json",
     "content": {
       "replace": false,
       "values": [
-        "#c:plates/plastic",
+        {
+          "id": "#c:plates/plastic",
+          "required": false
+        },
+        "ee_extras:abs_sheet",
         {
           "id": "afc:rubber_bar",
           "required": false

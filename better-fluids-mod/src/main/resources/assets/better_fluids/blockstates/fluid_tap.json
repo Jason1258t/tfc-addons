@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "better_fluids:block/fluid_tap"
+    },
+    "facing=east": {
+      "model": "better_fluids:block/fluid_tap",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "better_fluids:block/fluid_tap",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "better_fluids:block/fluid_tap",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "better_fluids:block/fluid_tap",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "better_fluids:block/fluid_tap",
+      "x": 90
+    }
+  }
+}

@@ -1,0 +1,43 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.148'
+}
+
+version = mod_version
+group = 'tfcstudio.betterfluids'
+base { archivesName = 'better-fluids' }
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+sourceSets {
+    devtest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+configurations {
+    devtestCompileOnly.extendsFrom compileOnly
+}
+
+neoForge {
+    version = neo_version
+    runs {
+        server {
+            server()
+            programArgument '--nogui'
+            sourceSet = sourceSets.devtest
+        }
+    }
+    addModdingDependenciesTo(sourceSets.devtest)
+
+    mods {
+        better_fluids { sourceSet sourceSets.main }
+        better_fluids_devtest { sourceSet sourceSets.devtest }
+    }
+}
+
+dependencies {
+    compileOnly fileTree(dir: 'libs', include: '*.jar')
+}
+
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }

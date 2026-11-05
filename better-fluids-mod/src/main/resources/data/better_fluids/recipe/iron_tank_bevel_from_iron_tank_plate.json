@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "better_fluids:iron_tank_plate"
+  },
+  "result": {
+    "id": "better_fluids:iron_tank_bevel",
+    "count": 1
+  }
+}

@@ -46,6 +46,7 @@ public class DevTest {
         ElectronicsTest.register(d);
         SolarTest.register(d);
         if (net.neoforged.fml.ModList.get().isLoaded("computercraft")) ComputerCraftTest.register(d);
+        if (net.neoforged.fml.ModList.get().isLoaded("destroy")) PetTest.register(d);
         if (net.neoforged.fml.ModList.get().isLoaded("tfc")) ThermometerTest.register(d);
         d.register(Commands.literal("rectest")
                 .then(Commands.literal("build").executes(c -> build(c.getSource())))
@@ -113,6 +114,17 @@ public class DevTest {
                                         .executes(c -> Extras.bidiSide(c.getSource(),
                                                 com.mojang.brigadier.arguments.StringArgumentType.getString(c, "dir"),
                                                 com.mojang.brigadier.arguments.StringArgumentType.getString(c, "mode"))))))
+                .then(Commands.literal("computerpower")
+                        .then(Commands.literal("setup").executes(c -> ComputerPowerTest.setup(c.getSource(), false)))
+                        .then(Commands.literal("advanced").executes(c -> ComputerPowerTest.setup(c.getSource(), true)))
+                        .then(Commands.literal("script").executes(c -> ComputerPowerTest.installScript(c.getSource())))
+                        .then(Commands.literal("discharge").executes(c -> ComputerPowerTest.discharge(c.getSource())))
+                        .then(Commands.literal("battery").executes(c -> ComputerPowerTest.batteryReport(c.getSource())))
+                        .then(Commands.literal("start").executes(c -> ComputerPowerTest.start(c.getSource())))
+                        .then(Commands.literal("report").executes(c -> ComputerPowerTest.report(c.getSource())))
+                        .then(Commands.argument("volts", com.mojang.brigadier.arguments.DoubleArgumentType.doubleArg(0))
+                                .executes(c -> ComputerPowerTest.voltage(c.getSource(),
+                                        com.mojang.brigadier.arguments.DoubleArgumentType.getDouble(c, "volts")))))
                 .then(Commands.literal("cables").executes(c -> Extras.cables(c.getSource())))
                 .then(Commands.literal("cablepower")
                         .then(Commands.argument("volts", com.mojang.brigadier.arguments.DoubleArgumentType.doubleArg(0))

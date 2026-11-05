@@ -39,7 +39,7 @@ public final class EtchingBathBlockEntity extends BlockEntity implements IHaveGo
 
     public final FluidTank input = tank(INPUT_CAPACITY, stack -> true, true);
     public final FluidTank spent = tank(SPENT_CAPACITY, stack -> true, false);
-    public final FluidTank hydrochloricAcid = tank(INPUT_CAPACITY, stack -> true, false);
+    public final FluidTank hydrochloricAcid = tank(INPUT_CAPACITY, HydrochloricAcidAdapter::isPureAcidGas, false);
     public final FluidTank water = tank(INPUT_CAPACITY,
         stack -> stack.getFluid() == Fluids.WATER, false);
     public final ItemStackHandler items = new ItemStackHandler(3) {

@@ -153,9 +153,12 @@ public class DevTest {
 
         // 4. Окно фильтра
         p.getInventory().selected = 0;
-        p.getInventory().setItem(0, belt(true));
+        p.getInventory().setItem(0, belt(true, new ItemStack(Items.SAND)));
         p.getInventory().setItem(5, new ItemStack(Items.DIRT, 12));
         BeltMenu menu = new BeltMenu(1, p.getInventory(), InteractionHand.MAIN_HAND);
+        check(out, "старый образец песка преобразован в группу", menu.blocksGroup(BeltFilter.Group.SAND)
+                && BeltFilter.samples(p.getInventory().getItem(0)).isEmpty()
+                && BeltFilter.blocks(p.getInventory().getItem(0), new ItemStack(Items.RED_SAND)));
         menu.setCarried(new ItemStack(Items.GRAVEL, 30));
         menu.clicked(0, 0, ClickType.PICKUP, p);
         ItemStack held = p.getInventory().getItem(0);
@@ -173,8 +176,16 @@ public class DevTest {
         menu.clicked(0, 0, ClickType.PICKUP, p);
         check(out, "клик пустой рукой убирает образец", BeltFilter.samples(held).size() == 1
                 && BeltFilter.samples(held).get(0).is(Items.DIRT));
-        menu.clickMenuButton(p, BeltMenu.BUTTON_ANY);
-        check(out, "кнопка «все породы» переключает", !BeltFilter.anyVariant(held) && !menu.anyVariant());
+        ItemStack dirt = new ItemStack(Items.DIRT);
+        check(out, "чёрный список запрещает предмет из неотмеченной группы",
+                BeltFilter.blocks(held, dirt) && !menu.blocksGroup(BeltFilter.Group.DIRT));
+        menu.clickMenuButton(p, BeltMenu.BUTTON_GROUP + BeltFilter.Group.DIRT.ordinal());
+        menu.clickMenuButton(p, BeltMenu.BUTTON_MODE);
+        check(out, "белый список разрешает предмет из отмеченной группы",
+                menu.allowsListedItems() && !BeltFilter.blocks(held, dirt)
+                        && BeltFilter.blocks(held, new ItemStack(Items.COARSE_DIRT)));
+        check(out, "предмет вне списка и отмеченных групп подбирается",
+                !BeltFilter.blocks(held, new ItemStack(Items.GOLD_INGOT)));
         menu.clickMenuButton(p, BeltMenu.BUTTON_ENABLED);
         check(out, "кнопка «работает» переключает", !BeltFilter.enabled(held) && !menu.enabled());
         // пояс в руке не переложить: клик по его ячейке и обмен цифрой

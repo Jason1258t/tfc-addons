@@ -5,6 +5,7 @@ import com.george_vi.electroenergetics.CEECreativeTab;
 import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.config.CEEConfigs;
 import com.george_vi.electroenergetics.CEERegistries;
+import com.george_vi.electroenergetics.content.bundled_wire.BundledWireTerminationDevice;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
@@ -18,6 +19,9 @@ import ee.extras.cable.CableWires;
 import ee.extras.cable.FourCoreSpoolItem;
 import ee.extras.cable.FourCoreTerminationBlock;
 import ee.extras.cable.PhaseTapBlock;
+import ee.extras.computer.ComputerPowerBlock;
+import ee.extras.computer.ComputerPowerDevice;
+import ee.extras.computer.PocketCharge;
 import ee.extras.lantern.EeFloodlight;
 import ee.extras.lantern.LanternBlock;
 import ee.extras.lantern.LanternConversion;
@@ -171,6 +175,17 @@ public class EeExtras {
     public static final DeferredItem<Item> CABLE_CONVERTER_ITEM = ITEMS.register("cable_converter",
             () -> new TooltipBlockItem(CABLE_CONVERTER.get(), new Item.Properties()));
 
+    public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<BundledWireTerminationDevice>> COMPUTER_POWER_DEVICE =
+            DEVICES.register("computer_power", () -> new SimulatedDeviceType<>(rl("computer_power"), (type, level, pos, devices) -> new ComputerPowerDevice(level, pos, devices, type)));
+    public static final DeferredBlock<ComputerPowerBlock> COMPUTER_INLET = BLOCKS.register("computer_power_inlet",
+            () -> new ComputerPowerBlock(metal(), false));
+    public static final DeferredBlock<ComputerPowerBlock> POCKET_CHARGER = BLOCKS.register("pocket_charger",
+            () -> new ComputerPowerBlock(metal(), true));
+    public static final DeferredItem<Item> COMPUTER_INLET_ITEM = ITEMS.register("computer_power_inlet",
+            () -> new TooltipBlockItem(COMPUTER_INLET.get(), new Item.Properties()));
+    public static final DeferredItem<Item> POCKET_CHARGER_ITEM = ITEMS.register("pocket_charger",
+            () -> new TooltipBlockItem(POCKET_CHARGER.get(), new Item.Properties()));
+
     public static final DeferredItem<FourCoreSpoolItem> FOUR_CORE_SPOOL = ITEMS.register("four_core_cable_spool",
             () -> new FourCoreSpoolItem(new Item.Properties().stacksTo(16)));
 
@@ -248,6 +263,7 @@ public class EeExtras {
                 KINETIC_GENERATOR.get(), () -> KineticGeneratorBlockEntity.STRESS_PER_RPM)));
         modBus.addListener(EeExtras::capabilities);
         CableEvents.register(NeoForge.EVENT_BUS);
+        NeoForge.EVENT_BUS.addListener(PocketCharge::addTooltip);
         if (FMLEnvironment.dist == Dist.CLIENT) {
             CableHud.register(modBus, NeoForge.EVENT_BUS);
             LinesClient.register(modBus, NeoForge.EVENT_BUS);
@@ -280,6 +296,8 @@ public class EeExtras {
             if (w.wire != null) event.accept(w.wire.get());
             event.accept(w.spool.get());
         }
+        event.accept(COMPUTER_INLET_ITEM.get());
+        event.accept(POCKET_CHARGER_ITEM.get());
         event.accept(Tension.CLAMP_ITEM.get());
         event.accept(SOLAR_PANEL_ITEM.get());
         if (ModList.get().isLoaded("tfc")) Thermometer.addToTab(event);

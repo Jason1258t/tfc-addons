@@ -15,6 +15,26 @@
     "note": "After the IC replacement the lapis plate has no remaining active consumers"
   },
   {
+    "path": "data/cccbridge/recipe/animatronic_block.json",
+    "status": "changed",
+    "note": ""
+  },
+  {
+    "path": "data/cccbridge/recipe/redrouter_block.json",
+    "status": "changed",
+    "note": ""
+  },
+  {
+    "path": "data/cccbridge/recipe/scroller_block.json",
+    "status": "changed",
+    "note": ""
+  },
+  {
+    "path": "data/cccbridge/recipe/source_block.json",
+    "status": "changed",
+    "note": ""
+  },
+  {
     "path": "data/computercraft/recipe/cable.json",
     "status": "changed",
     "note": "Copper conductors and insulation, six cables per cycle"
@@ -470,6 +490,56 @@
     "note": ""
   },
   {
+    "path": "data/ee_extras/recipe/cc/materials/abs_keyboard_blank.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/abs_sheet.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/antenna.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/battery_electrolyte.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/ink_cartridge.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/permanent_magnet.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/pet_film.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/rgb_phosphor.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/shadow_mask.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/speaker_cone.json",
+    "status": "new",
+    "note": ""
+  },
+  {
     "path": "data/ee_extras/recipe/cc/network_port.json",
     "status": "new",
     "note": ""
@@ -486,6 +556,11 @@
   },
   {
     "path": "data/ee_extras/recipe/cc/pocket_case.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/pocket_color_display.json",
     "status": "new",
     "note": ""
   },

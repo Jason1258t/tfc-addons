@@ -1,0 +1,9 @@
+{
+  "parent": "create:block/fluid_tank/block_middle_window_se",
+  "textures": {
+    "1": "better_fluids:block/fluid_tank",
+    "3": "better_fluids:block/fluid_tank_window",
+    "particle": "better_fluids:block/fluid_tank"
+  },
+  "render_type": "minecraft:cutout_mipped"
+}

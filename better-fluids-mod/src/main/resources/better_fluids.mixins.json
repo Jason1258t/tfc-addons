@@ -1,0 +1,9 @@
+{
+  "required": true,
+  "package": "tfcstudio.betterfluids.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": ["TankCapacityMixin"],
+  "client": ["TankModelInvoker", "TankModelConnectionsMixin"],
+
+  "injectors": { "defaultRequire": 1 }
+}

@@ -35,12 +35,13 @@ done
 MODS="${MODS:-${TFC_MODS_DIR:-${TFC_PACK_CACHE:-$HOME/.cache/tfc-plans/pack}/mods}}"
 cp "$MODS/Firmalife-NeoForge-1.21.1-3.0.14.jar" "$RUN_DIR/mods/"
 if [ "$PROFILE" = thermal ]; then
-  cp "$MODS/woodencog-1.2.18-1.21.1-TFCR.jar" "$MODS/ImmersiveEngineering-1.21.1-12.4.2-194.jar" "$RUN_DIR/mods/"
+  cp "$MODS/woodencog-1.2.18-1.21.1-TFCR.jar" "$MODS/ImmersiveEngineering-1.21.1-12.4.2-194.jar" \
+    "$MODS/TFC-IE-Crossover-NeoForge-1.21.1-2.1.3.jar" "$RUN_DIR/mods/"
 fi
 if [ "$PROFILE" = sable ]; then cp "$MODS/sable-neoforge-1.21.1-2.0.5.jar" "$RUN_DIR/mods/"; fi
 EE_VERSION=$(sed -n 's/^mod_version=//p' ../ee-extras-mod/gradle.properties)
 VERSION=$(sed -n 's/^mod_version=//p' gradle.properties)
-cp ../destroy-bridge-mod/build/libs/destroy-bridge-0.1.0.jar "$RUN_DIR/mods/"
+cp ../destroy-bridge-mod/build/libs/destroy-bridge-0.2.0.jar "$RUN_DIR/mods/"
 cp "../ee-extras-mod/build/libs/ee-extras-$EE_VERSION.jar" "$RUN_DIR/mods/"
 {
   echo "profile=$PROFILE"

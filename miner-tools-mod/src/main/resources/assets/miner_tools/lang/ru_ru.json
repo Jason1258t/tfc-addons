@@ -12,9 +12,6 @@
   "miner_belt.gui.enabled.on": "Работает: да",
   "miner_belt.gui.enabled.off": "Работает: нет",
   "miner_belt.gui.enabled.hint": "Выключенный пояс ничего не запрещает",
-  "miner_belt.gui.any.on": "Все породы: да",
-  "miner_belt.gui.any.off": "Все породы: нет",
-  "miner_belt.gui.any.hint": "Да — образец значит все породы и почвы: камешек гранита запрещает все камешки (и замшелые), гравий — любой гравий, почва — любую почву этого вида. Нет — только точно такой предмет",
   "item.miner_tools.miner_helmet": "Каска шахтёра",
   "item.miner_tools.miner_helmet.energy": "Заряд: %s / %s FE",
   "item.miner_tools.miner_helmet.lamp_on": "Фонарь включён",
@@ -27,5 +24,14 @@
   "message.miner_tools.miner_helmet.empty": "Аккумулятор каски разрядился",
   "message.miner_tools.miner_helmet.not_worn": "Каска шахтёра не надета",
   "key.categories.miner_tools": "Снаряжение шахтёра",
-  "key.miner_tools.helmet_lamp": "Фонарь каски"
+  "key.miner_tools.helmet_lamp": "Фонарь каски",
+  "miner_belt.group.dirt": "Земля",
+  "miner_belt.group.pebbles": "Камешки",
+  "miner_belt.group.cobblestone": "Булыжник",
+  "miner_belt.group.gravel": "Гравий",
+  "miner_belt.group.sand": "Песок",
+  "miner_belt.gui.allow": "Список: разрешить",
+  "miner_belt.gui.deny": "Список: запретить",
+  "miner_belt.gui.group.hint": "Отмеченную группу пояс запрещает подбирать",
+  "miner_belt.gui.mode.hint": "Список важнее групп. Добавьте предмет кликом с образцом или Shift+кликом из инвентаря. Пустой рукой можно убрать образец."
 }

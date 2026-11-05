@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Проверка аддона на сервере разработки (NeoForge + Create, Create Diesel Generators, Electro Energetics из libs/,
-# плоский мир, RCON 25596). Без аргументов — сценарий из README («Что проверено»); с аргументами — эти команды.
+# Immersive Engineering из кеша сборки, плоский мир, RCON 25596). Без аргументов — сценарий из README («Что проверено»); с аргументами — эти команды.
+# NO_IE=1 — без Immersive Engineering.
 # KEEP=1 — не стирать мир; NO_EE=1 — без Electro Energetics (аддон должен грузиться и без него).
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -10,6 +11,9 @@ if [ -z "${KEEP:-}" ]; then rm -rf run; fi
 mkdir -p run/mods
 rm -f run/mods/*.jar
 cp libs/create-1.21.1-*.jar libs/createdieselgenerators-*.jar run/mods/
+if [ -z "${NO_IE:-}" ]; then
+  cp "${MODS:-${TFC_MODS_DIR:-${TFC_PACK_CACHE:-$HOME/.cache/tfc-plans/pack}/mods}}"/ImmersiveEngineering-*.jar run/mods/
+fi
 if [ -z "${NO_EE:-}" ]; then cp libs/electroenergetics-*.jar run/mods/; fi
 echo 'eula=true' > run/eula.txt
 cat > run/server.properties <<'P'

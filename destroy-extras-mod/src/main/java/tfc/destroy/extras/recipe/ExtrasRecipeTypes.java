@@ -31,6 +31,18 @@ public final class ExtrasRecipeTypes {
     public static final DeferredHolder<RecipeType<?>, RecipeType<EtchingRecipe>> ETCHING_TYPE =
         TYPES.register("etching", () -> RecipeType.simple(ETCHING_ID));
 
+    public static final ResourceLocation METALLURGY_ID = DestroyExtras.rl("metallurgy");
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<MetallurgyRecipe>> METALLURGY_SERIALIZER =
+        SERIALIZERS.register("metallurgy", MetallurgyRecipe.Serializer::new);
+    public static final DeferredHolder<RecipeType<?>, RecipeType<MetallurgyRecipe>> METALLURGY_TYPE =
+        TYPES.register("metallurgy", () -> RecipeType.simple(METALLURGY_ID));
+
+    public static final IRecipeTypeInfo METALLURGY = new IRecipeTypeInfo() {
+        @Override public ResourceLocation getId() { return METALLURGY_ID; }
+        @Override @SuppressWarnings("unchecked") public <T extends RecipeSerializer<?>> T getSerializer() { return (T) METALLURGY_SERIALIZER.get(); }
+        @Override @SuppressWarnings("unchecked") public <I extends RecipeInput, R extends Recipe<I>> RecipeType<R> getType() { return (RecipeType<R>) METALLURGY_TYPE.get(); }
+    };
+
     public static final IRecipeTypeInfo ETCHING = new IRecipeTypeInfo() {
         @Override
         public ResourceLocation getId() {

@@ -1,0 +1,35 @@
+{
+  "type": "destroy_extras:metallurgy",
+  "ingredients": [
+    {
+      "item": "tfc:powder/sphalerite"
+    }
+  ],
+  "results": [
+    {
+      "id": "destroy_extras:roasted_sphalerite"
+    },
+    {
+      "id": "destroy_extras:gangue"
+    },
+    {
+      "id": "destroy:mixture",
+      "amount": 100,
+      "components": {
+        "destroy:mixture": {
+          "TranslationKey": "destroy_extras.fluid.sulfur_dioxide",
+          "Contents": [
+            {
+              "Molecule": "destroy:sulfur_dioxide",
+              "Concentration": 1
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "processing_time": 200,
+  "voltage": 240,
+  "current": 6,
+  "priority": 0
+}

@@ -4,7 +4,7 @@
   "pattern": [
     "ABA",
     "A A",
-    "AAA"
+    "APA"
   ],
   "key": {
     "A": {
@@ -12,6 +12,9 @@
     },
     "B": {
       "tag": "c:plates/brass"
+    },
+    "P": {
+      "item": "ee_extras:abs_sheet"
     }
   },
   "result": {

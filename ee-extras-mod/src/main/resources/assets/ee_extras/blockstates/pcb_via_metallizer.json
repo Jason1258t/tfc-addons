@@ -1,5 +1,7 @@
 {
   "variants": {
-    "": { "model": "create:block/basin/block" }
+    "": {
+      "model": "ee_extras:block/pcb_via_metallizer"
+    }
   }
 }

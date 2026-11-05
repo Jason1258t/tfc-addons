@@ -21,7 +21,7 @@ if [ -n "${IE:-}" ]; then cp "$MODS"/ImmersiveEngineering-*.jar run/mods/; fi
 if [ -n "${TFC:-}" ]; then cp "$MODS"/TerraFirmaCraft-NeoForge-*.jar "$MODS"/Patchouli-*.jar run/mods/; fi
 # CC=1 — CC:Tweaked, CCBR и More Red для проверки промышленных рецептов и сохранения данных устройств.
 if [ -n "${CC:-}" ]; then
-  cp "$MODS"/cc-tweaked-*.jar "$MODS"/ccbr-*.jar "$MODS"/morered-*.jar run/mods/
+  cp "$MODS"/cc-tweaked-*.jar "$MODS"/ccbr-*.jar "$MODS"/cccbridge-*.jar "$MODS"/morered-*.jar run/mods/
   # Как у игрока: datapack мира имеет приоритет над рецептами модов, включая удаление через neoforge:false.
   mkdir -p run/world/datapacks/cc-cbr
   rm -rf run/world/datapacks/cc-cbr/data
@@ -29,6 +29,12 @@ if [ -n "${CC:-}" ]; then
   cat > run/world/datapacks/cc-cbr/pack.mcmeta <<'JSON'
 {"pack":{"pack_format":48,"description":"EE Extras CC test recipes"}}
 JSON
+fi
+# DESTROY=1 — проверка PET и материалов дисплея; перед запуском DESTROY=1 ./libs.sh.
+if [ -n "${DESTROY:-}" ]; then
+  cp libs/destroy-*.jar libs/petrolpark-*.jar run/mods/
+  cp "$MODS"/tfc_aeronautics-*.jar "$MODS"/tfcorewashing-*.jar \
+    "$MODS"/create-aeronautics-bundled-*.jar "$MODS"/sable-neoforge-*.jar run/mods/
 fi
 if [ -n "${OLD_JAR:-}" ]; then cp "$OLD_JAR" run/mods/; fi
 echo 'eula=true' > run/eula.txt

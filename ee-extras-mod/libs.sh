@@ -10,4 +10,11 @@ for j in "$MODS"/create-1.21.1-*.jar "$MODS"/electroenergetics-*.jar "$MODS"/Imm
   cp "$j" libs/
   unzip -qq -o -j "$j" 'META-INF/jarjar/*.jar' -d libs/ 2>/dev/null || true
 done
+# DESTROY=1 — кандидат Destroy и Petrolpark только для проверки химии PET в devtest.
+if [ -n "${DESTROY:-}" ]; then
+  SUPER_ROOT="$(git rev-parse --show-superproject-working-tree)"
+  MAIN_ROOT="${SUPER_ROOT%%/.claude/worktrees/*}"
+  CANDIDATES="${CANDIDATES:-$MAIN_ROOT/.cache/mcp/candidates}"
+  cp "$CANDIDATES/destroy-1.21.1-0.4.6-eligibbs.jar" "$CANDIDATES/petrolpark-1.21.1-1.5.11.jar" libs/
+fi
 ls libs

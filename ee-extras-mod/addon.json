@@ -1,22 +1,31 @@
 {
   "id": "ee_extras",
   "name": "EE Extras — электрика для Electro Energetics",
-  "version": "2.10.0",
-  "jar": "ee-extras-2.10.0.jar",
-  "sha256": "f3c90cc85c115cb8324a48c29cd5cf5af0a988939b28cb7a3bad14a855f23876",
+  "version": "2.14.1",
+  "jar": "ee-extras-2.14.1.jar",
+  "sha256": "08851bed89db12390d997a9e1aca7ba28ba0ec2bbedc6e25789f0b287658e138",
   "order": 10,
   "side": "both",
-  "summary": "Блоки для Create Electro Energetics: выпрямители (переменный ток → ровный постоянный) и с 2.2 сетевые инверторы (постоянный → переменный в такт генераторам), лёгкие на 6 кВт и тяжёлые на 48 кВт, с 2.3 — компактный генератор (вал Create → постоянный ток до 1,5 кВт), двусторонний преобразователь EE ↔ FE для конденсаторов IE, рабочий двухпроводной кабель EE (в самом EE 1.1.2 катушка кабель не прокладывает), четырёхжильный кабель для трёхфазной сети, отвод фазы и кабельные изоляторы; с 2.1 — провода ЛЭП и сильноточной разводки (медная шина, силовой кабель, М, АС, А, бронзовый, ПС) и натяжной зажим; с 2.4 — электрический фонарь IE подключается к двухпроводному кабелю EE и собирается в линию; с 2.5 — преобразователи частоты (любой ток → заданные 1–40 Гц) и синхронизаторы (автоматическое включение генератора в сеть), до промышленного шкафа в два блока с радиаторами; с 2.6 — заготовка, маска и готовая плата L1 для травильной ванны Destroy Extras; с 2.7 — прожектор IE на двухжильном кабеле и кабельный преобразователь для машин; с 2.8 — редактор плат до трёх слоёв, материалы и компоненты электроники, солнечная панель 240 Вт / 48 В и термометр TFC 0–1600 °C → 0–15 В; с 2.9 — фотолитограф, металлизатор via и полный промышленный цикл плат L2/L3 совместно с травильной ванной Destroy Extras 0.4.0; с 2.10 — 30 компонентов для промышленного производства ComputerCraft и CCBR, магнитный носитель дискет и совместимость периферии CC с TFC. До версии 2.0 назывался «EE Rectifiers» (ee_rectifier): поставленные выпрямители при обновлении остаются на месте.",
-  "needs": "Сервер и все игроки (новые блоки). NeoForge 21.1.234+ (требование TFC 4.2.9), Create 6.0.10, Electro Energetics 1.1.2+. Термометр появляется при установленном TFC. Старый ee-rectifier-*.jar убрать — tfc pull addons уберёт сам.",
-  "formerIds": ["ee_rectifier"],
-  "replaces": ["mods/ee-rectifier-1.1.0.jar", "mods/ee-rectifier-1.0.0.jar"],
+  "summary": "Блоки для Create Electro Energetics: выпрямители (переменный ток → ровный постоянный) и с 2.2 сетевые инверторы (постоянный → переменный в такт генераторам), лёгкие на 6 кВт и тяжёлые на 48 кВт, с 2.3 — компактный генератор (вал Create → постоянный ток до 1,5 кВт), двусторонний преобразователь EE ↔ FE для конденсаторов IE, рабочий двухпроводной кабель EE (в самом EE 1.1.2 катушка кабель не прокладывает), четырёхжильный кабель для трёхфазной сети, отвод фазы и кабельные изоляторы; с 2.1 — провода ЛЭП и сильноточной разводки (медная шина, силовой кабель, М, АС, А, бронзовый, ПС) и натяжной зажим; с 2.4 — электрический фонарь IE подключается к двухпроводному кабелю EE и собирается в линию; с 2.5 — преобразователи частоты (любой ток → заданные 1–40 Гц) и синхронизаторы (автоматическое включение генератора в сеть), до промышленного шкафа в два блока с радиаторами; с 2.6 — заготовка, маска и готовая плата L1 для травильной ванны Destroy Extras; с 2.7 — прожектор IE на двухжильном кабеле и кабельный преобразователь для машин; с 2.8 — редактор плат до трёх слоёв, материалы и компоненты электроники, солнечная панель 240 Вт / 48 В и термометр TFC 0–1600 °C → 0–15 В; с 2.9 — фотолитограф, металлизатор via и полный промышленный цикл плат L2/L3 совместно с травильной ванной Destroy Extras 0.4.0; с 2.10 — 30 компонентов для промышленного производства ComputerCraft и CCBR, магнитный носитель дискет и совместимость периферии CC с TFC; с 2.11 — ещё 5 компонентов: листы и заготовки клавиш ABS, плёнка PET, RGB-люминофор и теневая маска для промышленного производства пластиковых корпусов, дискет и цветных дисплеев. С 2.12 — питание компьютеров CC: Tweaked от двухжильного кабеля и зарядная станция для карманных ПК. С 2.13 — магнит и бумажный диффузор для динамика, электролит для аккумулятора и чернильный картридж для принтера. С 2.14 — штыревая антенна, миниатюрная цветная матрица и промышленные рецепты CC:C Bridge. До версии 2.0 назывался «EE Rectifiers» (ee_rectifier): поставленные выпрямители при обновлении остаются на месте.",
+  "needs": "Сервер и все игроки (новые блоки). NeoForge 21.1.234+ (требование TFC 4.2.9), Create 6.0.10, Electro Energetics 1.1.2+. Для новых материалов и рецептов ComputerCraft — Destroy 0.4.6 и Petrolpark 1.5.11. Термометр появляется при установленном TFC. Старый ee-rectifier-*.jar убрать — tfc pull addons уберёт сам.",
+  "formerIds": [
+    "ee_rectifier"
+  ],
+  "replaces": [
+    "mods/ee-rectifier-1.1.0.jar",
+    "mods/ee-rectifier-1.0.0.jar"
+  ],
   "blocks": [
     {
       "id": "ee_extras:three_phase_rectifier",
       "name": "Трёхфазный выпрямитель",
       "image": "three_phase_rectifier.png",
       "recipe": {
-        "pattern": ["CDC", "DPD", "DDD"],
+        "pattern": [
+          "CDC",
+          "DPD",
+          "DDD"
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -36,7 +45,11 @@
       "name": "Однофазный выпрямитель",
       "image": "single_phase_rectifier.png",
       "recipe": {
-        "pattern": ["CDC", "DPD", " D "],
+        "pattern": [
+          "CDC",
+          "DPD",
+          " D "
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -56,7 +69,11 @@
       "name": "Тяжёлые выпрямители (трёх- и однофазный)",
       "image": "heavy_three_phase_rectifier.png",
       "recipe": {
-        "pattern": ["CRC", "XSX", "RSR"],
+        "pattern": [
+          "CRC",
+          "XSX",
+          "RSR"
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -81,7 +98,11 @@
       "name": "Трёхфазный инвертор",
       "image": "three_phase_inverter.png",
       "recipe": {
-        "pattern": ["CKC", "DPD", "LDL"],
+        "pattern": [
+          "CKC",
+          "DPD",
+          "LDL"
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -107,7 +128,11 @@
       "name": "Однофазный инвертор",
       "image": "single_phase_inverter.png",
       "recipe": {
-        "pattern": ["CKC", "DPD", " L "],
+        "pattern": [
+          "CKC",
+          "DPD",
+          " L "
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -133,7 +158,11 @@
       "name": "Тяжёлые инверторы (трёх- и однофазный)",
       "image": "heavy_three_phase_inverter.png",
       "recipe": {
-        "pattern": ["CRC", "XSX", "RSR"],
+        "pattern": [
+          "CRC",
+          "XSX",
+          "RSR"
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -158,7 +187,11 @@
       "name": "Трёхфазный преобразователь частоты",
       "image": "three_phase_frequency_converter.png",
       "recipe": {
-        "pattern": ["CKC", "RPV", " L "],
+        "pattern": [
+          "CKC",
+          "RPV",
+          " L "
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -191,7 +224,11 @@
       "name": "Однофазный преобразователь частоты",
       "image": "single_phase_frequency_converter.png",
       "recipe": {
-        "pattern": ["CKC", "RPV", " L "],
+        "pattern": [
+          "CKC",
+          "RPV",
+          " L "
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -224,7 +261,11 @@
       "name": "Тяжёлые преобразователи частоты (трёх- и однофазный)",
       "image": "heavy_three_phase_frequency_converter.png",
       "recipe": {
-        "pattern": ["CRC", "XSX", "RSR"],
+        "pattern": [
+          "CRC",
+          "XSX",
+          "RSR"
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -249,7 +290,11 @@
       "name": "Промышленный преобразователь частоты",
       "image": "industrial_three_phase_frequency_converter.png",
       "recipe": {
-        "pattern": ["CRC", "XSX", "RSR"],
+        "pattern": [
+          "CRC",
+          "XSX",
+          "RSR"
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -274,7 +319,11 @@
       "name": "Трёхфазный синхронизатор",
       "image": "three_phase_synchronizer.png",
       "recipe": {
-        "pattern": ["CYC", "BPB", " B "],
+        "pattern": [
+          "CYC",
+          "BPB",
+          " B "
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -297,7 +346,11 @@
       "name": "Однофазный синхронизатор",
       "image": "single_phase_synchronizer.png",
       "recipe": {
-        "pattern": ["CYC", "BPB", "   "],
+        "pattern": [
+          "CYC",
+          "BPB",
+          "   "
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -320,7 +373,11 @@
       "name": "Тяжёлые синхронизаторы (трёх- и однофазный)",
       "image": "heavy_three_phase_synchronizer.png",
       "recipe": {
-        "pattern": ["CRC", "XSX", "RSR"],
+        "pattern": [
+          "CRC",
+          "XSX",
+          "RSR"
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -345,7 +402,11 @@
       "name": "Промышленный синхронизатор",
       "image": "industrial_three_phase_synchronizer.png",
       "recipe": {
-        "pattern": ["CRC", "XBX", "RSR"],
+        "pattern": [
+          "CRC",
+          "XBX",
+          "RSR"
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -373,7 +434,11 @@
       "name": "Компактный генератор",
       "image": "compact_kinetic_generator.png",
       "recipe": {
-        "pattern": ["PCP", "MSM", "PAP"],
+        "pattern": [
+          "PCP",
+          "MSM",
+          "PAP"
+        ],
         "key": {
           "P": {
             "item": "create:iron_sheet",
@@ -399,7 +464,11 @@
       "name": "Двусторонний преобразователь",
       "image": "bidirectional_converter.png",
       "recipe": {
-        "pattern": ["VV ", "   ", "   "],
+        "pattern": [
+          "VV ",
+          "   ",
+          "   "
+        ],
         "key": {
           "V": {
             "item": "electroenergetics:converter"
@@ -416,7 +485,11 @@
       "name": "Четырёхжильный соединитель",
       "image": "four_core_termination.png",
       "recipe": {
-        "pattern": ["TT ", "   ", "   "],
+        "pattern": [
+          "TT ",
+          "   ",
+          "   "
+        ],
         "key": {
           "T": {
             "item": "electroenergetics:duplex_wire_termination"
@@ -429,7 +502,11 @@
       "name": "Отвод фазы",
       "image": "four_core_tap.png",
       "recipe": {
-        "pattern": ["TW ", "   ", "   "],
+        "pattern": [
+          "TW ",
+          "   ",
+          "   "
+        ],
         "key": {
           "T": {
             "item": "electroenergetics:duplex_wire_termination"
@@ -450,7 +527,11 @@
       "name": "Натяжной зажим",
       "image": "tension_clamp.png",
       "recipe": {
-        "pattern": ["SR ", "   ", "   "],
+        "pattern": [
+          "SR ",
+          "   ",
+          "   "
+        ],
         "key": {
           "S": {
             "item": "tfc:metal/sheet/wrought_iron",
@@ -468,7 +549,11 @@
       "name": "Катушка четырёхжильного кабеля",
       "image": "four_core_cable_spool.png",
       "recipe": {
-        "pattern": ["WWW", "WSW", "WWW"],
+        "pattern": [
+          "WWW",
+          "WSW",
+          "WWW"
+        ],
         "key": {
           "W": {
             "item": "electroenergetics:insulated_wire"
@@ -484,7 +569,11 @@
       "name": "Изоляторы двух- и четырёхжильного кабеля",
       "image": "four_core_cable_insulator.png",
       "recipe": {
-        "pattern": ["C  ", "   ", "   "],
+        "pattern": [
+          "C  ",
+          "   ",
+          "   "
+        ],
         "key": {
           "C": {
             "item": "electroenergetics:connector"
@@ -507,7 +596,11 @@
       "name": "Кабельный преобразователь",
       "image": "cable_converter.png",
       "recipe": {
-        "pattern": ["VT ", "   ", "   "],
+        "pattern": [
+          "VT ",
+          "   ",
+          "   "
+        ],
         "key": {
           "V": {
             "item": "electroenergetics:converter"
@@ -528,7 +621,11 @@
       "name": "Маска платы L1",
       "image": "l1_mask.png",
       "recipe": {
-        "pattern": ["PB ", "   ", "   "],
+        "pattern": [
+          "PB ",
+          "   ",
+          "   "
+        ],
         "key": {
           "P": {
             "item": "minecraft:paper"
@@ -589,7 +686,11 @@
       "name": "Фотолитограф плат",
       "image": "pcb_photolithographer.png",
       "recipe": {
-        "pattern": ["STS", "TDT", "SSS"],
+        "pattern": [
+          "STS",
+          "TDT",
+          "SSS"
+        ],
         "key": {
           "S": {
             "item": "immersiveengineering:plate_steel",
@@ -611,7 +712,11 @@
       "name": "Установка металлизации via",
       "image": "pcb_via_metallizer.png",
       "recipe": {
-        "pattern": ["STS", "TCT", "SSS"],
+        "pattern": [
+          "STS",
+          "TCT",
+          "SSS"
+        ],
         "key": {
           "S": {
             "item": "immersiveengineering:plate_steel",
@@ -875,6 +980,113 @@
       "id": "ee_extras:magnetic_disk_medium",
       "name": "Магнитный носитель дискеты",
       "image": "magnetic_disk_medium.png"
+    },
+    {
+      "id": "ee_extras:abs_sheet",
+      "name": "Лист ABS-пластика",
+      "image": "abs_sheet.png"
+    },
+    {
+      "id": "ee_extras:abs_keyboard_blank",
+      "name": "Формованная заготовка клавиш ABS",
+      "image": "abs_keyboard_blank.png"
+    },
+    {
+      "id": "ee_extras:pet_film",
+      "name": "Плёнка PET",
+      "image": "pet_film.png"
+    },
+    {
+      "id": "ee_extras:rgb_phosphor",
+      "name": "RGB-люминофор",
+      "image": "rgb_phosphor.png"
+    },
+    {
+      "id": "ee_extras:shadow_mask",
+      "name": "Теневая маска цветного кинескопа",
+      "image": "shadow_mask.png"
+    },
+    {
+      "id": "ee_extras:permanent_magnet",
+      "name": "Стальной постоянный магнит",
+      "image": "permanent_magnet.png"
+    },
+    {
+      "id": "ee_extras:speaker_cone",
+      "name": "Бумажный диффузор",
+      "image": "speaker_cone.png"
+    },
+    {
+      "id": "ee_extras:battery_electrolyte",
+      "name": "Аккумуляторный электролит",
+      "image": "battery_electrolyte.png"
+    },
+    {
+      "id": "ee_extras:ink_cartridge",
+      "name": "Чернильный картридж",
+      "image": "ink_cartridge.png"
+    },
+    {
+      "id": "ee_extras:antenna",
+      "name": "Штыревая антенна",
+      "image": "antenna.png"
+    },
+    {
+      "id": "ee_extras:pocket_color_display",
+      "name": "Миниатюрная цветная матрица",
+      "image": "pocket_color_display.png"
+    },
+    {
+      "id": "ee_extras:computer_power_inlet",
+      "name": "Двухжильный ввод питания ПК",
+      "image": "computer_power_inlet.png",
+      "recipe": {
+        "pattern": [
+          "SPI"
+        ],
+        "key": {
+          "S": {
+            "item": "electroenergetics:duplex_wire_termination"
+          },
+          "P": {
+            "item": "ee_extras:power_supply",
+            "image": "power_supply.png",
+            "name": "Блок питания"
+          },
+          "I": {
+            "item": "minecraft:iron_ingot"
+          }
+        }
+      }
+    },
+    {
+      "id": "ee_extras:pocket_charger",
+      "name": "Зарядная станция карманных компьютеров",
+      "image": "pocket_charger.png",
+      "recipe": {
+        "pattern": [
+          "SP",
+          "CM"
+        ],
+        "key": {
+          "S": {
+            "item": "electroenergetics:duplex_wire_termination"
+          },
+          "P": {
+            "item": "ee_extras:power_supply",
+            "image": "power_supply.png",
+            "name": "Блок питания"
+          },
+          "C": {
+            "item": "ee_extras:connector",
+            "image": "connector.png",
+            "name": "Разъём"
+          },
+          "M": {
+            "item": "minecraft:copper_ingot"
+          }
+        }
+      }
     }
   ]
 }

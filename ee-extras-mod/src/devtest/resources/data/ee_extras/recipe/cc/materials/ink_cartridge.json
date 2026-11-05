@@ -1,0 +1,23 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    " P ",
+    "AIA"
+  ],
+  "key": {
+    "P": {
+      "item": "ee_extras:pet_film"
+    },
+    "A": {
+      "item": "ee_extras:abs_sheet"
+    },
+    "I": {
+      "item": "minecraft:ink_sac"
+    }
+  },
+  "result": {
+    "id": "ee_extras:ink_cartridge",
+    "count": 1
+  }
+}

@@ -15,6 +15,9 @@ OUT = ROOT / "recipes" / "cc-cbr"
 DEVTEST = ROOT / "src" / "devtest" / "resources"
 
 ITEMS = [
+    "abs_sheet", "abs_keyboard_blank", "pet_film", "rgb_phosphor", "shadow_mask",
+    "antenna", "pocket_color_display",
+    "permanent_magnet", "speaker_cone", "battery_electrolyte", "ink_cartridge",
     "control_board_l1", "computer_motherboard", "advanced_motherboard", "turtle_controller",
     "advanced_turtle_controller", "keyboard", "pocket_input", "display_driver", "advanced_display_driver",
     "display_crt", "display_advanced", "pocket_display", "network_port", "computer_case",
@@ -25,6 +28,20 @@ ITEMS = [
 ]
 
 recipes: dict[str, dict] = {}
+data_files: dict[str, dict] = {
+    # В Destroy нет терефталевой кислоты и этиленгликоля: суммарный процесс без новых веществ.
+    "data/ee_extras/destroy/reactions/pet_overall_synthesis.json": {
+        "reactants": [
+            {"molecule": "destroy:paraxylene", "ratio": 1, "order": 1},
+            {"molecule": "destroy:ethene", "ratio": 1, "order": 1},
+            {"molecule": "destroy:oxygen", "ratio": 3, "order": 1},
+        ],
+        "products": [{"molecule": "destroy:water", "ratio": 3}],
+        "result": {"type": "destroy:precipitate_item", "moles": 1.0,
+                   "item": "destroy:polyethene_terephthalate", "count": 1},
+        "kinetics": {"activation_energy": 50.0, "preexponential_factor": 1.0e10, "enthalpy_change": -100.0},
+    },
+}
 audit: list[dict] = []
 
 
@@ -86,34 +103,95 @@ solder("advanced_display_driver", ["ee_extras:l3_board", ("ee_extras:basic_ic", 
        "ee_extras:connector"])
 solder("network_port", ["ee_extras:control_board_l1", ("ee_extras:connector", 2), "ee_extras:inductor",
        "ee_extras:copper_foil"])
-solder("network_transceiver", ["ee_extras:l2_board", "ee_extras:basic_ic", "ee_extras:inductor", "create:transmitter",
+solder("network_transceiver", ["ee_extras:l2_board", "ee_extras:basic_ic", "ee_extras:inductor", "ee_extras:antenna",
        "ee_extras:network_port", ("ee_extras:copper_foil", 2)])
 solder("ender_transceiver", ["ee_extras:network_transceiver", "ee_extras:l3_board", "ccbr:integrated_circuit",
        "ee_extras:inductor", "minecraft:ghast_tear", ("ee_extras:copper_foil", 2)])
 solder("audio_amplifier", ["ee_extras:control_board_l1", "ee_extras:transistor", "ee_extras:capacitor",
        "ee_extras:inductor", ("ee_extras:resistor", 2)])
 
+# Полимеры Destroy используются напрямую, без дублирования гранул в EE Extras.
+add("data/ee_extras/recipe/cc/materials/abs_sheet.json", {
+    "type": "create:compacting", "ingredients": [ingredient("destroy:abs", 2)],
+    "heat_requirement": "heated", "results": [result("ee_extras:abs_sheet")],
+})
+add("data/ee_extras/recipe/cc/materials/abs_keyboard_blank.json", {
+    "type": "create:compacting", "ingredients": [ingredient("destroy:abs", 3)],
+    "heat_requirement": "heated", "results": [result("ee_extras:abs_keyboard_blank")],
+})
+add("data/ee_extras/recipe/cc/materials/pet_film.json", {
+    "type": "create:compacting", "ingredients": [ingredient("destroy:polyethene_terephthalate")],
+    "heat_requirement": "heated", "results": [result("ee_extras:pet_film", 2)],
+})
+add("data/ee_extras/recipe/cc/materials/rgb_phosphor.json", {
+    "type": "create:mixing", "ingredients": [ingredient("tfc_aeronautics:powder/zinc", 2),
+        ingredient("tfc:powder/sulfur"), ingredient("tfcorewashing:chromium_powder"),
+        ingredient("tfc_aeronautics:powder/copper"), ingredient("tfc_aeronautics:powder/silver")],
+    "heat_requirement": "superheated", "results": [result("ee_extras:rgb_phosphor", 3)],
+})
+add("data/ee_extras/recipe/cc/materials/shadow_mask.json", {
+    "type": "create:pressing", "ingredients": [ingredient("#c:plates/steel")],
+    "results": [result("ee_extras:shadow_mask")],
+})
+
 # Ввод, экраны и корпуса.
-module("keyboard", ["PPP", "PPP", "CFC"], {"P": "#tfc:insulation", "C": "ee_extras:control_board_l1",
+module("keyboard", ["PPP", "PPP", "CFC"], {"P": "ee_extras:abs_keyboard_blank", "C": "ee_extras:control_board_l1",
        "F": "ee_extras:copper_foil"})
 module("display_crt", ["GGG", "TIT", "CFC"], {"G": "#c:glass_panes", "T": "create:electron_tube",
        "I": "ee_extras:inductor", "C": "ee_extras:display_driver", "F": "ee_extras:copper_foil"})
-module("display_advanced", ["PPP", "RGB", "CFC"], {"P": "#c:glass_panes", "R": "minecraft:red_dye",
-       "G": "minecraft:green_dye", "B": "minecraft:blue_dye", "C": "ee_extras:advanced_display_driver",
-       "F": "ee_extras:copper_foil"})
+module("display_advanced", ["PPP", "LS ", "CFC"], {"P": "#c:glass_panes", "L": "ee_extras:rgb_phosphor",
+       "S": "ee_extras:shadow_mask", "C": "ee_extras:advanced_display_driver", "F": "ee_extras:copper_foil"})
 module("pocket_display", ["PPP", "DF ", " C "], {"P": "#c:glass_panes", "D": "ee_extras:display_driver",
        "F": "ee_extras:copper_foil", "C": "ee_extras:connector"})
-module("computer_case", ["SPS", "S S", "SSS"], {"S": "#c:plates/steel", "P": "#tfc:insulation"})
-module("advanced_computer_case", ["ABA", "A A", "AAA"], {"A": "#c:plates/aluminum", "B": "#c:plates/brass"})
-module("pocket_case", ["APA", "T T", "AAA"], {"A": "#c:plates/aluminum", "P": "#c:glass_panes", "T": "#tfc:insulation"})
-module("peripheral_case", ["S S", "SPS", "SSS"], {"S": "#c:plates/steel", "P": "#tfc:insulation"})
+module("computer_case", ["SPS", "S S", "SAS"], {"S": "#c:plates/steel", "P": "ee_extras:abs_sheet",
+       "A": "ee_extras:abs_sheet"})
+module("advanced_computer_case", ["ABA", "A A", "APA"], {"A": "#c:plates/aluminum", "B": "#c:plates/brass",
+       "P": "ee_extras:abs_sheet"})
+module("pocket_case", ["APA", "P P", "AAA"], {"A": "#c:plates/aluminum", "P": "ee_extras:abs_sheet"})
+module("peripheral_case", ["S S", "SPS", "SAS"], {"S": "#c:plates/steel", "P": "ee_extras:abs_sheet",
+       "A": "ee_extras:abs_sheet"})
+
+# Расходные материалы и детали для динамика, аккумулятора и принтера.
+add("data/ee_extras/recipe/cc/materials/permanent_magnet.json", {
+    "type": "create:deploying",
+    "ingredients": [ingredient("#c:rods/steel"), ingredient("ee_extras:inductor")],
+    "keep_held_item": True,
+    "results": [result("ee_extras:permanent_magnet")],
+})
+add("data/ee_extras/recipe/cc/materials/speaker_cone.json", {
+    "type": "create:compacting",
+    "ingredients": [ingredient("minecraft:paper", 2),
+                    {"type": "neoforge:single", "fluid": "minecraft:water", "amount": 50}],
+    "heat_requirement": "heated",
+    "results": [result("ee_extras:speaker_cone")],
+})
+add("data/ee_extras/recipe/cc/materials/battery_electrolyte.json", {
+    "type": "create:filling",
+    "ingredients": [ingredient("minecraft:glass_bottle"),
+                    {"type": "destroy:mixture_with_molecule", "molecule": "destroy:sulfuric_acid",
+                     "amount": 125, "min_concentration": 4.0, "max_concentration": 5.0}],
+    "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "destroy"}],
+    "results": [result("ee_extras:battery_electrolyte")],
+})
+mechanical("data/ee_extras/recipe/cc/materials/ink_cartridge.json", [" P ", "AIA"],
+           {"P": "ee_extras:pet_film", "A": "ee_extras:abs_sheet", "I": "minecraft:ink_sac"},
+           "ee_extras:ink_cartridge")
+
+add("data/ee_extras/recipe/cc/materials/antenna.json", {
+    "type": "create:deploying",
+    "ingredients": [ingredient("#c:rods/steel"), ingredient("#c:wires/copper")],
+    "results": [result("ee_extras:antenna")],
+})
+module("pocket_color_display", ["PGP", "RDR", " C "], {
+    "P": "ee_extras:abs_sheet", "G": "#c:glass_panes", "R": "ee_extras:rgb_phosphor",
+    "D": "ee_extras:advanced_display_driver", "C": "ee_extras:connector",
+})
 
 # Электромеханика, связь, звук и питание.
-module("small_motor", ["WCW", "RSR", " T "], {"W": "#c:wires/copper", "C": "ee_extras:inductor",
-       "R": "#c:rods/steel", "S": "#c:plates/steel", "T": "#tfc:insulation"})
+module("small_motor", [" C ", "RMR", " S "], {"C": "ee_extras:inductor", "R": "#c:rods/steel",
+       "M": "ee_extras:permanent_magnet", "S": "#c:plates/steel"})
 module("precision_actuator", ["G R", "MC ", "D T"], {"G": "create:cogwheel", "R": "#c:rods/steel",
-       "M": "ee_extras:small_motor", "C": "ee_extras:control_board_l1", "D": "ee_extras:silicon_diode",
-       "T": "#tfc:insulation"})
+       "M": "ee_extras:small_motor", "C": "ee_extras:control_board_l1", "D": "ee_extras:silicon_diode", "T": "ee_extras:abs_sheet"})
 module("storage_bay", ["R R", "SAS", "CCT"], {"R": "#c:rods/steel", "S": "#c:plates/steel", "A": "#c:chests/wooden",
        "C": "ee_extras:connector", "T": "#tfc:insulation"})
 module("robot_chassis", ["SSSSS", "S M S", "SMBCS", "S M S", "SSSSS"], {"S": "#c:plates/steel",
@@ -121,16 +199,16 @@ module("robot_chassis", ["SSSSS", "S M S", "SMBCS", "S M S", "SSSSS"], {"S": "#c
 module("disk_transport", ["M R", "HAC", "M T"], {"M": "ee_extras:small_motor", "R": "#c:rods/steel",
        "H": "ee_extras:inductor", "A": "ee_extras:precision_actuator", "C": "ee_extras:control_board_l1",
        "T": "ee_extras:connector"})
-module("print_mechanism", ["M R", "DAC", "TDT"], {"M": "ee_extras:small_motor", "R": "#c:rods/steel",
-       "D": "#c:dyes", "A": "ee_extras:precision_actuator", "C": "ee_extras:control_board_l1", "T": "ee_extras:connector"})
-module("speaker_driver", ["S S", "IPI", " T "], {"S": "#c:plates/steel", "I": "ee_extras:inductor",
-       "P": "#tfc:insulation", "T": "#c:rods/steel"})
+module("print_mechanism", ["M R", "KAC", " T "], {"M": "ee_extras:small_motor", "R": "#c:rods/steel",
+       "K": "ee_extras:ink_cartridge", "A": "ee_extras:precision_actuator", "C": "ee_extras:control_board_l1", "T": "ee_extras:connector"})
+module("speaker_driver", ["SPS", "IMI", " T "], {"S": "#c:plates/steel", "P": "ee_extras:speaker_cone",
+       "I": "ee_extras:inductor", "M": "ee_extras:permanent_magnet", "T": "#c:rods/steel"})
 module("power_supply", ["S S", "ICI", "DCT"], {"S": "#c:plates/steel", "I": "ee_extras:inductor",
        "C": "ee_extras:capacitor", "D": "ee_extras:silicon_diode", "T": "ee_extras:connector"})
-module("battery_module", ["L L", "SCS", "DCT"], {"L": "#c:plates/lead", "S": "tfc:powder/sulfur",
-       "C": "ee_extras:capacitor", "D": "ee_extras:silicon_diode", "T": "ee_extras:connector"})
-module("magnetic_disk_medium", [" S ", "IMI", "PPP"], {"S": "#c:plates/steel", "I": "minecraft:iron_nugget",
-       "M": "tfc:powder/magnetite", "P": "#tfc:insulation"}, 4)
+module("battery_module", ["LEL", "APA", " DT"], {"L": "#c:plates/lead", "E": "ee_extras:battery_electrolyte",
+       "A": "ee_extras:abs_sheet", "P": "ee_extras:pet_film", "D": "ee_extras:silicon_diode", "T": "ee_extras:connector"})
+module("magnetic_disk_medium", ["ASA", "IMI", "PPP"], {"S": "#c:plates/steel", "I": "minecraft:iron_nugget",
+       "M": "tfc:powder/magnetite", "P": "ee_extras:pet_film", "A": "ee_extras:abs_sheet"}, 4)
 
 # Полная замена базовых устройств CC: выходы и ID рецептов сохраняются.
 CC = "data/computercraft/recipe"
@@ -160,7 +238,7 @@ for tier in ("normal", "advanced"):
 for tier in ("normal", "advanced"):
     motherboard = "advanced_motherboard" if tier == "advanced" else "computer_motherboard"
     mechanical(f"{CC}/pocket_computer_{tier}.json", ["PDP", "IMI", "CBT"], {
-        "P": "ee_extras:pocket_case", "D": "ee_extras:pocket_display", "I": "ee_extras:pocket_input",
+        "P": "ee_extras:pocket_case", "D": "ee_extras:pocket_color_display" if tier == "advanced" else "ee_extras:pocket_display", "I": "ee_extras:pocket_input",
         "M": f"ee_extras:{motherboard}", "C": "ee_extras:connector", "B": "ee_extras:battery_module",
         "T": "ee_extras:network_port",
     }, f"computercraft:pocket_computer_{tier}", status="changed", note="Pocket display/input, battery and L2/L3 motherboard")
@@ -205,7 +283,7 @@ upgrades = {
         "C": "computercraft:computer_normal", "K": "ee_extras:keyboard", "P": "ee_extras:power_supply",
     }, "computercraft:computer_normal", "computercraft:computer_advanced"),
     "pocket_computer_advanced_upgrade": (["AMA", "DCD", " B "], {
-        "A": "ee_extras:pocket_case", "M": "ee_extras:advanced_motherboard", "D": "ee_extras:pocket_display",
+        "A": "ee_extras:pocket_case", "M": "ee_extras:advanced_motherboard", "D": "ee_extras:pocket_color_display",
         "C": "computercraft:pocket_computer_normal", "B": "ee_extras:battery_module",
     }, "computercraft:pocket_computer_normal", "computercraft:pocket_computer_advanced"),
     "turtle_advanced_upgrade": ([" R ", "ACP", " S "], {
@@ -256,6 +334,29 @@ for entry in audit:
 add("data/ccbr/recipe/pressing/lapis_block.json", {"neoforge:conditions": [{"type": "neoforge:false"}]}, "removed",
     "After the IC replacement the lapis plate has no remaining active consumers")
 
+# CC:C Bridge: производство базового блока Source и штатное обратимое переключение Source/Target.
+BRIDGE = "data/cccbridge/recipe"
+for block, pattern, parts, count in [
+    ("redrouter_block", [" R ", "TBT", " C "], {
+        "R": "minecraft:redstone", "T": "ee_extras:connector", "B": "ee_extras:control_board_l1",
+        "C": "ee_extras:peripheral_case",
+    }, 1),
+    ("animatronic_block", [" D ", "HBH", " C "], {
+        "D": "ee_extras:display_crt", "H": "create:brass_hand", "B": "ee_extras:precision_actuator",
+        "C": "ee_extras:peripheral_case",
+    }, 1),
+    ("scroller_block", [" G ", "BMT", " C "], {
+        "G": "create:cogwheel", "B": "ee_extras:control_board_l1", "M": "ee_extras:small_motor",
+        "T": "ee_extras:connector", "C": "ee_extras:peripheral_case",
+    }, 1),
+    ("source_block", [" G ", "LBT", " C "], {
+        "G": "#c:glass_panes", "L": "create:rose_quartz_lamp", "B": "ee_extras:control_board_l1",
+        "T": "ee_extras:connector", "C": "ee_extras:abs_sheet",
+    }, 2),
+]:
+    mechanical(f"{BRIDGE}/{block}.json", pattern, parts, f"cccbridge:{block}", count, "changed")
+    recipes[f"{BRIDGE}/{block}.json"]["neoforge:conditions"] = [{"type": "neoforge:mod_loaded", "modid": "cccbridge"}]
+
 # Полный аудит неизменённых 40 файлов CC: special/output-only/cosmetic/creative и upgrades.
 unchanged = {
     "clear_colour.json": "special: clears colour without deleting disk data",
@@ -289,7 +390,7 @@ for tier in ("normal", "advanced"):
                       "note": "Cosmetic transform recipe"})
 
 # Общий тег изоляции: доступный IE/AFC базовый вариант + необязательные полимеры Destroy M9.
-tag = {"replace": False, "values": ["#c:plates/plastic", {"id": "afc:rubber_bar", "required": False},
+tag = {"replace": False, "values": [{"id": "#c:plates/plastic", "required": False}, "ee_extras:abs_sheet", {"id": "afc:rubber_bar", "required": False},
        {"id": "destroy:polystyrene_butadiene", "required": False},
        {"id": "destroy:polyethene", "required": False}, {"id": "destroy:polypropene", "required": False},
        {"id": "destroy:polyvinyl_chloride", "required": False}]}
@@ -298,8 +399,8 @@ tag = {"replace": False, "values": ["#c:plates/plastic", {"id": "afc:rubber_bar"
 def main() -> None:
     if len([x for x in audit if x["path"].startswith(CC)]) != 75:
         raise ValueError("CC audit must contain exactly 75 files")
-    if len(ITEMS) != 30 or len(recipes) != 68:
-        raise ValueError(f"unexpected size: {len(ITEMS)} items, {len(recipes)} recipes")
+    if len(ITEMS) != 41 or len(recipes) != 83 or len(data_files) != 1:
+        raise ValueError(f"unexpected size: {len(ITEMS)} items, {len(recipes)} recipes, {len(data_files)} data files")
     if OUT.exists():
         shutil.rmtree(OUT)
     OUT.mkdir(parents=True)
@@ -319,6 +420,11 @@ def main() -> None:
         if not path.startswith("data/ee_extras/"):
             kind = "remove" if kind == "remove" else "replace"
         entries.append({"path": path, "content": recipe, "kind": kind})
+    for path, data in data_files.items():
+        target = OUT / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        entries.append({"path": path, "content": data, "kind": "file"})
     tag_path = "data/tfc/tags/item/insulation.json"
     target = OUT / tag_path
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -331,9 +437,9 @@ def main() -> None:
     for path in [p for p in DEVTEST.rglob("*.json") if p.is_file()]:
         relative = path.relative_to(DEVTEST).as_posix()
         if relative.startswith("data/computercraft/") or relative.startswith("data/ccbr/") or relative == tag_path \
-                or relative.startswith("data/ee_extras/recipe/cc/"):
+                or relative.startswith(("data/ee_extras/recipe/cc/", "data/cccbridge/recipe/")) or relative in data_files:
             path.unlink()
-    for path, recipe in recipes.items():
+    for path, recipe in (recipes | data_files).items():
         target = DEVTEST / path
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(json.dumps(recipe, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

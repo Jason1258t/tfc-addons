@@ -22,6 +22,8 @@ public final class ProcessPowerDevice extends SimpleElectricalDevice {
     public static final int MINUS = 1;
 
     private volatile boolean active;
+    private volatile double nominalVoltage = NOMINAL_VOLTAGE;
+    private volatile double nominalCurrent = NOMINAL_CURRENT;
     private volatile double measuredVoltage;
     private volatile double measuredCurrent;
 
@@ -33,9 +35,16 @@ public final class ProcessPowerDevice extends SimpleElectricalDevice {
         active = value;
     }
 
+    /** Другие машины моста задают собственные 240/600 В без нового типа EE-устройства. */
+    public void setRating(double voltage, double current) {
+        if (voltage <= 0 || current <= 0) throw new IllegalArgumentException("Номиналы нагрузки должны быть положительными");
+        nominalVoltage = voltage;
+        nominalCurrent = current;
+    }
+
     @Override
     public void preTick(BridgeCollector collector) {
-        collector.builder(pos).resistor(PLUS, MINUS, active ? LOAD_RESISTANCE : OPEN_RESISTANCE);
+        collector.builder(pos).resistor(PLUS, MINUS, active ? nominalVoltage / nominalCurrent : OPEN_RESISTANCE);
     }
 
     @Override
@@ -58,8 +67,8 @@ public final class ProcessPowerDevice extends SimpleElectricalDevice {
 
     public boolean hasWorkingPower() {
         double voltage = measuredVoltage;
-        return voltage >= NOMINAL_VOLTAGE * 0.9 && voltage <= NOMINAL_VOLTAGE * 1.1
-            && Math.abs(measuredCurrent - NOMINAL_CURRENT) <= 0.1;
+        return voltage >= nominalVoltage * 0.9 && voltage <= nominalVoltage * 1.1
+            && Math.abs(measuredCurrent - nominalCurrent) <= Math.max(0.1, nominalCurrent * 0.0125);
     }
 
     @Override

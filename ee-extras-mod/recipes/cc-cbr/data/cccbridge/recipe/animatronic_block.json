@@ -1,0 +1,33 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    " D ",
+    "HBH",
+    " C "
+  ],
+  "key": {
+    "D": {
+      "item": "ee_extras:display_crt"
+    },
+    "H": {
+      "item": "create:brass_hand"
+    },
+    "B": {
+      "item": "ee_extras:precision_actuator"
+    },
+    "C": {
+      "item": "ee_extras:peripheral_case"
+    }
+  },
+  "result": {
+    "id": "cccbridge:animatronic_block",
+    "count": 1
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "cccbridge"
+    }
+  ]
+}

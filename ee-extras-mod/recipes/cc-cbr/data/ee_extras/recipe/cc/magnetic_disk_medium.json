@@ -2,7 +2,7 @@
   "type": "create:mechanical_crafting",
   "accept_mirrored": false,
   "pattern": [
-    " S ",
+    "ASA",
     "IMI",
     "PPP"
   ],
@@ -17,7 +17,10 @@
       "item": "tfc:powder/magnetite"
     },
     "P": {
-      "tag": "tfc:insulation"
+      "item": "ee_extras:pet_film"
+    },
+    "A": {
+      "item": "ee_extras:abs_sheet"
     }
   },
   "result": {

@@ -2,19 +2,22 @@
   "type": "create:mechanical_crafting",
   "accept_mirrored": false,
   "pattern": [
-    "S S",
-    "IPI",
+    "SPS",
+    "IMI",
     " T "
   ],
   "key": {
     "S": {
       "tag": "c:plates/steel"
     },
+    "P": {
+      "item": "ee_extras:speaker_cone"
+    },
     "I": {
       "item": "ee_extras:inductor"
     },
-    "P": {
-      "tag": "tfc:insulation"
+    "M": {
+      "item": "ee_extras:permanent_magnet"
     },
     "T": {
       "tag": "c:rods/steel"

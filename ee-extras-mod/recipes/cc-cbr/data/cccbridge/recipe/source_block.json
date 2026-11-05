@@ -1,0 +1,36 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    " G ",
+    "LBT",
+    " C "
+  ],
+  "key": {
+    "G": {
+      "tag": "c:glass_panes"
+    },
+    "L": {
+      "item": "create:rose_quartz_lamp"
+    },
+    "B": {
+      "item": "ee_extras:control_board_l1"
+    },
+    "T": {
+      "item": "ee_extras:connector"
+    },
+    "C": {
+      "item": "ee_extras:abs_sheet"
+    }
+  },
+  "result": {
+    "id": "cccbridge:source_block",
+    "count": 2
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "cccbridge"
+    }
+  ]
+}

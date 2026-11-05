@@ -12,6 +12,22 @@
     "output": ""
   },
   {
+    "id": "cccbridge:animatronic_block",
+    "output": "cccbridge:animatronic_block"
+  },
+  {
+    "id": "cccbridge:redrouter_block",
+    "output": "cccbridge:redrouter_block"
+  },
+  {
+    "id": "cccbridge:scroller_block",
+    "output": "cccbridge:scroller_block"
+  },
+  {
+    "id": "cccbridge:source_block",
+    "output": "cccbridge:source_block"
+  },
+  {
     "id": "computercraft:cable",
     "output": "computercraft:cable"
   },
@@ -216,6 +232,46 @@
     "output": "ee_extras:magnetic_disk_medium"
   },
   {
+    "id": "ee_extras:cc/materials/abs_keyboard_blank",
+    "output": "ee_extras:abs_keyboard_blank"
+  },
+  {
+    "id": "ee_extras:cc/materials/abs_sheet",
+    "output": "ee_extras:abs_sheet"
+  },
+  {
+    "id": "ee_extras:cc/materials/antenna",
+    "output": "ee_extras:antenna"
+  },
+  {
+    "id": "ee_extras:cc/materials/battery_electrolyte",
+    "output": "ee_extras:battery_electrolyte"
+  },
+  {
+    "id": "ee_extras:cc/materials/ink_cartridge",
+    "output": "ee_extras:ink_cartridge"
+  },
+  {
+    "id": "ee_extras:cc/materials/permanent_magnet",
+    "output": "ee_extras:permanent_magnet"
+  },
+  {
+    "id": "ee_extras:cc/materials/pet_film",
+    "output": "ee_extras:pet_film"
+  },
+  {
+    "id": "ee_extras:cc/materials/rgb_phosphor",
+    "output": "ee_extras:rgb_phosphor"
+  },
+  {
+    "id": "ee_extras:cc/materials/shadow_mask",
+    "output": "ee_extras:shadow_mask"
+  },
+  {
+    "id": "ee_extras:cc/materials/speaker_cone",
+    "output": "ee_extras:speaker_cone"
+  },
+  {
     "id": "ee_extras:cc/network_port",
     "output": "ee_extras:network_port"
   },
@@ -230,6 +286,10 @@
   {
     "id": "ee_extras:cc/pocket_case",
     "output": "ee_extras:pocket_case"
+  },
+  {
+    "id": "ee_extras:cc/pocket_color_display",
+    "output": "ee_extras:pocket_color_display"
   },
   {
     "id": "ee_extras:cc/pocket_display",

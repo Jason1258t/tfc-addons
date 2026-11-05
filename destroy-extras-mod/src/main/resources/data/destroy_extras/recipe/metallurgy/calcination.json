@@ -1,0 +1,21 @@
+{
+  "type": "destroy_extras:metallurgy",
+  "ingredients": [
+    {
+      "item": "destroy_extras:aluminum_hydroxide"
+    }
+  ],
+  "results": [
+    {
+      "id": "destroy_extras:alumina"
+    },
+    {
+      "id": "minecraft:water",
+      "amount": 50
+    }
+  ],
+  "processing_time": 300,
+  "voltage": 600,
+  "current": 6,
+  "priority": 0
+}

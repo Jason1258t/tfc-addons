@@ -1,0 +1,36 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "pattern": [
+    " G ",
+    "BMT",
+    " C "
+  ],
+  "key": {
+    "G": {
+      "item": "create:cogwheel"
+    },
+    "B": {
+      "item": "ee_extras:control_board_l1"
+    },
+    "M": {
+      "item": "ee_extras:small_motor"
+    },
+    "T": {
+      "item": "ee_extras:connector"
+    },
+    "C": {
+      "item": "ee_extras:peripheral_case"
+    }
+  },
+  "result": {
+    "id": "cccbridge:scroller_block",
+    "count": 1
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "cccbridge"
+    }
+  ]
+}

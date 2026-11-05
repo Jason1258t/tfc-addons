@@ -3,21 +3,18 @@
   "accept_mirrored": false,
   "pattern": [
     "PPP",
-    "RGB",
+    "LS ",
     "CFC"
   ],
   "key": {
     "P": {
       "tag": "c:glass_panes"
     },
-    "R": {
-      "item": "minecraft:red_dye"
+    "L": {
+      "item": "ee_extras:rgb_phosphor"
     },
-    "G": {
-      "item": "minecraft:green_dye"
-    },
-    "B": {
-      "item": "minecraft:blue_dye"
+    "S": {
+      "item": "ee_extras:shadow_mask"
     },
     "C": {
       "item": "ee_extras:advanced_display_driver"

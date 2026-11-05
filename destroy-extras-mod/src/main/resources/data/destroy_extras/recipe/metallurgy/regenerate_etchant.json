@@ -1,0 +1,74 @@
+{
+  "type": "destroy_extras:metallurgy",
+  "ingredients": [
+    {
+      "type": "destroy:mixture_with_salt",
+      "cation": "destroy:iron_ii",
+      "anion": "destroy:chloride",
+      "concentration": 6.0,
+      "amount": 250
+    },
+    {
+      "type": "destroy:mixture_with_molecule",
+      "molecule": "destroy:chlorine",
+      "concentration": 1.0,
+      "amount": 50
+    }
+  ],
+  "results": [
+    {
+      "id": "destroy:mixture",
+      "amount": 200,
+      "components": {
+        "destroy:mixture": {
+          "TranslationKey": "destroy_extras.fluid.regenerated_ferric_chloride",
+          "Contents": [
+            {
+              "Molecule": "destroy:iron_iii",
+              "Concentration": 6
+            },
+            {
+              "Molecule": "destroy:chloride",
+              "Concentration": 18
+            },
+            {
+              "Molecule": "destroy:copper_ii",
+              "Concentration": 3
+            },
+            {
+              "Molecule": "destroy:water",
+              "Concentration": 20
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "destroy:mixture",
+      "amount": 50,
+      "components": {
+        "destroy:mixture": {
+          "TranslationKey": "destroy_extras.fluid.copper_chloride",
+          "Contents": [
+            {
+              "Molecule": "destroy:copper_ii",
+              "Concentration": 1
+            },
+            {
+              "Molecule": "destroy:chloride",
+              "Concentration": 2
+            },
+            {
+              "Molecule": "destroy:water",
+              "Concentration": 10
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "processing_time": 300,
+  "voltage": 600,
+  "current": 8,
+  "priority": 0
+}

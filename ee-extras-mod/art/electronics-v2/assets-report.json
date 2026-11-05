@@ -1,0 +1,198 @@
+[
+  {
+    "id": "advanced_ic",
+    "source": "src/advanced_ic.png",
+    "sourceSize": [1254, 1254],
+    "alphaBounds": [149, 205, 1105, 1036],
+    "runtimeSize": 64
+  },
+  {
+    "id": "basic_ic",
+    "source": "src/basic_ic.png",
+    "sourceSize": [1536, 1024],
+    "alphaBounds": [398, 174, 1150, 808],
+    "runtimeSize": 64
+  },
+  {
+    "id": "capacitor",
+    "source": "src/capacitor.png",
+    "sourceSize": [1254, 1254],
+    "alphaBounds": [363, 133, 890, 1122],
+    "runtimeSize": 64
+  },
+  {
+    "id": "connector",
+    "source": "src/connector.png",
+    "sourceSize": [1536, 1024],
+    "alphaBounds": [461, 273, 1053, 778],
+    "runtimeSize": 64
+  },
+  {
+    "id": "copper_foil",
+    "source": "src/copper_foil.png",
+    "sourceSize": [1254, 1254],
+    "alphaBounds": [103, 245, 1145, 1105],
+    "runtimeSize": 64
+  },
+  {
+    "id": "epoxy_laminate",
+    "source": "src/epoxy_laminate.png",
+    "sourceSize": [1254, 1254],
+    "alphaBounds": [95, 270, 1174, 1056],
+    "runtimeSize": 64
+  },
+  {
+    "id": "glass_fabric",
+    "source": "src/glass_fabric.png",
+    "sourceSize": [1536, 1024],
+    "alphaBounds": [294, 127, 1241, 916],
+    "runtimeSize": 64
+  },
+  {
+    "id": "glass_fiber",
+    "source": "src/glass_fiber.png",
+    "sourceSize": [1254, 1254],
+    "alphaBounds": [314, 152, 940, 1120],
+    "runtimeSize": 64
+  },
+  {
+    "id": "inductor",
+    "source": "src/inductor.png",
+    "sourceSize": [1536, 1024],
+    "alphaBounds": [518, 237, 1007, 781],
+    "runtimeSize": 64
+  },
+  {
+    "id": "l1_board",
+    "source": "src/l1_board.png",
+    "sourceSize": [1448, 1086],
+    "alphaBounds": [219, 181, 1222, 906],
+    "runtimeSize": 64
+  },
+  {
+    "id": "l1_board_blank",
+    "source": "src/l1_board_blank.png",
+    "sourceSize": [1536, 1024],
+    "alphaBounds": [268, 148, 1257, 877],
+    "runtimeSize": 64
+  },
+  {
+    "id": "l1_mask",
+    "source": "src/l1_mask.png",
+    "sourceSize": [1254, 1254],
+    "alphaBounds": [252, 165, 1006, 1098],
+    "runtimeSize": 64
+  },
+  {
+    "id": "l2_board",
+    "source": "src/l2_board.png",
+    "sourceSize": [1536, 1024],
+    "alphaBounds": [246, 139, 1287, 905],
+    "runtimeSize": 64
+  },
+  {
+    "id": "l2_board_blank",
+    "source": "src/l2_board_blank.png",
+    "sourceSize": [1536, 1024],
+    "alphaBounds": [266, 166, 1266, 878],
+    "runtimeSize": 64
+  },
+  {
+    "id": "l2_etched_board",
+    "source": "src/l2_etched_board.png",
+    "sourceSize": [1402, 1122],
+    "alphaBounds": [105, 198, 1297, 1002],
+    "runtimeSize": 64
+  },
+  {
+    "id": "l2_prepared_blank",
+    "source": "src/l2_prepared_blank.png",
+    "sourceSize": [1536, 1024],
+    "alphaBounds": [173, 156, 1359, 896],
+    "runtimeSize": 64
+  },
+  {
+    "id": "l3_board",
+    "source": "src/l3_board.png",
+    "sourceSize": [1254, 1254],
+    "alphaBounds": [100, 225, 1143, 1096],
+    "runtimeSize": 64
+  },
+  {
+    "id": "l3_board_blank",
+    "source": "src/l3_board_blank.png",
+    "sourceSize": [1536, 1024],
+    "alphaBounds": [194, 139, 1336, 903],
+    "runtimeSize": 64
+  },
+  {
+    "id": "l3_etched_board",
+    "source": "src/l3_etched_board.png",
+    "sourceSize": [1402, 1122],
+    "alphaBounds": [147, 121, 1260, 1023],
+    "runtimeSize": 64
+  },
+  {
+    "id": "l3_prepared_blank",
+    "source": "src/l3_prepared_blank.png",
+    "sourceSize": [1536, 1024],
+    "alphaBounds": [166, 124, 1370, 927],
+    "runtimeSize": 64
+  },
+  {
+    "id": "pcb_design",
+    "source": "src/pcb_design.png",
+    "sourceSize": [1254, 1254],
+    "alphaBounds": [137, 256, 1099, 1050],
+    "runtimeSize": 64
+  },
+  {
+    "id": "photoresist",
+    "source": "src/photoresist.png",
+    "sourceSize": [1254, 1254],
+    "alphaBounds": [131, 216, 1111, 1092],
+    "runtimeSize": 64
+  },
+  {
+    "id": "resistor",
+    "source": "src/resistor.png",
+    "sourceSize": [1254, 1254],
+    "alphaBounds": [143, 232, 1187, 1085],
+    "runtimeSize": 64
+  },
+  {
+    "id": "rosin_flux",
+    "source": "src/rosin_flux.png",
+    "sourceSize": [1254, 1254],
+    "alphaBounds": [219, 346, 1035, 1032],
+    "runtimeSize": 64
+  },
+  {
+    "id": "silicon_diode",
+    "source": "src/silicon_diode.png",
+    "sourceSize": [1254, 1254],
+    "alphaBounds": [135, 103, 1205, 1179],
+    "runtimeSize": 64
+  },
+  {
+    "id": "silicon_wafer",
+    "source": "src/silicon_wafer.png",
+    "sourceSize": [1536, 1024],
+    "alphaBounds": [352, 183, 1184, 855],
+    "runtimeSize": 64
+  },
+  {
+    "id": "solder_wire",
+    "source": "src/solder_wire.png",
+    "sourceSize": [1536, 1024],
+    "alphaBounds": [532, 189, 998, 794],
+    "runtimeSize": 64
+  },
+  {
+    "id": "transistor",
+    "source": "src/transistor.png",
+    "sourceSize": [1536, 1024],
+    "alphaBounds": [598, 151, 957, 800],
+    "runtimeSize": 64
+  }
+]

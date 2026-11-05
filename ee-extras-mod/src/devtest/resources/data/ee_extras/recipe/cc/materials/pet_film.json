@@ -1,0 +1,15 @@
+{
+  "type": "create:compacting",
+  "ingredients": [
+    {
+      "item": "destroy:polyethene_terephthalate"
+    }
+  ],
+  "heat_requirement": "heated",
+  "results": [
+    {
+      "id": "ee_extras:pet_film",
+      "count": 2
+    }
+  ]
+}

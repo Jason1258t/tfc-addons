@@ -1,0 +1,51 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "better_fluids:block/fluid_tank",
+    "side": "better_fluids:block/fluid_tank",
+    "top": "better_fluids:block/fluid_tank_top"
+  },
+  "elements": [
+    {
+      "from": [
+        2.3431457505076203,
+        0,
+        2.3431457505076203
+      ],
+      "to": [
+        13.65685424949238,
+        16,
+        13.65685424949238
+      ],
+      "faces": {
+        "north": {
+          "texture": "#side"
+        },
+        "south": {
+          "texture": "#side"
+        },
+        "west": {
+          "texture": "#side"
+        },
+        "east": {
+          "texture": "#side"
+        },
+        "up": {
+          "texture": "#top"
+        },
+        "down": {
+          "texture": "#top"
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          8,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "immersiveengineering:item/material_circuit_board"
+    "layer0": "ee_extras:item/l1_board"
   }
 }

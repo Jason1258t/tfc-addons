@@ -1,0 +1,168 @@
+{
+  "tool": "image_gen",
+  "references": ["references/approved.png", "references/ee-extras-cc.png"],
+  "entries": [
+    {
+      "id": "glass_fiber",
+      "prompt": "Create ONE isolated Minecraft EE Extras inventory item sprite on TRUE TRANSPARENT background. Reference 1 is the approved art direction (ignore sheet layout/text), reference 2 the actual newer electronics textures defining detail density. Subject: tightly wound white fiberglass roving bobbin, upright cylindrical white package, visible hollow ivory core at top, fine restrained horizontal winding, a short loose strand. No protruding spool flanges. Preserve approved silhouette. Medium-detail pixel art suitable for 64x64 runtime sprite; square stepped pixel clusters, restrained 5 shade material palette, cool ivory, grey shadows. Modest 3/4 view, light upper left, same EE Extras electronics style. No photo, no smooth gradients, no background, no checkerboard, no text, no ground shadow. Exactly ONE object centered with generous 10% transparent margin, fill about 80% canvas. This is a usable item artwork, not a concept sheet.",
+      "source": "src/glass_fiber.png"
+    },
+    {
+      "id": "glass_fabric",
+      "prompt": "Create ONE isolated Minecraft EE Extras inventory item sprite on TRUE TRANSPARENT background. Reference 1 approved concepts for silhouette and material; reference 2 actual newer electronics for style. Medium-detail restrained pixel art for 32 or 64 px runtime, crisp square pixel clusters, few flat shades, subtle top-left highlights, modest 3/4 view, clear compact silhouette. Not coarse 16px symbols, not photorealistic or smooth 3D miniature. No background/checkerboard, NO cast shadow, no extra objects, no labels outside object. One centered complete object with 10% transparent margin, about 80% canvas. Subject: A short wide silver-white fiberglass woven FABRIC ROLL lying on its side, brown cardboard core visible on right end, broad rectangular fabric flap unrolled toward lower left. Neat straight factory edges, restrained tiny grey weave pattern. Match approved fabric.",
+      "source": "src/glass_fabric.png"
+    },
+    {
+      "id": "capacitor",
+      "prompt": "Create ONE isolated Minecraft EE Extras inventory item sprite on TRUE TRANSPARENT background. Reference 1 approved concepts for silhouette and material; reference 2 actual newer electronics for style. Medium-detail restrained pixel art for 32 or 64 px runtime, crisp square pixel clusters, few flat shades, subtle top-left highlights, modest 3/4 view, clear compact silhouette. Not coarse 16px symbols, not photorealistic or smooth 3D miniature. No background/checkerboard, NO cast shadow, no extra objects, no labels outside object. One centered complete object with 10% transparent margin, about 80% canvas. Subject: Stout upright dark blue cylindrical electrolytic capacitor, axis EXACTLY VERTICAL, silver top with small cross, light blue polarity stripe, two short parallel straight metal leads down. Match approved capacitor.",
+      "source": "src/capacitor.png"
+    },
+    {
+      "id": "l1_board_blank",
+      "prompt": "Create ONE isolated Minecraft EE Extras inventory item sprite on TRUE TRANSPARENT background. Reference 1 approved concepts for silhouette and material; reference 2 actual newer electronics for style. Medium-detail restrained pixel art for 32 or 64 px runtime, crisp square pixel clusters, few flat shades, subtle top-left highlights, modest 3/4 view, clear compact silhouette. Not coarse 16px symbols, not photorealistic or smooth 3D miniature. No background/checkerboard, NO cast shadow, no extra objects, no labels outside object. One centered complete object with 10% transparent margin, about 80% canvas. Subject: Copper-clad PCB blank in modest 3/4 view, uninterrupted muted copper upper face, ochre laminate edge. Conspicuous GOLDEN YELLOW adhesive sticker labeled L1 near front-left corner, lying on upper face and wrapping over front edge. Sticker 30% board width. One ivory registration mark on edge. Match approved board exactly.",
+      "source": "src/l1_board_blank.png"
+    },
+    {
+      "id": "l2_board_blank",
+      "prompt": "Create ONE isolated Minecraft EE Extras inventory item sprite on TRUE TRANSPARENT background. Reference 1 approved concepts for silhouette and material; reference 2 actual newer electronics for style. Medium-detail restrained pixel art for 32 or 64 px runtime, crisp square pixel clusters, few flat shades, subtle top-left highlights, modest 3/4 view, clear compact silhouette. Not coarse 16px symbols, not photorealistic or smooth 3D miniature. No background/checkerboard, NO cast shadow, no extra objects, no labels outside object. One centered complete object with 10% transparent margin, about 80% canvas. Subject: Copper-clad PCB blank in modest 3/4 view, uninterrupted muted copper upper face, dark green laminate edge with two subtle layers. Conspicuous GREEN adhesive sticker labeled L2 near front-left corner, lying on upper face and wrapping over front edge. Sticker 30% board width. Two ivory registration marks on edge. Match approved board.",
+      "source": "src/l2_board_blank.png"
+    },
+    {
+      "id": "l3_board_blank",
+      "prompt": "Create ONE isolated Minecraft EE Extras inventory item sprite on TRUE TRANSPARENT background. Reference 1 approved concepts for silhouette and material; reference 2 actual newer electronics for style. Medium-detail restrained pixel art for 32 or 64 px runtime, crisp square pixel clusters, few flat shades, subtle top-left highlights, modest 3/4 view, clear compact silhouette. Not coarse 16px symbols, not photorealistic or smooth 3D miniature. No background/checkerboard, NO cast shadow, no extra objects, no labels outside object. One centered complete object with 10% transparent margin, about 80% canvas. Subject: Copper-clad PCB blank in modest 3/4 view, uninterrupted muted copper upper face, dark blue laminate edge with three subtle layers. Conspicuous BLUE adhesive sticker labeled L3 near front-left corner, lying on upper face and wrapping over front edge. Sticker 30% board width. Three ivory registration marks on edge. Match approved board.",
+      "source": "src/l3_board_blank.png"
+    },
+    {
+      "id": "l1_mask",
+      "prompt": "Generate ONE SINGLE isolated game inventory item sprite, TRUE TRANSPARENT BACKGROUND, no sheet, no panels, no captions, no thumbnails, no swatches, no scenery, no text except specified sticker on object. Subject: Smoky translucent rectangular photographic stencil film, light ivory circuit-mask paths, slightly curled corner, small yellow L1 identification tab. Modest 3/4 view. True partially transparent film but visible grey border.. Style: EE Extras industrial Minecraft pixel-art, medium detail suitable for 64x64 runtime, muted palette, crisp pixel clusters, clear dark contour, 4-5 shades per material, subtle top-left lighting. Modest 3/4 view, one object centered filling 80% image with transparent margin. Ref image is only a style example of a DIFFERENT object, do NOT include it in output. Do not make a presentation page. No background rectangle or checkerboard or ground shadow or glow. Only the requested l1_mask object; every surrounding pixel must have alpha zero.",
+      "source": "src/l1_mask.png",
+      "references": ["src/capacitor.png"]
+    },
+    {
+      "id": "l1_board",
+      "prompt": "Generate ONE SINGLE isolated game inventory item sprite, TRUE TRANSPARENT BACKGROUND, no sheet, no panels, no captions, no thumbnails, no swatches, no scenery, no text except specified sticker on object. Subject: Finished single-layer bare olive green printed circuit board, few neatly etched copper tracks and round pads, yellow L1 sticker wrapping near left edge, single laminate layer. No mounted chips.. Style: EE Extras industrial Minecraft pixel-art, medium detail suitable for 64x64 runtime, muted palette, crisp pixel clusters, clear dark contour, 4-5 shades per material, subtle top-left lighting. Modest 3/4 view, one object centered filling 80% image with transparent margin. Ref image is only a style example of a DIFFERENT object, do NOT include it in output. Do not make a presentation page. No background rectangle or checkerboard or ground shadow or glow. Only the requested l1_board object; every surrounding pixel must have alpha zero.",
+      "source": "src/l1_board.png",
+      "references": ["src/capacitor.png"]
+    },
+    {
+      "id": "pcb_design",
+      "prompt": "Generate ONE SINGLE isolated game inventory item sprite, TRUE TRANSPARENT BACKGROUND, no sheet, no panels, no captions, no thumbnails, no swatches, no scenery, no text except specified sticker on object. Subject: Ivory folded engineering drawing sheet, green rectilinear printed circuit plan, small rolled paper edge, no readable words. Compact paper item.. Style: EE Extras industrial Minecraft pixel-art, medium detail suitable for 64x64 runtime, muted palette, crisp pixel clusters, clear dark contour, 4-5 shades per material, subtle top-left lighting. Modest 3/4 view, one object centered filling 80% image with transparent margin. Ref image is only a style example of a DIFFERENT object, do NOT include it in output. Do not make a presentation page. No background rectangle or checkerboard or ground shadow or glow. Only the requested pcb_design object; every surrounding pixel must have alpha zero.",
+      "source": "src/pcb_design.png",
+      "references": ["src/capacitor.png"]
+    },
+    {
+      "id": "copper_foil",
+      "prompt": "Generate ONE SINGLE isolated game inventory item sprite, TRUE TRANSPARENT BACKGROUND, no sheet, no panels, no captions, no thumbnails, no swatches, no scenery, no text except specified sticker on object. Subject: Thin muted salmon copper foil, a short rolled lip and broad slightly creased sheet extending diagonally forward, industrial material, restrained metallic pixel highlights.. Style: EE Extras industrial Minecraft pixel-art, medium detail suitable for 64x64 runtime, muted palette, crisp pixel clusters, clear dark contour, 4-5 shades per material, subtle top-left lighting. Modest 3/4 view, one object centered filling 80% image with transparent margin. Ref image is only a style example of a DIFFERENT object, do NOT include it in output. Do not make a presentation page. No background rectangle or checkerboard or ground shadow or glow. Only the requested copper_foil object; every surrounding pixel must have alpha zero.",
+      "source": "src/copper_foil.png",
+      "references": ["src/capacitor.png"]
+    },
+    {
+      "id": "epoxy_laminate",
+      "prompt": "Generate ONE SINGLE isolated game inventory item sprite, TRUE TRANSPARENT BACKGROUND, no sheet, no panels, no captions, no thumbnails, no swatches, no scenery, no text except specified sticker on object. Subject: Rigid olive-amber epoxy fiberglass laminate rectangular slab, exposed cream layers along edge, modest 3/4 view. Bare uncoated board, no copper or tracks.. Style: EE Extras industrial Minecraft pixel-art, medium detail suitable for 64x64 runtime, muted palette, crisp pixel clusters, clear dark contour, 4-5 shades per material, subtle top-left lighting. Modest 3/4 view, one object centered filling 80% image with transparent margin. Ref image is only a style example of a DIFFERENT object, do NOT include it in output. Do not make a presentation page. No background rectangle or checkerboard or ground shadow or glow. Only the requested epoxy_laminate object; every surrounding pixel must have alpha zero.",
+      "source": "src/epoxy_laminate.png",
+      "references": ["src/capacitor.png"]
+    },
+    {
+      "id": "photoresist",
+      "prompt": "Generate ONE SINGLE isolated game inventory item sprite, TRUE TRANSPARENT BACKGROUND, no sheet, no panels, no captions, no thumbnails, no swatches, no scenery, no text except specified sticker on object. Subject: Single translucent amber photosensitive dry film square with one visibly peeling curled corner, orange edges, restrained bright diagonal pixel highlights. No tin or bottle.. Style: EE Extras industrial Minecraft pixel-art, medium detail suitable for 64x64 runtime, muted palette, crisp pixel clusters, clear dark contour, 4-5 shades per material, subtle top-left lighting. Modest 3/4 view, one object centered filling 80% image with transparent margin. Ref image is only a style example of a DIFFERENT object, do NOT include it in output. Do not make a presentation page. No background rectangle or checkerboard or ground shadow or glow. Only the requested photoresist object; every surrounding pixel must have alpha zero.",
+      "source": "src/photoresist.png",
+      "references": ["src/capacitor.png"]
+    },
+    {
+      "id": "l2_prepared_blank",
+      "prompt": "Generate ONE SINGLE isolated game inventory item sprite, TRUE TRANSPARENT BACKGROUND, no sheet, no panels, no captions, no thumbnails, no swatches, no scenery, no text except specified sticker on object. Subject: Two-layer PCB rectangular blank, uniform dark GREEN photoresist coated top face, copper narrow perimeter and layered pale edge, GREEN sticker labeled L2 wrapping front-left edge. No exposed tracks, smooth uniform coating.. Style: EE Extras industrial Minecraft pixel-art, medium detail suitable for 64x64 runtime, muted palette, crisp pixel clusters, clear dark contour, 4-5 shades per material, subtle top-left lighting. Modest 3/4 view, one object centered filling 80% image with transparent margin. Ref image is only a style example of a DIFFERENT object, do NOT include it in output. Do not make a presentation page. No background rectangle or checkerboard or ground shadow or glow. Only the requested l2_prepared_blank object; every surrounding pixel must have alpha zero.",
+      "source": "src/l2_prepared_blank.png",
+      "references": ["src/capacitor.png"]
+    },
+    {
+      "id": "l3_prepared_blank",
+      "prompt": "Generate ONE SINGLE isolated game inventory item sprite, TRUE TRANSPARENT BACKGROUND, no sheet, no panels, no captions, no thumbnails, no swatches, no scenery, no text except specified sticker on object. Subject: Three-layer PCB rectangular blank, uniform deep BLUE photoresist coated top face, copper narrow perimeter and three-layer pale edge, BLUE sticker labeled L3 wrapping front-left edge. No exposed tracks.. Style: EE Extras industrial Minecraft pixel-art, medium detail suitable for 64x64 runtime, muted palette, crisp pixel clusters, clear dark contour, 4-5 shades per material, subtle top-left lighting. Modest 3/4 view, one object centered filling 80% image with transparent margin. Ref image is only a style example of a DIFFERENT object, do NOT include it in output. Do not make a presentation page. No background rectangle or checkerboard or ground shadow or glow. Only the requested l3_prepared_blank object; every surrounding pixel must have alpha zero.",
+      "source": "src/l3_prepared_blank.png",
+      "references": ["src/capacitor.png"]
+    },
+    {
+      "id": "l2_etched_board",
+      "prompt": "Generate ONE SINGLE isolated game inventory item sprite, TRUE TRANSPARENT BACKGROUND, no sheet, no panels, no captions, no thumbnails, no swatches, no scenery, no text except specified sticker on object. Subject: Two-layer dark green bare PCB, exposed sparse copper traces and conspicuous unfinished black drilled via holes, GREEN L2 sticker on front-left edge. No mounted components. Etched intermediate board.. Style: EE Extras industrial Minecraft pixel-art, medium detail suitable for 64x64 runtime, muted palette, crisp pixel clusters, clear dark contour, 4-5 shades per material, subtle top-left lighting. Modest 3/4 view, one object centered filling 80% image with transparent margin. Ref image is only a style example of a DIFFERENT object, do NOT include it in output. Do not make a presentation page. No background rectangle or checkerboard or ground shadow or glow. Only the requested l2_etched_board object; every surrounding pixel must have alpha zero.",
+      "source": "src/l2_etched_board.png",
+      "references": ["src/capacitor.png"]
+    },
+    {
+      "id": "l3_etched_board",
+      "prompt": "Generate ONE SINGLE isolated game inventory item sprite, TRUE TRANSPARENT BACKGROUND, no sheet, no panels, no captions, no thumbnails, no swatches, no scenery, no text except specified sticker on object. Subject: Three-layer dark blue bare PCB, denser copper traces and conspicuous unfinished black drilled via holes, BLUE L3 sticker on front-left edge. No mounted components. Etched intermediate board.. Style: EE Extras industrial Minecraft pixel-art, medium detail suitable for 64x64 runtime, muted palette, crisp pixel clusters, clear dark contour, 4-5 shades per material, subtle top-left lighting. Modest 3/4 view, one object centered filling 80% image with transparent margin. Ref image is only a style example of a DIFFERENT object, do NOT include it in output. Do not make a presentation page. No background rectangle or checkerboard or ground shadow or glow. Only the requested l3_etched_board object; every surrounding pixel must have alpha zero.",
+      "source": "src/l3_etched_board.png",
+      "references": ["src/capacitor.png"]
+    },
+    {
+      "id": "l2_board",
+      "prompt": "Generate ONE SINGLE isolated game inventory item sprite, TRUE TRANSPARENT BACKGROUND, no sheet, no panels, no captions, no thumbnails, no swatches, no scenery, no text except specified sticker on object. Subject: Finished two-layer dark GREEN bare PCB with neat copper routing and visibly SILVER plated round via rims, GREEN L2 sticker wrapping front-left edge. No mounted components. Distinguish from unfinished black holes with silver metallic rims.. Style: EE Extras industrial Minecraft pixel-art, medium detail suitable for 64x64 runtime, muted palette, crisp pixel clusters, clear dark contour, 4-5 shades per material, subtle top-left lighting. Modest 3/4 view, one object centered filling 80% image with transparent margin. Ref image is only a style example of a DIFFERENT object, do NOT include it in output. Do not make a presentation page. No background rectangle or checkerboard or ground shadow or glow. Only the requested l2_board object; every surrounding pixel must have alpha zero.",
+      "source": "src/l2_board.png",
+      "references": ["src/capacitor.png"]
+    },
+    {
+      "id": "l3_board",
+      "prompt": "Generate ONE SINGLE isolated game inventory item sprite, TRUE TRANSPARENT BACKGROUND, no sheet, no panels, no captions, no thumbnails, no swatches, no scenery, no text except specified sticker on object. Subject: Finished three-layer dark BLUE bare PCB with dense neat copper routing and visibly SILVER plated round via rims, BLUE L3 sticker wrapping front-left edge. No mounted components.. Style: EE Extras industrial Minecraft pixel-art, medium detail suitable for 64x64 runtime, muted palette, crisp pixel clusters, clear dark contour, 4-5 shades per material, subtle top-left lighting. Modest 3/4 view, one object centered filling 80% image with transparent margin. Ref image is only a style example of a DIFFERENT object, do NOT include it in output. Do not make a presentation page. No background rectangle or checkerboard or ground shadow or glow. Only the requested l3_board object; every surrounding pixel must have alpha zero.",
+      "source": "src/l3_board.png",
+      "references": ["src/capacitor.png"]
+    },
+    {
+      "id": "solder_wire",
+      "prompt": "undefinedCompact dark steel spool tightly wound with silver solder wire, silver winding and one curved loose end, modest 3/4 view. Metallic, distinct from white fiberglass bobbin, dark top and bottom flanges.",
+      "source": "src/solder_wire.png"
+    },
+    {
+      "id": "rosin_flux",
+      "prompt": "Generate ONE SINGLE isolated game inventory item sprite, TRUE TRANSPARENT BACKGROUND, no sheet, no panels, no captions, no thumbnails, no swatches, no scenery, no text except specified sticker on object. Subject: Three irregular translucent golden amber rosin chunks in a small shallow rectangular dark metal tin, readable simple facets and warm highlights.. Style: EE Extras industrial Minecraft pixel-art, medium detail suitable for 64x64 runtime, muted palette, crisp pixel clusters, clear dark contour, 4-5 shades per material, subtle top-left lighting. Modest 3/4 view, one object centered filling 80% image with transparent margin. Ref image is only a style example of a DIFFERENT object, do NOT include it in output. Do not make a presentation page. No background rectangle or checkerboard or ground shadow or glow. Only the requested rosin_flux object; every surrounding pixel must have alpha zero.",
+      "source": "src/rosin_flux.png",
+      "references": ["src/capacitor.png"]
+    },
+    {
+      "id": "resistor",
+      "prompt": "Generate ONE SINGLE isolated game inventory item sprite, TRUE TRANSPARENT BACKGROUND, no sheet, no panels, no captions, no thumbnails, no swatches, no scenery, no text except specified sticker on object. Subject: Single beige ceramic axial resistor body with brown red gold bands, two bent silver leads, diagonally oriented, compact real electrical component.. Style: EE Extras industrial Minecraft pixel-art, medium detail suitable for 64x64 runtime, muted palette, crisp pixel clusters, clear dark contour, 4-5 shades per material, subtle top-left lighting. Modest 3/4 view, one object centered filling 80% image with transparent margin. Ref image is only a style example of a DIFFERENT object, do NOT include it in output. Do not make a presentation page. No background rectangle or checkerboard or ground shadow or glow. Only the requested resistor object; every surrounding pixel must have alpha zero.",
+      "source": "src/resistor.png",
+      "references": ["src/capacitor.png"]
+    },
+    {
+      "id": "inductor",
+      "prompt": "undefinedSingle short copper induction coil with clear few wound turns around dark ferrite core, two bent grey metal leads, compact 3/4 view.",
+      "source": "src/inductor.png"
+    },
+    {
+      "id": "connector",
+      "prompt": "undefinedSmall ivory ceramic rectangular PCB connector socket, three dark socket openings and gold pins, compact 3/4 view, straight housing.",
+      "source": "src/connector.png"
+    },
+    {
+      "id": "silicon_diode",
+      "prompt": "Generate ONE SINGLE isolated game inventory item sprite, TRUE TRANSPARENT BACKGROUND, no sheet, no panels, no captions, no thumbnails, no swatches, no scenery, no text except specified sticker on object. Subject: Single charcoal black cylindrical axial silicon diode, conspicuous SILVER polarity band near one end, two bent silver wire leads, diagonal orientation.. Style: EE Extras industrial Minecraft pixel-art, medium detail suitable for 64x64 runtime, muted palette, crisp pixel clusters, clear dark contour, 4-5 shades per material, subtle top-left lighting. Modest 3/4 view, one object centered filling 80% image with transparent margin. Ref image is only a style example of a DIFFERENT object, do NOT include it in output. Do not make a presentation page. No background rectangle or checkerboard or ground shadow or glow. Only the requested silicon_diode object; every surrounding pixel must have alpha zero.",
+      "source": "src/silicon_diode.png",
+      "references": ["src/capacitor.png"]
+    },
+    {
+      "id": "transistor",
+      "prompt": "undefinedCompact black power transistor with grey rectangular metal tab and mounting hole, three short separated silver legs below, slight 3/4 view.",
+      "source": "src/transistor.png"
+    },
+    {
+      "id": "basic_ic",
+      "prompt": "undefinedBasic compact dark charcoal rectangular integrated circuit, silver pins along two sides, small olive inset mark, notch marking orientation. Slight 3/4 view, readable chip silhouette.",
+      "source": "src/basic_ic.png"
+    },
+    {
+      "id": "advanced_ic",
+      "prompt": "Generate ONE SINGLE isolated game inventory item sprite, TRUE TRANSPARENT BACKGROUND, no sheet, no panels, no captions, no thumbnails, no swatches, no scenery, no text except specified sticker on object. Subject: Advanced dark muted purple ceramic integrated circuit, gold pins along two sides, small brass square center inset, slight 3/4 view, industrial electronic item.. Style: EE Extras industrial Minecraft pixel-art, medium detail suitable for 64x64 runtime, muted palette, crisp pixel clusters, clear dark contour, 4-5 shades per material, subtle top-left lighting. Modest 3/4 view, one object centered filling 80% image with transparent margin. Ref image is only a style example of a DIFFERENT object, do NOT include it in output. Do not make a presentation page. No background rectangle or checkerboard or ground shadow or glow. Only the requested advanced_ic object; every surrounding pixel must have alpha zero.",
+      "source": "src/advanced_ic.png",
+      "references": ["src/capacitor.png"]
+    },
+    {
+      "id": "silicon_wafer",
+      "prompt": "Generate ONE SINGLE isolated game inventory item sprite, TRUE TRANSPARENT BACKGROUND, no sheet, no panels, no captions, no thumbnails, no swatches, no scenery, no text except specified sticker on object. Subject: Thin blue-grey silicon wafer with clipped corners, restrained regular crystalline square grid, a few subtle cool pale specular pixels, shallow 3/4 view, no frame or terminals.. Style: EE Extras industrial Minecraft pixel-art, medium detail suitable for 64x64 runtime, muted palette, crisp pixel clusters, clear dark contour, 4-5 shades per material, subtle top-left lighting. Modest 3/4 view, one object centered filling 80% image with transparent margin. Ref image is only a style example of a DIFFERENT object, do NOT include it in output. Do not make a presentation page. No background rectangle or checkerboard or ground shadow or glow. Only the requested silicon_wafer object; every surrounding pixel must have alpha zero.",
+      "source": "src/silicon_wafer.png",
+      "references": ["src/capacitor.png"]
+    },
+    {
+      "id": "block_atlas",
+      "prompt": "Generate ONE opaque Minecraft block-material texture ATLAS, perfectly square, EXACT 4x4 equal square tiles, no gutters, no margins, no labels, no background between tiles. This is a usable UV texture map, not inventory icons, NOT a 3D view. Each tile fills its square edge-to-edge, FLAT ORTHOGRAPHIC front-on. Medium-detail restrained 32x32 pixel texture look per tile, matching EE Extras actual electronics in reference 1 and approved industrial material colors in reference 2. Muted steel, dark green, blue, warm wood/copper. Crisp pixel clusters, few shades, no photo, no smooth gradient, no perspective.\nTile order left-to-right then top-to-bottom:\nRow 1: (1) square solar panel TOP: narrow steel border enclosing regular 4x4 dark blue solar cells, subtle pale blue separation. (2) instrument TOP: ivory enamel panel with narrow grey metal border and small corner screws, horizontal black graduated analog temperature scale across middle and small RED pointer, NO text/numbers. (3) drafting table TOP: green work mat with copper dotted regular circuit-pad grid, dark wood border, tiny brass corner fasteners. (4) photolithographer TOP: grey industrial steel square panel with dark violet rectangular exposure glass window in center and four corner rivets.\nRow 2: (1) plain neutral grey steel casing full square with top and bottom horizontal seam, small corner rivets, no vents. (2) ivory enamel casing side full square, subtle dark bottom lip, corner fasteners, no symbols. (3) warm brown factory worktable hardwood planks full square, vertical straight grain, restrained wear, no handles. (4) photolithographer SIDE full square grey steel frame around wood-brown vertical inset panel, subtle copper details, no text.\nRow 3: (1) dark steel vat EXTERIOR full square metal panel with reinforced horizontal top and bottom rims and four steel rivets. (2) dark grey vat INTERIOR full square, clean dark metal, subtle seams and flat tones, no fluid. (3) vat RIM full square lighter brushed grey steel with restrained highlights and tiny corner fasteners, no central hole (solid material swatch). (4) photolithographer PORT FACE grey steel square face with dark square optical port centered, muted copper trim, small screw corners.\nRow 4: (1) red electrical terminal material full square: muted terracotta-red metal face with dark border and central steel screw head. (2) blue electrical terminal material full square: muted cobalt-blue face with dark border and central steel screw head. (3) neutral dark industrial steel BOTTOM panel full square, flat dark charcoal grey with sparse seams. (4) tiny monochrome green PCB material full square with simple copper rectilinear traces and silver pads.\nALL 16 tiles must occupy exact equal grid cells, no layout decorations. No transparency. Every individual tile is FLAT face texture, never rendered cubic object. No shadows cast outside material. Preserve moderate pixel art of source.",
+      "source": "src/block_atlas.png"
+    }
+  ]
+}

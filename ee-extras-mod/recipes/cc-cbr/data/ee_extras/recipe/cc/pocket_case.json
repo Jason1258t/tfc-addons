@@ -3,7 +3,7 @@
   "accept_mirrored": false,
   "pattern": [
     "APA",
-    "T T",
+    "P P",
     "AAA"
   ],
   "key": {
@@ -11,10 +11,7 @@
       "tag": "c:plates/aluminum"
     },
     "P": {
-      "tag": "c:glass_panes"
-    },
-    "T": {
-      "tag": "tfc:insulation"
+      "item": "ee_extras:abs_sheet"
     }
   },
   "result": {

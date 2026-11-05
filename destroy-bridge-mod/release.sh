@@ -4,5 +4,5 @@ set -euo pipefail
 cd "$(dirname "$0")"
 ./libs.sh
 ./gradlew build --console=plain
-cp build/libs/destroy-bridge-0.1.0.jar .
-shasum -a 256 destroy-bridge-0.1.0.jar
+cp build/libs/destroy-bridge-0.2.0.jar .
+shasum -a 256 destroy-bridge-0.2.0.jar

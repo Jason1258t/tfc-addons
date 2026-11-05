@@ -1,0 +1,17 @@
+{
+  "type": "create:deploying",
+  "ingredients": [
+    {
+      "tag": "c:rods/steel"
+    },
+    {
+      "tag": "c:wires/copper"
+    }
+  ],
+  "results": [
+    {
+      "id": "ee_extras:antenna",
+      "count": 1
+    }
+  ]
+}

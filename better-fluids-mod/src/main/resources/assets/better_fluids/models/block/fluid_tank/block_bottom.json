@@ -1,0 +1,10 @@
+{
+  "parent": "create:block/fluid_tank/block_bottom",
+  "textures": {
+    "0": "better_fluids:block/fluid_tank_top",
+    "1": "better_fluids:block/fluid_tank",
+    "4": "better_fluids:block/fluid_tank_inner",
+    "particle": "better_fluids:block/fluid_tank"
+  },
+  "render_type": "minecraft:cutout_mipped"
+}

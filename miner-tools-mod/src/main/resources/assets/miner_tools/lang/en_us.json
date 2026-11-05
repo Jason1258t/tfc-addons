@@ -12,9 +12,6 @@
   "miner_belt.gui.enabled.on": "Enabled: yes",
   "miner_belt.gui.enabled.off": "Enabled: no",
   "miner_belt.gui.enabled.hint": "A disabled belt blocks nothing",
-  "miner_belt.gui.any.on": "Any rock: yes",
-  "miner_belt.gui.any.off": "Any rock: no",
-  "miner_belt.gui.any.hint": "Yes — a sample means every rock and soil type: a granite pebble blocks all pebbles (mossy too), gravel blocks any gravel, dirt any dirt of that kind. No — only the exact item",
   "item.miner_tools.miner_helmet": "Miner's Helmet",
   "item.miner_tools.miner_helmet.energy": "Charge: %s / %s FE",
   "item.miner_tools.miner_helmet.lamp_on": "Lamp on",
@@ -27,5 +24,14 @@
   "message.miner_tools.miner_helmet.empty": "Helmet battery is empty",
   "message.miner_tools.miner_helmet.not_worn": "You are not wearing a Miner's Helmet",
   "key.categories.miner_tools": "Miner's Gear",
-  "key.miner_tools.helmet_lamp": "Helmet lamp"
+  "key.miner_tools.helmet_lamp": "Helmet lamp",
+  "miner_belt.group.dirt": "Dirt",
+  "miner_belt.group.pebbles": "Pebbles",
+  "miner_belt.group.cobblestone": "Cobble",
+  "miner_belt.group.gravel": "Gravel",
+  "miner_belt.group.sand": "Sand",
+  "miner_belt.gui.allow": "List: allow",
+  "miner_belt.gui.deny": "List: block",
+  "miner_belt.gui.group.hint": "Checked groups are blocked",
+  "miner_belt.gui.mode.hint": "The list overrides groups. Click with a sample or shift-click from inventory to add an item. Click with an empty cursor to remove it."
 }
