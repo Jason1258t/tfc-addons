@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "ee_extras:duplex_cable_cap"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "electroenergetics:duplex_wire_termination"
+  }
+}

@@ -47,8 +47,10 @@ public final class CableLaying {
             return InteractionResult.SUCCESS;
         }
         BlockState state = level.getBlockState(pos);
-        CableEnd end = CableEnd.of(pos, state);
-        if (end == null) return null;
+        CableEnd end = CableEnd.of(level, pos, state);
+        // Про крышки приборов клиент не знает: прибор с двумя контактами — ждём ответа сервера
+        if (end == null && level.isClientSide && CableCap.isTwoContact(level, pos, state)) return InteractionResult.SUCCESS;
+        if (end == null) return CableCap.isTwoContact(level, pos, state) ? deny(level, player, pos, "cap.needed") : null;
         if (!(level instanceof ServerLevel sl)) return InteractionResult.SUCCESS;
         if (!fits(kind, end)) return deny(level, player, pos, kind == CableKind.DUPLEX ? "needs_duplex" : "needs_four_core");
 
@@ -59,7 +61,7 @@ public final class CableLaying {
             return InteractionResult.SUCCESS;
         }
 
-        CableEnd first = CableEnd.of(selected.pos(), level.getBlockState(selected.pos()));
+        CableEnd first = CableEnd.of(level, selected.pos(), level.getBlockState(selected.pos()));
         String problem = problem(sl, kind, first, end);
         if (problem != null) {
             // Выбранный блок сломан или заменён — выбор сбрасываем; остальное — оставляем, можно кликнуть по другому
@@ -158,8 +160,8 @@ public final class CableLaying {
             if (sd.isConnected(old[0], old[1])) sd.removeConnectionNoDrops(new InWorldNodeConnection(old[0], old[1]));
             BlockState sa = level.getBlockState(c.a.sourcePos());
             BlockState sb = level.getBlockState(c.b.sourcePos());
-            CableEnd a = CableEnd.of(c.a.sourcePos(), sa);
-            CableEnd b = CableEnd.of(c.b.sourcePos(), sb);
+            CableEnd a = CableEnd.of(level, c.a.sourcePos(), sa);
+            CableEnd b = CableEnd.of(level, c.b.sourcePos(), sb);
             if (a == null || b == null) continue;
             InWorldNode[] core = mixedCore(a, b, c.mixedEnd, phase, 1);
             sd.connect(core[0], core[1], CableWires.core(c.kind));

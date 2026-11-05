@@ -45,7 +45,7 @@
   "ee_extras.goggles.charge": "Заряд (сеть → FE):",
   "ee_extras.goggles.discharge": "Разряд (FE → сеть):",
   "ee_extras.cable.phase": "Ноль и фаза %s",
-  "ee_extras.cable.needs_duplex": "Двухпроводной кабель — только к двухпроводным соединителям и их изоляторам",
+  "ee_extras.cable.needs_duplex": "Двухпроводной кабель — только к двухпроводным соединителям, их изоляторам и приборам с крышкой",
   "ee_extras.cable.needs_four_core": "Четырёхжильный кабель — к четырёхжильным блокам (с одного конца можно к двухпроводному соединителю)",
   "ee_extras.cable.lost_selection": "Первый блок кабеля пропал — начните заново",
   "ee_extras.cable.same_block": "Кабель нельзя замкнуть на тот же блок",
@@ -311,5 +311,17 @@
   "item.ee_extras.permanent_magnet": "Стальной постоянный магнит",
   "item.ee_extras.speaker_cone": "Бумажный диффузор",
   "item.ee_extras.battery_electrolyte": "Аккумуляторный электролит",
-  "item.ee_extras.ink_cartridge": "Чернильный картридж"
+  "item.ee_extras.ink_cartridge": "Чернильный картридж",
+  "item.ee_extras.duplex_cable_cap": "Крышка двухжильного кабеля",
+  "item.ee_extras.duplex_cable_cap.tooltip": "Кликните по прибору EE ровно с двумя контактами (лампа, мотор, нагреватель…) — на нём появится крышка, и к нему подключится один двухжильный кабель: жила 1 — к контакту 1, жила 2 — к контакту 2.",
+  "item.ee_extras.duplex_cable_cap.tooltip.nodes": "Становится частью прибора и места не занимает. Снять — Shift + клик пустой рукой; сломали прибор — крышка выпадает. Перекрафчивается из двухпроводного соединителя и обратно.",
+  "ee_extras.cable.cap.not_device": "Крышка ставится только на приборы EE с контактами для проводов",
+  "ee_extras.cable.cap.contacts": "Крышке нужен прибор с двумя контактами, у этого их %s",
+  "ee_extras.cable.cap.already": "На этом приборе уже есть крышка",
+  "ee_extras.cable.cap.busy": "Сначала снимите провода с контактов прибора",
+  "ee_extras.cable.cap.placed": "Крышка на месте: жила 1 — %s, жила 2 — %s",
+  "ee_extras.cable.cap.contact": "контакт %s",
+  "ee_extras.cable.cap.removed": "Крышка снята",
+  "ee_extras.cable.cap.needed": "Сначала поставьте на прибор крышку двухжильного кабеля",
+  "ee_extras.cable.cap.covered": "Контакты под крышкой кабеля: снять её — Shift + клик пустой рукой"
 }
