@@ -4,6 +4,7 @@ import com.simibubi.create.content.fluids.tank.FluidTankBlock;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.bus.api.IEventBus;
@@ -21,6 +22,8 @@ public final class BetterFluids {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ID);
     private static final DeferredRegister<BlockEntityType<?>> ENTITIES =
         DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, ID);
+
+    static final Supplier<Block> TAP = BLOCKS.register("fluid_tap", () -> new FluidTapBlock(sectionProperties()));
 
     static final Supplier<FluidTankBlock> TANK = BLOCKS.register("iron_tank", () ->
         new IronTankBlock(BlockBehaviour.Properties.of().strength(3.0f, 6.0f)
@@ -46,6 +49,7 @@ public final class BetterFluids {
     }
 
     public BetterFluids(IEventBus bus) {
+        ITEMS.registerSimpleBlockItem("fluid_tap", TAP);
         ITEMS.register("iron_tank", () -> new IronTankItem(TANK.get(), new Item.Properties()));
         ITEMS.register("iron_tank_plate", () -> new IronTankItem(PLATE.get(), new Item.Properties()));
         ITEMS.register("iron_tank_quarter", () -> new IronTankItem(QUARTER.get(), new Item.Properties()));

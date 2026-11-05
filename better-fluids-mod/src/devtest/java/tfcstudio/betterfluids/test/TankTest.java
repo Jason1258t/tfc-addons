@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import com.simibubi.create.content.fluids.tank.FluidTankBlock;
@@ -26,6 +27,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 
 import java.util.UUID;
@@ -41,6 +43,11 @@ public final class TankTest {
     private void commands(RegisterCommandsEvent event) {
         event.getDispatcher().register(Commands.literal("betterfluidstest")
             .requires(source -> source.hasPermission(2))
+            .then(Commands.literal("tap").executes(ctx -> {
+                tap(ctx.getSource().getLevel());
+                ctx.getSource().sendSuccess(() -> Component.literal("OK: интерфейс наполняет ведро и канистру, снимается без бака"), false);
+                return 1;
+            }))
             .then(Commands.literal("build").executes(ctx -> {
                 build(ctx.getSource().getLevel());
                 ctx.getSource().sendSuccess(() -> Component.literal("OK: слой 2×2, 112 вёдер, медный бак отдельно"), false);
@@ -81,6 +88,45 @@ public final class TankTest {
                 ctx.getSource().sendSuccess(() -> Component.literal("OK: 112 вёдер воды после перезапуска"), false);
                 return 1;
             })));
+    }
+
+    private static void tap(ServerLevel level) {
+        var player = FakePlayerFactory.get(level, new GameProfile(UUID.randomUUID(), "BetterFluidsTest"));
+        var tapItem = BuiltInRegistries.ITEM.get(ResourceLocation.parse("better_fluids:fluid_tap"));
+        var canItem = BuiltInRegistries.ITEM.get(ResourceLocation.parse("immersiveengineering:jerrycan"));
+        var iron = BuiltInRegistries.BLOCK.get(ResourceLocation.parse("better_fluids:iron_tank"));
+        for (var block : new net.minecraft.world.level.block.Block[] {AllBlocks.FLUID_TANK.get(), iron}) {
+            var pos = BASE.offset(4, 0, 4);
+            level.setBlockAndUpdate(pos, block.defaultBlockState());
+            for (var side : Direction.values()) {
+                var tank = level.getCapability(Capabilities.FluidHandler.BLOCK, pos, side);
+                check(tank != null, "Доступ к баку с " + side);
+                tank.drain(Integer.MAX_VALUE, FluidAction.EXECUTE);
+                check(tank.fill(new FluidStack(Fluids.WATER, 2000), FluidAction.EXECUTE) == 2000, "Подготовка бака");
+                var hit = new BlockHitResult(Vec3.atCenterOf(pos), side, pos, false);
+                var hand = InteractionHand.MAIN_HAND;
+                player.setItemInHand(hand, new ItemStack(tapItem));
+                check(player.getMainHandItem().useOn(new UseOnContext(player, hand, hit)).consumesAction(), "Установка с " + side);
+                var tapPos = pos.relative(side);
+                var tapState = level.getBlockState(tapPos);
+                var tapHit = new BlockHitResult(Vec3.atCenterOf(tapPos), side, tapPos, false);
+                player.setItemInHand(hand, new ItemStack(Items.BUCKET));
+                tapState.useItemOn(player.getMainHandItem(), level, player, hand, tapHit);
+                check(player.getMainHandItem().is(Items.WATER_BUCKET), "Наполнение ведра");
+                player.setItemInHand(hand, new ItemStack(canItem));
+                tapState.useItemOn(player.getMainHandItem(), level, player, hand, tapHit);
+                check(FluidUtil.getFluidContained(player.getMainHandItem()).map(FluidStack::getAmount).orElse(0) == 1000,
+                    "Наполнение канистры");
+                check(tank.getFluidInTank(0).isEmpty(), "Из бака ушло ровно 2000 мБ");
+                level.setBlockAndUpdate(tapPos, Blocks.AIR.defaultBlockState());
+            }
+            var tapPos = pos.north();
+            player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(tapItem));
+            player.getMainHandItem().useOn(new UseOnContext(player, InteractionHand.MAIN_HAND,
+                new BlockHitResult(Vec3.atCenterOf(pos), Direction.NORTH, pos, false)));
+            level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+            check(level.isEmptyBlock(tapPos), "Интерфейс должен сняться при разрушении бака");
+        }
     }
 
     private static void shapes(ServerLevel level) {

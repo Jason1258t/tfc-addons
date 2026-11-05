@@ -2,5 +2,6 @@
   "block.better_fluids.iron_tank": "Железный резервуар",
   "block.better_fluids.iron_tank_plate": "Полублок железного резервуара",
   "block.better_fluids.iron_tank_quarter": "Четвертная секция железного резервуара",
-  "block.better_fluids.iron_tank_bevel": "Железная секция резервуара со скосами"
+  "block.better_fluids.iron_tank_bevel": "Железная секция резервуара со скосами",
+  "block.better_fluids.fluid_tap": "Жидкостный интерфейс"
 }
