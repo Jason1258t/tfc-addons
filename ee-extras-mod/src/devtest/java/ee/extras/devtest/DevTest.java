@@ -52,6 +52,7 @@ public class DevTest {
     static void commands(RegisterCommandsEvent e) {
         CommandDispatcher<CommandSourceStack> d = e.getDispatcher();
         Sync.register(d);
+        PcbCircuitTest.register(d);
         ElectronicsTest.register(d);
         SolarTest.register(d);
         if (net.neoforged.fml.ModList.get().isLoaded("computercraft")) ComputerCraftTest.register(d);

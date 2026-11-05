@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "ee_extras:block/pcb_circuit"
+    }
+  }
+}

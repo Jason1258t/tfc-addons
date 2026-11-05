@@ -1,4 +1,5 @@
 {
+  "block.ee_extras.pcb_circuit": "Схемная плата",
   "ee_extras.computer_power.battery": "Заряд аккумулятора: %s%%",
   "block.ee_extras.computer_power_inlet.tooltip": "Поставьте задней стороной вплотную к ПК и подключите двухжильный кабель. Номинал 300 В.",
   "block.ee_extras.computer_power_inlet.tooltip.nodes": "Двухжильный кабель",

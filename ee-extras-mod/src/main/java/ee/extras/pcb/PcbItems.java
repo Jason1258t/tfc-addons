@@ -1,5 +1,6 @@
 package ee.extras.pcb;
 
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import ee.extras.EeExtras;
 import java.util.List;
 import net.minecraft.core.component.DataComponentType;
@@ -146,6 +147,12 @@ public final class PcbItems {
             NETWORK_PORT, COMPUTER_CASE, ADVANCED_COMPUTER_CASE, POCKET_CASE, PERIPHERAL_CASE, SMALL_MOTOR,
             PRECISION_ACTUATOR, STORAGE_BAY, ROBOT_CHASSIS, DISK_TRANSPORT, PRINT_MECHANISM, NETWORK_TRANSCEIVER,
             ENDER_TRANSCEIVER, SPEAKER_DRIVER, AUDIO_AMPLIFIER, POWER_SUPPLY, BATTERY_MODULE, MAGNETIC_DISK_MEDIUM);
+
+    public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<PcbCircuitDevice>> CIRCUIT_DEVICE =
+            EeExtras.DEVICES.register("pcb_circuit", () -> new SimulatedDeviceType<>(
+                    EeExtras.rl("pcb_circuit"), (type, level, pos, devices) -> new PcbCircuitDevice(level, pos, devices, type)));
+    public static final DeferredBlock<PcbCircuitBlock> CIRCUIT_BLOCK = EeExtras.BLOCKS.register("pcb_circuit",
+            () -> new PcbCircuitBlock(EeExtras.metal().lightLevel(state -> state.getValue(PcbCircuitBlock.LIT) ? 7 : 0)));
 
     private PcbItems() {}
 
