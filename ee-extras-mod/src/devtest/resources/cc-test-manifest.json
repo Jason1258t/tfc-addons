@@ -224,6 +224,18 @@
     "output": "ee_extras:abs_sheet"
   },
   {
+    "id": "ee_extras:cc/materials/battery_electrolyte",
+    "output": "ee_extras:battery_electrolyte"
+  },
+  {
+    "id": "ee_extras:cc/materials/ink_cartridge",
+    "output": "ee_extras:ink_cartridge"
+  },
+  {
+    "id": "ee_extras:cc/materials/permanent_magnet",
+    "output": "ee_extras:permanent_magnet"
+  },
+  {
     "id": "ee_extras:cc/materials/pet_film",
     "output": "ee_extras:pet_film"
   },
@@ -234,6 +246,10 @@
   {
     "id": "ee_extras:cc/materials/shadow_mask",
     "output": "ee_extras:shadow_mask"
+  },
+  {
+    "id": "ee_extras:cc/materials/speaker_cone",
+    "output": "ee_extras:speaker_cone"
   },
   {
     "id": "ee_extras:cc/network_port",

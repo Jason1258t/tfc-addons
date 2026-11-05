@@ -296,5 +296,9 @@
   "item.ee_extras.abs_keyboard_blank": "Moulded ABS Keyboard Key Blank",
   "item.ee_extras.pet_film": "PET Film",
   "item.ee_extras.rgb_phosphor": "RGB Phosphor",
-  "item.ee_extras.shadow_mask": "Colour CRT Shadow Mask"
+  "item.ee_extras.shadow_mask": "Colour CRT Shadow Mask",
+  "item.ee_extras.permanent_magnet": "Steel Permanent Magnet",
+  "item.ee_extras.speaker_cone": "Paper Speaker Cone",
+  "item.ee_extras.battery_electrolyte": "Battery Electrolyte",
+  "item.ee_extras.ink_cartridge": "Ink Cartridge"
 }

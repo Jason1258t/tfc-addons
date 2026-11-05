@@ -1,0 +1,21 @@
+{
+  "type": "create:compacting",
+  "ingredients": [
+    {
+      "item": "minecraft:paper",
+      "count": 2
+    },
+    {
+      "type": "neoforge:single",
+      "fluid": "minecraft:water",
+      "amount": 50
+    }
+  ],
+  "heat_requirement": "heated",
+  "results": [
+    {
+      "id": "ee_extras:speaker_cone",
+      "count": 1
+    }
+  ]
+}

@@ -296,5 +296,9 @@
   "item.ee_extras.abs_keyboard_blank": "Формованная заготовка клавиш ABS",
   "item.ee_extras.pet_film": "Плёнка PET",
   "item.ee_extras.rgb_phosphor": "RGB-люминофор",
-  "item.ee_extras.shadow_mask": "Теневая маска цветного кинескопа"
+  "item.ee_extras.shadow_mask": "Теневая маска цветного кинескопа",
+  "item.ee_extras.permanent_magnet": "Стальной постоянный магнит",
+  "item.ee_extras.speaker_cone": "Бумажный диффузор",
+  "item.ee_extras.battery_electrolyte": "Аккумуляторный электролит",
+  "item.ee_extras.ink_cartridge": "Чернильный картридж"
 }

@@ -3,8 +3,8 @@
   "accept_mirrored": false,
   "pattern": [
     "M R",
-    "DAC",
-    "TDT"
+    "KAC",
+    " T "
   ],
   "key": {
     "M": {
@@ -13,8 +13,8 @@
     "R": {
       "tag": "c:rods/steel"
     },
-    "D": {
-      "tag": "c:dyes"
+    "K": {
+      "item": "ee_extras:ink_cartridge"
     },
     "A": {
       "item": "ee_extras:precision_actuator"

@@ -16,6 +16,7 @@ DEVTEST = ROOT / "src" / "devtest" / "resources"
 
 ITEMS = [
     "abs_sheet", "abs_keyboard_blank", "pet_film", "rgb_phosphor", "shadow_mask",
+    "permanent_magnet", "speaker_cone", "battery_electrolyte", "ink_cartridge",
     "control_board_l1", "computer_motherboard", "advanced_motherboard", "turtle_controller",
     "advanced_turtle_controller", "keyboard", "pocket_input", "display_driver", "advanced_display_driver",
     "display_crt", "display_advanced", "pocket_display", "network_port", "computer_case",
@@ -149,12 +150,37 @@ module("pocket_case", ["APA", "P P", "AAA"], {"A": "#c:plates/aluminum", "P": "e
 module("peripheral_case", ["S S", "SPS", "SAS"], {"S": "#c:plates/steel", "P": "ee_extras:abs_sheet",
        "A": "ee_extras:abs_sheet"})
 
+# Расходные материалы и детали для динамика, аккумулятора и принтера.
+add("data/ee_extras/recipe/cc/materials/permanent_magnet.json", {
+    "type": "create:deploying",
+    "ingredients": [ingredient("#c:rods/steel"), ingredient("ee_extras:inductor")],
+    "keep_held_item": True,
+    "results": [result("ee_extras:permanent_magnet")],
+})
+add("data/ee_extras/recipe/cc/materials/speaker_cone.json", {
+    "type": "create:compacting",
+    "ingredients": [ingredient("minecraft:paper", 2),
+                    {"type": "neoforge:single", "fluid": "minecraft:water", "amount": 50}],
+    "heat_requirement": "heated",
+    "results": [result("ee_extras:speaker_cone")],
+})
+add("data/ee_extras/recipe/cc/materials/battery_electrolyte.json", {
+    "type": "create:filling",
+    "ingredients": [ingredient("minecraft:glass_bottle"),
+                    {"type": "destroy:mixture_with_molecule", "molecule": "destroy:sulfuric_acid",
+                     "amount": 125, "min_concentration": 4.0, "max_concentration": 5.0}],
+    "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "destroy"}],
+    "results": [result("ee_extras:battery_electrolyte")],
+})
+mechanical("data/ee_extras/recipe/cc/materials/ink_cartridge.json", [" P ", "AIA"],
+           {"P": "ee_extras:pet_film", "A": "ee_extras:abs_sheet", "I": "minecraft:ink_sac"},
+           "ee_extras:ink_cartridge")
+
 # Электромеханика, связь, звук и питание.
-module("small_motor", ["WCW", "RSR", " T "], {"W": "#c:wires/copper", "C": "ee_extras:inductor",
-       "R": "#c:rods/steel", "S": "#c:plates/steel", "T": "#tfc:insulation"})
+module("small_motor", [" C ", "RMR", " S "], {"C": "ee_extras:inductor", "R": "#c:rods/steel",
+       "M": "ee_extras:permanent_magnet", "S": "#c:plates/steel"})
 module("precision_actuator", ["G R", "MC ", "D T"], {"G": "create:cogwheel", "R": "#c:rods/steel",
-       "M": "ee_extras:small_motor", "C": "ee_extras:control_board_l1", "D": "ee_extras:silicon_diode",
-       "T": "#tfc:insulation"})
+       "M": "ee_extras:small_motor", "C": "ee_extras:control_board_l1", "D": "ee_extras:silicon_diode", "T": "ee_extras:abs_sheet"})
 module("storage_bay", ["R R", "SAS", "CCT"], {"R": "#c:rods/steel", "S": "#c:plates/steel", "A": "#c:chests/wooden",
        "C": "ee_extras:connector", "T": "#tfc:insulation"})
 module("robot_chassis", ["SSSSS", "S M S", "SMBCS", "S M S", "SSSSS"], {"S": "#c:plates/steel",
@@ -162,14 +188,14 @@ module("robot_chassis", ["SSSSS", "S M S", "SMBCS", "S M S", "SSSSS"], {"S": "#c
 module("disk_transport", ["M R", "HAC", "M T"], {"M": "ee_extras:small_motor", "R": "#c:rods/steel",
        "H": "ee_extras:inductor", "A": "ee_extras:precision_actuator", "C": "ee_extras:control_board_l1",
        "T": "ee_extras:connector"})
-module("print_mechanism", ["M R", "DAC", "TDT"], {"M": "ee_extras:small_motor", "R": "#c:rods/steel",
-       "D": "#c:dyes", "A": "ee_extras:precision_actuator", "C": "ee_extras:control_board_l1", "T": "ee_extras:connector"})
-module("speaker_driver", ["S S", "IPI", " T "], {"S": "#c:plates/steel", "I": "ee_extras:inductor",
-       "P": "#tfc:insulation", "T": "#c:rods/steel"})
+module("print_mechanism", ["M R", "KAC", " T "], {"M": "ee_extras:small_motor", "R": "#c:rods/steel",
+       "K": "ee_extras:ink_cartridge", "A": "ee_extras:precision_actuator", "C": "ee_extras:control_board_l1", "T": "ee_extras:connector"})
+module("speaker_driver", ["SPS", "IMI", " T "], {"S": "#c:plates/steel", "P": "ee_extras:speaker_cone",
+       "I": "ee_extras:inductor", "M": "ee_extras:permanent_magnet", "T": "#c:rods/steel"})
 module("power_supply", ["S S", "ICI", "DCT"], {"S": "#c:plates/steel", "I": "ee_extras:inductor",
        "C": "ee_extras:capacitor", "D": "ee_extras:silicon_diode", "T": "ee_extras:connector"})
-module("battery_module", ["L L", "SCS", "DCT"], {"L": "#c:plates/lead", "S": "tfc:powder/sulfur",
-       "C": "ee_extras:capacitor", "D": "ee_extras:silicon_diode", "T": "ee_extras:connector"})
+module("battery_module", ["LEL", "APA", " DT"], {"L": "#c:plates/lead", "E": "ee_extras:battery_electrolyte",
+       "A": "ee_extras:abs_sheet", "P": "ee_extras:pet_film", "D": "ee_extras:silicon_diode", "T": "ee_extras:connector"})
 module("magnetic_disk_medium", ["ASA", "IMI", "PPP"], {"S": "#c:plates/steel", "I": "minecraft:iron_nugget",
        "M": "tfc:powder/magnetite", "P": "ee_extras:pet_film", "A": "ee_extras:abs_sheet"}, 4)
 
@@ -339,7 +365,7 @@ tag = {"replace": False, "values": ["#c:plates/plastic", {"id": "afc:rubber_bar"
 def main() -> None:
     if len([x for x in audit if x["path"].startswith(CC)]) != 75:
         raise ValueError("CC audit must contain exactly 75 files")
-    if len(ITEMS) != 35 or len(recipes) != 73 or len(data_files) != 1:
+    if len(ITEMS) != 39 or len(recipes) != 77 or len(data_files) != 1:
         raise ValueError(f"unexpected size: {len(ITEMS)} items, {len(recipes)} recipes, {len(data_files)} data files")
     if OUT.exists():
         shutil.rmtree(OUT)

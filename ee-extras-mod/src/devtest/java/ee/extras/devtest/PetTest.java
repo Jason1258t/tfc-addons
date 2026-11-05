@@ -3,6 +3,8 @@ package ee.extras.devtest;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import com.simibubi.create.content.fluids.spout.FillingBySpout;
+import ee.extras.pcb.PcbItems;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -10,6 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -33,7 +36,8 @@ final class PetTest {
         dispatcher.register(Commands.literal("rectest")
                 .then(Commands.literal("petbuild").executes(PetTest::build))
                 .then(Commands.literal("petprepare").executes(PetTest::prepare))
-                .then(Commands.literal("petassert").executes(PetTest::assertPet)));
+                .then(Commands.literal("petassert").executes(PetTest::assertPet))
+                .then(Commands.literal("electrolyte").executes(PetTest::verifyElectrolyte)));
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(PetTest::tick);
     }
 
@@ -87,6 +91,38 @@ final class PetTest {
         }
         thermostat = false;
         require(context, count > 0, "Vat произвёл PET, штук: " + count);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int verifyElectrolyte(CommandContext<CommandSourceStack> context) {
+        ServerLevel level = context.getSource().getLevel();
+        ItemStack bottle = new ItemStack(Items.GLASS_BOTTLE);
+        LegacyMixture mixture = new LegacyMixture()
+                .addMolecule(DestroyMolecules.WATER, 45.0F)
+                .addMolecule(DestroyMolecules.SULFURIC_ACID, 4.5F);
+        FluidStack solution = MixtureFluid.of(250, mixture);
+        int amount = FillingBySpout.getRequiredAmountForItem(level, bottle, solution);
+        if (amount != 125) throw new IllegalStateException("Электролит: ожидалось 125 мБ, получено " + amount);
+        ItemStack filled = FillingBySpout.fillItem(level, amount, bottle, solution);
+        if (!filled.is(PcbItems.BATTERY_ELECTROLYTE.get()) || solution.getAmount() != 125) {
+            throw new IllegalStateException("Электролит: Create не наполнил бутылочку 125 мБ раствора");
+        }
+
+        for (float concentration : new float[] {1.0F, 10.0F}) {
+            LegacyMixture unsuitable = new LegacyMixture()
+                    .addMolecule(DestroyMolecules.WATER, 45.0F)
+                    .addMolecule(DestroyMolecules.SULFURIC_ACID, concentration);
+            FluidStack fluid = MixtureFluid.of(250, unsuitable);
+            ItemStack empty = new ItemStack(Items.GLASS_BOTTLE);
+            int required = FillingBySpout.getRequiredAmountForItem(level, empty, fluid);
+            if (required > 0 && FillingBySpout.fillItem(level, required, empty, fluid)
+                    .is(PcbItems.BATTERY_ELECTROLYTE.get())) {
+                throw new IllegalStateException("Электролит: принят раствор с концентрацией " + concentration);
+            }
+        }
+
+        context.getSource().sendSuccess(() -> Component.literal(
+                "Электролит: Create разлил раствор 4,5 моль/л по 125 мБ и отклонил 1 и 10 моль/л"), false);
         return Command.SINGLE_SUCCESS;
     }
 

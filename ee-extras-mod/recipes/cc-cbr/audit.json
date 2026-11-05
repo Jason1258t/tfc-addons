@@ -480,6 +480,21 @@
     "note": ""
   },
   {
+    "path": "data/ee_extras/recipe/cc/materials/battery_electrolyte.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/ink_cartridge.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/permanent_magnet.json",
+    "status": "new",
+    "note": ""
+  },
+  {
     "path": "data/ee_extras/recipe/cc/materials/pet_film.json",
     "status": "new",
     "note": ""
@@ -491,6 +506,11 @@
   },
   {
     "path": "data/ee_extras/recipe/cc/materials/shadow_mask.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/speaker_cone.json",
     "status": "new",
     "note": ""
   },

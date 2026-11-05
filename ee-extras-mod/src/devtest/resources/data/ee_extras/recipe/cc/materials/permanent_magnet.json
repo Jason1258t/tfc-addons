@@ -1,0 +1,18 @@
+{
+  "type": "create:deploying",
+  "ingredients": [
+    {
+      "tag": "c:rods/steel"
+    },
+    {
+      "item": "ee_extras:inductor"
+    }
+  ],
+  "keep_held_item": true,
+  "results": [
+    {
+      "id": "ee_extras:permanent_magnet",
+      "count": 1
+    }
+  ]
+}

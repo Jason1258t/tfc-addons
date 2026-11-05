@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.brigadier.CommandDispatcher;
+import com.simibubi.create.content.kinetics.deployer.DeployerApplicationRecipe;
 import dan200.computercraft.shared.ModRegistry;
 import dan200.computercraft.shared.util.NonNegativeId;
 import ee.extras.pcb.PcbItems;
@@ -53,6 +54,10 @@ final class ComputerCraftTest {
         ServerLevel level = src.getLevel();
         boolean restored = checkMigration(level);
         verifyManifest(level);
+        ResourceLocation magnetId = ResourceLocation.parse("ee_extras:cc/materials/permanent_magnet");
+        Recipe<?> magnet = level.getRecipeManager().byKey(magnetId).orElseThrow().value();
+        require(magnet instanceof DeployerApplicationRecipe deploying && deploying.shouldKeepHeldItem(),
+                "деплойер расходует катушку при намагничивании");
         verifyOldIds();
         verifyShortcutsRemoved(level);
         ItemStack disk = verifyDisk(level);
@@ -60,7 +65,7 @@ final class ComputerCraftTest {
         verifyComputer(level);
         ItemStack turtle = verifyTurtle(level);
         if (!restored) saveMigration(level, turtle, pocket, disk);
-        String message = "CC PASS: " + checks + " проверок; рецепты 73/73; миграция=" + (restored ? "восстановлена" : "создана");
+        String message = "CC PASS: " + checks + " проверок; рецепты 77/77; миграция=" + (restored ? "восстановлена" : "создана");
         src.sendSuccess(() -> Component.literal(message), false);
         return checks;
     }
@@ -90,7 +95,7 @@ final class ComputerCraftTest {
         } catch (Exception e) {
             throw new IllegalStateException("CC FAIL: не прочитан манифест", e);
         }
-        require(count == 73, "манифест содержит " + count + " вместо 73 рецептов");
+        require(count == 77, "манифест содержит " + count + " вместо 77 рецептов");
     }
 
     private static void verifyOldIds() {

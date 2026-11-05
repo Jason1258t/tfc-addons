@@ -2,19 +2,22 @@
   "type": "create:mechanical_crafting",
   "accept_mirrored": false,
   "pattern": [
-    "L L",
-    "SCS",
-    "DCT"
+    "LEL",
+    "APA",
+    " DT"
   ],
   "key": {
     "L": {
       "tag": "c:plates/lead"
     },
-    "S": {
-      "item": "tfc:powder/sulfur"
+    "E": {
+      "item": "ee_extras:battery_electrolyte"
     },
-    "C": {
-      "item": "ee_extras:capacitor"
+    "A": {
+      "item": "ee_extras:abs_sheet"
+    },
+    "P": {
+      "item": "ee_extras:pet_film"
     },
     "D": {
       "item": "ee_extras:silicon_diode"
