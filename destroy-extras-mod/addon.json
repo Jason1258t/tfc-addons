@@ -1,9 +1,9 @@
 {
   "id": "destroy_extras",
   "name": "Destroy Extras — химические машины",
-  "version": "0.5.0",
-  "jar": "destroy-extras-0.5.0.jar",
-  "sha256": "248eb808d2413f4ae58144b49c3994a9c34150b2f54753f0a98ff9d888b2f2c8",
+  "version": "0.6.0",
+  "jar": "destroy-extras-0.6.0.jar",
+  "sha256": "8cd052b3e9473b7473f1f2a9e0e918e4d4781468c31d8d56462461f97a9bd",
   "order": 801,
   "side": "both",
   "manual": true,
