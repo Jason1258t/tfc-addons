@@ -187,6 +187,8 @@ public class EeExtras {
     public static final DeferredItem<Item> POCKET_CHARGER_ITEM = ITEMS.register("pocket_charger",
             () -> new TooltipBlockItem(POCKET_CHARGER.get(), new Item.Properties()));
 
+    public static final DeferredItem<ee.extras.cable.ThinSpoolItem> THIN_SPOOL = ITEMS.register("thin_insulated_wire_spool",
+            () -> new ee.extras.cable.ThinSpoolItem(new Item.Properties().stacksTo(16)));
     public static final DeferredItem<FourCoreSpoolItem> FOUR_CORE_SPOOL = ITEMS.register("four_core_cable_spool",
             () -> new FourCoreSpoolItem(new Item.Properties().stacksTo(16)));
     /** Крышка двухжильного кабеля (cable/CableCap): модификатор прибора EE с двумя контактами, своего блока нет */
@@ -297,7 +299,7 @@ public class EeExtras {
         for (Kind<?> k : POWER) event.accept(k.item.get());
         AcBlocks.addToTab(event);
         for (Supplier<? extends Item> item : new Supplier[] {KINETIC_GENERATOR_ITEM, CONVERTER_ITEM, CABLE_CONVERTER_ITEM,
-                FOUR_CORE_TERMINATION_ITEM, PHASE_TAP_ITEM, DUPLEX_INSULATOR_ITEM, FOUR_CORE_INSULATOR_ITEM, FOUR_CORE_SPOOL, CABLE_CAP})
+                FOUR_CORE_TERMINATION_ITEM, PHASE_TAP_ITEM, DUPLEX_INSULATOR_ITEM, FOUR_CORE_INSULATOR_ITEM, FOUR_CORE_SPOOL, THIN_SPOOL, CABLE_CAP})
             event.accept(item.get());
         for (LineWire w : LineWire.values()) {
             if (w.wire != null) event.accept(w.wire.get());

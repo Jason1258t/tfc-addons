@@ -1,3 +1,6 @@
 {
-  "parent": "ee_extras:block/junction_box/block"
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "ee_extras:item/junction_box"
+  }
 }

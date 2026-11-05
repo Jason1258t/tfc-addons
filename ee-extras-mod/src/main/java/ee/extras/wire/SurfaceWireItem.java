@@ -76,7 +76,7 @@ public class SurfaceWireItem extends Item {
             LanternConversion.convert(level, pos, player);
             st = level.getBlockState(pos);
         }
-        CableEnd end = CableEnd.of(pos, st);
+        CableEnd end = CableEnd.of(level, pos, st);
         return end != null && end.kind() == CableKind.DUPLEX ? new WireEnd.Block(pos) : null;
     }
 

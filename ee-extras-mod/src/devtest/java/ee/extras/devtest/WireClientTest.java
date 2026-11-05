@@ -45,6 +45,7 @@ final class WireClientTest {
         if (tick == 80) server.execute(() -> {
             var p = server.getPlayerList().getPlayer(mc.player.getUUID());
             Wire.build(p.createCommandSourceStack());
+            Wire.thin(p.createCommandSourceStack());
             Wire.power(p.createCommandSourceStack(), 230);
             p.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(SurfaceWires.DUPLEX_ITEM.get(), 32));
         });
@@ -85,6 +86,14 @@ final class WireClientTest {
             boolean hit = mc.hitResult instanceof EntityHitResult e && e.getEntity() instanceof SurfaceWireEntity;
             ClientTest.check("с пустой рукой провод не загораживает блок", !hit);
             Screenshot.grab(mc.gameDirectory, "wire_close.png", mc.getMainRenderTarget(), c -> {});
+            server.execute(() -> {
+                var p = server.getPlayerList().getPlayer(mc.player.getUUID());
+                p.teleportTo(p.serverLevel(), 4.5, -57.5, 246.5, 0f, 35f);
+            });
+        }
+        if (tick == 205) look(mc, new Vec3(5.5, -59.5, 251.5));
+        if (tick == 215) {
+            Screenshot.grab(mc.gameDirectory, "wire_thin.png", mc.getMainRenderTarget(), c -> {});
             System.out.println("EECLIENT WIRE ИТОГ");
             mc.stop();
         }

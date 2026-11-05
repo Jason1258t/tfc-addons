@@ -97,7 +97,7 @@ public sealed interface WireEnd {
 
         public CableEnd end(Level level) {
             if (!level.hasChunk(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()))) return null;
-            CableEnd end = CableEnd.of(pos, level.getBlockState(pos));
+            CableEnd end = CableEnd.of(level, pos, level.getBlockState(pos));
             return end != null && end.kind() == CableKind.DUPLEX ? end : null;
         }
 

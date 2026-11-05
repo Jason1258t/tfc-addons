@@ -339,5 +339,8 @@
   "ee_extras.surface_wire.preview": "Length %s of %s m, needs %s",
   "key.ee_extras.alternate_wire": "Straight wire placement",
   "key.categories.ee_extras": "EE Extras",
-  "ee_extras.surface_wire.too_far": "Too far for one click — click a surface halfway"
+  "ee_extras.surface_wire.too_far": "Too far for one click — click a surface halfway",
+  "item.ee_extras.thin_insulated_wire_spool": "Thin Insulated Wire Spool",
+  "item.ee_extras.thin_insulated_wire_spool.tooltip": "Thin twin wire for device leads: hangs like an EE wire, cores like EE insulated wire. Click a termination, insulator, box or device, then another. Cannot run between two insulators.",
+  "ee_extras.cable.thin_needs_device": "Thin wire goes only to a device or a duplex termination, not between two insulators"
 }

@@ -43,6 +43,17 @@ public final class CableWires {
                     .thickness(0.125f)
                     .decorative()
                     .build());
+    public static final PartialModel THIN_SEGMENT = PartialModel.of(EeExtras.rl("block/thin_insulated_wire_segment"));
+    /** Оболочка тонкого изолированного провода (ThinSpoolItem): двухжильный кабель, тонкий, как провод EE */
+    public static final DeferredHolder<WireType, WireType> THIN = EeExtras.WIRES.register("thin_insulated_wire",
+            () -> new WireType.Builder(THIN_SEGMENT)
+                    .resistance(() -> 1.0E11)
+                    .droppedItem(CEEItems.INSULATED_WIRE)
+                    .spoolItem(() -> EeExtras.THIN_SPOOL.get())
+                    .maxLength(CEEConfigs.server().maxBundledWireLength::get)
+                    .thickness(0.0625f)
+                    .decorative()
+                    .build());
     public static final DeferredHolder<WireType, WireType> DUPLEX_CORE = core("duplex_cable_core", CableKind.DUPLEX);
     public static final DeferredHolder<WireType, WireType> FOUR_CORE_CORE = core("four_core_cable_core", CableKind.FOUR_CORE);
 
@@ -59,6 +70,11 @@ public final class CableWires {
 
     public static net.minecraft.world.item.Item spool(CableKind kind) {
         return kind == CableKind.DUPLEX ? CEEItems.DUPLEX_WIRE_SPOOL.get() : EeExtras.FOUR_CORE_SPOOL.get();
+    }
+
+    /** Оболочка для катушки: тонкий провод — своя, иначе по виду кабеля */
+    public static WireType sheath(CableKind kind, net.minecraft.world.item.ItemStack spool) {
+        return spool != null && spool.getItem() instanceof ThinSpoolItem ? THIN.get() : sheath(kind);
     }
 
     public static WireType sheath(CableKind kind) {

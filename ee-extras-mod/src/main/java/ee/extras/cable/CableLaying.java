@@ -63,12 +63,13 @@ public final class CableLaying {
 
         CableEnd first = CableEnd.of(level, selected.pos(), level.getBlockState(selected.pos()));
         String problem = problem(sl, kind, first, end);
+        if (problem == null && stack.getItem() instanceof ThinSpoolItem && insulator(sl, first) && insulator(sl, end)) problem = "thin_needs_device";
         if (problem != null) {
             // Выбранный блок сломан или заменён — выбор сбрасываем; остальное — оставляем, можно кликнуть по другому
             if (first == null || !fits(kind, first)) stack.remove(CEEDataComponents.SELECTED_WIRE_TERMINATION);
             return deny(level, player, pos, problem);
         }
-        if (!connect(sl, kind, first, end)) return deny(level, player, pos, "no_nodes");
+        if (!connect(sl, kind, first, end, CableWires.sheath(kind, stack))) return deny(level, player, pos, "no_nodes");
 
         AllSoundEvents.WRENCH_REMOVE.playOnServer(level, pos);
         stack.remove(CEEDataComponents.SELECTED_WIRE_TERMINATION);
@@ -110,8 +111,17 @@ public final class CableLaying {
         return null;
     }
 
-    /** Проложить кабель: оболочка, жилы, запись в CableData. false — EE не создал узлы блоков */
+    /** Конец — кабельный изолятор (керамический): тонкий провод между двумя изоляторами не тянется */
+    static boolean insulator(ServerLevel level, CableEnd end) {
+        return end != null && level.getBlockState(end.pos()).getBlock() instanceof CableInsulatorBlock;
+    }
+
     public static boolean connect(ServerLevel level, CableKind kind, CableEnd a, CableEnd b) {
+        return connect(level, kind, a, b, CableWires.sheath(kind));
+    }
+
+    /** Проложить кабель: оболочка sheath, жилы, запись в CableData. false — EE не создал узлы блоков */
+    public static boolean connect(ServerLevel level, CableKind kind, CableEnd a, CableEnd b, com.george_vi.electroenergetics.simulation.WireType sheath) {
         for (BlockPos p : new BlockPos[] {a.pos(), b.pos()}) {
             BlockState st = level.getBlockState(p);
             if (st.getBlock() instanceof ElectricalDeviceBlock<?> eb) eb.ensureNodesExist(level, p, st);
@@ -132,7 +142,7 @@ public final class CableLaying {
         for (InWorldNode[] core : cores)
             for (InWorldNode n : core) if (!sd.getNodes().contains(n)) return false;
 
-        sd.connect(a.cable(), b.cable(), CableWires.sheath(kind));
+        sd.connect(a.cable(), b.cable(), sheath);
         for (InWorldNode[] core : cores) sd.connect(core[0], core[1], CableWires.core(kind));
         data.add(new CableData.Cable(kind, a.cable(), b.cable(), cores, mixed));
         return true;

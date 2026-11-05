@@ -83,6 +83,8 @@ final class Wire {
                     return 1;
                 }))
                 .then(Commands.literal("lampreport").executes(c -> lampReport(c.getSource())))
+                .then(Commands.literal("thin").executes(c -> thin(c.getSource())))
+                .then(Commands.literal("thinreport").executes(c -> thinReport(c.getSource())))
                 .then(Commands.literal("long").executes(c -> tooLong(c.getSource())))
                 .then(Commands.literal("cut").executes(c -> cut(c.getSource())))
                 .then(Commands.literal("breakb").executes(c -> {
@@ -287,6 +289,65 @@ final class Wire {
         BlockState st = src.getLevel().getBlockState(LAMP);
         String lit = st.getBlock() instanceof ee.extras.lantern.LanternBlock ? (st.getValue(ee.extras.lantern.LanternBlock.LIT) ? "горит" : "не горит") : "не фонарь EE";
         src.sendSuccess(() -> Component.literal("фонарь " + lit), false);
+        return 1;
+    }
+
+    static final BlockPos T_BAT = new BlockPos(0, -60, 250);
+    static final BlockPos TA = T_BAT.east(2);
+    static final BlockPos I1 = T_BAT.east(5);
+    static final BlockPos I2 = T_BAT.east(8);
+    static final BlockPos T_VM = T_BAT.offset(5, 0, 4);
+
+    /**
+     * Тонкий изолированный провод (висячий двухжильный): изолятор → изолятор — отказ; изолятор → соединитель EE и
+     * изолятор → вольтметр с крышкой — прокладывается
+     */
+    static int thin(CommandSourceStack src) {
+        ServerLevel level = src.getLevel();
+        DevTest.place(level, T_BAT, CEEBlocks.CREATIVE_BATTERY.getDefaultState().setValue(CreativeBatteryBlock.AC, true));
+        DevTest.place(level, TA, Extras.eeTermination());
+        DevTest.place(level, I1, ee.extras.EeExtras.DUPLEX_INSULATOR.get().defaultBlockState());
+        DevTest.place(level, I2, ee.extras.EeExtras.DUPLEX_INSULATOR.get().defaultBlockState());
+        DevTest.place(level, T_VM, CEEBlocks.VOLTMETER.getDefaultState());
+        CableEnd a = Extras.end(level, TA);
+        DevTest.wire(level, T_BAT, 0, TA, a.conductor(1).id());
+        DevTest.wire(level, T_BAT, 1, TA, a.conductor(2).id());
+        FakePlayer p = player(level);
+        log.clear();
+        p.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ee.extras.EeExtras.CABLE_CAP.get(), 1));
+        click(level, p, T_VM, false);
+        p.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ee.extras.EeExtras.THIN_SPOOL.get(), 16));
+        click(level, p, I1, false);
+        click(level, p, I2, false);
+        click(level, p, TA, false);
+        click(level, p, I1, false);
+        click(level, p, T_VM, false);
+        int left = p.getMainHandItem().getCount();
+        src.sendSuccess(() -> Component.literal("тонкий: " + String.join("; ", log) + "; катушек осталось " + left), false);
+        return 1;
+    }
+
+    static int thinReport(CommandSourceStack src) {
+        ServerLevel level = src.getLevel();
+        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
+        StringBuilder out = new StringBuilder();
+        for (BlockPos[] pair : new BlockPos[][] {{I1, I2}, {TA, I1}, {I1, T_VM}}) {
+            int n = 0;
+            String types = "";
+            for (InWorldNode x : sd.getNodes()) {
+                if (!x.sourcePos().equals(pair[0])) continue;
+                for (var c : sd.getConnections(x)) {
+                    InWorldNode other = c.node1().equals(x) ? c.node2() : c.node1();
+                    if (!other.sourcePos().equals(pair[1])) continue;
+                    n++;
+                    types += " " + ee.extras.EeExtras.WIRES.getRegistry().get().getKey(sd.getConnectionData(c).wireType()).getPath();
+                }
+            }
+            out.append(pair[0].getX()).append("–").append(pair[1].getX()).append(pair[1].getZ() != pair[0].getZ() ? "(ВМ)" : "")
+                    .append(": проводов EE ").append(n).append(types).append("; ");
+        }
+        out.append("вольтметр с крышкой ").append(Extras.vm(DevicesSavedData.load(level), T_VM)).append(" В");
+        src.sendSuccess(() -> Component.literal(out.toString()), false);
         return 1;
     }
 

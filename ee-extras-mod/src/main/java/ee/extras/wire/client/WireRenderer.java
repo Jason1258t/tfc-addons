@@ -81,9 +81,9 @@ public class WireRenderer extends EntityRenderer<SurfaceWireEntity> {
             length *= -1;
             thickness *= -1;
         }
-        uvOffset %= 16;
-        float u0 = uvOffset / 16f, v0 = uvOffset / 16f, t0 = uvOffset / 16f;
-        float u1 = thickness + uvOffset / 16f, v1 = thickness + uvOffset / 16f, t1 = thickness + uvOffset / 16f;
+        // Поперёк провода — вся текстура (полосы жил по V), вдоль — длина в блоках (у Power Grid — кусок со сдвигом uvOffset)
+        float u0 = 0, v0 = 0, t0 = 0;
+        float u1 = 1, v1 = 1, t1 = 1;
         ms.pushPose();
         ms.translate(start.x - thickness / 2, start.y - thickness / 2, start.z - thickness / 2);
         double x1 = 0, y1 = 0, z1 = 0, x2 = 0, y2 = 0, z2 = 0;
