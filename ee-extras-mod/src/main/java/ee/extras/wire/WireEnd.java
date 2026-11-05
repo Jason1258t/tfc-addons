@@ -113,7 +113,7 @@ public sealed interface WireEnd {
             if (end != null && state.getBlock() instanceof ElectricalDeviceBlock<?> b) {
                 if (end.contacts() != null) {
                     var cover = CableCapGeometry.of(level, pos, state, end.contacts());
-                    if (cover != null) return Vec3.atLowerCornerOf(pos).add(cover.front());
+                    if (cover != null) return Vec3.atLowerCornerOf(pos).add(cover.inlet());
                 }
                 Vec3 local = b.getNodePosition(level, pos, state, end.cable().id());
                 if (local != null) return Vec3.atLowerCornerOf(pos).add(local);

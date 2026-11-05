@@ -57,6 +57,10 @@ public final class ClientTest {
         tick++;
         var server = mc.getSingleplayerServer();
         try {
+            if (System.getenv("CAP") != null) {
+                CapClientTest.tick(mc, server, tick);
+                return;
+            }
             if (System.getenv("WIRE") != null) {
                 WireClientTest.tick(mc, server, tick);
                 return;
