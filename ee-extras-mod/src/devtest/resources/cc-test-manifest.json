@@ -216,6 +216,26 @@
     "output": "ee_extras:magnetic_disk_medium"
   },
   {
+    "id": "ee_extras:cc/materials/abs_keyboard_blank",
+    "output": "ee_extras:abs_keyboard_blank"
+  },
+  {
+    "id": "ee_extras:cc/materials/abs_sheet",
+    "output": "ee_extras:abs_sheet"
+  },
+  {
+    "id": "ee_extras:cc/materials/pet_film",
+    "output": "ee_extras:pet_film"
+  },
+  {
+    "id": "ee_extras:cc/materials/rgb_phosphor",
+    "output": "ee_extras:rgb_phosphor"
+  },
+  {
+    "id": "ee_extras:cc/materials/shadow_mask",
+    "output": "ee_extras:shadow_mask"
+  },
+  {
     "id": "ee_extras:cc/network_port",
     "output": "ee_extras:network_port"
   },

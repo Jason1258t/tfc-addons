@@ -1,0 +1,28 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "item": "tfc_aeronautics:powder/zinc",
+      "count": 2
+    },
+    {
+      "item": "tfc:powder/sulfur"
+    },
+    {
+      "item": "tfcorewashing:chromium_powder"
+    },
+    {
+      "item": "tfc_aeronautics:powder/copper"
+    },
+    {
+      "item": "tfc_aeronautics:powder/silver"
+    }
+  ],
+  "heat_requirement": "superheated",
+  "results": [
+    {
+      "id": "ee_extras:rgb_phosphor",
+      "count": 3
+    }
+  ]
+}

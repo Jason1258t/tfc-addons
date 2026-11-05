@@ -281,5 +281,10 @@
   "item.ee_extras.audio_amplifier": "Audio Amplifier",
   "item.ee_extras.power_supply": "Computer Power Supply",
   "item.ee_extras.battery_module": "Battery Module",
-  "item.ee_extras.magnetic_disk_medium": "Floppy Disk Magnetic Medium"
+  "item.ee_extras.magnetic_disk_medium": "Floppy Disk Magnetic Medium",
+  "item.ee_extras.abs_sheet": "ABS Plastic Sheet",
+  "item.ee_extras.abs_keyboard_blank": "Moulded ABS Keyboard Key Blank",
+  "item.ee_extras.pet_film": "PET Film",
+  "item.ee_extras.rgb_phosphor": "RGB Phosphor",
+  "item.ee_extras.shadow_mask": "Colour CRT Shadow Mask"
 }

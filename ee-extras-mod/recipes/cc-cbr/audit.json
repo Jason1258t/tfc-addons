@@ -470,6 +470,31 @@
     "note": ""
   },
   {
+    "path": "data/ee_extras/recipe/cc/materials/abs_keyboard_blank.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/abs_sheet.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/pet_film.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/rgb_phosphor.json",
+    "status": "new",
+    "note": ""
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/shadow_mask.json",
+    "status": "new",
+    "note": ""
+  },
+  {
     "path": "data/ee_extras/recipe/cc/network_port.json",
     "status": "new",
     "note": ""

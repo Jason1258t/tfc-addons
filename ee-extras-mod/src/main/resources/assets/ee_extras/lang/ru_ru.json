@@ -281,5 +281,10 @@
   "item.ee_extras.audio_amplifier": "Усилитель звука",
   "item.ee_extras.power_supply": "Блок питания компьютера",
   "item.ee_extras.battery_module": "Аккумуляторный модуль",
-  "item.ee_extras.magnetic_disk_medium": "Магнитный носитель дискеты"
+  "item.ee_extras.magnetic_disk_medium": "Магнитный носитель дискеты",
+  "item.ee_extras.abs_sheet": "Лист ABS-пластика",
+  "item.ee_extras.abs_keyboard_blank": "Формованная заготовка клавиш ABS",
+  "item.ee_extras.pet_film": "Плёнка PET",
+  "item.ee_extras.rgb_phosphor": "RGB-люминофор",
+  "item.ee_extras.shadow_mask": "Теневая маска цветного кинескопа"
 }

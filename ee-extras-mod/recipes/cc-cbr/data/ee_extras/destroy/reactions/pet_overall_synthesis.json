@@ -1,0 +1,36 @@
+{
+  "reactants": [
+    {
+      "molecule": "destroy:paraxylene",
+      "ratio": 1,
+      "order": 1
+    },
+    {
+      "molecule": "destroy:ethene",
+      "ratio": 1,
+      "order": 1
+    },
+    {
+      "molecule": "destroy:oxygen",
+      "ratio": 3,
+      "order": 1
+    }
+  ],
+  "products": [
+    {
+      "molecule": "destroy:water",
+      "ratio": 3
+    }
+  ],
+  "result": {
+    "type": "destroy:precipitate_item",
+    "moles": 1.0,
+    "item": "destroy:polyethene_terephthalate",
+    "count": 1
+  },
+  "kinetics": {
+    "activation_energy": 50.0,
+    "preexponential_factor": 10000000000.0,
+    "enthalpy_change": -100.0
+  }
+}

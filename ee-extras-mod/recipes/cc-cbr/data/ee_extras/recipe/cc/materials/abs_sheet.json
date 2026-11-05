@@ -1,0 +1,16 @@
+{
+  "type": "create:compacting",
+  "ingredients": [
+    {
+      "item": "destroy:abs",
+      "count": 2
+    }
+  ],
+  "heat_requirement": "heated",
+  "results": [
+    {
+      "id": "ee_extras:abs_sheet",
+      "count": 1
+    }
+  ]
+}

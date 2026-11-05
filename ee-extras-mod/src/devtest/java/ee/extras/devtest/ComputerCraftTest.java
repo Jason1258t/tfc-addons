@@ -60,7 +60,7 @@ final class ComputerCraftTest {
         verifyComputer(level);
         ItemStack turtle = verifyTurtle(level);
         if (!restored) saveMigration(level, turtle, pocket, disk);
-        String message = "CC PASS: " + checks + " проверок; рецепты 68/68; миграция=" + (restored ? "восстановлена" : "создана");
+        String message = "CC PASS: " + checks + " проверок; рецепты 73/73; миграция=" + (restored ? "восстановлена" : "создана");
         src.sendSuccess(() -> Component.literal(message), false);
         return checks;
     }
@@ -90,7 +90,7 @@ final class ComputerCraftTest {
         } catch (Exception e) {
             throw new IllegalStateException("CC FAIL: не прочитан манифест", e);
         }
-        require(count == 68, "манифест содержит " + count + " вместо 68 рецептов");
+        require(count == 73, "манифест содержит " + count + " вместо 73 рецептов");
     }
 
     private static void verifyOldIds() {

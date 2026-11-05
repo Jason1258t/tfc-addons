@@ -15,6 +15,7 @@ OUT = ROOT / "recipes" / "cc-cbr"
 DEVTEST = ROOT / "src" / "devtest" / "resources"
 
 ITEMS = [
+    "abs_sheet", "abs_keyboard_blank", "pet_film", "rgb_phosphor", "shadow_mask",
     "control_board_l1", "computer_motherboard", "advanced_motherboard", "turtle_controller",
     "advanced_turtle_controller", "keyboard", "pocket_input", "display_driver", "advanced_display_driver",
     "display_crt", "display_advanced", "pocket_display", "network_port", "computer_case",
@@ -25,6 +26,20 @@ ITEMS = [
 ]
 
 recipes: dict[str, dict] = {}
+data_files: dict[str, dict] = {
+    # В Destroy нет терефталевой кислоты и этиленгликоля: суммарный процесс без новых веществ.
+    "data/ee_extras/destroy/reactions/pet_overall_synthesis.json": {
+        "reactants": [
+            {"molecule": "destroy:paraxylene", "ratio": 1, "order": 1},
+            {"molecule": "destroy:ethene", "ratio": 1, "order": 1},
+            {"molecule": "destroy:oxygen", "ratio": 3, "order": 1},
+        ],
+        "products": [{"molecule": "destroy:water", "ratio": 3}],
+        "result": {"type": "destroy:precipitate_item", "moles": 1.0,
+                   "item": "destroy:polyethene_terephthalate", "count": 1},
+        "kinetics": {"activation_energy": 50.0, "preexponential_factor": 1.0e10, "enthalpy_change": -100.0},
+    },
+}
 audit: list[dict] = []
 
 
@@ -93,20 +108,46 @@ solder("ender_transceiver", ["ee_extras:network_transceiver", "ee_extras:l3_boar
 solder("audio_amplifier", ["ee_extras:control_board_l1", "ee_extras:transistor", "ee_extras:capacitor",
        "ee_extras:inductor", ("ee_extras:resistor", 2)])
 
+# Полимеры Destroy используются напрямую, без дублирования гранул в EE Extras.
+add("data/ee_extras/recipe/cc/materials/abs_sheet.json", {
+    "type": "create:compacting", "ingredients": [ingredient("destroy:abs", 2)],
+    "heat_requirement": "heated", "results": [result("ee_extras:abs_sheet")],
+})
+add("data/ee_extras/recipe/cc/materials/abs_keyboard_blank.json", {
+    "type": "create:compacting", "ingredients": [ingredient("destroy:abs", 3)],
+    "heat_requirement": "heated", "results": [result("ee_extras:abs_keyboard_blank")],
+})
+add("data/ee_extras/recipe/cc/materials/pet_film.json", {
+    "type": "create:compacting", "ingredients": [ingredient("destroy:polyethene_terephthalate")],
+    "heat_requirement": "heated", "results": [result("ee_extras:pet_film", 2)],
+})
+add("data/ee_extras/recipe/cc/materials/rgb_phosphor.json", {
+    "type": "create:mixing", "ingredients": [ingredient("tfc_aeronautics:powder/zinc", 2),
+        ingredient("tfc:powder/sulfur"), ingredient("tfcorewashing:chromium_powder"),
+        ingredient("tfc_aeronautics:powder/copper"), ingredient("tfc_aeronautics:powder/silver")],
+    "heat_requirement": "superheated", "results": [result("ee_extras:rgb_phosphor", 3)],
+})
+add("data/ee_extras/recipe/cc/materials/shadow_mask.json", {
+    "type": "create:pressing", "ingredients": [ingredient("#c:plates/steel")],
+    "results": [result("ee_extras:shadow_mask")],
+})
+
 # Ввод, экраны и корпуса.
-module("keyboard", ["PPP", "PPP", "CFC"], {"P": "#tfc:insulation", "C": "ee_extras:control_board_l1",
+module("keyboard", ["PPP", "PPP", "CFC"], {"P": "ee_extras:abs_keyboard_blank", "C": "ee_extras:control_board_l1",
        "F": "ee_extras:copper_foil"})
 module("display_crt", ["GGG", "TIT", "CFC"], {"G": "#c:glass_panes", "T": "create:electron_tube",
        "I": "ee_extras:inductor", "C": "ee_extras:display_driver", "F": "ee_extras:copper_foil"})
-module("display_advanced", ["PPP", "RGB", "CFC"], {"P": "#c:glass_panes", "R": "minecraft:red_dye",
-       "G": "minecraft:green_dye", "B": "minecraft:blue_dye", "C": "ee_extras:advanced_display_driver",
-       "F": "ee_extras:copper_foil"})
+module("display_advanced", ["PPP", "LS ", "CFC"], {"P": "#c:glass_panes", "L": "ee_extras:rgb_phosphor",
+       "S": "ee_extras:shadow_mask", "C": "ee_extras:advanced_display_driver", "F": "ee_extras:copper_foil"})
 module("pocket_display", ["PPP", "DF ", " C "], {"P": "#c:glass_panes", "D": "ee_extras:display_driver",
        "F": "ee_extras:copper_foil", "C": "ee_extras:connector"})
-module("computer_case", ["SPS", "S S", "SSS"], {"S": "#c:plates/steel", "P": "#tfc:insulation"})
-module("advanced_computer_case", ["ABA", "A A", "AAA"], {"A": "#c:plates/aluminum", "B": "#c:plates/brass"})
-module("pocket_case", ["APA", "T T", "AAA"], {"A": "#c:plates/aluminum", "P": "#c:glass_panes", "T": "#tfc:insulation"})
-module("peripheral_case", ["S S", "SPS", "SSS"], {"S": "#c:plates/steel", "P": "#tfc:insulation"})
+module("computer_case", ["SPS", "S S", "SAS"], {"S": "#c:plates/steel", "P": "ee_extras:abs_sheet",
+       "A": "ee_extras:abs_sheet"})
+module("advanced_computer_case", ["ABA", "A A", "APA"], {"A": "#c:plates/aluminum", "B": "#c:plates/brass",
+       "P": "ee_extras:abs_sheet"})
+module("pocket_case", ["APA", "P P", "AAA"], {"A": "#c:plates/aluminum", "P": "ee_extras:abs_sheet"})
+module("peripheral_case", ["S S", "SPS", "SAS"], {"S": "#c:plates/steel", "P": "ee_extras:abs_sheet",
+       "A": "ee_extras:abs_sheet"})
 
 # Электромеханика, связь, звук и питание.
 module("small_motor", ["WCW", "RSR", " T "], {"W": "#c:wires/copper", "C": "ee_extras:inductor",
@@ -129,8 +170,8 @@ module("power_supply", ["S S", "ICI", "DCT"], {"S": "#c:plates/steel", "I": "ee_
        "C": "ee_extras:capacitor", "D": "ee_extras:silicon_diode", "T": "ee_extras:connector"})
 module("battery_module", ["L L", "SCS", "DCT"], {"L": "#c:plates/lead", "S": "tfc:powder/sulfur",
        "C": "ee_extras:capacitor", "D": "ee_extras:silicon_diode", "T": "ee_extras:connector"})
-module("magnetic_disk_medium", [" S ", "IMI", "PPP"], {"S": "#c:plates/steel", "I": "minecraft:iron_nugget",
-       "M": "tfc:powder/magnetite", "P": "#tfc:insulation"}, 4)
+module("magnetic_disk_medium", ["ASA", "IMI", "PPP"], {"S": "#c:plates/steel", "I": "minecraft:iron_nugget",
+       "M": "tfc:powder/magnetite", "P": "ee_extras:pet_film", "A": "ee_extras:abs_sheet"}, 4)
 
 # Полная замена базовых устройств CC: выходы и ID рецептов сохраняются.
 CC = "data/computercraft/recipe"
@@ -298,8 +339,8 @@ tag = {"replace": False, "values": ["#c:plates/plastic", {"id": "afc:rubber_bar"
 def main() -> None:
     if len([x for x in audit if x["path"].startswith(CC)]) != 75:
         raise ValueError("CC audit must contain exactly 75 files")
-    if len(ITEMS) != 30 or len(recipes) != 68:
-        raise ValueError(f"unexpected size: {len(ITEMS)} items, {len(recipes)} recipes")
+    if len(ITEMS) != 35 or len(recipes) != 73 or len(data_files) != 1:
+        raise ValueError(f"unexpected size: {len(ITEMS)} items, {len(recipes)} recipes, {len(data_files)} data files")
     if OUT.exists():
         shutil.rmtree(OUT)
     OUT.mkdir(parents=True)
@@ -319,6 +360,11 @@ def main() -> None:
         if not path.startswith("data/ee_extras/"):
             kind = "remove" if kind == "remove" else "replace"
         entries.append({"path": path, "content": recipe, "kind": kind})
+    for path, data in data_files.items():
+        target = OUT / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        entries.append({"path": path, "content": data, "kind": "file"})
     tag_path = "data/tfc/tags/item/insulation.json"
     target = OUT / tag_path
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -331,9 +377,9 @@ def main() -> None:
     for path in [p for p in DEVTEST.rglob("*.json") if p.is_file()]:
         relative = path.relative_to(DEVTEST).as_posix()
         if relative.startswith("data/computercraft/") or relative.startswith("data/ccbr/") or relative == tag_path \
-                or relative.startswith("data/ee_extras/recipe/cc/"):
+                or relative.startswith("data/ee_extras/recipe/cc/") or relative in data_files:
             path.unlink()
-    for path, recipe in recipes.items():
+    for path, recipe in (recipes | data_files).items():
         target = DEVTEST / path
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(json.dumps(recipe, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

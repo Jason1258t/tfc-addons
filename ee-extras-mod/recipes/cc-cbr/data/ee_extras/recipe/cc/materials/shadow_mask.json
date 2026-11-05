@@ -1,0 +1,14 @@
+{
+  "type": "create:pressing",
+  "ingredients": [
+    {
+      "tag": "c:plates/steel"
+    }
+  ],
+  "results": [
+    {
+      "id": "ee_extras:shadow_mask",
+      "count": 1
+    }
+  ]
+}

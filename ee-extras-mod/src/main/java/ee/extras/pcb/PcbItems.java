@@ -90,6 +90,11 @@ public final class PcbItems {
     public static final DeferredItem<Item> BASIC_IC = item("basic_ic", 32);
     public static final DeferredItem<Item> ADVANCED_IC = item("advanced_ic", 16);
     public static final DeferredItem<Item> SILICON_WAFER = item("silicon_wafer", 16);
+    public static final DeferredItem<Item> ABS_SHEET = item("abs_sheet", 64);
+    public static final DeferredItem<Item> ABS_KEYBOARD_BLANK = item("abs_keyboard_blank", 32);
+    public static final DeferredItem<Item> PET_FILM = item("pet_film", 64);
+    public static final DeferredItem<Item> RGB_PHOSPHOR = item("rgb_phosphor", 64);
+    public static final DeferredItem<Item> SHADOW_MASK = item("shadow_mask", 32);
 
     // Функциональные модули компьютеров и периферии CC. Это обычные предметы: поведение и данные устройств
     // остаются у CC, а новые идентификаторы нужны только для физической производственной цепочки.
@@ -127,7 +132,8 @@ public final class PcbItems {
     private static final List<DeferredItem<? extends Item>> ELECTRONICS = List.of(COPPER_FOIL, GLASS_FIBER, GLASS_FABRIC,
             EPOXY_LAMINATE, PHOTORESIST, L2_BOARD_BLANK, L3_BOARD_BLANK, L2_PREPARED_BLANK, L3_PREPARED_BLANK,
             L2_ETCHED_BOARD, L3_ETCHED_BOARD, L2_BOARD, L3_BOARD, SOLDER_WIRE, ROSIN_FLUX, RESISTOR, CAPACITOR, INDUCTOR,
-            CONNECTOR, SILICON_DIODE, TRANSISTOR, BASIC_IC, ADVANCED_IC, SILICON_WAFER, CONTROL_BOARD_L1,
+            CONNECTOR, SILICON_DIODE, TRANSISTOR, BASIC_IC, ADVANCED_IC, SILICON_WAFER, ABS_SHEET, ABS_KEYBOARD_BLANK,
+            PET_FILM, RGB_PHOSPHOR, SHADOW_MASK, CONTROL_BOARD_L1,
             COMPUTER_MOTHERBOARD, ADVANCED_MOTHERBOARD, TURTLE_CONTROLLER, ADVANCED_TURTLE_CONTROLLER, KEYBOARD,
             POCKET_INPUT, DISPLAY_DRIVER, ADVANCED_DISPLAY_DRIVER, DISPLAY_CRT, DISPLAY_ADVANCED, POCKET_DISPLAY,
             NETWORK_PORT, COMPUTER_CASE, ADVANCED_COMPUTER_CASE, POCKET_CASE, PERIPHERAL_CASE, SMALL_MOTOR,

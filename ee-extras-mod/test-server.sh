@@ -30,6 +30,12 @@ if [ -n "${CC:-}" ]; then
 {"pack":{"pack_format":48,"description":"EE Extras CC test recipes"}}
 JSON
 fi
+# DESTROY=1 — проверка PET и материалов дисплея; перед запуском DESTROY=1 ./libs.sh.
+if [ -n "${DESTROY:-}" ]; then
+  cp libs/destroy-*.jar libs/petrolpark-*.jar run/mods/
+  cp "$MODS"/tfc_aeronautics-*.jar "$MODS"/tfcorewashing-*.jar \
+    "$MODS"/create-aeronautics-bundled-*.jar "$MODS"/sable-neoforge-*.jar run/mods/
+fi
 if [ -n "${OLD_JAR:-}" ]; then cp "$OLD_JAR" run/mods/; fi
 echo 'eula=true' > run/eula.txt
 cat > run/server.properties <<P

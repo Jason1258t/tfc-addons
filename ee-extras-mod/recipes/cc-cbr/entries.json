@@ -1205,7 +1205,7 @@
       "pattern": [
         "ABA",
         "A A",
-        "AAA"
+        "APA"
       ],
       "key": {
         "A": {
@@ -1213,6 +1213,9 @@
         },
         "B": {
           "tag": "c:plates/brass"
+        },
+        "P": {
+          "item": "ee_extras:abs_sheet"
         }
       },
       "result": {
@@ -1377,14 +1380,17 @@
       "pattern": [
         "SPS",
         "S S",
-        "SSS"
+        "SAS"
       ],
       "key": {
         "S": {
           "tag": "c:plates/steel"
         },
         "P": {
-          "tag": "tfc:insulation"
+          "item": "ee_extras:abs_sheet"
+        },
+        "A": {
+          "item": "ee_extras:abs_sheet"
         }
       },
       "result": {
@@ -1493,21 +1499,18 @@
       "accept_mirrored": false,
       "pattern": [
         "PPP",
-        "RGB",
+        "LS ",
         "CFC"
       ],
       "key": {
         "P": {
           "tag": "c:glass_panes"
         },
-        "R": {
-          "item": "minecraft:red_dye"
+        "L": {
+          "item": "ee_extras:rgb_phosphor"
         },
-        "G": {
-          "item": "minecraft:green_dye"
-        },
-        "B": {
-          "item": "minecraft:blue_dye"
+        "S": {
+          "item": "ee_extras:shadow_mask"
         },
         "C": {
           "item": "ee_extras:advanced_display_driver"
@@ -1627,7 +1630,7 @@
       ],
       "key": {
         "P": {
-          "tag": "tfc:insulation"
+          "item": "ee_extras:abs_keyboard_blank"
         },
         "C": {
           "item": "ee_extras:control_board_l1"
@@ -1649,7 +1652,7 @@
       "type": "create:mechanical_crafting",
       "accept_mirrored": false,
       "pattern": [
-        " S ",
+        "ASA",
         "IMI",
         "PPP"
       ],
@@ -1664,13 +1667,125 @@
           "item": "tfc:powder/magnetite"
         },
         "P": {
-          "tag": "tfc:insulation"
+          "item": "ee_extras:pet_film"
+        },
+        "A": {
+          "item": "ee_extras:abs_sheet"
         }
       },
       "result": {
         "id": "ee_extras:magnetic_disk_medium",
         "count": 4
       }
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/abs_keyboard_blank.json",
+    "content": {
+      "type": "create:compacting",
+      "ingredients": [
+        {
+          "item": "destroy:abs",
+          "count": 3
+        }
+      ],
+      "heat_requirement": "heated",
+      "results": [
+        {
+          "id": "ee_extras:abs_keyboard_blank",
+          "count": 1
+        }
+      ]
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/abs_sheet.json",
+    "content": {
+      "type": "create:compacting",
+      "ingredients": [
+        {
+          "item": "destroy:abs",
+          "count": 2
+        }
+      ],
+      "heat_requirement": "heated",
+      "results": [
+        {
+          "id": "ee_extras:abs_sheet",
+          "count": 1
+        }
+      ]
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/pet_film.json",
+    "content": {
+      "type": "create:compacting",
+      "ingredients": [
+        {
+          "item": "destroy:polyethene_terephthalate"
+        }
+      ],
+      "heat_requirement": "heated",
+      "results": [
+        {
+          "id": "ee_extras:pet_film",
+          "count": 2
+        }
+      ]
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/rgb_phosphor.json",
+    "content": {
+      "type": "create:mixing",
+      "ingredients": [
+        {
+          "item": "tfc_aeronautics:powder/zinc",
+          "count": 2
+        },
+        {
+          "item": "tfc:powder/sulfur"
+        },
+        {
+          "item": "tfcorewashing:chromium_powder"
+        },
+        {
+          "item": "tfc_aeronautics:powder/copper"
+        },
+        {
+          "item": "tfc_aeronautics:powder/silver"
+        }
+      ],
+      "heat_requirement": "superheated",
+      "results": [
+        {
+          "id": "ee_extras:rgb_phosphor",
+          "count": 3
+        }
+      ]
+    },
+    "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/recipe/cc/materials/shadow_mask.json",
+    "content": {
+      "type": "create:pressing",
+      "ingredients": [
+        {
+          "tag": "c:plates/steel"
+        }
+      ],
+      "results": [
+        {
+          "id": "ee_extras:shadow_mask",
+          "count": 1
+        }
+      ]
     },
     "kind": "add"
   },
@@ -1740,14 +1855,17 @@
       "pattern": [
         "S S",
         "SPS",
-        "SSS"
+        "SAS"
       ],
       "key": {
         "S": {
           "tag": "c:plates/steel"
         },
         "P": {
-          "tag": "tfc:insulation"
+          "item": "ee_extras:abs_sheet"
+        },
+        "A": {
+          "item": "ee_extras:abs_sheet"
         }
       },
       "result": {
@@ -1764,7 +1882,7 @@
       "accept_mirrored": false,
       "pattern": [
         "APA",
-        "T T",
+        "P P",
         "AAA"
       ],
       "key": {
@@ -1772,10 +1890,7 @@
           "tag": "c:plates/aluminum"
         },
         "P": {
-          "tag": "c:glass_panes"
-        },
-        "T": {
-          "tag": "tfc:insulation"
+          "item": "ee_extras:abs_sheet"
         }
       },
       "result": {
@@ -2104,6 +2219,46 @@
       }
     },
     "kind": "add"
+  },
+  {
+    "path": "data/ee_extras/destroy/reactions/pet_overall_synthesis.json",
+    "content": {
+      "reactants": [
+        {
+          "molecule": "destroy:paraxylene",
+          "ratio": 1,
+          "order": 1
+        },
+        {
+          "molecule": "destroy:ethene",
+          "ratio": 1,
+          "order": 1
+        },
+        {
+          "molecule": "destroy:oxygen",
+          "ratio": 3,
+          "order": 1
+        }
+      ],
+      "products": [
+        {
+          "molecule": "destroy:water",
+          "ratio": 3
+        }
+      ],
+      "result": {
+        "type": "destroy:precipitate_item",
+        "moles": 1.0,
+        "item": "destroy:polyethene_terephthalate",
+        "count": 1
+      },
+      "kinetics": {
+        "activation_energy": 50.0,
+        "preexponential_factor": 10000000000.0,
+        "enthalpy_change": -100.0
+      }
+    },
+    "kind": "file"
   },
   {
     "path": "data/tfc/tags/item/insulation.json",
