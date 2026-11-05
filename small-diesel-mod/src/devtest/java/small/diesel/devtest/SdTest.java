@@ -8,11 +8,13 @@ import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
 import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.simibubi.create.AllBlocks;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -22,15 +24,21 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import small.diesel.EngineBlock;
 import small.diesel.EngineBlockEntity;
@@ -70,7 +78,36 @@ public class SdTest {
                         .executes(c -> addHeaters(c.getSource(), IntegerArgumentType.getInteger(c, "n")))))
                 .then(Commands.literal("mark").executes(c -> mark(c.getSource())))
                 .then(Commands.literal("report").executes(c -> report(c.getSource())))
+                .then(Commands.literal("jerrycan").executes(c -> jerrycan(c.getSource())))
                 .then(Commands.literal("water").executes(c -> water(c.getSource()))));
+    }
+
+    static int jerrycan(CommandSourceStack src) {
+        ServerLevel level = src.getLevel();
+        var player = FakePlayerFactory.get(level, new GameProfile(UUID.randomUUID(), "SmallDieselTest"));
+        var item = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("immersiveengineering", "jerrycan"));
+        for (BlockPos pos : new BlockPos[] {ENGINES[0], GEN}) {
+            BlockState state = pos.equals(GEN) ? Electric.GENERATOR.get().defaultBlockState() : engine(Direction.EAST);
+            place(level, pos, state);
+            var tank = FluidUtil.getFluidHandler(level, pos, null).orElseThrow();
+            tank.drain(Integer.MAX_VALUE, FluidAction.EXECUTE);
+            tank.fill(new FluidStack(diesel(), 400), FluidAction.EXECUTE);
+            for (int[] amounts : new int[][] {{1500, 1000, 900}, {900, 1000, 900}, {0, 0, 1000}}) {
+                var can = FluidUtil.getFluidHandler(new ItemStack(item)).orElseThrow();
+                if (amounts[0] > 0) can.fill(new FluidStack(diesel(), amounts[0]), FluidAction.EXECUTE);
+                player.setItemInHand(InteractionHand.MAIN_HAND, can.getContainer());
+                state.useItemOn(can.getContainer(), level, player, InteractionHand.MAIN_HAND,
+                        new BlockHitResult(Vec3.atCenterOf(pos), Direction.WEST, pos, false));
+                int inTank = tank.getFluidInTank(0).getAmount();
+                int inCan = FluidUtil.getFluidContained(player.getMainHandItem()).map(FluidStack::getAmount).orElse(0);
+                if (inTank != amounts[1] || inCan != amounts[2]) {
+                    src.sendFailure(Component.literal("Канистра: " + pos + ", бак " + inTank + ", канистра " + inCan));
+                    return 0;
+                }
+            }
+        }
+        src.sendSuccess(() -> Component.literal("Канистра: оба блока заправлены до 1000 мБ, остаток 900 мБ; полный бак защищён, пустая канистра забирает топливо."), false);
+        return 1;
     }
 
     static Fluid diesel() {
