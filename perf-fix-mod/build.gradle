@@ -1,0 +1,45 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.148'
+}
+
+version = mod_version
+group = 'perf.fix'
+base { archivesName = 'perf-fix' }
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+// Проверочный мод (только для runServer): команда /pftest — замер записи тайлов общих карт. В jar не попадает.
+sourceSets {
+    devtest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+configurations {
+    devtestCompileOnly.extendsFrom compileOnly
+}
+
+neoForge {
+    version = project.neo_version
+    mods {
+        perf_fix { sourceSet sourceSets.main }
+        perf_fix_devtest { sourceSet sourceSets.devtest }
+    }
+    addModdingDependenciesTo(sourceSets.devtest)
+    // Проверочный сервер: ./gradlew runServer. JourneyMap Shared Maps кладёт в run/mods скрипт test-server.sh
+    runs {
+        server {
+            server()
+            programArgument '--nogui'
+            sourceSet = sourceSets.devtest
+        }
+    }
+}
+
+dependencies {
+    // JourneyMap Shared Maps и TFC — только для компиляции (libs.sh)
+    compileOnly fileTree(dir: 'libs', include: '*.jar')
+}
+
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }

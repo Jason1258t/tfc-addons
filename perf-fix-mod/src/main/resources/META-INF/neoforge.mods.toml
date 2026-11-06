@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+license = "MIT"
+
+[[mods]]
+modId = "perf_fix"
+version = "1.0.0"
+displayName = "TFC Studio: Perf Fix"
+description = "Убирает тяжёлую работу из главного потока сервера: тайлы общих карт JourneyMap пишутся на диск в отдельном потоке, исчезающий октопотеутис TFC не грузит чанки."
+
+[[mixins]]
+config = "perf_fix.mixins.json"
+
+[[dependencies.perf_fix]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.244,)"
+ordering = "NONE"
+side = "BOTH"
+
+# Формат файла .jmregion и RegionTileStore проверены по байткоду JourneyMap Shared Maps 1.1.3; новая версия — сверить
+[[dependencies.perf_fix]]
+modId = "jmsharedmaps"
+type = "optional"
+versionRange = "[1.1.3-neoforge]"
+ordering = "AFTER"
+side = "BOTH"
+
+# IGlow и Octopoteuthis.remove проверены по байткоду TFC 4.2.9
+[[dependencies.perf_fix]]
+modId = "tfc"
+type = "optional"
+versionRange = "[4.2.9,4.3)"
+ordering = "AFTER"
+side = "BOTH"
