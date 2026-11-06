@@ -1,0 +1,6 @@
+{
+  "parent": "ee_extras:block/pcb_part/led",
+  "textures": {
+    "lens": "minecraft:block/redstone_block"
+  }
+}

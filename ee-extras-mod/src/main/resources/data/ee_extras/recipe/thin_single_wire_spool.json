@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "electroenergetics:empty_spool"
+    },
+    {
+      "item": "electroenergetics:insulated_wire"
+    }
+  ],
+  "result": {
+    "id": "ee_extras:thin_single_wire_spool",
+    "count": 1
+  }
+}

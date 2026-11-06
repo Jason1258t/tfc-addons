@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "ee_extras:power_supply"
+    },
+    {
+      "item": "electroenergetics:insulated_wire"
+    }
+  ],
+  "result": {
+    "id": "ee_extras:pcb_supply",
+    "count": 1
+  }
+}

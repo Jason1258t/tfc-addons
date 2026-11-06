@@ -1,5 +1,11 @@
 package ee.extras.devtest;
 
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.server.level.ServerPlayer;
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
@@ -14,6 +20,7 @@ import ee.extras.EeExtras;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
@@ -53,6 +60,7 @@ public class DevTest {
         CommandDispatcher<CommandSourceStack> d = e.getDispatcher();
         Sync.register(d);
         PcbCircuitTest.register(d);
+        PcbSupplyTest.register(d);
         Wire.register(d);
         ElectronicsTest.register(d);
         SolarTest.register(d);
@@ -218,6 +226,22 @@ public class DevTest {
             if (st.getBlock() instanceof ElectricalDeviceBlock<?> eb) eb.ensureNodesExist(level, p, st);
         }
         InfrastructureSavedData.load(level).connect(new InWorldNode(na, a), new InWorldNode(nb, b), CEEWireTypes.COPPER.get());
+    }
+
+    static boolean spoolWire(ServerPlayer player, ItemStack spool, BlockPos a, int na, BlockPos b, int nb) {
+        var level = player.serverLevel();
+        player.setItemInHand(InteractionHand.MAIN_HAND, spool);
+        for (BlockHitResult hit : new BlockHitResult[] {nodeHit(level, a, na), nodeHit(level, b, nb)}) {
+            spool.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit));
+        }
+        return InfrastructureSavedData.load(level).isConnected(new InWorldNode(na, a), new InWorldNode(nb, b));
+    }
+
+    private static BlockHitResult nodeHit(ServerLevel level, BlockPos pos, int id) {
+        var state = level.getBlockState(pos);
+        var device = (ElectricalDeviceBlock<?>) state.getBlock();
+        return new BlockHitResult(Vec3.atLowerCornerOf(pos).add(device.getNodePosition(level, pos, state, id)),
+                Direction.UP, pos, false);
     }
 
     static int build(CommandSourceStack src) {

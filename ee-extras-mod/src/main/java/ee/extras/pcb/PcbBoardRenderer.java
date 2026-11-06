@@ -2,6 +2,7 @@ package ee.extras.pcb;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -24,6 +25,22 @@ final class PcbBoardRenderer implements BlockEntityRenderer<PcbCircuitBlockEntit
         boolean burnt = board.getBlockState().getValue(PcbCircuitBlock.BURNT);
         var texture = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(WHITE);
         var vertices = buffers.getBuffer(RenderType.entityCutout(TextureAtlas.LOCATION_BLOCKS));
+        poses.pushPose();
+        poses.translate(0.5, 0.5, 0.5);
+        Direction face = board.getBlockState().getValue(PcbCircuitBlock.FACING);
+        if (face.getAxis().isHorizontal()) {
+            poses.mulPose(Axis.YP.rotationDegrees(switch (face) {
+                case EAST -> -90;
+                case SOUTH -> 180;
+                case WEST -> 90;
+                default -> 0;
+            }));
+            poses.mulPose(Axis.XP.rotationDegrees(-90));
+        } else if (face == Direction.DOWN) {
+            poses.mulPose(Axis.XP.rotationDegrees(180));
+        }
+        poses.scale(0.75f, 1, 0.75f);
+        poses.translate(-0.5, -0.5, -0.5);
         var painter = new Painter(poses.last(), vertices, texture, light, overlay);
         int[] definitions = topology.getIntArray(PcbWiring.KEY);
         int layer = PcbTopology.level(topology) - 1;
@@ -36,10 +53,10 @@ final class PcbBoardRenderer implements BlockEntityRenderer<PcbCircuitBlockEntit
             if (PcbTopology.cut(topology, cell)) continue;
             int x = cell % PcbTopology.SIZE;
             int z = cell / PcbTopology.SIZE;
-            float x0 = Math.max(x, 0.25f) / 16;
-            float z0 = Math.max(z, 0.25f) / 16;
-            float x1 = Math.min(x + 1, 15.75f) / 16;
-            float z1 = Math.min(z + 1, 15.75f) / 16;
+            float x0 = x / 16f;
+            float z0 = z / 16f;
+            float x1 = (x + 1) / 16f;
+            float z1 = (z + 1) / 16f;
             int color = burnt ? 0xFF2C2928 : switch (PcbTopology.get(topology, layer, cell)) {
                 case PcbTopology.TRACE -> 0xFFA16635;
                 case PcbTopology.VIA -> 0xFF8AA19A;
@@ -74,7 +91,10 @@ final class PcbBoardRenderer implements BlockEntityRenderer<PcbCircuitBlockEntit
             for (int partLayer = layer; partLayer >= 0; partLayer--) {
                 int index = partLayer * PcbTopology.CELLS + cell;
                 if (index < definitions.length && definitions[index] != 0) {
-                    PcbPartModels.render(definitions[index], x, z, burnt, poses, vertices, light, overlay);
+                    int type = PcbWiring.type(definitions[index]);
+                    boolean indicatorLit = !burnt && (type == 4 || type == 13)
+                            && board.indicatorLit(PcbWiring.componentOrdinal(definitions, index));
+                    PcbPartModels.render(definitions[index], x, z, burnt, indicatorLit, board.hasCap(cell), poses, vertices, light, overlay);
                     break;
                 }
             }
@@ -91,6 +111,7 @@ final class PcbBoardRenderer implements BlockEntityRenderer<PcbCircuitBlockEntit
                 painter.side(Direction.SOUTH, px1, pz1, px0, pz1, 1f / 16, 2f / 16, pad);
             }
         }
+        poses.popPose();
     }
 
     private static boolean joins(CompoundTag topology, int[] definitions, int layer, int from, int to) {

@@ -14,7 +14,7 @@ final class PcbWiring {
     static final double[] VOLTS = {3, 5, 12, 24, 48, 96, 128, 230};
     static final Kind[] KINDS = {Kind.RESISTOR, Kind.RELAY, Kind.BUTTON, Kind.SWITCH,
             Kind.LAMP, Kind.REDSTONE_IN, Kind.REDSTONE_OUT, Kind.CAPACITOR, Kind.DIODE,
-            Kind.FUSE, Kind.VOLTMETER, Kind.AMMETER, Kind.TRANSISTOR};
+            Kind.FUSE, Kind.VOLTMETER, Kind.AMMETER, Kind.TRANSISTOR, Kind.LED};
     static final String ERROR = "Проверьте выводы и контакты";
     private static final int CELLS = PcbTopology.CELLS;
     private static final int SIZE = PcbTopology.SIZE;
@@ -117,6 +117,12 @@ final class PcbWiring {
             parts.add(part);
         }
         return parts.isEmpty() || parts.size() > 64 ? null : List.copyOf(parts);
+    }
+
+    static int componentOrdinal(int[] definitions, int index) {
+        int ordinal = 0;
+        for (int i = 0; i < index; i++) if (definitions[i] != 0) ordinal++;
+        return ordinal;
     }
 
     static boolean conductor(int cell) {

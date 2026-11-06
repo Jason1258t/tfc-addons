@@ -165,7 +165,7 @@ final class PcbClientTest {
                     && state.getValue(PcbCircuitBlock.CUSTOM)
                     && board.getNodePositions(mc.level, BOARD, state).size() == 2
                     && state.getShape(mc.level, BOARD).toAabbs().stream()
-                            .noneMatch(box -> box.contains(12.5 / 16, 0.5 / 16, 12.5 / 16)));
+                            .noneMatch(box -> box.contains(11.375 / 16, 0.5 / 16, 11.375 / 16)));
             Screenshot.grab(mc.gameDirectory, "pcb_installed.png", mc.getMainRenderTarget(), c -> {});
             System.out.println("EECLIENT PCB ИТОГ: ошибок " + fails);
             mc.stop();

@@ -1,0 +1,6 @@
+{
+  "parent": "ee_extras:block/pcb_supply/block_flip_roll",
+  "textures": {
+    "case": "minecraft:block/deepslate_tiles"
+  }
+}

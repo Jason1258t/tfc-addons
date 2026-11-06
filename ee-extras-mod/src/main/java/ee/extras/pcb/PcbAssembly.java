@@ -28,6 +28,7 @@ final class PcbAssembly {
             case BUTTON -> Items.STONE_BUTTON;
             case SWITCH -> Items.LEVER;
             case LAMP -> CEEBlocks.INDICATOR_BULB.asItem();
+            case LED -> PcbItems.LED.get();
             case REDSTONE_IN, REDSTONE_OUT -> PcbItems.CONNECTOR.get();
             case CAPACITOR -> PcbItems.CAPACITOR.get();
             case DIODE -> PcbItems.SILICON_DIODE.get();
@@ -75,7 +76,7 @@ final class PcbAssembly {
             candidates.add(item);
             float chance = switch (kind) {
                 case BUTTON, SWITCH, REDSTONE_IN, REDSTONE_OUT -> 0.70f;
-                case TRANSISTOR, DIODE, LAMP -> 0.45f;
+                case TRANSISTOR, DIODE, LAMP, LED -> 0.45f;
                 default -> 0.60f;
             };
             if (player.getRandom().nextFloat() < chance) {

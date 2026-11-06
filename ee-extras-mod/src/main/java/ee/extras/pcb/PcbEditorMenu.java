@@ -64,7 +64,7 @@ public class PcbEditorMenu extends AbstractContainerMenu {
         addSlot(new Slot(container, 0, 244, 8) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return stack.is(net.minecraft.world.item.Items.PAPER) || stack.getItem() instanceof PcbDesignItem || PcbBoardItem.level(stack) != 0 || stack.is(PcbItems.BURNT_BOARD.get());
+                return stack.getItem() instanceof PcbSupplyItem || stack.is(net.minecraft.world.item.Items.PAPER) || stack.getItem() instanceof PcbDesignItem || PcbBoardItem.level(stack) != 0 || stack.is(PcbItems.BURNT_BOARD.get());
             }
         });
         for (int row = 0; row < 3; row++) {
@@ -170,7 +170,15 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             case CONTACT -> contact.set(1 - contact.get());
             case ROTATE -> rotation.set((rotation.get() + 1) % 4);
             case OHMS -> resistance.set((resistance.get() + 1) % PcbWiring.OHMS.length);
-            case VOLTS -> threshold.set((threshold.get() + 1) % PcbWiring.VOLTS.length);
+            case VOLTS -> {
+                var item = getSlot(0).getItem();
+                if (item.getItem() instanceof PcbSupplyItem) {
+                    PcbSupplyItem.configure(item, (PcbSupplyItem.setting(item) + 1) % PcbSupplyBlock.VOLTS.length);
+                    getSlot(0).setChanged();
+                } else {
+                    threshold.set((threshold.get() + 1) % PcbWiring.VOLTS.length);
+                }
+            }
             case LAYER -> layer.set((layer.get() + 1) % level.get());
             case LEVEL -> {
                 int newLevel = level.get() % PcbTopology.MAX_LAYERS + 1;

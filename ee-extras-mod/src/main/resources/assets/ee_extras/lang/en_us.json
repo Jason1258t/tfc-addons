@@ -1,4 +1,11 @@
 {
+  "ee_extras.pcb.supply.terminal": "Output %s",
+  "ee_extras.pcb.supply.voltage": "Output setting: %s V",
+  "block.ee_extras.pcb_supply_dc": "Rectified PCB Supply Module",
+  "block.ee_extras.pcb_supply": "PCB Step-down Module",
+  "item.ee_extras.pcb_led": "Miniature LED",
+  "item.ee_extras.decorative_single_wire_spool": "Decorative Single-Core Wire",
+  "item.ee_extras.thin_single_wire_spool": "Thin Insulated Single-Core Wire",
   "ee_extras.pcb.assemble": "Assemble",
   "item.ee_extras.burnt_board": "Burnt circuit board",
   "ee_extras.pcb.salvage": "Salvage",

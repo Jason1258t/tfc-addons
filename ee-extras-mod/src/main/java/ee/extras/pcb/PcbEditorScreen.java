@@ -16,7 +16,7 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
     private static final int CELL = 7;
     private static final String[] PARTS = {"Резистор", "Реле", "Кнопка", "Переключатель",
             "Индикатор", "Редстоун-вход", "Редстоун-выход", "Конденсатор", "Диод", "Предохранитель",
-            "Вольтметр", "Амперметр", "Транзистор"};
+            "Вольтметр", "Амперметр", "Транзистор", "Светодиод"};
     private static final String[] TOOLS = {"Трасса", "Метка", "Переход", "Вывод", "Ластик", "Деталь", "Контур"};
     private static final String[] TOOL_HINTS = {
             "Провести дорожку на текущем слое", "Метка компонента для пассивного чертежа",
@@ -276,13 +276,16 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
         }
         PcbCircuitDevice.Kind kind = PcbWiring.KINDS[menu.part()];
         double value = PcbWiring.OHMS[menu.resistance()];
-        double limit = PcbWiring.VOLTS[menu.threshold()];
+        if (kind == PcbCircuitDevice.Kind.LAMP || kind == PcbCircuitDevice.Kind.LED) value = PcbCircuitDevice.indicatorResistance(value);
+        ItemStack input = menu.getSlot(0).getItem();
+        boolean supply = input.getItem() instanceof PcbSupplyItem;
+        double limit = supply ? PcbSupplyBlock.VOLTS[PcbSupplyItem.setting(input)] : PcbWiring.VOLTS[menu.threshold()];
         String[] arrows = {"→", "↓", "←", "↑"};
         String orientation = arrows[menu.rotation()];
         if (kind == PcbCircuitDevice.Kind.RELAY) orientation += menu.normallyClosed() ? " · НЗ" : " · НО";
         String[] partLabels = {"Поворот " + orientation,
                 kind == PcbCircuitDevice.Kind.CAPACITOR ? (int) value + " мФ" : (int) value + " Ом",
-                kind == PcbCircuitDevice.Kind.FUSE || kind == PcbCircuitDevice.Kind.AMMETER
+                supply ? (int) limit + " В на выходе" : kind == PcbCircuitDevice.Kind.FUSE || kind == PcbCircuitDevice.Kind.AMMETER
                         ? limit / 100 + " А" : (int) limit + " В"};
         for (int row = 0; row < partLabels.length; row++) {
             graphics.drawCenteredString(font, partLabels[row], 220, SETTINGS_Y + 3 + row * SETTINGS_ROW, 0xFFFFFFFF);

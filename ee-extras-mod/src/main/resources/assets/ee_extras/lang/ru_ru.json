@@ -1,4 +1,11 @@
 {
+  "ee_extras.pcb.supply.terminal": "Выход %s",
+  "ee_extras.pcb.supply.voltage": "Настройка выхода: %s В",
+  "block.ee_extras.pcb_supply_dc": "Модуль питания платы с выпрямителем",
+  "block.ee_extras.pcb_supply": "Модуль понижения напряжения платы",
+  "item.ee_extras.pcb_led": "Миниатюрный светодиод",
+  "item.ee_extras.decorative_single_wire_spool": "Декоративный одножильный провод",
+  "item.ee_extras.thin_single_wire_spool": "Тонкий изолированный одножильный провод",
   "ee_extras.pcb.assemble": "Собрать",
   "item.ee_extras.burnt_board": "Сгоревшая печатная плата",
   "ee_extras.pcb.salvage": "Разобрать",

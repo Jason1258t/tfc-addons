@@ -31,6 +31,11 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
     private static final double CAPACITOR_ESR = 0.1;
     private static final double DIODE_SENSE = 0.01;
     private static final double OVERLOAD_TICKS = 40;
+    private static final double INDICATOR_MIN_OHMS = 220;
+
+    static double indicatorResistance(double ohms) {
+        return Math.max(INDICATOR_MIN_OHMS, ohms);
+    }
 
     public enum Rating {
         L1(48, 12, 0.5), L2(128, 48, 1), L3(230, 120, 2);
@@ -60,7 +65,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                     var capacitor = new CapacitorProperties();
                     capacitor.capacitance = part.ohms / 1000;
                     properties[i] = capacitor;
-                } else if (part.kind == Kind.DIODE) {
+                } else if (part.kind == Kind.DIODE || part.kind == Kind.LED) {
                     properties[i] = new DiodeProperties();
                 }
             }
@@ -89,6 +94,9 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
     private volatile Circuit circuit = new Circuit(List.of(), LEGACY_TERMINALS);
     private long buttonUntil;
     private volatile boolean switched;
+    private volatile long switches;
+    private volatile long pressedComponents;
+    private final long[] buttonExpiries = new long[MAX_PARTS];
     private volatile boolean powered;
     private volatile long closedMask;
     private volatile long blownFuses;
@@ -108,7 +116,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
 
     public enum Kind {
         TRACE, RESISTOR, RELAY, BUTTON, SWITCH, LAMP, REDSTONE_IN, REDSTONE_OUT,
-        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR;
+        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED;
 
         boolean controlled() {
             return this == RELAY || this == TRANSISTOR;
@@ -147,6 +155,9 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         }
         closedMask = 0;
         blownFuses = 0;
+        switches = 0;
+        pressedComponents = 0;
+        java.util.Arrays.fill(buttonExpiries, 0);
         this.rating = rating;
         circuit = new Circuit(parts, terminals);
         deviceSD.setDirty();
@@ -158,6 +169,21 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             toggleRequested = !toggleRequested;
         } else {
             buttonUntil = now + 20;
+        }
+    }
+
+    void interactComponent(int ordinal, long now) {
+        if (burnt) return;
+        for (int i = 0; i < circuit.parts.size(); i++) {
+            Kind kind = circuit.parts.get(i).kind;
+            if (kind == Kind.TRACE || ordinal-- != 0) continue;
+            if (kind == Kind.SWITCH) {
+                switches ^= 1L << i;
+                deviceSD.setDirty();
+            } else if (kind == Kind.BUTTON) {
+                buttonExpiries[i] = now + 20;
+            }
+            return;
         }
     }
 
@@ -195,6 +221,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         return switch (part.kind) {
             case CAPACITOR -> CAPACITOR_ESR;
             case DIODE -> DIODE_SENSE;
+            case LED -> indicatorResistance(part.ohms);
             default -> CONTACT / 2;
         };
     }
@@ -203,9 +230,11 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         long bit = 1L << index;
         return switch (part.kind) {
             case TRACE, AMMETER -> CONTACT;
+            // У индикатора есть встроенный балласт, в том числе на уже установленных платах.
+            case LAMP -> indicatorResistance(part.ohms);
             case VOLTMETER, REDSTONE_OUT -> OPEN;
-            case BUTTON -> pressed ? CONTACT : OPEN;
-            case SWITCH -> switched ? CONTACT : OPEN;
+            case BUTTON -> pressed || (pressedComponents & bit) != 0 ? CONTACT : OPEN;
+            case SWITCH -> switched != ((switches & bit) != 0) ? CONTACT : OPEN;
             case REDSTONE_IN -> powered ? CONTACT : OPEN;
             case RELAY, TRANSISTOR -> ((closedMask & bit) != 0) != part.normallyClosed ? CONTACT : OPEN;
             case FUSE -> (blownFuses & bit) == 0 ? CONTACT : OPEN;
@@ -273,22 +302,41 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                     .setValue(PcbCircuitBlock.LIT, false).setValue(PcbCircuitBlock.OUTPUT, 0));
             return;
         }
-        pressed = level.getGameTime() < buttonUntil;
+        long now = level.getGameTime();
+        pressed = now < buttonUntil;
+        long pressedMask = 0;
+        for (int i = 0; i < current.parts.size(); i++) {
+            if (now < buttonExpiries[i]) pressedMask |= 1L << i;
+        }
+        pressedComponents = pressedMask;
         if (toggleRequested) {
             switched = !switched;
             toggleRequested = false;
             deviceSD.setDirty();
         }
-        powered = level.isLoaded(pos.north()) && level.getSignal(pos.north(), Direction.NORTH) > 0;
+        Direction input = PcbCircuitBlock.mountedDirection(Direction.NORTH, state.getValue(PcbCircuitBlock.FACING));
+        BlockPos neighbor = pos.relative(input);
+        powered = level.isLoaded(neighbor) && level.getSignal(neighbor, input) > 0;
         boolean lit = false;
         double maxIndicatorVoltage = 0;
         int output = 0;
         long closed = 0;
+        long litIndicators = 0;
+        int component = -1;
         meterKind = null;
         meterValue = 0;
         for (int i = 0; i < current.parts.size(); i++) {
             Part part = current.parts.get(i);
+            if (part.kind != Kind.TRACE) component++;
             switch (part.kind) {
+                case LED -> {
+                    double volts = voltage(results, part.a, part.b);
+                    double ballastVoltage = voltage(results, MAX_NODES + i, part.b);
+                    if (volts >= part.threshold && ballastVoltage / senseResistance(part) >= 0.001) {
+                        lit = true;
+                        litIndicators |= 1L << component;
+                    }
+                }
                 case RELAY, TRANSISTOR -> {
                     long bit = 1L << i;
                     double threshold = (closedMask & bit) != 0 ? part.threshold * 0.8 : part.threshold;
@@ -299,7 +347,10 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 case LAMP -> {
                     double volts = voltage(results, part.a, part.b);
                     maxIndicatorVoltage = Math.max(maxIndicatorVoltage, volts);
-                    lit |= volts >= part.threshold;
+                    if (volts >= part.threshold) {
+                        lit = true;
+                        litIndicators |= 1L << component;
+                    }
                 }
                 case REDSTONE_OUT -> {
                     if (voltage(results, part.a, part.b) >= part.threshold) output = 15;
@@ -317,6 +368,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 default -> { }
             }
         }
+        if (level.getBlockEntity(pos) instanceof PcbCircuitBlockEntity board) board.setLitIndicators(litIndicators);
         closedMask = closed;
         indicatorVoltage = maxIndicatorVoltage;
         BlockState updated = state.setValue(PcbCircuitBlock.LIT, lit).setValue(PcbCircuitBlock.OUTPUT, output);
@@ -355,6 +407,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
     @Override
     public void read(CompoundTag tag) {
         switched = tag.getBoolean("Switch");
+        switches = tag.getLong("Switches");
         burnt = tag.getBoolean("Burnt");
         blownFuses = tag.getLong("BlownFuses");
         overload = Math.clamp(tag.getDouble("Overload"), 0, OVERLOAD_TICKS);
@@ -391,6 +444,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
     public void write(CompoundTag tag) {
         tag.putInt("Terminals", circuit.terminals);
         tag.putBoolean("Switch", switched);
+        tag.putLong("Switches", switches);
         tag.putBoolean("Burnt", burnt);
         tag.putLong("BlownFuses", blownFuses);
         tag.putDouble("Meter", meterValue);

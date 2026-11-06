@@ -50,6 +50,10 @@ final class PcbCircuitTest {
                 .then(Commands.literal("build").executes(context -> build(context.getSource().getLevel())))
                 .then(Commands.literal("advanced").then(Commands.argument("circuit", StringArgumentType.word())
                         .executes(context -> advanced(context.getSource(), StringArgumentType.getString(context, "circuit")))))
+                .then(Commands.literal("build_lead").executes(context -> build(context.getSource().getLevel(), true)))
+                .then(Commands.literal("controls").executes(context -> controls(context.getSource().getLevel())))
+                .then(Commands.literal("click_button").executes(context -> clickControl(context.getSource().getLevel(), 3)))
+                .then(Commands.literal("click_switch").executes(context -> clickControl(context.getSource().getLevel(), 7)))
                 .then(Commands.literal("meter").then(Commands.argument("value", DoubleArgumentType.doubleArg(0))
                         .executes(context -> meter(context.getSource(), DoubleArgumentType.getDouble(context, "value")))))
                 .then(Commands.literal("display").executes(context -> display(context.getSource())))
@@ -59,6 +63,9 @@ final class PcbCircuitTest {
                 .then(Commands.literal("salvage").executes(context -> salvage(context.getSource())))
                 .then(Commands.literal("editor").executes(context -> editor(context.getSource())))
                 .then(Commands.literal("nominal").executes(context -> nominal(context.getSource().getLevel())))
+                .then(Commands.literal("indicator").then(Commands.argument("ohms", DoubleArgumentType.doubleArg(10))
+                        .executes(context -> indicator(context.getSource().getLevel(),
+                                DoubleArgumentType.getDouble(context, "ohms")))))
                 .then(Commands.literal("overload").executes(context -> overload(context.getSource().getLevel(), false)))
                 .then(Commands.literal("overcurrent").executes(context -> overload(context.getSource().getLevel(), true)))
                 .then(Commands.literal("reserve_power").executes(context -> {
@@ -94,14 +101,76 @@ final class PcbCircuitTest {
     }
 
     private static int build(ServerLevel level) {
+        return build(level, false);
+    }
+
+    private static int build(ServerLevel level, boolean thinLead) {
         DevTest.place(level, BOARD, Blocks.AIR.defaultBlockState());
         DevTest.place(level, BATTERY, Blocks.AIR.defaultBlockState());
         DevTest.place(level, BOARD, PcbItems.CIRCUIT_BLOCK.get().defaultBlockState());
         DevTest.place(level, BATTERY, CEEBlocks.CREATIVE_BATTERY.getDefaultState());
         DevTest.place(level, RESERVE, Blocks.AIR.defaultBlockState());
         DevTest.place(level, RESERVE, CEEBlocks.CREATIVE_BATTERY.getDefaultState());
+        if (thinLead) {
+            var player = FakePlayerFactory.getMinecraft(level);
+            for (int contact = 0; contact < 2; contact++) {
+                if (!DevTest.spoolWire(player, ee.extras.EeExtras.THIN_SPOOL.toStack(), BOARD, contact, BATTERY, contact))
+                    throw new IllegalStateException("Не подключился прежний тонкий провод " + contact);
+            }
+        } else {
+            DevTest.wire(level, BATTERY, 0, BOARD, 0);
+            DevTest.wire(level, BATTERY, 1, BOARD, 1);
+        }
+        return 1;
+    }
+
+    private static int controls(ServerLevel level) {
+        build(level);
+        power(level, 25);
+        DevTest.place(level, BOARD, Blocks.AIR.defaultBlockState());
+        DevTest.place(level, BOARD.south(), Blocks.STONE.defaultBlockState());
+        var player = FakePlayerFactory.getMinecraft(level);
+        var topology = PcbTopology.create(1);
+        int[] parts = new int[PcbTopology.CELLS];
+        parts[115] = 3;
+        parts[119] = 4;
+        parts[123] = 5 + 3 * 32 + 3 * 512;
+        for (int cell = 112; cell < 128; cell++) {
+            int kind = cell == 112 || cell == 127 ? PcbTopology.TERMINAL
+                    : parts[cell] == 0 ? PcbTopology.TRACE : PcbTopology.COMPONENT;
+            PcbTopology.set(topology, 0, cell, kind);
+        }
+        topology.putIntArray("ElectricalParts", parts);
+        topology.putBoolean("Assembled", true);
+        var stack = PcbItems.L1_BOARD.toStack();
+        stack.set(PcbItems.PCB_TOPOLOGY.get(), topology);
+        player.setItemInHand(InteractionHand.MAIN_HAND, stack);
+        player.getMainHandItem().useOn(new UseOnContext(player, InteractionHand.MAIN_HAND,
+                new BlockHitResult(Vec3.atCenterOf(BOARD.south()).add(0, 0, -0.5), Direction.NORTH, BOARD.south(), false)));
         DevTest.wire(level, BATTERY, 0, BOARD, 0);
         DevTest.wire(level, BATTERY, 1, BOARD, 1);
+        var state = level.getBlockState(BOARD);
+        for (int x : new int[] {3, 7}) {
+            var hit = controlHit(x);
+            var cap = new ItemStack(x == 3 ? net.minecraft.world.item.Items.STONE_BUTTON : net.minecraft.world.item.Items.LEVER);
+            if (!state.useItemOn(cap, level, player, InteractionHand.MAIN_HAND, hit).consumesAction())
+                throw new IllegalStateException("Накладка не установилась на компонент " + x);
+            Vec3 raised = hit.getLocation().subtract(Vec3.atLowerCornerOf(BOARD)).add(0, 0, -0.12);
+            if (state.getShape(level, BOARD).toAabbs().stream().noneMatch(box -> box.contains(raised)))
+                throw new IllegalStateException("Хитбокс накладки не увеличился для компонента " + x);
+        }
+        return 1;
+    }
+
+    private static BlockHitResult controlHit(int x) {
+        return new BlockHitResult(Vec3.atLowerCornerOf(BOARD).add((2 + 0.75 * (x + 0.5)) / 16,
+                (2 + 0.75 * 7.5) / 16, 0.875), Direction.NORTH, BOARD, false);
+    }
+
+    private static int clickControl(ServerLevel level, int x) {
+        var player = FakePlayerFactory.getMinecraft(level);
+        if (!level.getBlockState(BOARD).useWithoutItem(level, player, controlHit(x)).consumesAction())
+            throw new IllegalStateException("Клик не попал в компонент " + x);
         return 1;
     }
 
@@ -131,7 +200,7 @@ final class PcbCircuitTest {
             menu.clickMenuButton(player, 31);
             menu.clickMenuButton(player, 240);
             menu.clickMenuButton(player, PcbEditorMenu.SELECT_TOOL + 5);
-            for (int i = 0; i < 5; i++) menu.clickMenuButton(player, PcbEditorMenu.OHMS);
+            for (int i = 0; i < 2 * tier + 1; i++) menu.clickMenuButton(player, PcbEditorMenu.OHMS);
             menu.clickMenuButton(player, 7);
             menu.clickMenuButton(player, PcbEditorMenu.SAVE);
             if (menu.status() == 1) throw new IllegalStateException("Сборка прошла без резистора");
@@ -163,12 +232,47 @@ final class PcbCircuitTest {
             device.write(snapshot);
             if (!snapshot.getString("Rating").equals("L" + (tier + 1)) || snapshot.getList("Circuit", 10).size() != 5 || snapshot.getInt("Terminals") != 6)
                 throw new IllegalStateException("При установке потеряны схема или уровень платы");
+            double expectedOhms = switch (tier) {
+                case 0 -> 47;
+                case 1 -> 220;
+                default -> 1000;
+            };
+            boolean resistanceSaved = snapshot.getList("Circuit", 10).stream()
+                    .map(CompoundTag.class::cast)
+                    .anyMatch(part -> part.getString("Kind").equals("RESISTOR") && part.getDouble("Ohms") == expectedOhms);
+            if (!resistanceSaved) throw new IllegalStateException("Плата потеряла настройку " + expectedOhms + " Ом");
+            if (tier == 0) {
+                for (Direction face : Direction.values()) {
+                    BlockPos mounted = target.offset(0, 4 + face.ordinal() * 3, 0);
+                    BlockPos support = mounted.relative(face.getOpposite());
+                    DevTest.place(level, mounted, Blocks.AIR.defaultBlockState());
+                    DevTest.place(level, support, Blocks.STONE.defaultBlockState());
+                    Vec3 hitPoint = Vec3.atCenterOf(support).add(Vec3.atLowerCornerOf(face.getNormal()).scale(0.5));
+                    player.setItemInHand(InteractionHand.MAIN_HAND, active.copy());
+                    player.getMainHandItem().useOn(new UseOnContext(player, InteractionHand.MAIN_HAND,
+                            new BlockHitResult(hitPoint, face, support, false)));
+                    var mountedState = level.getBlockState(mounted);
+                    if (!(mountedState.getBlock() instanceof PcbCircuitBlock mountedBoard)
+                            || mountedState.getValue(PcbCircuitBlock.FACING) != face)
+                        throw new IllegalStateException("Плата не поставилась на грань " + face);
+                    Vec3 contact = mountedBoard.getNodePositions(level, mounted, mountedState).get(0);
+                    double depth = contact.get(face.getAxis());
+                    double expectedDepth = face.getAxisDirection() == Direction.AxisDirection.POSITIVE ? 0.125 : 0.875;
+                    if (depth != expectedDepth)
+                        throw new IllegalStateException("Контакт на неверной высоте для грани " + face);
+                    var box = mountedState.getShape(level, mounted).bounds();
+                    for (Direction.Axis axis : Direction.Axis.values()) {
+                        if (axis != face.getAxis() && (box.min(axis) != 0.125 || box.max(axis) != 0.875))
+                            throw new IllegalStateException("Неверная рамка платы на грани " + face);
+                    }
+                }
+            }
             var circuitBlock = (PcbCircuitBlock) level.getBlockState(target).getBlock();
             var contacts = circuitBlock.getNodePositions(level, target, level.getBlockState(target));
-            if (contacts.size() != 6 || !contacts.get(5).equals(new Vec3(0.5 / 16, 2.0 / 16, 15.5 / 16)))
+            if (contacts.size() != 6 || !contacts.get(5).equals(new Vec3(2.375 / 16, 2.0 / 16, 13.625 / 16)))
                 throw new IllegalStateException("Узлы не соответствуют контактам редактора");
             if (level.getBlockState(target).getShape(level, target).toAabbs().stream()
-                    .anyMatch(box -> box.contains(8.5 / 16, 0.5 / 16, 8.5 / 16)))
+                    .anyMatch(box -> box.contains(8.375 / 16, 0.5 / 16, 8.375 / 16)))
                 throw new IllegalStateException("Вырезанная ячейка осталась в контуре платы");
             player.setItemInHand(InteractionHand.MAIN_HAND, ee.extras.EeExtras.THIN_SPOOL.toStack());
             for (int contact : new int[] {4, 5}) {
@@ -221,6 +325,11 @@ final class PcbCircuitTest {
             case "timer" -> List.of(part(Kind.RESISTOR, 0, 4, 220, 1),
                     part(Kind.CAPACITOR, 4, 1, 10, 1), part(Kind.VOLTMETER, 4, 1, 1, 48),
                     part(Kind.LAMP, 4, 1, 10000, 24));
+            case "led", "led_reverse" -> {
+                power(level, 12);
+                boolean forward = mode.equals("led");
+                yield List.of(part(Kind.LED, forward ? 0 : 1, forward ? 1 : 0, 220, 3));
+            }
             case "diode" -> List.of(part(Kind.DIODE, 0, 4, 1, 1),
                     part(Kind.RESISTOR, 4, 1, 1000, 1), part(Kind.VOLTMETER, 4, 1, 1, 48));
             case "reverse" -> List.of(part(Kind.DIODE, 4, 0, 1, 1),
@@ -344,6 +453,9 @@ final class PcbCircuitTest {
 
     private static void power(ServerLevel level, double volts) {
         var battery = DevicesSavedData.load(level).getDevice(BATTERY, CreativeBatteryDevice.class);
+        var entity = (com.simibubi.create.foundation.blockEntity.SmartBlockEntity) level.getBlockEntity(BATTERY);
+        entity.getBehaviour(com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour.TYPE)
+                .setValue((int) Math.round(volts * 1000));
         battery.voltage = volts;
         battery.acFrequency = 0;
     }
@@ -357,6 +469,13 @@ final class PcbCircuitTest {
                 new Part(Kind.RELAY, 0, 5, 1000, 4, 1, 30),
                 part(Kind.RESISTOR, 5, 6, 1000, 1),
                 part(Kind.LAMP, 6, 1, 1000, 22)));
+        return 1;
+    }
+
+    private static int indicator(ServerLevel level, double ohms) {
+        DevicesSavedData.load(level).getDevice(BOARD, PcbCircuitDevice.class).setCircuit(List.of(
+                part(Kind.BUTTON, 0, 4, 1, 1),
+                part(Kind.LAMP, 4, 1, ohms, 24)));
         return 1;
     }
 

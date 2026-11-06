@@ -65,6 +65,28 @@ public final class CableWires {
                     .maxTemperature(() -> 3540.0)
                     .thickness(0.0625f)
                     .build());
+    private static final PartialModel THIN_SINGLE_SEGMENT = PartialModel.of(EeExtras.rl("block/thin_single_wire_segment"));
+    private static final PartialModel DECORATIVE_SINGLE_SEGMENT = PartialModel.of(EeExtras.rl("block/decorative_single_wire_segment"));
+    public static final DeferredHolder<WireType, WireType> THIN_SINGLE = EeExtras.WIRES.register("thin_single_wire",
+            () -> new WireType.Builder(THIN_SINGLE_SEGMENT)
+                    .resistance(CEEConfigs.server().resistanceValues.wireResistance::get)
+                    .droppedItem(CEEItems.INSULATED_WIRE)
+                    .spoolItem(() -> EeExtras.THIN_SINGLE_SPOOL.get())
+                    .maxLength(CEEConfigs.server().maxBundledWireLength::get)
+                    .maxInsulationVoltage(CEEConfigs.server().voltageValues.wireMaxVoltage::get)
+                    .insulationResistance(330000.0)
+                    .maxTemperature(() -> 3540.0)
+                    .thickness(0.03125f)
+                    .build());
+    public static final DeferredHolder<WireType, WireType> DECORATIVE_SINGLE = EeExtras.WIRES.register("decorative_single_wire",
+            () -> new WireType.Builder(DECORATIVE_SINGLE_SEGMENT)
+                    .resistance(() -> 1.0E11)
+                    .droppedItem(CEEItems.COPPER_WIRE)
+                    .spoolItem(() -> EeExtras.DECORATIVE_SINGLE_SPOOL.get())
+                    .maxLength(CEEConfigs.server().maxBundledWireLength::get)
+                    .thickness(0.03125f)
+                    .decorative()
+                    .build());
     public static final DeferredHolder<WireType, WireType> DUPLEX_CORE = core("duplex_cable_core", CableKind.DUPLEX);
     public static final DeferredHolder<WireType, WireType> FOUR_CORE_CORE = core("four_core_cable_core", CableKind.FOUR_CORE);
 

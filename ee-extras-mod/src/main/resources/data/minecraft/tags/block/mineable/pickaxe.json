@@ -26,6 +26,8 @@
       "required": false
     },
     "ee_extras:cable_converter",
+    "ee_extras:pcb_supply",
+    "ee_extras:pcb_supply_dc",
     "ee_extras:computer_power_inlet",
     "ee_extras:pocket_charger",
     "ee_extras:solar_panel",
