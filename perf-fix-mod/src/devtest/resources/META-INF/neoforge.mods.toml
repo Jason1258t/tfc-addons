@@ -1,0 +1,16 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+license = "MIT"
+
+[[mods]]
+modId = "perf_fix_devtest"
+version = "1.0.0"
+displayName = "Perf Fix devtest"
+description = "Только для сервера разработки: /pftest"
+
+[[dependencies.perf_fix_devtest]]
+modId = "perf_fix"
+type = "required"
+versionRange = "[1,)"
+ordering = "AFTER"
+side = "BOTH"
