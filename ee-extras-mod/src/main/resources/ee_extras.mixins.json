@@ -11,6 +11,6 @@
     "ServerComputerPowerMixin",
     "PocketComputerPowerMixin"
   ],
-  "client": ["WireVisualMixin", "BundledWirePreviewMixin"],
+  "client": ["WireVisualMixin", "WireRendererCapMixin", "BundledWirePreviewMixin", "WireRaycastMixin"],
   "injectors": { "defaultRequire": 0 }
 }

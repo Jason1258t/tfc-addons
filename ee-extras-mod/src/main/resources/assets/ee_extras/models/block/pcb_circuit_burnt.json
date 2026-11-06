@@ -1,0 +1,9 @@
+{
+  "parent": "ee_extras:block/pcb_circuit",
+  "textures": {
+    "particle": "#base",
+    "base": "minecraft:block/blackstone",
+    "contact": "minecraft:block/polished_blackstone",
+    "board": "minecraft:block/blackstone_top"
+  }
+}

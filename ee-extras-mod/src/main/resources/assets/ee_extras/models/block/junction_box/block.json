@@ -1,0 +1,81 @@
+{
+  "credit": "ee_extras; \u0444\u043e\u0440\u043c\u0430 \u2014 \u043a\u0430\u043a powergrid:cord_junction (Create: Power Grid, Apache-2.0)",
+  "parent": "block/block",
+  "textures": {
+    "front": "ee_extras:block/junction_box_front",
+    "side": "ee_extras:block/junction_box_side",
+    "back": "ee_extras:block/junction_box_back",
+    "particle": "ee_extras:block/junction_box_side"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        0,
+        4
+      ],
+      "to": [
+        12,
+        3,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#side",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#side",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#side",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#side",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#front",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#back",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "cullface": "down"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,218 @@
+{
+  "credit": "Made with Blockbench",
+  "textures": {
+    "0": "ee_extras:block/pcb_part/capacitor",
+    "particle": "ee_extras:block/pcb_part/capacitor"
+  },
+  "elements": [
+    {
+      "name": "Body",
+      "from": [
+        7.53,
+        0.31333,
+        7.53
+      ],
+      "to": [
+        8.47,
+        1.56667,
+        8.47
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            0,
+            6,
+            4
+          ],
+          "texture": "#0"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            3,
+            4
+          ],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [
+            9,
+            0,
+            12,
+            4
+          ],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [
+            6,
+            0,
+            9,
+            4
+          ],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [
+            0,
+            4,
+            3,
+            7
+          ],
+          "rotation": 90,
+          "texture": "#0"
+        },
+        "down": {
+          "uv": [
+            3,
+            4,
+            6,
+            7
+          ],
+          "rotation": 90,
+          "texture": "#0"
+        }
+      }
+    },
+    {
+      "name": "Terminal",
+      "from": [
+        7.53,
+        0.0,
+        8.0
+      ],
+      "to": [
+        7.84333,
+        0.31333,
+        8.0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            5,
+            7,
+            6
+          ],
+          "texture": "#0"
+        },
+        "east": {
+          "uv": [
+            1,
+            1,
+            1,
+            2
+          ],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [
+            6,
+            5,
+            7,
+            6
+          ],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [
+            1,
+            1,
+            1,
+            2
+          ],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [
+            1,
+            1,
+            2,
+            1
+          ],
+          "texture": "#0"
+        },
+        "down": {
+          "uv": [
+            1,
+            1,
+            2,
+            1
+          ],
+          "texture": "#0"
+        }
+      }
+    },
+    {
+      "name": "Terminal",
+      "from": [
+        8.15667,
+        0.0,
+        8.0
+      ],
+      "to": [
+        8.47,
+        0.31333,
+        8.0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            4,
+            7,
+            5
+          ],
+          "texture": "#0"
+        },
+        "east": {
+          "uv": [
+            1,
+            1,
+            1,
+            2
+          ],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [
+            6,
+            4,
+            7,
+            5
+          ],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [
+            1,
+            1,
+            1,
+            2
+          ],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [
+            1,
+            1,
+            2,
+            1
+          ],
+          "texture": "#0"
+        },
+        "down": {
+          "uv": [
+            1,
+            1,
+            2,
+            1
+          ],
+          "texture": "#0"
+        }
+      }
+    }
+  ]
+}

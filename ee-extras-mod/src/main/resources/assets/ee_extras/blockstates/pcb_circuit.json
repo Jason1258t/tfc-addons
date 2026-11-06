@@ -1,0 +1,59 @@
+{
+  "variants": {
+    "burnt=false,custom=false,facing=up": {
+      "model": "ee_extras:block/pcb_circuit"
+    },
+    "burnt=true,custom=false,facing=up": {
+      "model": "ee_extras:block/pcb_circuit_burnt"
+    },
+    "burnt=false,custom=false,facing=down": {
+      "model": "ee_extras:block/pcb_circuit",
+      "x": 180
+    },
+    "burnt=true,custom=false,facing=down": {
+      "model": "ee_extras:block/pcb_circuit_burnt",
+      "x": 180
+    },
+    "burnt=false,custom=false,facing=north": {
+      "model": "ee_extras:block/pcb_circuit",
+      "x": 90
+    },
+    "burnt=true,custom=false,facing=north": {
+      "model": "ee_extras:block/pcb_circuit_burnt",
+      "x": 90
+    },
+    "burnt=false,custom=false,facing=east": {
+      "model": "ee_extras:block/pcb_circuit",
+      "x": 90,
+      "y": 90
+    },
+    "burnt=true,custom=false,facing=east": {
+      "model": "ee_extras:block/pcb_circuit_burnt",
+      "x": 90,
+      "y": 90
+    },
+    "burnt=false,custom=false,facing=south": {
+      "model": "ee_extras:block/pcb_circuit",
+      "x": 90,
+      "y": 180
+    },
+    "burnt=true,custom=false,facing=south": {
+      "model": "ee_extras:block/pcb_circuit_burnt",
+      "x": 90,
+      "y": 180
+    },
+    "burnt=false,custom=false,facing=west": {
+      "model": "ee_extras:block/pcb_circuit",
+      "x": 90,
+      "y": 270
+    },
+    "burnt=true,custom=false,facing=west": {
+      "model": "ee_extras:block/pcb_circuit_burnt",
+      "x": 90,
+      "y": 270
+    },
+    "custom=true": {
+      "model": "ee_extras:block/pcb_circuit_custom"
+    }
+  }
+}

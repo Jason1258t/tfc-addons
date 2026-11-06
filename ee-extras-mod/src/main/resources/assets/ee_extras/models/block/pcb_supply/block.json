@@ -1,0 +1,108 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "case": "minecraft:block/smooth_stone",
+    "input": "minecraft:block/polished_blackstone",
+    "left": "minecraft:block/cut_copper",
+    "right": "minecraft:block/iron_block",
+    "particle": "#case"
+  },
+  "elements": [
+    {
+      "from": [1, 0, 1],
+      "to": [15, 5, 15],
+      "faces": {
+        "up": {
+          "texture": "#case"
+        },
+        "down": {
+          "texture": "#case"
+        },
+        "east": {
+          "texture": "#case"
+        },
+        "west": {
+          "texture": "#case"
+        },
+        "north": {
+          "texture": "#case"
+        },
+        "south": {
+          "texture": "#case"
+        }
+      }
+    },
+    {
+      "from": [6, 1, 11],
+      "to": [10, 4, 16],
+      "faces": {
+        "up": {
+          "texture": "#input"
+        },
+        "down": {
+          "texture": "#input"
+        },
+        "east": {
+          "texture": "#input"
+        },
+        "west": {
+          "texture": "#input"
+        },
+        "north": {
+          "texture": "#input"
+        },
+        "south": {
+          "texture": "#input"
+        }
+      }
+    },
+    {
+      "from": [4, 5, 3],
+      "to": [6, 7, 5],
+      "faces": {
+        "up": {
+          "texture": "#left"
+        },
+        "down": {
+          "texture": "#left"
+        },
+        "east": {
+          "texture": "#left"
+        },
+        "west": {
+          "texture": "#left"
+        },
+        "north": {
+          "texture": "#left"
+        },
+        "south": {
+          "texture": "#left"
+        }
+      }
+    },
+    {
+      "from": [10, 5, 3],
+      "to": [12, 7, 5],
+      "faces": {
+        "up": {
+          "texture": "#right"
+        },
+        "down": {
+          "texture": "#right"
+        },
+        "east": {
+          "texture": "#right"
+        },
+        "west": {
+          "texture": "#right"
+        },
+        "north": {
+          "texture": "#right"
+        },
+        "south": {
+          "texture": "#right"
+        }
+      }
+    }
+  ]
+}

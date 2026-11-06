@@ -1,5 +1,8 @@
 package ee.extras.pcb;
 
+import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
+import com.simibubi.create.api.behaviour.display.DisplaySource;
+import com.simibubi.create.api.registry.CreateRegistries;
 import ee.extras.EeExtras;
 import java.util.List;
 import net.minecraft.core.component.DataComponentType;
@@ -13,6 +16,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -26,6 +30,11 @@ public final class PcbItems {
             DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, EeExtras.MOD_ID);
     private static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, EeExtras.MOD_ID);
 
+    private static final DeferredRegister<DisplaySource> DISPLAY_SOURCES =
+            DeferredRegister.create(CreateRegistries.DISPLAY_SOURCE, EeExtras.MOD_ID);
+    private static final DeferredHolder<DisplaySource, PcbMeterSource> METER_SOURCE =
+            DISPLAY_SOURCES.register("pcb_meter", PcbMeterSource::new);
+
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<CompoundTag>> PCB_TOPOLOGY =
             DATA_COMPONENTS.register("pcb_topology", () -> DataComponentType.<CompoundTag>builder()
                     .persistent(CompoundTag.CODEC)
@@ -35,7 +44,7 @@ public final class PcbItems {
     public static final DeferredItem<PcbDesignItem> L1_MASK = EeExtras.ITEMS.register("l1_mask",
             () -> new PcbDesignItem(new Item.Properties().stacksTo(16), 1));
     public static final DeferredItem<Item> L1_BOARD_BLANK = item("l1_board_blank", 16);
-    public static final DeferredItem<Item> L1_BOARD = item("l1_board", 16);
+    public static final DeferredItem<Item> L1_BOARD = EeExtras.ITEMS.register("l1_board", () -> new PcbBoardItem(1));
     public static final DeferredItem<PcbDesignItem> PCB_DESIGN = EeExtras.ITEMS.register("pcb_design",
             () -> new PcbDesignItem(new Item.Properties().stacksTo(16), 2));
 
@@ -77,10 +86,11 @@ public final class PcbItems {
     public static final DeferredItem<Item> L3_PREPARED_BLANK = item("l3_prepared_blank", 16);
     public static final DeferredItem<Item> L2_ETCHED_BOARD = item("l2_etched_board", 16);
     public static final DeferredItem<Item> L3_ETCHED_BOARD = item("l3_etched_board", 16);
-    public static final DeferredItem<Item> L2_BOARD = item("l2_board", 16);
-    public static final DeferredItem<Item> L3_BOARD = item("l3_board", 16);
+    public static final DeferredItem<Item> L2_BOARD = EeExtras.ITEMS.register("l2_board", () -> new PcbBoardItem(2));
+    public static final DeferredItem<Item> L3_BOARD = EeExtras.ITEMS.register("l3_board", () -> new PcbBoardItem(3));
     public static final DeferredItem<Item> SOLDER_WIRE = item("solder_wire", 64);
     public static final DeferredItem<Item> ROSIN_FLUX = item("rosin_flux", 64);
+    public static final DeferredItem<Item> LED = item("pcb_led", 64);
     public static final DeferredItem<Item> RESISTOR = item("resistor", 64);
     public static final DeferredItem<Item> CAPACITOR = item("capacitor", 64);
     public static final DeferredItem<Item> INDUCTOR = item("inductor", 64);
@@ -137,7 +147,7 @@ public final class PcbItems {
 
     private static final List<DeferredItem<? extends Item>> ELECTRONICS = List.of(COPPER_FOIL, GLASS_FIBER, GLASS_FABRIC,
             EPOXY_LAMINATE, PHOTORESIST, L2_BOARD_BLANK, L3_BOARD_BLANK, L2_PREPARED_BLANK, L3_PREPARED_BLANK,
-            L2_ETCHED_BOARD, L3_ETCHED_BOARD, L2_BOARD, L3_BOARD, SOLDER_WIRE, ROSIN_FLUX, RESISTOR, CAPACITOR, INDUCTOR,
+            L2_ETCHED_BOARD, L3_ETCHED_BOARD, L2_BOARD, L3_BOARD, SOLDER_WIRE, ROSIN_FLUX, LED, RESISTOR, CAPACITOR, INDUCTOR,
             CONNECTOR, SILICON_DIODE, TRANSISTOR, BASIC_IC, ADVANCED_IC, SILICON_WAFER, ABS_SHEET, ABS_KEYBOARD_BLANK,
             PET_FILM, RGB_PHOSPHOR, SHADOW_MASK, PERMANENT_MAGNET, SPEAKER_CONE, BATTERY_ELECTROLYTE, INK_CARTRIDGE,
             CONTROL_BOARD_L1,
@@ -146,6 +156,30 @@ public final class PcbItems {
             NETWORK_PORT, COMPUTER_CASE, ADVANCED_COMPUTER_CASE, POCKET_CASE, PERIPHERAL_CASE, SMALL_MOTOR,
             PRECISION_ACTUATOR, STORAGE_BAY, ROBOT_CHASSIS, DISK_TRANSPORT, PRINT_MECHANISM, NETWORK_TRANSCEIVER,
             ENDER_TRANSCEIVER, SPEAKER_DRIVER, AUDIO_AMPLIFIER, POWER_SUPPLY, BATTERY_MODULE, MAGNETIC_DISK_MEDIUM);
+
+    public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<PcbCircuitDevice>> CIRCUIT_DEVICE =
+            EeExtras.DEVICES.register("pcb_circuit", () -> new SimulatedDeviceType<>(
+                    EeExtras.rl("pcb_circuit"), (type, level, pos, devices) -> new PcbCircuitDevice(level, pos, devices, type)));
+    public static final DeferredBlock<PcbCircuitBlock> CIRCUIT_BLOCK = EeExtras.BLOCKS.register("pcb_circuit",
+            () -> new PcbCircuitBlock(EeExtras.metal().noOcclusion().lightLevel(state -> state.getValue(PcbCircuitBlock.LIT) ? 7 : 0)));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PcbCircuitBlockEntity>> CIRCUIT_BE =
+            EeExtras.BLOCK_ENTITIES.register("pcb_circuit", () -> BlockEntityType.Builder
+                    .of(PcbCircuitBlockEntity::new, CIRCUIT_BLOCK.get()).build(null));
+
+    static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<com.george_vi.electroenergetics.content.bundled_wire.BundledWireTerminationDevice>>
+            SUPPLY_DEVICE = EeExtras.DEVICES.register("pcb_supply", () -> new SimulatedDeviceType<>(
+                    EeExtras.rl("pcb_supply"), (type, level, pos, devices) -> new PcbSupplyDevice(level, pos, devices, type)));
+    static final DeferredBlock<PcbSupplyBlock> SUPPLY = EeExtras.BLOCKS.register("pcb_supply",
+            () -> new PcbSupplyBlock(EeExtras.metal().noOcclusion(), false));
+    static final DeferredBlock<PcbSupplyBlock> SUPPLY_DC = EeExtras.BLOCKS.register("pcb_supply_dc",
+            () -> new PcbSupplyBlock(EeExtras.metal().noOcclusion(), true));
+    static final DeferredItem<PcbSupplyItem> SUPPLY_ITEM = EeExtras.ITEMS.register("pcb_supply",
+            () -> new PcbSupplyItem(SUPPLY.get()));
+    static final DeferredItem<PcbSupplyItem> SUPPLY_DC_ITEM = EeExtras.ITEMS.register("pcb_supply_dc",
+            () -> new PcbSupplyItem(SUPPLY_DC.get()));
+
+    public static final DeferredItem<Item> BURNT_BOARD = item("burnt_board", 16);
 
     private PcbItems() {}
 
@@ -157,12 +191,17 @@ public final class PcbItems {
 
     public static void register(IEventBus modBus) {
         DATA_COMPONENTS.register(modBus);
+        DISPLAY_SOURCES.register(modBus);
+        modBus.addListener((FMLCommonSetupEvent event) -> event.enqueueWork(
+                () -> DisplaySource.BY_BLOCK.add(CIRCUIT_BLOCK.get(), METER_SOURCE.get())));
         MENUS.register(modBus);
         PcbProcessRecipes.register(modBus);
     }
 
     public static void addToTab(BuildCreativeModeTabContentsEvent event) {
         event.accept(EDITOR_ITEM.get());
+        event.accept(SUPPLY_ITEM.get());
+        event.accept(SUPPLY_DC_ITEM.get());
         event.accept(PHOTOLITHOGRAPHER_ITEM.get());
         event.accept(METALLIZER_ITEM.get());
         event.accept(L1_BOARD_BLANK.get());

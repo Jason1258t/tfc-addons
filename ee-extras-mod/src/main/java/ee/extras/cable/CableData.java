@@ -78,8 +78,14 @@ public class CableData extends SavedData {
         if (cables.isEmpty() && phases.isEmpty()) return;
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
         boolean changed = false;
-        for (Iterator<Cable> it = cables.iterator(); it.hasNext(); ) {
+        for (var it = cables.listIterator(); it.hasNext(); ) {
             Cable c = it.next();
+            Cable repaired = restoreSheath(sd, c);
+            if (repaired != c) {
+                it.set(repaired);
+                c = repaired;
+                changed = true;
+            }
             boolean whole = sd.isConnected(c.a, c.b);
             for (InWorldNode[] core : c.cores) whole &= sd.isConnected(core[0], core[1]);
             if (whole) continue;
@@ -90,6 +96,38 @@ public class CableData extends SavedData {
         // Фазы соединителей, к которым больше не подходит ни один четырёхжильный кабель
         changed |= phases.keySet().removeIf(pos -> mixedAt(pos).isEmpty());
         if (changed) setDirty();
+    }
+
+    /** В старой записи первая жила перезаписывала оболочку. Тип прежней оболочки EE уже не хранит. */
+    private static Cable restoreSheath(InfrastructureSavedData sd, Cable c) {
+        if (c.kind != CableKind.DUPLEX || c.cores.size() != 2) return c;
+        InWorldNode[] first = c.cores.get(0);
+        InWorldNode[] second = c.cores.get(1);
+        if (!c.a.equals(first[0]) || !c.b.equals(first[1])) return c;
+        var coreType = CableWires.core(c.kind);
+        for (InWorldNode[] core : c.cores) {
+            var wire = sd.getConnectionData(new InWorldNodeConnection(core[0], core[1]));
+            if (wire == null || wire.wireType() != coreType) return c;
+        }
+        InWorldNode shellB = second[1];
+        if (sd.isConnected(c.a, shellB)) return c;
+        sd.connect(c.a, shellB, CableWires.sheath(c.kind));
+        return new Cable(c.kind, c.a, shellB, c.cores, c.mixedEnd);
+    }
+
+    /** Убрать без выпадения все кабели, подведённые к блоку pos (снята крышка прибора); сколько убрано */
+    int removeAt(ServerLevel level, BlockPos pos) {
+        InfrastructureSavedData sd = InfrastructureSavedData.load(level);
+        int n = 0;
+        for (Iterator<Cable> it = cables.iterator(); it.hasNext(); ) {
+            Cable c = it.next();
+            if (!c.a.sourcePos().equals(pos) && !c.b.sourcePos().equals(pos)) continue;
+            remove(sd, c);
+            it.remove();
+            n++;
+        }
+        if (n > 0) setDirty();
+        return n;
     }
 
     static void remove(InfrastructureSavedData sd, Cable c) {

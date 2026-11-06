@@ -1,0 +1,120 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "#base",
+    "base": "ee_extras:block/electronics_board",
+    "contact": "minecraft:block/cut_copper",
+    "board": "#base"
+  },
+  "elements": [
+    {
+      "from": [2, 0, 2],
+      "to": [14, 1, 14],
+      "faces": {
+        "north": {
+          "texture": "#base"
+        },
+        "east": {
+          "texture": "#base"
+        },
+        "south": {
+          "texture": "#base"
+        },
+        "west": {
+          "texture": "#base"
+        },
+        "up": {
+          "texture": "#board",
+          "uv": [0, 0, 16, 16]
+        },
+        "down": {
+          "texture": "#base"
+        }
+      }
+    },
+    {
+      "from": [4.625, 1, 4.625],
+      "to": [5.375, 2, 5.375],
+      "faces": {
+        "north": {
+          "texture": "#contact"
+        },
+        "east": {
+          "texture": "#contact"
+        },
+        "south": {
+          "texture": "#contact"
+        },
+        "west": {
+          "texture": "#contact"
+        },
+        "up": {
+          "texture": "#contact"
+        }
+      }
+    },
+    {
+      "from": [10.625, 1, 4.625],
+      "to": [11.375, 2, 5.375],
+      "faces": {
+        "north": {
+          "texture": "#contact"
+        },
+        "east": {
+          "texture": "#contact"
+        },
+        "south": {
+          "texture": "#contact"
+        },
+        "west": {
+          "texture": "#contact"
+        },
+        "up": {
+          "texture": "#contact"
+        }
+      }
+    },
+    {
+      "from": [10.625, 1, 10.625],
+      "to": [11.375, 2, 11.375],
+      "faces": {
+        "north": {
+          "texture": "#contact"
+        },
+        "east": {
+          "texture": "#contact"
+        },
+        "south": {
+          "texture": "#contact"
+        },
+        "west": {
+          "texture": "#contact"
+        },
+        "up": {
+          "texture": "#contact"
+        }
+      }
+    },
+    {
+      "from": [4.625, 1, 10.625],
+      "to": [5.375, 2, 11.375],
+      "faces": {
+        "north": {
+          "texture": "#contact"
+        },
+        "east": {
+          "texture": "#contact"
+        },
+        "south": {
+          "texture": "#contact"
+        },
+        "west": {
+          "texture": "#contact"
+        },
+        "up": {
+          "texture": "#contact"
+        }
+      }
+    }
+  ]
+}

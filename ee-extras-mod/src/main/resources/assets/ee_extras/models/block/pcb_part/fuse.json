@@ -1,0 +1,68 @@
+{
+  "credit": "Made with Blockbench",
+  "textures": {
+    "0": "ee_extras:block/pcb_part/fuse",
+    "particle": "ee_extras:block/pcb_part/fuse"
+  },
+  "elements": [
+    {
+      "from": [
+        7.53,
+        0.0,
+        7.6475
+      ],
+      "to": [
+        8.47,
+        0.47,
+        8.3525
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            3,
+            4,
+            5
+          ],
+          "texture": "#0"
+        },
+        "east": {
+          "uv": [
+            4,
+            2,
+            7,
+            4
+          ],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [
+            4,
+            0,
+            8,
+            2
+          ],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [
+            4,
+            4,
+            7,
+            6
+          ],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [
+            4,
+            3,
+            0,
+            0
+          ],
+          "texture": "#0"
+        }
+      }
+    }
+  ]
+}

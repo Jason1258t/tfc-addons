@@ -1,5 +1,11 @@
 package ee.extras.devtest;
 
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.server.level.ServerPlayer;
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
@@ -14,6 +20,7 @@ import ee.extras.EeExtras;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
@@ -40,13 +47,25 @@ public class DevTest {
         Power.register();
     }
 
+    /** PetTest собирается только с jar Destroy в libs/, поэтому прямой ссылки на него здесь нет */
+    private static void registerPetTest(CommandDispatcher<CommandSourceStack> d) {
+        try {
+            Class.forName("ee.extras.devtest.PetTest").getDeclaredMethod("register", CommandDispatcher.class).invoke(null, d);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("PetTest не собран: нужен DESTROY=1 ./libs.sh", e);
+        }
+    }
+
     static void commands(RegisterCommandsEvent e) {
         CommandDispatcher<CommandSourceStack> d = e.getDispatcher();
         Sync.register(d);
+        PcbCircuitTest.register(d);
+        PcbSupplyTest.register(d);
+        Wire.register(d);
         ElectronicsTest.register(d);
         SolarTest.register(d);
         if (net.neoforged.fml.ModList.get().isLoaded("computercraft")) ComputerCraftTest.register(d);
-        if (net.neoforged.fml.ModList.get().isLoaded("destroy")) PetTest.register(d);
+        if (net.neoforged.fml.ModList.get().isLoaded("destroy")) registerPetTest(d);
         if (net.neoforged.fml.ModList.get().isLoaded("tfc")) ThermometerTest.register(d);
         d.register(Commands.literal("rectest")
                 .then(Commands.literal("build").executes(c -> build(c.getSource())))
@@ -151,6 +170,10 @@ public class DevTest {
                 .then(Commands.literal("lanternreport").executes(c -> Lantern.report(c.getSource())))
                 .then(Commands.literal("lanternie").executes(c -> Lantern.ieWired(c.getSource())))
                 .then(Commands.literal("lanterncut").executes(c -> Lantern.cut(c.getSource())))
+                .then(Commands.literal("caps").executes(c -> CapTest.build(c.getSource())))
+                .then(Commands.literal("capreport").executes(c -> CapTest.report(c.getSource())))
+                .then(Commands.literal("capbreak").executes(c -> CapTest.breakBulb(c.getSource())))
+                .then(Commands.literal("captake").executes(c -> CapTest.take(c.getSource())))
                 .then(Commands.literal("lines").executes(c -> Lines.build(c.getSource())))
                 .then(Commands.literal("linespower").executes(c -> Lines.power(c.getSource())))
                 .then(Commands.literal("linesreport").executes(c -> Lines.report(c.getSource())))
@@ -203,6 +226,22 @@ public class DevTest {
             if (st.getBlock() instanceof ElectricalDeviceBlock<?> eb) eb.ensureNodesExist(level, p, st);
         }
         InfrastructureSavedData.load(level).connect(new InWorldNode(na, a), new InWorldNode(nb, b), CEEWireTypes.COPPER.get());
+    }
+
+    static boolean spoolWire(ServerPlayer player, ItemStack spool, BlockPos a, int na, BlockPos b, int nb) {
+        var level = player.serverLevel();
+        player.setItemInHand(InteractionHand.MAIN_HAND, spool);
+        for (BlockHitResult hit : new BlockHitResult[] {nodeHit(level, a, na), nodeHit(level, b, nb)}) {
+            spool.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit));
+        }
+        return InfrastructureSavedData.load(level).isConnected(new InWorldNode(na, a), new InWorldNode(nb, b));
+    }
+
+    private static BlockHitResult nodeHit(ServerLevel level, BlockPos pos, int id) {
+        var state = level.getBlockState(pos);
+        var device = (ElectricalDeviceBlock<?>) state.getBlock();
+        return new BlockHitResult(Vec3.atLowerCornerOf(pos).add(device.getNodePosition(level, pos, state, id)),
+                Direction.UP, pos, false);
     }
 
     static int build(CommandSourceStack src) {

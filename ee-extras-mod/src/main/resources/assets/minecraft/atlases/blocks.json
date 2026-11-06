@@ -1,0 +1,8 @@
+{
+  "sources": [
+    {
+      "type": "single",
+      "resource": "ee_extras:entity/thin_insulated_wire"
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "variants": {
+    "facing=up,flip=false,roll=false": {
+      "model": "ee_extras:block/pcb_supply_dc/block"
+    },
+    "facing=up,flip=false,roll=true": {
+      "model": "ee_extras:block/pcb_supply_dc/block_roll"
+    },
+    "facing=up,flip=true,roll=false": {
+      "model": "ee_extras:block/pcb_supply_dc/block_flip"
+    },
+    "facing=up,flip=true,roll=true": {
+      "model": "ee_extras:block/pcb_supply_dc/block_flip_roll"
+    },
+    "facing=down,flip=false,roll=false": {
+      "model": "ee_extras:block/pcb_supply_dc/block",
+      "x": 180
+    },
+    "facing=down,flip=false,roll=true": {
+      "model": "ee_extras:block/pcb_supply_dc/block_roll",
+      "x": 180
+    },
+    "facing=down,flip=true,roll=false": {
+      "model": "ee_extras:block/pcb_supply_dc/block_flip",
+      "x": 180
+    },
+    "facing=down,flip=true,roll=true": {
+      "model": "ee_extras:block/pcb_supply_dc/block_flip_roll",
+      "x": 180
+    },
+    "facing=south,flip=false,roll=false": {
+      "model": "ee_extras:block/pcb_supply_dc/block",
+      "x": 270
+    },
+    "facing=south,flip=false,roll=true": {
+      "model": "ee_extras:block/pcb_supply_dc/block_roll",
+      "x": 270
+    },
+    "facing=south,flip=true,roll=false": {
+      "model": "ee_extras:block/pcb_supply_dc/block_flip",
+      "x": 270
+    },
+    "facing=south,flip=true,roll=true": {
+      "model": "ee_extras:block/pcb_supply_dc/block_flip_roll",
+      "x": 270
+    },
+    "facing=north,flip=false,roll=false": {
+      "model": "ee_extras:block/pcb_supply_dc/block",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,flip=false,roll=true": {
+      "model": "ee_extras:block/pcb_supply_dc/block_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,flip=true,roll=false": {
+      "model": "ee_extras:block/pcb_supply_dc/block_flip",
+      "x": 270,
+      "y": 180
+    },
+    "facing=north,flip=true,roll=true": {
+      "model": "ee_extras:block/pcb_supply_dc/block_flip_roll",
+      "x": 270,
+      "y": 180
+    },
+    "facing=east,flip=false,roll=false": {
+      "model": "ee_extras:block/pcb_supply_dc/block",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,flip=false,roll=true": {
+      "model": "ee_extras:block/pcb_supply_dc/block_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,flip=true,roll=false": {
+      "model": "ee_extras:block/pcb_supply_dc/block_flip",
+      "x": 270,
+      "y": 270
+    },
+    "facing=east,flip=true,roll=true": {
+      "model": "ee_extras:block/pcb_supply_dc/block_flip_roll",
+      "x": 270,
+      "y": 270
+    },
+    "facing=west,flip=false,roll=false": {
+      "model": "ee_extras:block/pcb_supply_dc/block",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,flip=false,roll=true": {
+      "model": "ee_extras:block/pcb_supply_dc/block_roll",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,flip=true,roll=false": {
+      "model": "ee_extras:block/pcb_supply_dc/block_flip",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,flip=true,roll=true": {
+      "model": "ee_extras:block/pcb_supply_dc/block_flip_roll",
+      "x": 270,
+      "y": 90
+    }
+  }
+}

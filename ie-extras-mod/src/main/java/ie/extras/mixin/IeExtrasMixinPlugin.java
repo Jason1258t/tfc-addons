@@ -7,7 +7,7 @@ import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
-/** Миксины чаши — только при Create и WoodenCog (без них аддон работает как 1.0.0) */
+/** Совместимость с необязательными модами */
 public class IeExtrasMixinPlugin implements IMixinConfigPlugin {
     public static boolean basinHeat() {
         LoadingModList mods = LoadingModList.get();
@@ -16,6 +16,10 @@ public class IeExtrasMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        if (mixinClassName.endsWith(".EarmuffsRecipeMixin")) {
+            LoadingModList mods = LoadingModList.get();
+            return mods != null && mods.getModFileById("create") != null;
+        }
         return !mixinClassName.endsWith(".BasinBlockEntityMixin") || basinHeat();
     }
 

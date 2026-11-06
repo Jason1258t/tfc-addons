@@ -43,6 +43,50 @@ public final class CableWires {
                     .thickness(0.125f)
                     .decorative()
                     .build());
+    public static final PartialModel THIN_SEGMENT = PartialModel.of(EeExtras.rl("block/thin_insulated_wire_segment"));
+    /** Оболочка тонкого изолированного провода (ThinSpoolItem): двухжильный кабель, тонкий, как провод EE */
+    public static final DeferredHolder<WireType, WireType> THIN = EeExtras.WIRES.register("thin_insulated_wire",
+            () -> new WireType.Builder(THIN_SEGMENT)
+                    .resistance(() -> 1.0E11)
+                    .droppedItem(CEEItems.INSULATED_WIRE)
+                    .spoolItem(() -> EeExtras.THIN_SPOOL.get())
+                    .maxLength(CEEConfigs.server().maxBundledWireLength::get)
+                    .thickness(0.0625f)
+                    .decorative()
+                    .build());
+    public static final DeferredHolder<WireType, WireType> PCB_LEAD = EeExtras.WIRES.register("pcb_lead",
+            () -> new WireType.Builder(THIN_SEGMENT)
+                    .resistance(CEEConfigs.server().resistanceValues.wireResistance::get)
+                    .droppedItem(CEEItems.INSULATED_WIRE)
+                    .spoolItem(() -> EeExtras.THIN_SPOOL.get())
+                    .maxLength(CEEConfigs.server().maxBundledWireLength::get)
+                    .maxInsulationVoltage(CEEConfigs.server().voltageValues.wireMaxVoltage::get)
+                    .insulationResistance(330000.0)
+                    .maxTemperature(() -> 3540.0)
+                    .thickness(0.0625f)
+                    .build());
+    private static final PartialModel THIN_SINGLE_SEGMENT = PartialModel.of(EeExtras.rl("block/thin_single_wire_segment"));
+    private static final PartialModel DECORATIVE_SINGLE_SEGMENT = PartialModel.of(EeExtras.rl("block/decorative_single_wire_segment"));
+    public static final DeferredHolder<WireType, WireType> THIN_SINGLE = EeExtras.WIRES.register("thin_single_wire",
+            () -> new WireType.Builder(THIN_SINGLE_SEGMENT)
+                    .resistance(CEEConfigs.server().resistanceValues.wireResistance::get)
+                    .droppedItem(CEEItems.INSULATED_WIRE)
+                    .spoolItem(() -> EeExtras.THIN_SINGLE_SPOOL.get())
+                    .maxLength(CEEConfigs.server().maxBundledWireLength::get)
+                    .maxInsulationVoltage(CEEConfigs.server().voltageValues.wireMaxVoltage::get)
+                    .insulationResistance(330000.0)
+                    .maxTemperature(() -> 3540.0)
+                    .thickness(0.03125f)
+                    .build());
+    public static final DeferredHolder<WireType, WireType> DECORATIVE_SINGLE = EeExtras.WIRES.register("decorative_single_wire",
+            () -> new WireType.Builder(DECORATIVE_SINGLE_SEGMENT)
+                    .resistance(() -> 1.0E11)
+                    .droppedItem(CEEItems.COPPER_WIRE)
+                    .spoolItem(() -> EeExtras.DECORATIVE_SINGLE_SPOOL.get())
+                    .maxLength(CEEConfigs.server().maxBundledWireLength::get)
+                    .thickness(0.03125f)
+                    .decorative()
+                    .build());
     public static final DeferredHolder<WireType, WireType> DUPLEX_CORE = core("duplex_cable_core", CableKind.DUPLEX);
     public static final DeferredHolder<WireType, WireType> FOUR_CORE_CORE = core("four_core_cable_core", CableKind.FOUR_CORE);
 
@@ -59,6 +103,11 @@ public final class CableWires {
 
     public static net.minecraft.world.item.Item spool(CableKind kind) {
         return kind == CableKind.DUPLEX ? CEEItems.DUPLEX_WIRE_SPOOL.get() : EeExtras.FOUR_CORE_SPOOL.get();
+    }
+
+    /** Оболочка для катушки: тонкий провод — своя, иначе по виду кабеля */
+    public static WireType sheath(CableKind kind, net.minecraft.world.item.ItemStack spool) {
+        return spool != null && spool.getItem() instanceof ThinSpoolItem ? THIN.get() : sheath(kind);
     }
 
     public static WireType sheath(CableKind kind) {

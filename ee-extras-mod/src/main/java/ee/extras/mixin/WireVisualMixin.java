@@ -1,6 +1,7 @@
 package ee.extras.mixin;
 
 import com.george_vi.electroenergetics.client.WireVisual;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
@@ -11,11 +12,14 @@ import dev.engine_room.flywheel.api.instance.Instancer;
 import dev.engine_room.flywheel.api.visual.DynamicVisual;
 import dev.engine_room.flywheel.lib.instance.TransformedInstance;
 import ee.extras.WireVisualFixed;
+import ee.extras.cable.CableCapRender;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -53,6 +57,14 @@ public abstract class WireVisualMixin implements WireVisualFixed {
         Instance instance = original.call(instancer);
         eeExtras$created.add(instance);
         return instance;
+    }
+
+    @WrapOperation(method = "recreateInstances", at = @At(value = "INVOKE",
+            target = "Lcom/george_vi/electroenergetics/foundation/nodes/InWorldNode;getPosition(Lnet/minecraft/world/level/Level;F)Lnet/minecraft/world/phys/Vec3;"),
+            require = 2)
+    private Vec3 eeExtras$capInlet(InWorldNode node, Level level, float tick, Operation<Vec3> original) {
+        Vec3 inlet = CableCapRender.cableInlet(level, node, wireType);
+        return inlet == null ? original.call(node, level, tick) : inlet;
     }
 
     @WrapMethod(method = "beginFrame")

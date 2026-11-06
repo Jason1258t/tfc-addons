@@ -3,6 +3,7 @@ package ee.extras.cable;
 import com.george_vi.electroenergetics.content.bundled_wire.BundledWireTerminationBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
@@ -12,10 +13,21 @@ import net.minecraft.world.level.block.state.BlockState;
  *
  * @param eeTermination двухпроводной конец с выбором фазы — соединитель EE или отвод фазы (PhaseTapBlock): к нему можно
  *                      подвести и четырёхжильный кабель (ноль и фаза, фазу меняет ключ)
+ * @param contacts      номера узлов жил 1…n, если они не base + k: у прибора с крышкой (CableCap) — его контакты
  */
-public record CableEnd(BlockPos pos, CableKind kind, boolean eeTermination, int base) {
+public record CableEnd(BlockPos pos, CableKind kind, boolean eeTermination, int base, int[] contacts) {
     /** Жила соединителя EE, на которую приходит ноль четырёхжильного кабеля; фаза — на жилу 1 */
     public static final int EE_NEUTRAL = 2;
+
+    public CableEnd(BlockPos pos, CableKind kind, boolean eeTermination, int base) {
+        this(pos, kind, eeTermination, base, null);
+    }
+
+    /** Как of(pos, state), но знает и приборы с крышкой */
+    public static CableEnd of(Level level, BlockPos pos, BlockState state) {
+        CableEnd end = of(pos, state);
+        return end == null ? CableCap.end(level, pos, state) : end;
+    }
 
     public static CableEnd of(BlockPos pos, BlockState state) {
         if (state.getBlock() instanceof PhaseTapBlock) return new CableEnd(pos, CableKind.DUPLEX, true, 0);
@@ -34,6 +46,6 @@ public record CableEnd(BlockPos pos, CableKind kind, boolean eeTermination, int 
     }
 
     public InWorldNode conductor(int k) {
-        return new InWorldNode(base + k, pos);
+        return new InWorldNode(contacts != null ? contacts[k - 1] : base + k, pos);
     }
 }

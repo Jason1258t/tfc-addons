@@ -1,12 +1,12 @@
 {
   "id": "ie_extras",
   "name": "IE Extras — блоки к Immersive Engineering",
-  "version": "1.1.0",
-  "jar": "ie-extras-1.1.0.jar",
-  "sha256": "ee8a2371e1516adbca9cb07c3a28e92dcf18c9d5112e13b3028a276d619e70b0",
+  "version": "1.2.0",
+  "jar": "ie-extras-1.2.0.jar",
+  "sha256": "385d291c36b0960e1a31243296af7105bb70ee5771526f862ba18f0ef83a57de",
   "order": 70,
   "side": "both",
-  "summary": "Блоки и функции к Immersive Engineering для TFC. Первый — аналоговый нагреватель: электрический (FE) нагреватель для тигля и других тепловых устройств TFC, температура которого задаётся силой сигнала красного камня — аналоговым рычагом Create или компаратором: 0–15 → 0–1600 °C, шаг около 107 °C. С 1.1.0 чаша Create (WoodenCog) греется от внешнего нагревателя IE (2000 °C, перегрев), нагревателя Electro Energetics и аналогового нагревателя.",
+  "summary": "Блоки и функции к Immersive Engineering для TFC. Первый — аналоговый нагреватель: электрический (FE) нагреватель для тигля и других тепловых устройств TFC, температура которого задаётся силой сигнала красного камня — аналоговым рычагом Create или компаратором: 0–15 → 0–1600 °C, шаг около 107 °C. С 1.1.0 чаша Create (WoodenCog) греется от внешнего нагревателя IE (2000 °C, перегрев), нагревателя Electro Energetics и аналогового нагревателя. Защитные наушники IE можно соединить с очками инженера Create на верстаке.",
   "needs": "Сервер и все игроки (новый блок). NeoForge 21.1.234+, TerraFirmaCraft 4.2.9, Immersive Engineering 12.4.2; нагрев чаши — при Create 6.0.10 и WoodenCog 1.2.18.",
   "blocks": [
     {
@@ -16,9 +16,15 @@
       "recipe": {
         "pattern": ["CTC", " H "],
         "key": {
-          "C": { "item": "minecraft:comparator" },
-          "T": { "item": "immersiveengineering:electron_tube" },
-          "H": { "item": "immersiveengineering:furnace_heater" }
+          "C": {
+            "item": "minecraft:comparator"
+          },
+          "T": {
+            "item": "immersiveengineering:electron_tube"
+          },
+          "H": {
+            "item": "immersiveengineering:furnace_heater"
+          }
         }
       }
     }
