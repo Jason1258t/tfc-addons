@@ -36,11 +36,16 @@ final class PcbUpgradePhotos {
     private static BlockPos activeBattery;
     private static boolean indicatorCaptured;
     private static volatile Component measurement;
+    private static final boolean INDICATOR_ONLY = java.nio.file.Files.exists(java.nio.file.Path.of("pcb-indicator-photo"));
 
     private PcbUpgradePhotos() {}
 
     static void tick(Minecraft mc, MinecraftServer server, int tick) {
         if (tick % 10 == 0) mc.gui.getChat().clearMessages(false);
+        if (INDICATOR_ONLY) {
+            indicatorOnly(mc, server, tick);
+            return;
+        }
         if (tick >= 845) PcbMountPhotos.tick(mc, server, tick - 745);
         if (tick == 100) server.execute(() -> {
             var player = player(mc, server);
@@ -170,6 +175,39 @@ final class PcbUpgradePhotos {
             photo(mc, "05-protection-60v");
         }
         if (tick == 1230) mc.stop();
+    }
+
+    private static void indicatorOnly(Minecraft mc, MinecraftServer server, int tick) {
+        if (tick == 100) server.execute(() -> {
+            var player = player(mc, server);
+            base = player.blockPosition().atY(300);
+            player.getAbilities().flying = true;
+            player.onUpdateAbilities();
+            player.serverLevel().setDayTime(6000);
+            player.serverLevel().setWeatherParameters(24000, 0, false, false);
+            player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                    net.minecraft.world.effect.MobEffects.NIGHT_VISION, 4000, 0, false, false, false));
+            setupBoard(player, BoardMode.INDICATOR);
+            camera(player, activeBoard, new Vec3(0.2, 1.3, 0.95));
+        });
+        if (tick == 185) mc.gui.setOverlayMessage(Component.literal("Кнопка и индикатор · батарея 25 В"), false);
+        if (tick == 190) server.execute(() -> click(player(mc, server), 3));
+        if (tick > 190 && tick < 220 && !indicatorCaptured && mc.level.getBlockState(activeBoard)
+                .getOptionalValue(PcbCircuitBlock.LIT).orElse(false)) {
+            indicatorCaptured = true;
+            ClientTest.check("Индикатор при 25 В", !mc.level.getBlockState(activeBoard).getValue(PcbCircuitBlock.BURNT));
+            photo(mc, "05-indicator-25v");
+        }
+        if (tick == 220 && !indicatorCaptured) ClientTest.check("Индикатор при 25 В", false);
+        if (tick == 230) {
+            mc.gui.setOverlayMessage(Component.literal("Защита платы L1 · батарея 60 В"), false);
+            server.execute(() -> setBattery(player(mc, server).serverLevel(), activeBattery, 60));
+        }
+        if (tick == 260) {
+            ClientTest.check("Защита платы при 60 В", mc.level.getBlockState(activeBoard).getValue(PcbCircuitBlock.BURNT));
+            photo(mc, "05-protection-60v");
+        }
+        if (tick == 300) mc.stop();
     }
 
     private static void supplyPhoto(Minecraft mc, MinecraftServer server, boolean dc) {
