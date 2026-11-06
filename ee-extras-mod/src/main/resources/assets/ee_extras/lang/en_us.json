@@ -1,4 +1,6 @@
 {
+  "item.ee_extras.pcb_switch_cap": "PCB Switch Cap",
+  "item.ee_extras.pcb_button_cap": "PCB Pushbutton Cap",
   "ee_extras.pcb.supply.terminal": "Output %s",
   "ee_extras.pcb.supply.voltage": "Output setting: %s V",
   "block.ee_extras.pcb_supply_dc": "Rectified PCB Supply Module",

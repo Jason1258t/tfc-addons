@@ -22,7 +22,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
@@ -119,16 +118,23 @@ final class PcbUpgradePhotos {
             camera(player, activeBoard, new Vec3(0, 1.7, 1.2));
             click(player, 7);
         });
-        if (tick == 570) photo(mc, "04-caps");
+        if (tick == 570) {
+            photo(mc, "04-caps");
+            photo(mc, "06-led-off");
+        }
         if (tick == 585) server.execute(() -> click(player(mc, server), 3));
-        if (tick == 592) {
+        if (tick == 592) server.execute(() -> click(player(mc, server), 3));
+        if (tick == 606) {
             mc.gui.setOverlayMessage(Component.literal("25 В · прямая полярность"), false);
             var state = mc.level.getBlockState(activeBoard);
             ClientTest.check("Плата под 25 В включилась", state.getValue(PcbCircuitBlock.LIT)
                     && !state.getValue(PcbCircuitBlock.BURNT));
+            var entity = mc.level.getBlockEntity(activeBoard);
+            ClientTest.check("Маска свечения дошла до клиента", entity != null
+                    && entity.getUpdateTag(mc.level.registryAccess()).getLong("LitIndicators") != 0);
             photo(mc, "06-led-forward");
         }
-        if (tick == 620) ClientTest.check("Кнопка отпустилась",
+        if (tick == 623) ClientTest.check("Кнопка отпустилась",
                 !mc.level.getBlockState(activeBoard).getValue(PcbCircuitBlock.LIT));
         if (tick == 625) server.execute(() -> {
             var player = player(mc, server);
@@ -263,7 +269,7 @@ final class PcbUpgradePhotos {
                 new BlockHitResult(Vec3.atBottomCenterOf(board), Direction.UP, board.below(), false)));
         var state = level.getBlockState(board);
         for (int x : mode == BoardMode.INDICATOR ? new int[] {3} : new int[] {3, 7}) {
-            var cap = new ItemStack(x == 3 ? Items.STONE_BUTTON : Items.LEVER);
+            var cap = x == 3 ? PcbItems.BUTTON_CAP.toStack() : PcbItems.SWITCH_CAP.toStack();
             ClientTest.check("Накладка " + x, state.useItemOn(cap, level, player, InteractionHand.MAIN_HAND, controlHit(x))
                     .consumesAction());
         }

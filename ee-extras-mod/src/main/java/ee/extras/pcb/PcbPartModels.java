@@ -23,6 +23,8 @@ final class PcbPartModels {
     static void register(ModelEvent.RegisterAdditional event) {
         for (String name : NAMES) event.register(id(name));
         event.register(id("led_on"));
+        event.register(id("button_cap"));
+        event.register(id("switch_cap"));
     }
 
     static void render(int definition, int x, int z, boolean burnt, boolean indicatorLit, boolean cap, PoseStack poses,
@@ -30,11 +32,12 @@ final class PcbPartModels {
         int type = PcbWiring.type(definition);
         if (definition <= 0 || type >= NAMES.length) return;
         var minecraft = Minecraft.getInstance();
-        var model = minecraft.getModelManager().getModel(id(indicatorLit && NAMES[type].equals("led") ? "led_on" : NAMES[type]));
+        String name = cap && (type == 2 || type == 3) ? NAMES[type] + "_cap"
+                : indicatorLit && NAMES[type].equals("led") ? "led_on" : NAMES[type];
+        var model = minecraft.getModelManager().getModel(id(name));
         poses.pushPose();
         poses.translate((x + 0.5f) / 16, 1f / 16, (z + 0.5f) / 16);
         poses.mulPose(Axis.YP.rotationDegrees(-90 * PcbWiring.rotation(definition)));
-        if (cap) poses.scale(1, 2.5f, 1);
         poses.translate(-0.5, 0, -0.5);
         float tint = burnt ? 0.35f : 1f;
         minecraft.getBlockRenderer().getModelRenderer().renderModel(poses.last(), vertices, null, model,

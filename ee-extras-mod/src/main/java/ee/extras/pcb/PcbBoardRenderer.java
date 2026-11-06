@@ -95,6 +95,15 @@ final class PcbBoardRenderer implements BlockEntityRenderer<PcbCircuitBlockEntit
                     boolean indicatorLit = !burnt && (type == 4 || type == 13)
                             && board.indicatorLit(PcbWiring.componentOrdinal(definitions, index));
                     PcbPartModels.render(definitions[index], x, z, burnt, indicatorLit, board.hasCap(cell), poses, vertices, light, overlay);
+                    if (type == 13 && indicatorLit) {
+                        var glow = new Painter(poses.last(), vertices, texture,
+                                net.minecraft.client.renderer.LightTexture.FULL_BRIGHT, overlay);
+                        // Световое пятно шире корпуса, чтобы состояние читалось с обычной дистанции.
+                        glow.top((x - 0.35f) / 16, (z - 0.35f) / 16,
+                                (x + 1.35f) / 16, (z + 1.35f) / 16, 1.03f / 16, 0xFFEF351E);
+                        glow.top((x + 0.17f) / 16, (z + 0.17f) / 16,
+                                (x + 0.83f) / 16, (z + 0.83f) / 16, 1.46f / 16, 0xFFFFE4A3);
+                    }
                     break;
                 }
             }

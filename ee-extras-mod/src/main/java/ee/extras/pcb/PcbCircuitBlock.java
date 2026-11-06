@@ -18,7 +18,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -199,13 +198,13 @@ public final class PcbCircuitBlock extends SimpleElectricalDeviceBlock<PcbCircui
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                                 Player player, InteractionHand hand, BlockHitResult hit) {
-        if (!stack.is(Items.STONE_BUTTON) && !stack.is(Items.LEVER)) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        if (!stack.is(PcbItems.BUTTON_CAP.get()) && !stack.is(PcbItems.SWITCH_CAP.get())) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         if (!(level.getBlockEntity(pos) instanceof PcbCircuitBlockEntity board))
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         int cell = hitCell(hit.getLocation().subtract(Vec3.atLowerCornerOf(pos)), state.getValue(FACING));
         int index = board.controlAt(cell);
         if (state.getValue(BURNT) || index < 0 || board.hasCap(cell)
-                || (stack.is(Items.LEVER) != board.isSwitch(index))) return ItemInteractionResult.FAIL;
+                || (stack.is(PcbItems.SWITCH_CAP.get()) != board.isSwitch(index))) return ItemInteractionResult.FAIL;
         if (!level.isClientSide) {
             board.addCap(cell);
             stack.consume(1, player);

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:copper_ingot"
+    },
+    {
+      "item": "ee_extras:connector"
+    }
+  ],
+  "result": {
+    "id": "ee_extras:pcb_switch_cap",
+    "count": 2
+  }
+}

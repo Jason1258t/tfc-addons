@@ -1,4 +1,6 @@
 {
+  "item.ee_extras.pcb_switch_cap": "Накладка переключателя платы",
+  "item.ee_extras.pcb_button_cap": "Накладка кнопки платы",
   "ee_extras.pcb.supply.terminal": "Выход %s",
   "ee_extras.pcb.supply.voltage": "Настройка выхода: %s В",
   "block.ee_extras.pcb_supply_dc": "Модуль питания платы с выпрямителем",

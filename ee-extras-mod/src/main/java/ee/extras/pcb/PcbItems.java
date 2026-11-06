@@ -90,6 +90,8 @@ public final class PcbItems {
     public static final DeferredItem<Item> L3_BOARD = EeExtras.ITEMS.register("l3_board", () -> new PcbBoardItem(3));
     public static final DeferredItem<Item> SOLDER_WIRE = item("solder_wire", 64);
     public static final DeferredItem<Item> ROSIN_FLUX = item("rosin_flux", 64);
+    public static final DeferredItem<Item> BUTTON_CAP = item("pcb_button_cap", 64);
+    public static final DeferredItem<Item> SWITCH_CAP = item("pcb_switch_cap", 64);
     public static final DeferredItem<Item> LED = item("pcb_led", 64);
     public static final DeferredItem<Item> RESISTOR = item("resistor", 64);
     public static final DeferredItem<Item> CAPACITOR = item("capacitor", 64);
@@ -147,7 +149,7 @@ public final class PcbItems {
 
     private static final List<DeferredItem<? extends Item>> ELECTRONICS = List.of(COPPER_FOIL, GLASS_FIBER, GLASS_FABRIC,
             EPOXY_LAMINATE, PHOTORESIST, L2_BOARD_BLANK, L3_BOARD_BLANK, L2_PREPARED_BLANK, L3_PREPARED_BLANK,
-            L2_ETCHED_BOARD, L3_ETCHED_BOARD, L2_BOARD, L3_BOARD, SOLDER_WIRE, ROSIN_FLUX, LED, RESISTOR, CAPACITOR, INDUCTOR,
+            L2_ETCHED_BOARD, L3_ETCHED_BOARD, L2_BOARD, L3_BOARD, SOLDER_WIRE, ROSIN_FLUX, LED, BUTTON_CAP, SWITCH_CAP, RESISTOR, CAPACITOR, INDUCTOR,
             CONNECTOR, SILICON_DIODE, TRANSISTOR, BASIC_IC, ADVANCED_IC, SILICON_WAFER, ABS_SHEET, ABS_KEYBOARD_BLANK,
             PET_FILM, RGB_PHOSPHOR, SHADOW_MASK, PERMANENT_MAGNET, SPEAKER_CONE, BATTERY_ELECTROLYTE, INK_CARTRIDGE,
             CONTROL_BOARD_L1,

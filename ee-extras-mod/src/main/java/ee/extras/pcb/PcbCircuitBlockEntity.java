@@ -124,8 +124,7 @@ public final class PcbCircuitBlockEntity extends BlockEntity {
     void addCapDrops(java.util.List<ItemStack> drops) {
         for (int cell = caps.nextSetBit(0); cell >= 0; cell = caps.nextSetBit(cell + 1)) {
             int index = controlAt(cell);
-            if (index >= 0) drops.add(new ItemStack(isSwitch(index)
-                    ? net.minecraft.world.item.Items.LEVER : net.minecraft.world.item.Items.STONE_BUTTON));
+            if (index >= 0) drops.add(isSwitch(index) ? PcbItems.SWITCH_CAP.toStack() : PcbItems.BUTTON_CAP.toStack());
         }
     }
 

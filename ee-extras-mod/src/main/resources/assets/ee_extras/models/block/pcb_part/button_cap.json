@@ -1,0 +1,74 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "base": "minecraft:block/polished_blackstone",
+    "cap": "minecraft:block/red_concrete",
+    "particle": "#base"
+  },
+  "elements": [
+    {
+      "from": [
+        7.525,
+        0.0,
+        7.525
+      ],
+      "to": [
+        8.475,
+        0.96,
+        8.475
+      ],
+      "faces": {
+        "up": {
+          "texture": "#base"
+        },
+        "down": {
+          "texture": "#base"
+        },
+        "north": {
+          "texture": "#base"
+        },
+        "south": {
+          "texture": "#base"
+        },
+        "east": {
+          "texture": "#base"
+        },
+        "west": {
+          "texture": "#base"
+        }
+      }
+    },
+    {
+      "from": [
+        7.715,
+        0.96,
+        7.715
+      ],
+      "to": [
+        8.285,
+        1.92,
+        8.285
+      ],
+      "faces": {
+        "up": {
+          "texture": "#cap"
+        },
+        "down": {
+          "texture": "#cap"
+        },
+        "north": {
+          "texture": "#cap"
+        },
+        "south": {
+          "texture": "#cap"
+        },
+        "east": {
+          "texture": "#cap"
+        },
+        "west": {
+          "texture": "#cap"
+        }
+      }
+    }
+  ]
+}

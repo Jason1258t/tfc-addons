@@ -152,7 +152,7 @@ final class PcbCircuitTest {
         var state = level.getBlockState(BOARD);
         for (int x : new int[] {3, 7}) {
             var hit = controlHit(x);
-            var cap = new ItemStack(x == 3 ? net.minecraft.world.item.Items.STONE_BUTTON : net.minecraft.world.item.Items.LEVER);
+            var cap = x == 3 ? PcbItems.BUTTON_CAP.toStack() : PcbItems.SWITCH_CAP.toStack();
             if (!state.useItemOn(cap, level, player, InteractionHand.MAIN_HAND, hit).consumesAction())
                 throw new IllegalStateException("Накладка не установилась на компонент " + x);
             Vec3 raised = hit.getLocation().subtract(Vec3.atLowerCornerOf(BOARD)).add(0, 0, -0.12);
