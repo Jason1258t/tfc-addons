@@ -11,6 +11,8 @@ import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureS
 import ee.extras.EeExtras;
 import ee.extras.cable.CableCap;
 import ee.extras.cable.CableEnd;
+import ee.extras.cable.CableWires;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.commands.CommandSourceStack;
@@ -99,6 +101,8 @@ final class CapTest {
             click(level, p, "кабель_A", A);
             click(level, p, "кабель_к", to);
         }
+        click(level, p, "две_крышки_начало", BULB);
+        click(level, p, "две_крышки_конец", HEATER);
         click(level, p, "кабель_A", A);
         click(level, p, "кабель_без_крышки", BARE);
 
@@ -138,6 +142,16 @@ final class CapTest {
             }
             for (ItemEntity e : level.getEntitiesOfClass(ItemEntity.class, new AABB(p).inflate(1.5)))
                 out.append(", выпало ").append(e.getItem());
+        }
+        CableEnd lamp = CableEnd.of(level, BULB, level.getBlockState(BULB));
+        CableEnd heater = CableEnd.of(level, HEATER, level.getBlockState(HEATER));
+        if (lamp != null && heater != null) {
+            var sheath = sd.getConnectionData(new InWorldNodeConnection(lamp.conductor(1), heater.conductor(2)));
+            var first = sd.getConnectionData(new InWorldNodeConnection(lamp.conductor(1), heater.conductor(1)));
+            var second = sd.getConnectionData(new InWorldNodeConnection(lamp.conductor(2), heater.conductor(2)));
+            out.append("; между крышками: оболочка ").append(sheath != null && sheath.wireType() == CableWires.DUPLEX.get())
+                    .append(", жила 1 ").append(first != null && first.wireType() == CableWires.DUPLEX_CORE.get())
+                    .append(", жила 2 ").append(second != null && second.wireType() == CableWires.DUPLEX_CORE.get());
         }
         src.sendSuccess(() -> Component.literal(out.toString()), false);
         return 1;

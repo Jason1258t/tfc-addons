@@ -54,7 +54,7 @@ public final class CableCapRender {
         if (!has(level, pos)) return null;
         var state = level.getBlockState(pos);
         int[] contacts = CableCap.contacts(level, pos, state);
-        if (contacts == null || contacts.length != 2 || contacts[0] != node.id()) return null;
+        if (contacts == null || contacts.length != 2 || (contacts[0] != node.id() && contacts[1] != node.id())) return null;
         var geometry = CableCapGeometry.of(level, pos, state, contacts);
         return geometry == null ? null : Vec3.atLowerCornerOf(pos).add(geometry.inlet());
     }

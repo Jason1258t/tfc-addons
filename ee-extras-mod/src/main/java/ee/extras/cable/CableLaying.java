@@ -140,9 +140,12 @@ public final class CableLaying {
         for (InWorldNode[] core : cores)
             for (InWorldNode n : core) if (!sd.getNodes().contains(n)) return false;
 
-        sd.connect(a.cable(), b.cable(), sheath);
+        // Между крышками первая жила уже занимает пару контактов 1–1. Оболочке нужна отдельная пара.
+        InWorldNode shellB = a.contacts() != null && b.contacts() != null ? b.conductor(2) : b.cable();
+        if (sd.isConnected(a.cable(), shellB)) return false;
+        sd.connect(a.cable(), shellB, sheath);
         for (InWorldNode[] core : cores) sd.connect(core[0], core[1], CableWires.core(kind));
-        data.add(new CableData.Cable(kind, a.cable(), b.cable(), cores, mixed));
+        data.add(new CableData.Cable(kind, a.cable(), shellB, cores, mixed));
         return true;
     }
 
