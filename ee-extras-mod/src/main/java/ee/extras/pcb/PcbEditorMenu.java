@@ -27,6 +27,7 @@ public class PcbEditorMenu extends AbstractContainerMenu {
     public static final int CONTACT = 1011;
 
     public static final int SELECT_TOOL = 1020;
+    static final int SELECT_PART = 1040;
     static final int CUT_TOOL = 6;
 
     private final ContainerLevelAccess access;
@@ -83,6 +84,11 @@ public class PcbEditorMenu extends AbstractContainerMenu {
     }
 
     int part() { return part.get(); }
+    boolean available(int type) { return PcbWiring.minimumLevel(type) <= level(); }
+
+    int selectedDefinition() {
+        return PcbWiring.component(part(), rotation(), resistance(), threshold(), normallyClosed());
+    }
     int rotation() { return rotation.get(); }
     int resistance() { return resistance.get(); }
     int threshold() { return threshold.get(); }
@@ -112,8 +118,21 @@ public class PcbEditorMenu extends AbstractContainerMenu {
     @Override
     public boolean clickMenuButton(Player player, int id) {
         if (editor == null) return false;
+        int currentLevel = PcbTopology.level(editor.topology());
+        if (level() != currentLevel) {
+            level.set(currentLevel);
+            layer.set(Math.min(layer(), currentLevel - 1));
+            if (!available(part())) part.set(0);
+        }
         if (id >= SELECT_TOOL && id <= SELECT_TOOL + CUT_TOOL) {
             tool.set(id - SELECT_TOOL);
+            return true;
+        }
+        if (id >= SELECT_PART && id < SELECT_PART + PcbWiring.KINDS.length) {
+            int type = id - SELECT_PART;
+            if (!available(type)) return false;
+            part.set(type);
+            tool.set(5);
             return true;
         }
         if (id >= 0 && id < PcbTopology.CELLS) {
@@ -124,7 +143,8 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             }
             if (PcbTopology.cut(editor.topology(), id)) return false;
             if (tool.get() == 5) {
-                editor.setPart(layer.get(), id, PcbWiring.component(part(), rotation(), resistance(), threshold(), normallyClosed()));
+                if (!available(part())) return false;
+                editor.setPart(layer.get(), id, selectedDefinition());
                 status.set(0);
                 return true;
             }
@@ -143,7 +163,9 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             case TOOL -> tool.set((tool.get() + 1) % (CUT_TOOL + 1));
             case PART -> {
                 tool.set(5);
-                part.set((part.get() + 1) % PcbWiring.KINDS.length);
+                do {
+                    part.set((part.get() + 1) % PcbWiring.KINDS.length);
+                } while (!available(part()));
             }
             case CONTACT -> contact.set(1 - contact.get());
             case ROTATE -> rotation.set((rotation.get() + 1) % 4);
@@ -153,6 +175,7 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             case LEVEL -> {
                 int newLevel = level.get() % PcbTopology.MAX_LAYERS + 1;
                 level.set(newLevel);
+                if (!available(part())) part.set(0);
                 layer.set(0);
                 editor.setLevel(newLevel);
             }
@@ -169,6 +192,7 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             case LOAD -> {
                 editor.loadDesign();
                 level.set(PcbTopology.level(editor.topology()));
+                if (!available(part())) part.set(0);
                 layer.set(0);
                 status.set(3);
             }

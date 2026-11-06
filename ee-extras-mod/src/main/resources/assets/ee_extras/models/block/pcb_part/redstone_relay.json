@@ -1,0 +1,129 @@
+{
+  "credit": "Made with Blockbench",
+  "textures": {
+    "0": "ee_extras:block/pcb_part/redstone_relay",
+    "particle": "ee_extras:block/pcb_part/redstone_relay"
+  },
+  "elements": [
+    {
+      "from": [
+        7.624,
+        0.376,
+        7.53
+      ],
+      "to": [
+        8.188,
+        0.94,
+        8.47
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            0,
+            6,
+            3
+          ],
+          "texture": "#0"
+        },
+        "east": {
+          "uv": [
+            0,
+            5,
+            5,
+            8
+          ],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [
+            3,
+            0,
+            6,
+            3
+          ],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [
+            0,
+            5,
+            5,
+            8
+          ],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            3,
+            5
+          ],
+          "texture": "#0"
+        }
+      }
+    },
+    {
+      "from": [
+        8.188,
+        0.0,
+        7.718
+      ],
+      "to": [
+        8.376,
+        0.752,
+        8.282
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            10,
+            1,
+            11,
+            5
+          ],
+          "texture": "#0"
+        },
+        "east": {
+          "uv": [
+            6,
+            1,
+            9,
+            5
+          ],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [
+            9,
+            1,
+            10,
+            5
+          ],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [
+            6,
+            0,
+            9,
+            1
+          ],
+          "rotation": 90,
+          "texture": "#0"
+        },
+        "down": {
+          "uv": [
+            3,
+            4,
+            6,
+            5
+          ],
+          "rotation": 90,
+          "texture": "#0"
+        }
+      }
+    }
+  ]
+}

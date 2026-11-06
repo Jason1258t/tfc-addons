@@ -123,8 +123,14 @@ final class PcbClientTest {
             click(screen(mc), 145, 47);
             cell(screen(mc), 0, 0);
             cell(screen(mc), 15, 0);
-            click(screen(mc), 230, 47);
-            for (int i = 0; i < 5; i++) click(screen(mc), 200, 195);
+            click(screen(mc), 188, 47);
+            click(screen(mc), 177, 170);
+            cell(screen(mc), 7, 0);
+        }
+        if (tick == 595 && screen(mc) != null) {
+            check("конденсатор недоступен на L1", PcbTopology.get(screen(mc).getMenu().editor().topology(),
+                    0, 7) == PcbTopology.EMPTY);
+            click(screen(mc), 203, 170);
             cell(screen(mc), 7, 0);
             click(screen(mc), 145, 62);
             for (int z = 4; z < 16; z++) {

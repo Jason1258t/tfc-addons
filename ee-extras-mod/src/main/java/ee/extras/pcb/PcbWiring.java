@@ -34,6 +34,24 @@ final class PcbWiring {
         return ((component - 1) & 16) != 0;
     }
 
+    static int rotation(int definition) {
+        return (vertical(definition) ? 1 : 0) + (((definition - 1) & 4096) != 0 ? 2 : 0);
+    }
+
+    static int minimumLevel(int type) {
+        return switch (KINDS[type]) {
+            case TRANSISTOR -> 3;
+            case CAPACITOR, DIODE, VOLTMETER, AMMETER -> 2;
+            default -> 1;
+        };
+    }
+
+    static int pinCell(int cell, int definition, int pin) {
+        boolean axis = pin < 2 ? vertical(definition) : !vertical(definition);
+        boolean reverse = rotation(definition) >= 2;
+        return neighbor(cell, axis, (pin % 2 == 0) != reverse ? -1 : 1);
+    }
+
     static boolean active(CompoundTag tag) {
         for (int value : tag.getIntArray(KEY)) if (value != 0) return true;
         return false;
@@ -82,14 +100,12 @@ final class PcbWiring {
             int type = type(definition);
             int resistance = ((definition - 1) >>> 5) & 15;
             int threshold = ((definition - 1) >>> 9) & 7;
-            boolean reverse = ((definition - 1) & 4096) != 0;
             if (definition <= 0 || definition > 16384 || type >= KINDS.length || resistance >= OHMS.length || threshold >= VOLTS.length)
                 return null;
             Kind kind = KINDS[type];
             int[] pins = new int[4];
             for (int pin = 0; pin < (kind.controlled() ? 4 : 2); pin++) {
-                boolean axis = pin < 2 ? vertical(definition) : !vertical(definition);
-                int neighbor = neighbor(i, axis, (pin % 2 == 0) != reverse ? -1 : 1);
+                int neighbor = pinCell(i, definition, pin);
                 if (neighbor < 0 || groups[neighbor] < 0) return null;
                 int group = root(groups, neighbor);
                 if (nodes[group] < 0) nodes[group] = nextNode++;
@@ -103,7 +119,7 @@ final class PcbWiring {
         return parts.isEmpty() || parts.size() > 64 ? null : List.copyOf(parts);
     }
 
-    private static boolean conductor(int cell) {
+    static boolean conductor(int cell) {
         return cell == PcbTopology.TRACE || cell == PcbTopology.VIA || cell == PcbTopology.TERMINAL;
     }
 

@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 
 final class PcbBoardRenderer implements BlockEntityRenderer<PcbCircuitBlockEntity> {
@@ -24,7 +25,13 @@ final class PcbBoardRenderer implements BlockEntityRenderer<PcbCircuitBlockEntit
         var texture = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(WHITE);
         var vertices = buffers.getBuffer(RenderType.entityCutout(TextureAtlas.LOCATION_BLOCKS));
         var painter = new Painter(poses.last(), vertices, texture, light, overlay);
+        int[] definitions = topology.getIntArray(PcbWiring.KEY);
         int layer = PcbTopology.level(topology) - 1;
+        int substrate = burnt ? 0xFF2C2928 : switch (layer) {
+            case 1 -> 0xFF285742;
+            case 2 -> 0xFF274756;
+            default -> 0xFF615139;
+        };
         for (int cell = 0; cell < PcbTopology.CELLS; cell++) {
             if (PcbTopology.cut(topology, cell)) continue;
             int x = cell % PcbTopology.SIZE;
@@ -36,10 +43,24 @@ final class PcbBoardRenderer implements BlockEntityRenderer<PcbCircuitBlockEntit
             int color = burnt ? 0xFF2C2928 : switch (PcbTopology.get(topology, layer, cell)) {
                 case PcbTopology.TRACE -> 0xFFA16635;
                 case PcbTopology.VIA -> 0xFF8AA19A;
-                case PcbTopology.COMPONENT -> 0xFFADAD86;
-                default -> 0xFF285742;
+                default -> substrate;
             };
-            painter.top(x0, z0, x1, z1, 1f / 16, color);
+            painter.top(x0, z0, x1, z1, 1f / 16, substrate);
+            if (color != substrate) {
+                float cx = (x + 0.5f) / 16;
+                float cz = (z + 0.5f) / 16;
+                float half = 0.15f / 16;
+                float surface = 1.005f / 16;
+                painter.top(cx - half, cz - half, cx + half, cz + half, surface, color);
+                if (x > 0 && joins(topology, definitions, layer, cell, cell - 1))
+                    painter.top(x0, cz - half, cx - half, cz + half, surface, color);
+                if (x < 15 && joins(topology, definitions, layer, cell, cell + 1))
+                    painter.top(cx + half, cz - half, x1, cz + half, surface, color);
+                if (z > 0 && joins(topology, definitions, layer, cell, cell - 16))
+                    painter.top(cx - half, z0, cx + half, cz - half, surface, color);
+                if (z < 15 && joins(topology, definitions, layer, cell, cell + 16))
+                    painter.top(cx - half, cz + half, cx + half, z1, surface, color);
+            }
             painter.bottom(x0, z0, x1, z1, burnt ? 0xFF252323 : 0xFF234837);
             int edge = burnt ? 0xFF312D2B : 0xFF48765B;
             if (x == 0 || PcbTopology.cut(topology, cell - 1))
@@ -50,6 +71,13 @@ final class PcbBoardRenderer implements BlockEntityRenderer<PcbCircuitBlockEntit
                 painter.side(Direction.NORTH, x0, z0, x1, z0, 0, 1f / 16, edge);
             if (z == 15 || PcbTopology.cut(topology, cell + 16))
                 painter.side(Direction.SOUTH, x1, z1, x0, z1, 0, 1f / 16, edge);
+            for (int partLayer = layer; partLayer >= 0; partLayer--) {
+                int index = partLayer * PcbTopology.CELLS + cell;
+                if (index < definitions.length && definitions[index] != 0) {
+                    PcbPartModels.render(definitions[index], x, z, burnt, poses, vertices, light, overlay);
+                    break;
+                }
+            }
             if (PcbTopology.get(topology, 0, cell) == PcbTopology.TERMINAL) {
                 int pad = burnt ? 0xFF48413B : 0xFFC98A4E;
                 float px0 = x / 16f;
@@ -63,6 +91,22 @@ final class PcbBoardRenderer implements BlockEntityRenderer<PcbCircuitBlockEntit
                 painter.side(Direction.SOUTH, px1, pz1, px0, pz1, 1f / 16, 2f / 16, pad);
             }
         }
+    }
+
+    private static boolean joins(CompoundTag topology, int[] definitions, int layer, int from, int to) {
+        if (PcbTopology.cut(topology, to)) return false;
+        int value = PcbTopology.get(topology, layer, to);
+        if (PcbWiring.conductor(value)) return true;
+        int index = layer * PcbTopology.CELLS + to;
+        if (value != PcbTopology.COMPONENT || index >= definitions.length || definitions[index] <= 0) return false;
+        int definition = definitions[index];
+        int type = PcbWiring.type(definition);
+        if (type >= PcbWiring.KINDS.length) return false;
+        int pins = PcbWiring.KINDS[type].controlled() ? 4 : 2;
+        for (int pin = 0; pin < pins; pin++) {
+            if (PcbWiring.pinCell(to, definition, pin) == from) return true;
+        }
+        return false;
     }
 
     private record Painter(PoseStack.Pose pose, VertexConsumer vertices, TextureAtlasSprite texture, int light,

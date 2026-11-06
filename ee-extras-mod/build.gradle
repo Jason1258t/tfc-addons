@@ -51,4 +51,4 @@ dependencies {
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
 
 // Уведомление Apache-2.0 для частей, перенесённых из Create: Power Grid (декоративный провод)
-jar { from('NOTICE') { into 'META-INF' } }
+jar { from(files('NOTICE', 'LICENSE-PowerGrid')) { into 'META-INF' } }

@@ -7,6 +7,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 
 /** Русский экран редактора: клик по ячейке применяет выбранный инструмент на текущем слое. */
 public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
@@ -27,7 +28,13 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
     private static final int TOOL_Y = 27;
     private static final int TOOL_WIDTH = 42;
     private static final int TOOL_HEIGHT = 15;
-    private static final int[] PART_BUTTONS = {PcbEditorMenu.PART, PcbEditorMenu.ROTATE, PcbEditorMenu.OHMS, PcbEditorMenu.VOLTS};
+    private static final int PALETTE_X = 175;
+    private static final int PALETTE_Y = 153;
+    private static final int PALETTE_CELL = 13;
+    private static final int PALETTE_COLUMNS = 7;
+    private static final int SETTINGS_Y = 181;
+    private static final int SETTINGS_ROW = 15;
+    private static final int[] PART_BUTTONS = {PcbEditorMenu.ROTATE, PcbEditorMenu.OHMS, PcbEditorMenu.VOLTS};
     private static final int[] BUTTON_Y = {73, 86, 99, 112, 125, 138};
     private static final int[] BUTTON_ID = {PcbEditorMenu.LAYER, PcbEditorMenu.LEVEL,
             PcbEditorMenu.CHECK, PcbEditorMenu.SAVE, PcbEditorMenu.LOAD, PcbEditorMenu.CLEAR};
@@ -60,8 +67,14 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
                 }
             }
         }
-        if (localX >= 175 && localX < 266 && localY >= 155 && localY < 227) {
-            int action = PART_BUTTONS[(int) (localY - 155) / 18];
+        int part = partAt(localX, localY);
+        if (part >= 0) {
+            if (button == 0 && menu.available(part)) click(PcbEditorMenu.SELECT_PART + part);
+            return true;
+        }
+        if (localX >= PALETTE_X && localX < 266 && localY >= SETTINGS_Y
+                && localY < SETTINGS_Y + SETTINGS_ROW * PART_BUTTONS.length) {
+            int action = PART_BUTTONS[(int) (localY - SETTINGS_Y) / SETTINGS_ROW];
             if (action == PcbEditorMenu.ROTATE && button == 1
                     && PcbWiring.KINDS[menu.part()] == PcbCircuitDevice.Kind.RELAY) action = PcbEditorMenu.CONTACT;
             click(action);
@@ -70,10 +83,18 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
         int x = (int) Math.floor((localX - GRID_X) / CELL);
         int y = (int) Math.floor((localY - GRID_Y) / CELL);
         if (x >= 0 && y >= 0 && x < PcbTopology.SIZE && y < PcbTopology.SIZE) {
-            click(y * PcbTopology.SIZE + x);
+            if (button == 0) click(y * PcbTopology.SIZE + x);
             return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    private static int partAt(double x, double y) {
+        if (x < PALETTE_X || x >= PALETTE_X + PALETTE_CELL * PALETTE_COLUMNS
+                || y < PALETTE_Y || y >= PALETTE_Y + 2 * PALETTE_CELL) return -1;
+        int part = (int) ((y - PALETTE_Y) / PALETTE_CELL) * PALETTE_COLUMNS
+                + (int) ((x - PALETTE_X) / PALETTE_CELL);
+        return part < PARTS.length ? part : -1;
     }
 
     private static int toolAt(double x, double y) {
@@ -93,6 +114,13 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
         }
         int localX = mouseX - leftPos;
         int localY = mouseY - topPos;
+        int part = partAt(localX, localY);
+        if (part >= 0) {
+            String label = PARTS[part];
+            if (!menu.available(part)) label += " · с L" + PcbWiring.minimumLevel(part);
+            graphics.renderTooltip(font, Component.literal(label), mouseX, mouseY);
+            return;
+        }
         if (localX >= 12 && localX < 136 && localY >= 142 && localY < 154) {
             graphics.renderTooltip(font, Component.literal(menu.statusText()), mouseX, mouseY);
             return;
@@ -155,14 +183,49 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
                 graphics.fill(sx, sy, sx + CELL - 1, sy + CELL - 1, color);
                 int index = menu.layer() * PcbTopology.CELLS + cell;
                 if (value == PcbTopology.COMPONENT && index < definitions.length && definitions[index] != 0) {
-                    if (PcbWiring.vertical(definitions[index])) graphics.fill(sx + 2, sy, sx + 4, sy + 6, 0xFF553F0D);
-                    else graphics.fill(sx, sy + 2, sx + 6, sy + 4, 0xFF553F0D);
+                    drawPart(graphics, PcbWiring.type(definitions[index]), sx, sy, 6 / 16f);
                 }
             }
         }
+        int hoverX = mouseX - leftPos - GRID_X;
+        int hoverY = mouseY - topPos - GRID_Y;
+        if (menu.tool() == 5 && menu.available(menu.part()) && hoverX >= 0 && hoverY >= 0
+                && hoverX < CELL * PcbTopology.SIZE && hoverY < CELL * PcbTopology.SIZE) {
+            int cell = hoverY / CELL * PcbTopology.SIZE + hoverX / CELL;
+            if (!PcbTopology.cut(topology, cell)) {
+                int definition = menu.selectedDefinition();
+                int pins = PcbWiring.KINDS[menu.part()].controlled() ? 4 : 2;
+                for (int pin = 0; pin < pins; pin++) {
+                    int contact = PcbWiring.pinCell(cell, definition, pin);
+                    if (contact < 0) continue;
+                    int sx = leftPos + GRID_X + contact % PcbTopology.SIZE * CELL;
+                    int sy = topPos + GRID_Y + contact / PcbTopology.SIZE * CELL;
+                    boolean connected = !PcbTopology.cut(topology, contact)
+                            && PcbWiring.conductor(PcbTopology.get(topology, menu.layer(), contact));
+                    graphics.renderOutline(sx, sy, CELL, CELL, connected ? 0xFF79D878 : 0xFFE57C72);
+                }
+                int sx = leftPos + GRID_X + hoverX / CELL * CELL;
+                int sy = topPos + GRID_Y + hoverY / CELL * CELL;
+                graphics.fill(sx, sy, sx + CELL - 1, sy + CELL - 1, 0xFF93B690);
+                drawPart(graphics, menu.part(), sx, sy, 6 / 16f);
+            }
+        }
+        for (int part = 0; part < PARTS.length; part++) {
+            int x = leftPos + PALETTE_X + part % PALETTE_COLUMNS * PALETTE_CELL;
+            int y = topPos + PALETTE_Y + part / PALETTE_COLUMNS * PALETTE_CELL;
+            graphics.fill(x, y, x + PALETTE_CELL - 1, y + PALETTE_CELL - 1,
+                    part == menu.part() && menu.tool() == 5 ? 0xFF3E7863 : 0xFF46535A);
+            drawPart(graphics, part, x, y, 0.75f);
+            if (!menu.available(part)) {
+                graphics.pose().pushPose();
+                graphics.pose().translate(0, 0, 200);
+                graphics.fill(x, y, x + PALETTE_CELL - 1, y + PALETTE_CELL - 1, 0xAA101416);
+                graphics.pose().popPose();
+            }
+        }
         for (int row = 0; row < PART_BUTTONS.length; row++) {
-            int y = topPos + 155 + row * 18;
-            graphics.fill(leftPos + 175, y, leftPos + 266, y + 17, 0xFF66706C);
+            int y = topPos + SETTINGS_Y + row * SETTINGS_ROW;
+            graphics.fill(leftPos + PALETTE_X, y, leftPos + 266, y + SETTINGS_ROW - 1, 0xFF66706C);
         }
         for (int tool = 0; tool < TOOLS.length; tool++) {
             int x = leftPos + TOOL_X + tool % 3 * TOOL_WIDTH;
@@ -175,6 +238,15 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
             graphics.fill(leftPos + 140, topPos + y, leftPos + 266, topPos + y + 13, 0xFF101416);
             graphics.fill(leftPos + 141, topPos + y + 1, leftPos + 265, topPos + y + 12, 0xFF66706C);
         }
+    }
+
+    private static void drawPart(GuiGraphics graphics, int type, int x, int y, float scale) {
+        if (type >= PARTS.length) return;
+        graphics.pose().pushPose();
+        graphics.pose().translate(x, y, 0);
+        graphics.pose().scale(scale, scale, 1);
+        graphics.renderFakeItem(new ItemStack(PcbAssembly.item(PcbWiring.KINDS[type])), 0, 0);
+        graphics.pose().popPose();
     }
 
     @Override
@@ -208,12 +280,12 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
         String[] arrows = {"→", "↓", "←", "↑"};
         String orientation = arrows[menu.rotation()];
         if (kind == PcbCircuitDevice.Kind.RELAY) orientation += menu.normallyClosed() ? " · НЗ" : " · НО";
-        String[] partLabels = {PARTS[menu.part()], "Контакт " + orientation,
+        String[] partLabels = {"Поворот " + orientation,
                 kind == PcbCircuitDevice.Kind.CAPACITOR ? (int) value + " мФ" : (int) value + " Ом",
                 kind == PcbCircuitDevice.Kind.FUSE || kind == PcbCircuitDevice.Kind.AMMETER
                         ? limit / 100 + " А" : (int) limit + " В"};
         for (int row = 0; row < partLabels.length; row++) {
-            graphics.drawCenteredString(font, partLabels[row], 220, 160 + row * 18, 0xFFFFFFFF);
+            graphics.drawCenteredString(font, partLabels[row], 220, SETTINGS_Y + 3 + row * SETTINGS_ROW, 0xFFFFFFFF);
         }
         int color = menu.status() == 1 ? 0xFF79D878 : menu.status() >= 4 ? 0xFFE57C72 : 0xFFB6C0BA;
         String status = menu.status() == 0 ? "Проект не проверен" : menu.statusText();

@@ -11,3 +11,8 @@ NeoForge networking; branch nodes stored as Electro Energetics detached nodes; s
 The junction box shape follows powergrid:cord_junction.
 
 Distributed under the Apache License 2.0 terms for the derived parts; the rest of the addon is MIT.
+
+The PCB component models and textures (assets/ee_extras/{models,textures}/block/pcb_part)
+are adapted from Create: Power Grid, revision e22874b, Copyright 2025-2026 patryk3211,
+under the Apache License, Version 2.0. The models were rescaled and recentered for the
+EE Extras board grid, and texture paths were changed to the EE Extras namespace.
