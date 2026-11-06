@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "destroy_extras:item/metal_dust"
+    "layer0": "destroy_extras:item/steel_dust"
   }
 }
