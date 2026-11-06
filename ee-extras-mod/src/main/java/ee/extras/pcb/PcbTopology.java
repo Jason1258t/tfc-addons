@@ -10,7 +10,7 @@ public final class PcbTopology {
     public static final int SIZE = 16;
     public static final int CELLS = SIZE * SIZE;
     public static final int MAX_LAYERS = 3;
-    public static final int VERSION = 1;
+    public static final int VERSION = 2;
 
     public static final int EMPTY = 0;
     public static final int TRACE = 1;
@@ -32,12 +32,14 @@ public final class PcbTopology {
         int level = Math.max(1, Math.min(MAX_LAYERS, source.getInt("Level")));
         if (!source.contains("Level")) level = fallbackLevel;
         CompoundTag result = create(level);
+        result.putInt("Version", source.getInt("Version") >= VERSION ? VERSION : 1);
         byte[] old = source.getByteArray("Cells");
         byte[] cells = Arrays.copyOf(old, CELLS * MAX_LAYERS);
         for (int i = 0; i < cells.length; i++) {
-            if (cells[i] < EMPTY || cells[i] > TERMINAL) cells[i] = EMPTY;
+            if (cells[i] < EMPTY || cells[i] > TERMINAL || cut(source, i % CELLS)) cells[i] = EMPTY;
         }
         result.putByteArray("Cells", cells);
+        if (source.contains("Cut")) result.putByteArray("Cut", Arrays.copyOf(source.getByteArray("Cut"), CELLS));
         if (source.contains(PcbWiring.KEY)) {
             int[] parts = Arrays.copyOf(source.getIntArray(PcbWiring.KEY), CELLS * MAX_LAYERS);
             for (int i = 0; i < parts.length; i++) {
@@ -46,6 +48,28 @@ public final class PcbTopology {
             result.putIntArray(PcbWiring.KEY, parts);
         }
         return result;
+    }
+
+    static boolean positionedContacts(CompoundTag tag) {
+        return tag != null && tag.getInt("Version") >= VERSION;
+    }
+
+    static int[] contacts(CompoundTag tag) {
+        byte[] cells = tag.getByteArray("Cells");
+        return java.util.stream.IntStream.range(0, Math.min(CELLS, cells.length))
+                .filter(cell -> cells[cell] == TERMINAL).toArray();
+    }
+
+    static boolean cut(CompoundTag tag, int cell) {
+        byte[] cut = tag.getByteArray("Cut");
+        return cell < cut.length && cut[cell] != 0;
+    }
+
+    static void toggleCut(CompoundTag tag, int cell) {
+        byte[] cut = Arrays.copyOf(tag.getByteArray("Cut"), CELLS);
+        cut[cell] = (byte) (cut[cell] == 0 ? 1 : 0);
+        tag.putByteArray("Cut", cut);
+        for (int layer = 0; layer < MAX_LAYERS; layer++) set(tag, layer, cell, EMPTY);
     }
 
     public static int level(CompoundTag tag) {
@@ -91,8 +115,10 @@ public final class PcbTopology {
 
     public static void copyInto(CompoundTag source, CompoundTag target) {
         target.putInt("Level", level(source));
-        target.putInt("Version", VERSION);
+        target.putInt("Version", source.getInt("Version"));
         target.putByteArray("Cells", source.getByteArray("Cells").clone());
+        if (source.contains("Cut")) target.putByteArray("Cut", source.getByteArray("Cut").clone());
+        else target.remove("Cut");
         if (source.contains(PcbWiring.KEY)) target.putIntArray(PcbWiring.KEY, source.getIntArray(PcbWiring.KEY).clone());
         else target.remove(PcbWiring.KEY);
     }

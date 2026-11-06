@@ -49,6 +49,11 @@ public class PcbEditorBlockEntity extends BlockEntity implements MenuProvider, C
         sync();
     }
 
+    void toggleCut(int cell) {
+        PcbTopology.toggleCut(topology, cell);
+        sync();
+    }
+
     public void setLevel(int level) {
         PcbTopology.setLevel(topology, level);
         sync();

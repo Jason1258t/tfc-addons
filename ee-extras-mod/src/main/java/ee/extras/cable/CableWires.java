@@ -54,6 +54,17 @@ public final class CableWires {
                     .thickness(0.0625f)
                     .decorative()
                     .build());
+    public static final DeferredHolder<WireType, WireType> PCB_LEAD = EeExtras.WIRES.register("pcb_lead",
+            () -> new WireType.Builder(THIN_SEGMENT)
+                    .resistance(CEEConfigs.server().resistanceValues.wireResistance::get)
+                    .droppedItem(CEEItems.INSULATED_WIRE)
+                    .spoolItem(() -> EeExtras.THIN_SPOOL.get())
+                    .maxLength(CEEConfigs.server().maxBundledWireLength::get)
+                    .maxInsulationVoltage(CEEConfigs.server().voltageValues.wireMaxVoltage::get)
+                    .insulationResistance(330000.0)
+                    .maxTemperature(() -> 3540.0)
+                    .thickness(0.0625f)
+                    .build());
     public static final DeferredHolder<WireType, WireType> DUPLEX_CORE = core("duplex_cable_core", CableKind.DUPLEX);
     public static final DeferredHolder<WireType, WireType> FOUR_CORE_CORE = core("four_core_cable_core", CableKind.FOUR_CORE);
 

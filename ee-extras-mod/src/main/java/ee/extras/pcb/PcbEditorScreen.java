@@ -16,8 +16,19 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
     private static final String[] PARTS = {"Резистор", "Реле", "Кнопка", "Переключатель",
             "Индикатор", "Редстоун-вход", "Редстоун-выход", "Конденсатор", "Диод", "Предохранитель",
             "Вольтметр", "Амперметр", "Транзистор"};
+    private static final String[] TOOLS = {"Дорожка", "Элемент", "Переход", "Вывод", "Ластик", "Деталь", "Контур"};
+    private static final String[] TOOL_HINTS = {
+            "Провести дорожку на текущем слое", "Метка компонента для пассивного чертежа",
+            "Соединить дорожки на разных слоях", "Добавить контакт на краю первого слоя",
+            "Очистить ячейку текущего слоя", "Поставить выбранную электрическую деталь",
+            "Вырезать ячейку платы или вернуть материал"
+    };
+    private static final int TOOL_X = 140;
+    private static final int TOOL_Y = 27;
+    private static final int TOOL_WIDTH = 42;
+    private static final int TOOL_HEIGHT = 15;
     private static final int[] PART_BUTTONS = {PcbEditorMenu.PART, PcbEditorMenu.ROTATE, PcbEditorMenu.OHMS, PcbEditorMenu.VOLTS};
-    private static final int[] BUTTON_Y = {28, 46, 64, 82, 100, 118, 136};
+    private static final int[] BUTTON_Y = {-100, 73, 86, 99, 112, 125, 138};
     private static final int[] BUTTON_ID = {PcbEditorMenu.TOOL, PcbEditorMenu.LAYER, PcbEditorMenu.LEVEL,
             PcbEditorMenu.CHECK, PcbEditorMenu.SAVE, PcbEditorMenu.LOAD, PcbEditorMenu.CLEAR};
 
@@ -36,9 +47,14 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         double localX = mouseX - leftPos;
         double localY = mouseY - topPos;
+        int tool = toolAt(localX, localY);
+        if (tool >= 0) {
+            click(PcbEditorMenu.SELECT_TOOL + tool);
+            return true;
+        }
         if (localX >= 140 && localX < 266) {
-            for (int i = 0; i < BUTTON_Y.length; i++) {
-                if (localY >= BUTTON_Y[i] && localY < BUTTON_Y[i] + 18) {
+            for (int i = 1; i < BUTTON_Y.length; i++) {
+                if (localY >= BUTTON_Y[i] && localY < BUTTON_Y[i] + 13) {
                     click(BUTTON_ID[i]);
                     return true;
                 }
@@ -60,11 +76,33 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
+    private static int toolAt(double x, double y) {
+        if (x < TOOL_X || x >= TOOL_X + 3 * TOOL_WIDTH || y < TOOL_Y || y >= TOOL_Y + 3 * TOOL_HEIGHT) return -1;
+        int tool = (int) ((y - TOOL_Y) / TOOL_HEIGHT) * 3 + (int) ((x - TOOL_X) / TOOL_WIDTH);
+        return tool < TOOLS.length ? tool : -1;
+    }
+
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
         renderTooltip(graphics, mouseX, mouseY);
-        int x = mouseX - leftPos - GRID_X;
+        int tool = toolAt(mouseX - leftPos, mouseY - topPos);
+        if (tool >= 0) {
+            graphics.renderTooltip(font, Component.literal(TOOL_HINTS[tool]), mouseX, mouseY);
+            return;
+        }
+        int localX = mouseX - leftPos;
+        int localY = mouseY - topPos;
+        if (localX >= 12 && localX < 136 && localY >= 142 && localY < 154) {
+            graphics.renderTooltip(font, Component.literal(menu.statusText()), mouseX, mouseY);
+            return;
+        }
+        if (localX >= 244 && localX < 260 && localY >= 8 && localY < 24 && !menu.getSlot(0).hasItem()) {
+            graphics.renderTooltip(font, Component.literal("Бумага или чертёж. Чистую плату можно оставить в инвентаре."),
+                    mouseX, mouseY);
+            return;
+        }
+        int x = localX - GRID_X;
         int y = mouseY - topPos - GRID_Y;
         if (x < 0 || y < 0 || x >= CELL * PcbTopology.SIZE || y >= CELL * PcbTopology.SIZE
                 || menu.editor() == null) return;
@@ -90,6 +128,8 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         graphics.fill(leftPos, topPos, leftPos + imageWidth, topPos + imageHeight, 0xFF20252A);
+        graphics.fill(leftPos + 243, topPos + 7, leftPos + 261, topPos + 25, 0xFF66706C);
+        graphics.fill(leftPos + 244, topPos + 8, leftPos + 260, topPos + 24, 0xFF101416);
         graphics.fill(leftPos + GRID_X - 2, topPos + GRID_Y - 2, leftPos + GRID_X + 112 + 2,
                 topPos + GRID_Y + 112 + 2, 0xFF0B1114);
         PcbEditorBlockEntity editor = menu.editor();
@@ -99,7 +139,7 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
             for (int x = 0; x < PcbTopology.SIZE; x++) {
                 int cell = y * PcbTopology.SIZE + x;
                 int value = PcbTopology.get(topology, menu.layer(), cell);
-                int color = switch (value) {
+                int color = PcbTopology.cut(topology, cell) ? 0xFF0B1114 : switch (value) {
                     case PcbTopology.TRACE -> 0xFFD17B45;
                     case PcbTopology.COMPONENT -> 0xFFE3D36A;
                     case PcbTopology.VIA -> 0xFF69D4DB;
@@ -120,9 +160,16 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
             int y = topPos + 155 + row * 18;
             graphics.fill(leftPos + 175, y, leftPos + 266, y + 17, 0xFF66706C);
         }
-        for (int y : BUTTON_Y) {
-            graphics.fill(leftPos + 140, topPos + y, leftPos + 266, topPos + y + 18, 0xFF101416);
-            graphics.fill(leftPos + 141, topPos + y + 1, leftPos + 265, topPos + y + 17, 0xFF66706C);
+        for (int tool = 0; tool < TOOLS.length; tool++) {
+            int x = leftPos + TOOL_X + tool % 3 * TOOL_WIDTH;
+            int y = topPos + TOOL_Y + tool / 3 * TOOL_HEIGHT;
+            graphics.fill(x, y, x + TOOL_WIDTH - 1, y + TOOL_HEIGHT - 1,
+                    tool == menu.tool() ? 0xFF3E7863 : 0xFF46535A);
+        }
+        for (int i = 1; i < BUTTON_Y.length; i++) {
+            int y = BUTTON_Y[i];
+            graphics.fill(leftPos + 140, topPos + y, leftPos + 266, topPos + y + 13, 0xFF101416);
+            graphics.fill(leftPos + 141, topPos + y + 1, leftPos + 265, topPos + y + 12, 0xFF66706C);
         }
     }
 
@@ -130,7 +177,12 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         graphics.drawString(font, title, 12, 8, 0xFFE7ECE8, false);
         graphics.drawString(font, Component.translatable("ee_extras.pcb.tool_value", toolName()), 140, 18, 0xFFD5DDD8, false);
-        for (int i = 0; i < BUTTON_Y.length; i++) {
+        for (int tool = 0; tool < TOOLS.length; tool++) {
+            int x = TOOL_X + tool % 3 * TOOL_WIDTH + TOOL_WIDTH / 2;
+            int y = TOOL_Y + tool / 3 * TOOL_HEIGHT + 3;
+            graphics.drawCenteredString(font, TOOLS[tool], x, y, 0xFFFFFFFF);
+        }
+        for (int i = 1; i < BUTTON_Y.length; i++) {
             Component label = switch (i) {
                 case 1 -> Component.translatable("ee_extras.pcb.layer_value", menu.layer() + 1);
                 case 2 -> Component.literal("Уровень: L" + menu.level());
@@ -140,7 +192,7 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
                                 ? "ee_extras.pcb.save" : "ee_extras.pcb.assemble");
                 default -> Component.translatable("ee_extras.pcb." + new String[] {"tool", "layer", "level", "check", "save", "load", "clear"}[i]);
             };
-            graphics.drawCenteredString(font, label, 203, BUTTON_Y[i] + 5, 0xFFFFFFFF);
+            graphics.drawCenteredString(font, label, 203, BUTTON_Y[i] + 2, 0xFFFFFFFF);
         }
         PcbCircuitDevice.Kind kind = PcbWiring.KINDS[menu.part()];
         double value = PcbWiring.OHMS[menu.resistance()];
@@ -156,10 +208,13 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
             graphics.drawCenteredString(font, partLabels[row], 220, 160 + row * 18, 0xFFFFFFFF);
         }
         int color = menu.status() == 1 ? 0xFF79D878 : menu.status() >= 4 ? 0xFFE57C72 : 0xFFB6C0BA;
-        graphics.drawString(font, menu.statusText(), 12, 144, color, false);
+        String status = menu.statusText();
+        if (font.width(status) > 124) status = font.plainSubstrByWidth(status, 116) + "…";
+        graphics.drawString(font, status, 12, 143, color, false);
     }
 
     private Component toolName() {
+        if (menu.tool() == PcbEditorMenu.CUT_TOOL) return Component.literal("Контур платы");
         if (menu.tool() == 5) return Component.literal(PARTS[menu.part()]);
         return Component.translatable("ee_extras.pcb.tool." + menu.tool());
     }

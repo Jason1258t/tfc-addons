@@ -34,6 +34,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public final class PcbCircuitBlock extends SimpleElectricalDeviceBlock<PcbCircuitDevice> implements IBE<PcbCircuitBlockEntity> {
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
+    public static final BooleanProperty CUSTOM = BooleanProperty.create("custom");
     public static final BooleanProperty BURNT = BooleanProperty.create("burnt");
     public static final IntegerProperty OUTPUT = IntegerProperty.create("output", 0, 15);
     private static final VoxelShape SHAPE = Block.box(0.5, 0, 0.5, 15.5, 2, 15.5);
@@ -42,11 +43,13 @@ public final class PcbCircuitBlock extends SimpleElectricalDeviceBlock<PcbCircui
 
     public PcbCircuitBlock(Properties properties) {
         super(properties);
-        registerDefaultState(defaultBlockState().setValue(LIT, false).setValue(OUTPUT, 0).setValue(BURNT, false));
+        registerDefaultState(defaultBlockState().setValue(LIT, false).setValue(OUTPUT, 0).setValue(BURNT, false).setValue(CUSTOM, false));
     }
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        if (state.getValue(CUSTOM) && level.getBlockEntity(pos) instanceof PcbCircuitBlockEntity board)
+            return board.shape();
         return SHAPE;
     }
 
@@ -57,12 +60,24 @@ public final class PcbCircuitBlock extends SimpleElectricalDeviceBlock<PcbCircui
 
     @Override
     public Map<Integer, Vec3> getNodePositions(Level level, BlockPos pos, BlockState state) {
+        if (level.getBlockEntity(pos) instanceof PcbCircuitBlockEntity board) {
+            int[] contacts = board.positionedContacts();
+            if (contacts != null) {
+                Map<Integer, Vec3> nodes = new java.util.LinkedHashMap<>();
+                for (int id = 0; id < contacts.length; id++) {
+                    int cell = contacts[id];
+                    nodes.put(id, new Vec3((cell % PcbTopology.SIZE + 0.5) / PcbTopology.SIZE,
+                            2.0 / 16, (cell / PcbTopology.SIZE + 0.5) / PcbTopology.SIZE));
+                }
+                return nodes;
+            }
+        }
         return NODES.getNodes(Direction.UP);
     }
 
     @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int node) {
-        return NODES.getNodePos(Direction.UP, node);
+        return getNodePositions(level, pos, state).get(node);
     }
 
     @Override
@@ -91,8 +106,15 @@ public final class PcbCircuitBlock extends SimpleElectricalDeviceBlock<PcbCircui
         if (topology == null || device == null || boardLevel == 0) return;
         var parts = PcbWiring.compile(topology);
         if (parts == null) return;
-        device.setCircuit(parts, PcbCircuitDevice.Rating.values()[boardLevel - 1]);
         entity.setBoard(stack);
+        int[] contacts = entity.positionedContacts();
+        if (contacts == null) {
+            device.setCircuit(parts, PcbCircuitDevice.Rating.values()[boardLevel - 1]);
+        } else {
+            device.setCircuit(parts, PcbCircuitDevice.Rating.values()[boardLevel - 1], contacts.length);
+            level.setBlock(pos, state.setValue(CUSTOM, true), Block.UPDATE_ALL);
+            ensureNodesExist(server, pos, level.getBlockState(pos));
+        }
         device.restoreFuses(topology.getLong("BlownFuses"));
     }
 
@@ -110,7 +132,7 @@ public final class PcbCircuitBlock extends SimpleElectricalDeviceBlock<PcbCircui
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        builder.add(LIT, OUTPUT, BURNT);
+        builder.add(LIT, OUTPUT, BURNT, CUSTOM);
     }
 
     @Override

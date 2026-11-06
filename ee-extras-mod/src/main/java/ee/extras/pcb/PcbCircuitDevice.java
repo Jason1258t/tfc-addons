@@ -20,11 +20,12 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
-/** Схема платы в общей матрице EE. Узлы 0–3 доступны для подключения проводов. */
+/** Схема платы в общей матрице EE. Внешние узлы нумеруются в порядке контактов на плате. */
 public final class PcbCircuitDevice extends SimpleElectricalDevice {
-    private static final int TERMINALS = 4;
-    private static final int MAX_NODES = 32;
+    private static final int LEGACY_TERMINALS = 4;
+    static final int MAX_TERMINALS = 4 * (PcbTopology.SIZE - 1);
     private static final int MAX_PARTS = 64;
+    private static final int MAX_NODES = MAX_TERMINALS + 2 * MAX_PARTS;
     private static final double CONTACT = 0.01;
     private static final double OPEN = 1e9;
     private static final double CAPACITOR_ESR = 0.1;
@@ -45,9 +46,9 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         }
     }
 
-    private record Circuit(List<Part> parts, int[] groups, ElectricalProperties[] reactive, boolean hasCapacitor) {
-        Circuit(List<Part> parts) {
-            this(List.copyOf(parts), terminalGroups(parts), reactiveParts(parts),
+    private record Circuit(List<Part> parts, int terminals, int[] groups, ElectricalProperties[] reactive, boolean hasCapacitor) {
+        Circuit(List<Part> parts, int terminals) {
+            this(List.copyOf(parts), terminals, terminalGroups(parts), reactiveParts(parts),
                     parts.stream().anyMatch(part -> part.kind == Kind.CAPACITOR));
         }
 
@@ -85,7 +86,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
 
     private Circuit collectedCircuit;
     private CircuitBuilder collectedBuilder;
-    private volatile Circuit circuit = new Circuit(List.of());
+    private volatile Circuit circuit = new Circuit(List.of(), LEGACY_TERMINALS);
     private long buttonUntil;
     private volatile boolean switched;
     private volatile boolean powered;
@@ -137,13 +138,17 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
     }
 
     public void setCircuit(List<Part> parts, Rating rating) {
+        setCircuit(parts, rating, LEGACY_TERMINALS);
+    }
+
+    void setCircuit(List<Part> parts, Rating rating, int terminals) {
         if (parts.size() > MAX_PARTS || parts.stream().anyMatch(part -> !part.valid())) {
             throw new IllegalArgumentException("Недопустимая схема платы");
         }
         closedMask = 0;
         blownFuses = 0;
         this.rating = rating;
-        circuit = new Circuit(parts);
+        circuit = new Circuit(parts, terminals);
         deviceSD.setDirty();
     }
 
@@ -217,16 +222,16 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         collectedBuilder = null;
         double watts = 0;
         double maxVoltage = 0;
-        int[] groups = circuit.groups;
-        for (int a = 0; a < TERMINALS; a++) {
-            for (int b = a + 1; b < TERMINALS; b++) {
+        Circuit current = circuit;
+        int[] groups = current.groups;
+        for (int a = 0; a < current.terminals; a++) {
+            for (int b = a + 1; b < current.terminals; b++) {
                 if (groups[a] == groups[b]) {
                     maxVoltage = Math.max(maxVoltage, Math.sqrt(results.getVoltageAtSqr(pos, a, b)));
                 }
             }
         }
         double maxCurrent = 0;
-        Circuit current = circuit;
         long nextFuses = blownFuses;
         for (int i = 0; i < current.parts.size(); i++) {
             Part part = current.parts.get(i);
@@ -373,7 +378,8 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 return;
             }
         }
-        circuit = new Circuit(parts);
+        int terminals = tag.contains("Terminals") ? Math.clamp(tag.getInt("Terminals"), 0, MAX_TERMINALS) : LEGACY_TERMINALS;
+        circuit = new Circuit(parts, terminals);
         ListTag charges = tag.getList("Charge", Tag.TAG_DOUBLE);
         for (int i = 0; i < Math.min(charges.size(), circuit.reactive.length); i++) {
             if (circuit.reactive[i] instanceof CapacitorProperties capacitor && charges.get(i) instanceof net.minecraft.nbt.DoubleTag charge)
@@ -383,6 +389,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
 
     @Override
     public void write(CompoundTag tag) {
+        tag.putInt("Terminals", circuit.terminals);
         tag.putBoolean("Switch", switched);
         tag.putBoolean("Burnt", burnt);
         tag.putLong("BlownFuses", blownFuses);

@@ -64,17 +64,18 @@ final class PcbWiring {
         List<Part> parts = new ArrayList<>();
         int[] nodes = new int[size];
         Arrays.fill(nodes, -1);
+        boolean positioned = PcbTopology.positionedContacts(tag);
         int terminals = 0;
         for (int i = 0; i < size; i++) {
             if (cells[i] != PcbTopology.TERMINAL) continue;
-            if (terminals == 4 || i >= CELLS || !edge(i)) return null;
+            if ((!positioned && terminals == 4) || i >= CELLS || !edge(i)) return null;
             int group = root(groups, i);
             if (nodes[group] < 0) nodes[group] = terminals;
             else parts.add(new Part(Kind.TRACE, nodes[group], terminals, 1, 0, 0, 1));
             terminals++;
         }
-        if (terminals < 2) return null;
-        int nextNode = 4;
+        if (!positioned && terminals < 2) return null;
+        int nextNode = positioned ? terminals : 4;
         for (int i = 0; i < size; i++) {
             if (cells[i] != PcbTopology.COMPONENT) continue;
             int definition = definitions[i];
@@ -99,7 +100,7 @@ final class PcbWiring {
             if (!part.valid() || parts.size() == 64) return null;
             parts.add(part);
         }
-        return parts.isEmpty() ? null : List.copyOf(parts);
+        return parts.isEmpty() || parts.size() > 64 ? null : List.copyOf(parts);
     }
 
     private static boolean conductor(int cell) {

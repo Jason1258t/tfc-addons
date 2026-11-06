@@ -1,5 +1,8 @@
 package ee.extras.devtest;
 
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
+import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
+
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
@@ -117,11 +120,17 @@ final class PcbCircuitTest {
             var menu = new PcbEditorMenu(1, player.getInventory(), ContainerLevelAccess.create(level, table), editor);
             // Два вывода по краям строки и резистор между дорожками.
             for (int cell = 1; cell < 15; cell++) if (cell != 7) menu.clickMenuButton(player, cell);
-            for (int i = 0; i < 3; i++) menu.clickMenuButton(player, PcbEditorMenu.TOOL);
+            for (int row = 1; row < 15; row++) menu.clickMenuButton(player, row * 16);
+            menu.clickMenuButton(player, PcbEditorMenu.SELECT_TOOL + 6);
+            menu.clickMenuButton(player, 8 * 16 + 8);
+            menu.clickMenuButton(player, PcbEditorMenu.SELECT_TOOL + 3);
             menu.clickMenuButton(player, 0);
             menu.clickMenuButton(player, 15);
-            menu.clickMenuButton(player, PcbEditorMenu.TOOL);
-            menu.clickMenuButton(player, PcbEditorMenu.TOOL);
+            menu.clickMenuButton(player, 1);
+            menu.clickMenuButton(player, 16);
+            menu.clickMenuButton(player, 31);
+            menu.clickMenuButton(player, 240);
+            menu.clickMenuButton(player, PcbEditorMenu.SELECT_TOOL + 5);
             for (int i = 0; i < 5; i++) menu.clickMenuButton(player, PcbEditorMenu.OHMS);
             menu.clickMenuButton(player, 7);
             menu.clickMenuButton(player, PcbEditorMenu.SAVE);
@@ -152,8 +161,23 @@ final class PcbCircuitTest {
             var device = DevicesSavedData.load(level).getDevice(target, PcbCircuitDevice.class);
             CompoundTag snapshot = new CompoundTag();
             device.write(snapshot);
-            if (!snapshot.getString("Rating").equals("L" + (tier + 1)) || snapshot.getList("Circuit", 10).size() != 1)
+            if (!snapshot.getString("Rating").equals("L" + (tier + 1)) || snapshot.getList("Circuit", 10).size() != 5 || snapshot.getInt("Terminals") != 6)
                 throw new IllegalStateException("При установке потеряны схема или уровень платы");
+            var circuitBlock = (PcbCircuitBlock) level.getBlockState(target).getBlock();
+            var contacts = circuitBlock.getNodePositions(level, target, level.getBlockState(target));
+            if (contacts.size() != 6 || !contacts.get(5).equals(new Vec3(0.5 / 16, 2.0 / 16, 15.5 / 16)))
+                throw new IllegalStateException("Узлы не соответствуют контактам редактора");
+            if (level.getBlockState(target).getShape(level, target).toAabbs().stream()
+                    .anyMatch(box -> box.contains(8.5 / 16, 0.5 / 16, 8.5 / 16)))
+                throw new IllegalStateException("Вырезанная ячейка осталась в контуре платы");
+            player.setItemInHand(InteractionHand.MAIN_HAND, ee.extras.EeExtras.THIN_SPOOL.toStack());
+            for (int contact : new int[] {4, 5}) {
+                var wireHit = new BlockHitResult(Vec3.atLowerCornerOf(target).add(contacts.get(contact)), Direction.UP, target, false);
+                if (!player.getMainHandItem().useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, wireHit)).consumesAction())
+                    throw new IllegalStateException("Катушка не приняла контакт " + contact);
+            }
+            if (!InfrastructureSavedData.load(level).isConnected(new InWorldNode(4, target), new InWorldNode(5, target)))
+                throw new IllegalStateException("Тонкий провод не подключился к выбранным контактам");
             var drops = net.minecraft.world.level.block.Block.getDrops(level.getBlockState(target), level, target,
                     level.getBlockEntity(target));
             if (drops.size() != 1 || !ItemStack.isSameItemSameComponents(drops.getFirst(), active))

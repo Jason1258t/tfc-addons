@@ -53,6 +53,14 @@ public final class CableEvents {
             e.setCancellationResult(CableCap.put(level, pos, e.getEntity(), stack));
             return;
         }
+        if (stack.getItem() instanceof ThinSpoolItem thin) {
+            var result = thin.useLead(new net.minecraft.world.item.context.UseOnContext(e.getEntity(), e.getHand(), e.getHitVec()));
+            if (result != null) {
+                e.setCanceled(true);
+                e.setCancellationResult(result);
+                return;
+            }
+        }
         // Катушка кабеля по прибору с двумя контактами — сразу в прокладку, по той же причине
         if (stack.getItem() instanceof BundledWireItem && !(stack.getItem() instanceof FourCoreSpoolItem)
                 && CableCap.isTwoContact(level, pos, level.getBlockState(pos))) {

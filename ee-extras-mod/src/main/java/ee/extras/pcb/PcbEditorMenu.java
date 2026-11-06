@@ -26,6 +26,9 @@ public class PcbEditorMenu extends AbstractContainerMenu {
     public static final int VOLTS = 1010;
     public static final int CONTACT = 1011;
 
+    public static final int SELECT_TOOL = 1020;
+    static final int CUT_TOOL = 6;
+
     private final ContainerLevelAccess access;
     private final PcbEditorBlockEntity editor;
     private final DataSlot tool = DataSlot.standalone();
@@ -109,7 +112,17 @@ public class PcbEditorMenu extends AbstractContainerMenu {
     @Override
     public boolean clickMenuButton(Player player, int id) {
         if (editor == null) return false;
+        if (id >= SELECT_TOOL && id <= SELECT_TOOL + CUT_TOOL) {
+            tool.set(id - SELECT_TOOL);
+            return true;
+        }
         if (id >= 0 && id < PcbTopology.CELLS) {
+            if (tool.get() == CUT_TOOL) {
+                editor.toggleCut(id);
+                status.set(0);
+                return true;
+            }
+            if (PcbTopology.cut(editor.topology(), id)) return false;
             if (tool.get() == 5) {
                 editor.setPart(layer.get(), id, PcbWiring.component(part(), rotation(), resistance(), threshold(), normallyClosed()));
                 status.set(0);
@@ -127,7 +140,7 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             return true;
         }
         switch (id) {
-            case TOOL -> tool.set((tool.get() + 1) % 6);
+            case TOOL -> tool.set((tool.get() + 1) % (CUT_TOOL + 1));
             case PART -> {
                 tool.set(5);
                 part.set((part.get() + 1) % PcbWiring.KINDS.length);
