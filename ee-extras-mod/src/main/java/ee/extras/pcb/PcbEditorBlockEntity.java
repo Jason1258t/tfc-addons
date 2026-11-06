@@ -78,14 +78,22 @@ public class PcbEditorBlockEntity extends BlockEntity implements MenuProvider, C
         if (error != null) return error;
         ItemStack stack = items.getItem(0);
         int level = PcbTopology.level(topology);
-        int boardLevel = PcbBoardItem.level(stack);
-        if (boardLevel != 0) {
-            var original = stack.get(PcbItems.PCB_TOPOLOGY.get());
-            if (!PcbWiring.active(topology) || boardLevel != level || stack.getCount() != 1
-                    || (original != null && original.getBoolean(PcbAssembly.ASSEMBLED))) return PcbBoardItem.EDITOR_ERROR;
+        boolean fromInventory = stack.isEmpty() && player != null && PcbWiring.active(topology);
+        if (fromInventory) {
+            stack = player.getInventory().items.stream()
+                    .filter(candidate -> PcbBoardItem.isClean(candidate, level))
+                    .findFirst().orElse(ItemStack.EMPTY);
+        }
+        if (fromInventory || PcbBoardItem.level(stack) != 0) {
+            if (!PcbBoardItem.isClean(stack, level)) return PcbBoardItem.EDITOR_ERROR;
+            if (!PcbWiring.active(topology)) return PcbWiring.ERROR;
+            if (!fromInventory && stack.getCount() > 1 && player == null) return PcbBoardItem.EDITOR_ERROR;
             var parts = PcbWiring.compile(topology);
             if (parts == null || !PcbAssembly.consume(player, parts)) return PcbAssembly.MISSING;
-            ItemStack result = stack.copy();
+            ItemStack result = stack.copyWithCount(1);
+            stack.shrink(1);
+            if (fromInventory) player.getInventory().setChanged();
+            else if (!stack.isEmpty()) player.getInventory().placeItemBackInInventory(stack.copy());
             PcbTopology.attach(result, topology);
             CompoundTag assembled = result.get(PcbItems.PCB_TOPOLOGY.get()).copy();
             assembled.putBoolean(PcbAssembly.ASSEMBLED, true);

@@ -111,7 +111,9 @@ final class PcbCircuitTest {
         for (int tier = 0; tier < boards.length; tier++) {
             var editor = (ee.extras.pcb.PcbEditorBlockEntity) level.getBlockEntity(table);
             editor.clear(tier + 1);
-            editor.setItem(0, boards[tier]);
+            editor.setItem(0, tier == 0 ? ItemStack.EMPTY : boards[tier].copyWithCount(3));
+            player.getInventory().clearContent();
+            if (tier == 0) player.getInventory().setItem(2, boards[tier].copyWithCount(3));
             var menu = new PcbEditorMenu(1, player.getInventory(), ContainerLevelAccess.create(level, table), editor);
             // Два вывода по краям строки и резистор между дорожками.
             for (int cell = 1; cell < 15; cell++) if (cell != 7) menu.clickMenuButton(player, cell);
@@ -127,6 +129,11 @@ final class PcbCircuitTest {
             player.getInventory().setItem(1, PcbItems.RESISTOR.toStack());
             menu.clickMenuButton(player, PcbEditorMenu.SAVE);
             if (!player.getInventory().getItem(1).isEmpty()) throw new IllegalStateException("Резистор не списан");
+            int remaining = player.getInventory().items.stream()
+                    .filter(stack -> stack.is(boards[PcbTopology.level(editor.topology()) - 1].getItem()))
+                    .mapToInt(ItemStack::getCount).sum();
+            if (remaining != 2 || editor.getItem(0).getCount() != 1)
+                throw new IllegalStateException("Сборка должна расходовать ровно одну плату");
             ItemStack active = editor.getItem(0).copy();
             CompoundTag topology = active.get(PcbItems.PCB_TOPOLOGY.get());
             if (menu.status() != 1 || topology == null || PcbTopology.level(topology) != tier + 1)

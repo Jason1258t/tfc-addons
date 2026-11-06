@@ -136,7 +136,7 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
                 case 2 -> Component.literal("Уровень: L" + menu.level());
                 case 4 -> menu.getSlot(0).getItem().is(PcbItems.BURNT_BOARD.get())
                         ? Component.translatable("ee_extras.pcb.salvage")
-                        : Component.translatable(PcbBoardItem.level(menu.getSlot(0).getItem()) == 0
+                        : Component.translatable(!menu.getSlot(0).getItem().isEmpty() && PcbBoardItem.level(menu.getSlot(0).getItem()) == 0
                                 ? "ee_extras.pcb.save" : "ee_extras.pcb.assemble");
                 default -> Component.translatable("ee_extras.pcb." + new String[] {"tool", "layer", "level", "check", "save", "load", "clear"}[i]);
             };

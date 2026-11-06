@@ -36,9 +36,9 @@ public final class PcbCircuitBlock extends SimpleElectricalDeviceBlock<PcbCircui
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     public static final BooleanProperty BURNT = BooleanProperty.create("burnt");
     public static final IntegerProperty OUTPUT = IntegerProperty.create("output", 0, 15);
-    private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 4, 16);
+    private static final VoxelShape SHAPE = Block.box(0.5, 0, 0.5, 15.5, 2, 15.5);
     private static final NodeConfigurator NODES = new NodeConfigurator.Builder()
-            .add(4, 4, 4).add(12, 4, 4).add(12, 4, 12).add(4, 4, 12).simple();
+            .add(4, 2, 4).add(12, 2, 4).add(12, 2, 12).add(4, 2, 12).simple();
 
     public PcbCircuitBlock(Properties properties) {
         super(properties);

@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.Block;
 
 /** Предмет готовой платы. Пассивная плата остаётся материалом для рецептов. */
 final class PcbBoardItem extends BlockItem {
-    static final String EDITOR_ERROR = "Нужна одна чистая плата нужного уровня";
+    static final String EDITOR_ERROR = "Нужна чистая плата уровня проекта";
     private final int level;
 
     PcbBoardItem(int level) {
@@ -24,6 +24,12 @@ final class PcbBoardItem extends BlockItem {
 
     static int level(ItemStack stack) {
         return stack.getItem() instanceof PcbBoardItem board ? board.level : 0;
+    }
+
+    static boolean isClean(ItemStack stack, int level) {
+        if (stack.isEmpty() || level(stack) != level) return false;
+        var topology = stack.get(PcbItems.PCB_TOPOLOGY.get());
+        return topology == null || !topology.getBoolean(PcbAssembly.ASSEMBLED);
     }
 
     @Override
