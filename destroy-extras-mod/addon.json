@@ -1,9 +1,9 @@
 {
   "id": "destroy_extras",
   "name": "Destroy Extras — химические машины",
-  "version": "0.6.0",
-  "jar": "destroy-extras-0.6.0.jar",
-  "sha256": "8cd052b3e9473b7473f1f2a9e0e10e918e4d4781468c31d8d56462461f97a9bd",
+  "version": "0.7.1",
+  "jar": "destroy-extras-0.7.1.jar",
+  "sha256": "87de14d35f93c3a8fb2b73537e16e407baf5612e00cb84596d9b77736a1a5e94",
   "order": 801,
   "side": "both",
   "manual": true,
@@ -15,7 +15,11 @@
       "name": "Мембранный электролизёр",
       "image": "membrane_electrolyzer.png",
       "recipe": {
-        "pattern": ["GEG", "CTC", "GGG"],
+        "pattern": [
+          "GEG",
+          "CTC",
+          "GGG"
+        ],
         "key": {
           "G": {
             "item": "immersiveengineering:graphite_electrode"
@@ -42,7 +46,11 @@
       "name": "Травильная ванна L1–L3",
       "image": "etching_bath.png",
       "recipe": {
-        "pattern": ["CCC", "TFT", "CCC"],
+        "pattern": [
+          "CCC",
+          "TFT",
+          "CCC"
+        ],
         "key": {
           "C": {
             "item": "create:copper_sheet",
@@ -62,11 +70,21 @@
       "name": "Металлургический процессор",
       "image": "metallurgical_processor.png",
       "recipe": {
-        "pattern": ["SCS", "CEC", "SCS"],
+        "pattern": [
+          "SCS",
+          "CEC",
+          "SCS"
+        ],
         "key": {
-          "S": { "item": "tfc:metal/sheet/steel" },
-          "C": { "item": "create:copper_casing" },
-          "E": { "item": "create:electron_tube" }
+          "S": {
+            "item": "tfc:metal/sheet/steel"
+          },
+          "C": {
+            "item": "create:copper_casing"
+          },
+          "E": {
+            "item": "create:electron_tube"
+          }
         }
       }
     },
@@ -75,16 +93,56 @@
       "name": "Обожжённый тетраэдрит",
       "image": "roasted_tetrahedrite.png"
     },
-    { "id": "destroy_extras:roasted_sphalerite", "name": "Обожжённый сфалерит", "image": "roasted_sphalerite.png" },
-    { "id": "destroy_extras:gangue", "name": "Промытая пустая порода", "image": "gangue.png" },
-    { "id": "destroy_extras:iron_residue", "name": "Железный остаток", "image": "iron_residue.png" },
-    { "id": "destroy_extras:red_mud", "name": "Красный шлам", "image": "red_mud.png" },
-    { "id": "destroy_extras:aluminum_hydroxide", "name": "Гидроксид алюминия", "image": "aluminum_hydroxide.png" },
-    { "id": "destroy_extras:alumina", "name": "Глинозём", "image": "alumina.png" },
-    { "id": "destroy_extras:cement_copper", "name": "Цементная медь", "image": "cement_copper.png" },
-    { "id": "destroy_extras:nickel_sulfide", "name": "Сульфидный концентрат никеля", "image": "nickel_sulfide.png" },
-    { "id": "destroy_extras:electronic_scrap", "name": "Электронный лом", "image": "electronic_scrap.png" },
-    { "id": "destroy_extras:precious_residue", "name": "Благородный анодный остаток", "image": "precious_residue.png" },
+    {
+      "id": "destroy_extras:roasted_sphalerite",
+      "name": "Обожжённый сфалерит",
+      "image": "roasted_sphalerite.png"
+    },
+    {
+      "id": "destroy_extras:gangue",
+      "name": "Промытая пустая порода",
+      "image": "gangue.png"
+    },
+    {
+      "id": "destroy_extras:iron_residue",
+      "name": "Железный остаток",
+      "image": "iron_residue.png"
+    },
+    {
+      "id": "destroy_extras:red_mud",
+      "name": "Красный шлам",
+      "image": "red_mud.png"
+    },
+    {
+      "id": "destroy_extras:aluminum_hydroxide",
+      "name": "Гидроксид алюминия",
+      "image": "aluminum_hydroxide.png"
+    },
+    {
+      "id": "destroy_extras:alumina",
+      "name": "Глинозём",
+      "image": "alumina.png"
+    },
+    {
+      "id": "destroy_extras:cement_copper",
+      "name": "Цементная медь",
+      "image": "cement_copper.png"
+    },
+    {
+      "id": "destroy_extras:nickel_sulfide",
+      "name": "Сульфидный концентрат никеля",
+      "image": "nickel_sulfide.png"
+    },
+    {
+      "id": "destroy_extras:electronic_scrap",
+      "name": "Электронный лом",
+      "image": "electronic_scrap.png"
+    },
+    {
+      "id": "destroy_extras:precious_residue",
+      "name": "Благородный анодный остаток",
+      "image": "precious_residue.png"
+    },
     {
       "id": "destroy_extras:stabilized_tailings",
       "name": "Стабилизированные хвосты",
