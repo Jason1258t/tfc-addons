@@ -20,7 +20,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
  * Поиск пути провода по поверхностям: A* по сетке 1/16 блока, ходы вдоль осей до ближайшей преграды или границы
- * блока; клетка с опорой — рядом блок-проводник (isRedstoneConductor), без опоры — не больше 16 шагов подряд; не
+ * блока; клетка с опорой — рядом блок-проводник или поверхность забора, без опоры — не больше 16 шагов подряд; не
  * дальше 160 шагов и 150 клеток за клик. Прямой путь (alternatePath) — до 16 шагов по каждой оси, без поиска.
  *
  * Перенесено из Create: Power Grid 0.6.2 (org.patryk3211.powergrid.utility.BlockTrace, Apache-2.0, авторы patryk3211,
@@ -231,19 +231,8 @@ public final class BlockTrace {
                     p.getZ() * UNIT_SIZE + origin.z + HALF_UNIT);
         }
 
-        boolean isSupport(Vec3i position) {
-            BlockPos bp = BlockPos.containing(transform(position));
-            return world.getBlockState(bp).isRedstoneConductor(world, bp);
-        }
-
         Cell createCell(Vec3i position, int length) {
-            boolean supported = false;
-            for (Direction d : Direction.values()) {
-                if (position.equals(target) || isSupport(position.offset(d.getNormal()))) {
-                    supported = true;
-                    break;
-                }
-            }
+            boolean supported = position.equals(target) || SurfaceWireEntity.supported(world, transform(position));
             Cell cell = new Cell(position, length, supported);
             states.put(position, cell);
             return cell;
@@ -270,9 +259,7 @@ public final class BlockTrace {
         boolean insideShape(Vec3i cellPos) {
             Vec3 p = transform(cellPos);
             BlockPos pos = BlockPos.containing(p);
-            Vec3 local = p.subtract(pos.getX(), pos.getY(), pos.getZ());
-            for (AABB box : world.getBlockState(pos).getCollisionShape(world, pos).toAabbs()) if (box.contains(local)) return true;
-            return false;
+            return SurfaceWireEntity.inside(world, pos, p);
         }
 
         Vec3i raycastNextPosition(Cell cell, Direction dir) {

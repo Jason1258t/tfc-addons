@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -573,7 +574,7 @@ public class SurfaceWireEntity extends Entity implements IEntityWithComplexSpawn
 
     /**
      * Своё, в Power Grid этого нет: шаг маршрута внутри формы блока или больше MAX_UNSUPPORTED шагов подряд без
-     * опоры (соседний блок-проводник, как у BlockTrace) — участок вырезается и выпадает. Шаги в блоках приборов на
+     * опоры (соседняя поверхность, как у BlockTrace) — участок вырезается и выпадает. Шаги в блоках приборов на
      * концах не проверяются (провод заходит в их форму).
      */
     void supportCheck(ServerLevel sl) {
@@ -612,14 +613,19 @@ public class SurfaceWireEntity extends Entity implements IEntityWithComplexSpawn
         BlockState st = level.getBlockState(pos);
         if (st.isAir()) return false;
         Vec3 local = p.subtract(pos.getX(), pos.getY(), pos.getZ());
-        for (AABB box : st.getCollisionShape(level, pos).toAabbs()) if (box.contains(local)) return true;
+        // У забора форма столкновения выше видимых перекладин и столбов.
+        var shape = st.is(BlockTags.FENCES) ? st.getShape(level, pos) : st.getCollisionShape(level, pos);
+        for (AABB box : shape.toAabbs()) if (box.contains(local)) return true;
         return false;
     }
 
     static boolean supported(Level level, Vec3 p) {
         for (Direction d : Direction.values()) {
-            BlockPos bp = BlockPos.containing(p.relative(d, 1.0 / Point.GRID));
-            if (level.getBlockState(bp).isRedstoneConductor(level, bp)) return true;
+            Vec3 adjacent = p.relative(d, 1.0 / Point.GRID);
+            BlockPos bp = BlockPos.containing(adjacent);
+            BlockState state = level.getBlockState(bp);
+            if (state.isRedstoneConductor(level, bp) || state.is(BlockTags.FENCES) && inside(level, bp, adjacent))
+                return true;
         }
         return false;
     }

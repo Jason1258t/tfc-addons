@@ -63,6 +63,7 @@ final class Wire {
 
     static void register(CommandDispatcher<CommandSourceStack> d) {
         d.register(Commands.literal("wiretest")
+                .then(Commands.literal("fence").executes(c -> fence(c.getSource())))
                 .then(Commands.literal("build").executes(c -> build(c.getSource())))
                 .then(Commands.literal("power").then(Commands.argument("v", DoubleArgumentType.doubleArg(0))
                         .executes(c -> power(c.getSource(), DoubleArgumentType.getDouble(c, "v")))))
@@ -133,6 +134,26 @@ final class Wire {
 
     static boolean is(WireEnd e, BlockPos p) {
         return e instanceof WireEnd.Block b && b.pos().equals(p);
+    }
+
+    static int fence(CommandSourceStack src) {
+        ServerLevel level = src.getLevel();
+        BlockPos start = BAT.south(7).above(2);
+        for (int i = 0; i <= 6; i++) {
+            level.setBlockAndUpdate(start.east(i), net.minecraft.world.level.block.Blocks.OAK_FENCE.defaultBlockState());
+        }
+        FakePlayer p = player(level);
+        ItemStack stack = new ItemStack(SurfaceWires.DUPLEX_ITEM.get(), 64);
+        p.setItemInHand(InteractionHand.MAIN_HAND, stack);
+        Vec3 top = Vec3.atLowerCornerOf(start).add(0.5, 1.0625, 0.5);
+        var result = ee.extras.wire.SurfaceWireItem.connect(level, stack, p,
+                new WireEnd.Free(top), new WireEnd.Free(top.add(6, 0, 0)));
+        if (result.getObject() == null) {
+            src.sendFailure(Component.literal("Провод по забору не проложен: " + ee.extras.wire.SurfaceWireItem.lastFail));
+            return 0;
+        }
+        src.sendSuccess(() -> Component.literal("Провод по забору: " + describe(result.getObject())), false);
+        return 1;
     }
 
     static int build(CommandSourceStack src) {
