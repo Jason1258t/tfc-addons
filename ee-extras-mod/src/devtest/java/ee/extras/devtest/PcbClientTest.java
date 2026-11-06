@@ -130,8 +130,9 @@ final class PcbClientTest {
             for (int z = 4; z < 16; z++) {
                 for (int x = 8; x < 16; x++) cell(screen(mc), x, z);
             }
-            Screenshot.grab(mc.gameDirectory, "pcb_electrical.png", mc.getMainRenderTarget(), c -> {});
         }
+        if (tick == 600 && screen(mc) != null)
+            Screenshot.grab(mc.gameDirectory, "pcb_electrical.png", mc.getMainRenderTarget(), c -> {});
         if (tick == 605 && screen(mc) != null) click(screen(mc), 145, 117);
         if (tick == 620) {
             var current = screen(mc);
