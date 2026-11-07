@@ -1,0 +1,27 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+license = "MIT"
+
+[[mods]]
+modId = "schematic_fix"
+version = "1.0.0"
+displayName = "Create: Schematic Fix"
+description = "Схематичная пушка Create не перестраивает уже стоящие блоки того же вида и не тратит предметы на блоки, которые Fast Schematic Cannon ломать не даёт."
+
+[[mixins]]
+config = "schematic_fix.mixins.json"
+
+[[dependencies.schematic_fix]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.219,)"
+ordering = "NONE"
+side = "BOTH"
+
+# SchematicannonBlockEntity.shouldPlace проверен по байткоду Create 6.0.10; новая версия — сверить
+[[dependencies.schematic_fix]]
+modId = "create"
+type = "required"
+versionRange = "[6.0.10,6.1)"
+ordering = "AFTER"
+side = "BOTH"

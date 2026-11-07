@@ -1,0 +1,8 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "schematic.fix.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": ["SchematicannonBlockEntityMixin"],
+  "injectors": { "defaultRequire": 1 }
+}
