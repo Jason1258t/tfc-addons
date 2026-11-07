@@ -78,6 +78,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             for (Part part : parts) {
                 join(group, part.a, part.b);
                 if (part.kind.controlled()) join(group, part.coilA, part.coilB);
+                if (part.kind == Kind.POTENTIOMETER) join(group, part.a, part.coilA);
             }
             return group;
         }
@@ -92,6 +93,15 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
     private Circuit collectedCircuit;
     private CircuitBuilder collectedBuilder;
     private volatile Circuit circuit = new Circuit(List.of(), LEGACY_TERMINALS);
+    private static int[] defaultPositions() {
+        int[] values = new int[MAX_PARTS];
+        java.util.Arrays.fill(values, 50);
+        return values;
+    }
+
+    private volatile long[] timerDue = new long[MAX_PARTS];
+    private long pausedClocks;
+    private volatile int[] positions = defaultPositions();
     private long buttonUntil;
     private volatile boolean switched;
     private volatile long switches;
@@ -116,10 +126,10 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
 
     public enum Kind {
         TRACE, RESISTOR, RELAY, BUTTON, SWITCH, LAMP, REDSTONE_IN, REDSTONE_OUT,
-        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED;
+        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK;
 
         boolean controlled() {
-            return this == RELAY || this == TRANSISTOR;
+            return this == RELAY || this == TRANSISTOR || this == CLOCK;
         }
     }
 
@@ -132,7 +142,9 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         boolean valid() {
             return kind != null && node(a) && node(b) && a != b
                     && Double.isFinite(ohms) && ohms >= CONTACT && ohms <= OPEN
-                    && Double.isFinite(threshold) && threshold > 0 && threshold <= 10000
+                    && Double.isFinite(threshold) && threshold > 0 && threshold <= (kind == Kind.MECHANICAL_TIMER || kind == Kind.CLOCK ? 12000 : 10000)
+                    && (kind != Kind.CLOCK && kind != Kind.MECHANICAL_TIMER || threshold >= 2 && threshold == Math.rint(threshold))
+                    && (kind != Kind.POTENTIOMETER || node(coilA) && coilA != a && coilA != b)
                     && (!kind.controlled() || node(coilA) && node(coilB) && coilA != coilB);
         }
 
@@ -153,6 +165,9 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         if (parts.size() > MAX_PARTS || parts.stream().anyMatch(part -> !part.valid())) {
             throw new IllegalArgumentException("Недопустимая схема платы");
         }
+        positions = defaultPositions();
+        timerDue = new long[MAX_PARTS];
+        pausedClocks = 0;
         closedMask = 0;
         blownFuses = 0;
         switches = 0;
@@ -172,8 +187,10 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         }
     }
 
-    void interactComponent(int ordinal, long now) {
-        if (burnt) return;
+    void interactComponent(int ordinal, long now) { interactComponent(ordinal, now, false); }
+
+    String interactComponent(int ordinal, long now, boolean reset) {
+        if (burnt) return null;
         for (int i = 0; i < circuit.parts.size(); i++) {
             Kind kind = circuit.parts.get(i).kind;
             if (kind == Kind.TRACE || ordinal-- != 0) continue;
@@ -182,9 +199,41 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 deviceSD.setDirty();
             } else if (kind == Kind.BUTTON) {
                 buttonExpiries[i] = now + 20;
+            } else if (kind == Kind.MECHANICAL_TIMER || kind == Kind.CLOCK) {
+                long[] copy = timerDue.clone();
+                copy[i] = kind == Kind.MECHANICAL_TIMER ? (reset ? 0 : now + (long) circuit.parts.get(i).threshold) : 0;
+                timerDue = copy;
+                if (kind == Kind.CLOCK) {
+                    if (reset) pausedClocks &= ~(1L << i);
+                    else pausedClocks ^= 1L << i;
+                }
+                deviceSD.setDirty();
+                if (kind == Kind.MECHANICAL_TIMER) return reset ? "Таймер отменён" : "Таймер заведён";
+                return (pausedClocks & (1L << i)) != 0 ? "Клок остановлен" : reset ? "Фаза клока сброшена" : "Клок запущен";
             }
-            return;
+            return null;
         }
+        return null;
+    }
+
+    boolean adjustComponent(int ordinal, int value) {
+        if (burnt || value < 0 || value > 100) return false;
+        for (int i = 0; i < circuit.parts.size(); i++) {
+            Kind kind = circuit.parts.get(i).kind;
+            if (kind == Kind.TRACE || ordinal-- != 0) continue;
+            if (kind != Kind.RHEOSTAT && kind != Kind.POTENTIOMETER) return false;
+            int[] copy = positions.clone();
+            copy[i] = value;
+            positions = copy;
+            deviceSD.setDirty();
+            return true;
+        }
+        return false;
+    }
+
+    private double segmentResistance(Part part, int index, boolean upper) {
+        double fraction = positions[index] / 100.0;
+        return Math.max(CONTACT, part.ohms * (upper ? 1 - fraction : fraction));
     }
 
     @Override
@@ -199,11 +248,15 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             Part part = parts.get(i);
             int branch = MAX_NODES + i;
             double sense = senseResistance(part);
-            builder.node(branch).resistor(branch, part.b, sense);
+            int returnNode = part.kind == Kind.POTENTIOMETER ? part.coilA : part.b;
+            builder.node(branch).resistor(branch, returnNode, sense);
             if (current.reactive[i] != null) {
                 builder.connect(part.a, branch, current.reactive[i]);
             } else {
                 builder.resistor(part.a, branch, resistance(part, i) - sense);
+            }
+            if (part.kind == Kind.POTENTIOMETER) {
+                builder.resistor(part.coilA, part.b, segmentResistance(part, i, true));
             }
             if (part.kind.controlled()) {
                 int coil = MAX_NODES + MAX_PARTS + i;
@@ -214,7 +267,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
     }
 
     private static double coilResistance(Part part) {
-        return part.kind == Kind.RELAY ? part.ohms : OPEN;
+        return part.kind == Kind.CLOCK ? 10000 : part.kind == Kind.RELAY ? part.ohms : OPEN;
     }
 
     private static double senseResistance(Part part) {
@@ -230,12 +283,14 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         long bit = 1L << index;
         return switch (part.kind) {
             case TRACE, AMMETER -> CONTACT;
+            case RHEOSTAT, POTENTIOMETER -> segmentResistance(part, index, false);
             // У индикатора есть встроенный балласт, в том числе на уже установленных платах.
             case LAMP -> indicatorResistance(part.ohms);
             case VOLTMETER, REDSTONE_OUT -> OPEN;
             case BUTTON -> pressed || (pressedComponents & bit) != 0 ? CONTACT : OPEN;
             case SWITCH -> switched != ((switches & bit) != 0) ? CONTACT : OPEN;
             case REDSTONE_IN -> powered ? CONTACT : OPEN;
+            case MECHANICAL_TIMER, CLOCK -> (closedMask & bit) != 0 ? CONTACT : OPEN;
             case RELAY, TRANSISTOR -> ((closedMask & bit) != 0) != part.normallyClosed ? CONTACT : OPEN;
             case FUSE -> (blownFuses & bit) == 0 ? CONTACT : OPEN;
             default -> part.ohms;
@@ -267,9 +322,15 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             double squared = results.getVoltageAtSqr(pos, part.a, part.b);
             maxVoltage = Math.max(maxVoltage, Math.sqrt(squared));
             double sense = senseResistance(part);
-            double sensedSquared = results.getVoltageAtSqr(pos, MAX_NODES + i, part.b);
+            int returnNode = part.kind == Kind.POTENTIOMETER ? part.coilA : part.b;
+            double sensedSquared = results.getVoltageAtSqr(pos, MAX_NODES + i, returnNode);
             double amps = Math.sqrt(sensedSquared) / sense;
-            if (part.kind == Kind.CAPACITOR) {
+            if (part.kind == Kind.POTENTIOMETER) {
+                double upperSquared = results.getVoltageAtSqr(pos, part.coilA, part.b);
+                double upperOhms = segmentResistance(part, i, true);
+                watts += Math.sqrt(results.getVoltageAtSqr(pos, part.a, part.coilA)) * amps + upperSquared / upperOhms;
+                maxCurrent = Math.max(maxCurrent, Math.sqrt(upperSquared) / upperOhms);
+            } else if (part.kind == Kind.CAPACITOR) {
                 watts += sensedSquared / sense;
                 maxVoltage = Math.max(maxVoltage, voltage(results, part.a, MAX_NODES + i));
             } else {
@@ -322,13 +383,44 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         int output = 0;
         long closed = 0;
         long litIndicators = 0;
+        long controlStates = 0;
+        int[] controlPositions = new int[current.parts.size()];
+        long[] nextTimers = timerDue.clone();
         int component = -1;
         meterKind = null;
         meterValue = 0;
         for (int i = 0; i < current.parts.size(); i++) {
             Part part = current.parts.get(i);
-            if (part.kind != Kind.TRACE) component++;
+            if (part.kind != Kind.TRACE) {
+                component++;
+                controlPositions[component] = positions[i];
+            }
+            if (part.kind == Kind.BUTTON && (pressed || (pressedComponents & (1L << i)) != 0)
+                    || part.kind == Kind.SWITCH && (switched != ((switches & (1L << i)) != 0)))
+                controlStates |= 1L << component;
             switch (part.kind) {
+                case MECHANICAL_TIMER -> {
+                    if (timerDue[i] > 0 && now >= timerDue[i]) {
+                        closed |= 1L << i;
+                        controlStates |= 1L << component;
+                    }
+                    controlPositions[component] = timerDue[i] == 0 ? 0 : (int) Math.clamp(
+                            Math.ceil(100.0 * (timerDue[i] - now) / part.threshold), 0, 100);
+                }
+                case CLOCK -> {
+                    controlPositions[component] = 0;
+                    boolean enabled = (pausedClocks & (1L << i)) == 0 && voltage(results, part.coilA, part.coilB) >= 3;
+                    if (!enabled) nextTimers[i] = 0;
+                    else {
+                        if (timerDue[i] == 0) nextTimers[i] = now;
+                        long phase = Math.floorMod(now - nextTimers[i], (long) part.threshold);
+                        if (phase < part.threshold / 2) {
+                            closed |= 1L << i;
+                            controlStates |= 1L << component;
+                        }
+                        controlPositions[component] = (int) (100 * phase / part.threshold);
+                    }
+                }
                 case LED -> {
                     double volts = voltage(results, part.a, part.b);
                     double ballastVoltage = voltage(results, MAX_NODES + i, part.b);
@@ -368,7 +460,9 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 default -> { }
             }
         }
-        if (level.getBlockEntity(pos) instanceof PcbCircuitBlockEntity board) board.setLitIndicators(litIndicators);
+        if (level.getBlockEntity(pos) instanceof PcbCircuitBlockEntity board) board.setVisualStates(litIndicators, controlStates, controlPositions);
+        if (!java.util.Arrays.equals(timerDue, nextTimers)) deviceSD.setDirty();
+        timerDue = nextTimers;
         closedMask = closed;
         indicatorVoltage = maxIndicatorVoltage;
         BlockState updated = state.setValue(PcbCircuitBlock.LIT, lit).setValue(PcbCircuitBlock.OUTPUT, output);
@@ -406,6 +500,14 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
 
     @Override
     public void read(CompoundTag tag) {
+        timerDue = new long[MAX_PARTS];
+        long[] savedTimers = tag.getLongArray("TimerDue");
+        for (int i = 0; i < Math.min(savedTimers.length, timerDue.length); i++) timerDue[i] = Math.max(0, savedTimers[i]);
+        pausedClocks = tag.getLong("PausedClocks");
+        positions = defaultPositions();
+        int[] savedPositions = tag.getIntArray("Positions");
+        for (int i = 0; i < Math.min(savedPositions.length, positions.length); i++)
+            positions[i] = Math.clamp(savedPositions[i], 0, 100);
         switched = tag.getBoolean("Switch");
         switches = tag.getLong("Switches");
         burnt = tag.getBoolean("Burnt");
@@ -443,6 +545,9 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
     @Override
     public void write(CompoundTag tag) {
         tag.putInt("Terminals", circuit.terminals);
+        tag.putLongArray("TimerDue", timerDue);
+        tag.putLong("PausedClocks", pausedClocks);
+        tag.putIntArray("Positions", positions);
         tag.putBoolean("Switch", switched);
         tag.putLong("Switches", switches);
         tag.putBoolean("Burnt", burnt);

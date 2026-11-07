@@ -11,10 +11,10 @@ import net.minecraft.nbt.CompoundTag;
 final class PcbWiring {
     static final String KEY = "ElectricalParts";
     static final double[] OHMS = {10, 47, 100, 220, 470, 1000, 2200, 4700, 10000};
+    static final int[] TIMER_TICKS = {20, 40, 100, 200, 400, 1200, 2400, 6000, 12000};
+    static final int[] CLOCK_TICKS = {2, 4, 10, 20, 40, 100, 200, 1200, 12000};
     static final double[] VOLTS = {3, 5, 12, 24, 48, 96, 128, 230};
-    static final Kind[] KINDS = {Kind.RESISTOR, Kind.RELAY, Kind.BUTTON, Kind.SWITCH,
-            Kind.LAMP, Kind.REDSTONE_IN, Kind.REDSTONE_OUT, Kind.CAPACITOR, Kind.DIODE,
-            Kind.FUSE, Kind.VOLTMETER, Kind.AMMETER, Kind.TRANSISTOR, Kind.LED};
+    static final Kind[] KINDS = Arrays.stream(PcbModules.ALL).map(PcbModules.Module::kind).toArray(Kind[]::new);
     static final String ERROR = "Проверьте выводы и контакты";
     private static final int CELLS = PcbTopology.CELLS;
     private static final int SIZE = PcbTopology.SIZE;
@@ -22,34 +22,29 @@ final class PcbWiring {
     private PcbWiring() {}
 
     static int component(int type, int rotation, int resistance, int threshold, boolean normallyClosed) {
-        return 1 + type + ((rotation & 1) == 1 ? 16 : 0) + resistance * 32 + threshold * 512 + (rotation >= 2 ? 4096 : 0)
-                + (normallyClosed ? 8192 : 0);
+        return 1 + type + ((rotation & 3) << 8) + (resistance << 10) + (threshold << 14)
+                + (normallyClosed ? 1 << 17 : 0);
     }
 
-    static int type(int component) {
-        return (component - 1) & 15;
+    static int type(int definition) { return (definition - 1) & 255; }
+    static int rotation(int definition) { return ((definition - 1) >>> 8) & 3; }
+    static boolean vertical(int definition) { return (rotation(definition) & 1) != 0; }
+    static int resistance(int definition) { return ((definition - 1) >>> 10) & 15; }
+    static int threshold(int definition) { return ((definition - 1) >>> 14) & 7; }
+    static boolean normallyClosed(int definition) { return ((definition - 1) & (1 << 17)) != 0; }
+    static boolean valid(int definition) {
+        return definition > 0 && definition <= 1 << 18 && type(definition) < KINDS.length
+                && resistance(definition) < OHMS.length;
     }
 
-    static boolean vertical(int component) {
-        return ((component - 1) & 16) != 0;
-    }
+    static int minimumLevel(int type) { return PcbModules.ALL[type].level(); }
 
-    static int rotation(int definition) {
-        return (vertical(definition) ? 1 : 0) + (((definition - 1) & 4096) != 0 ? 2 : 0);
-    }
-
-    static int minimumLevel(int type) {
-        return switch (KINDS[type]) {
-            case TRANSISTOR -> 3;
-            case CAPACITOR, DIODE, VOLTMETER, AMMETER -> 2;
-            default -> 1;
-        };
+    static int period(int type, int setting) {
+        return (KINDS[type] == Kind.MECHANICAL_TIMER ? TIMER_TICKS : CLOCK_TICKS)[setting];
     }
 
     static int pinCell(int cell, int definition, int pin) {
-        boolean axis = pin < 2 ? vertical(definition) : !vertical(definition);
-        boolean reverse = rotation(definition) >= 2;
-        return neighbor(cell, axis, (pin % 2 == 0) != reverse ? -1 : 1);
+        return PcbFootprint.pinCell(cell, definition, pin);
     }
 
     static boolean active(CompoundTag tag) {
@@ -58,6 +53,7 @@ final class PcbWiring {
     }
 
     static List<Part> compile(CompoundTag tag) {
+        if (tag.getInt("Version") != PcbTopology.VERSION || !PcbFootprint.validate(tag)) return null;
         int[] definitions = Arrays.copyOf(tag.getIntArray(KEY), PcbTopology.MAX_LAYERS * CELLS);
         byte[] cells = tag.getByteArray("Cells");
         int size = PcbTopology.level(tag) * CELLS;
@@ -98,21 +94,21 @@ final class PcbWiring {
             if (cells[i] != PcbTopology.COMPONENT) continue;
             int definition = definitions[i];
             int type = type(definition);
-            int resistance = ((definition - 1) >>> 5) & 15;
-            int threshold = ((definition - 1) >>> 9) & 7;
-            if (definition <= 0 || definition > 16384 || type >= KINDS.length || resistance >= OHMS.length || threshold >= VOLTS.length)
+            int resistance = resistance(definition);
+            int threshold = threshold(definition);
+            if (!valid(definition))
                 return null;
             Kind kind = KINDS[type];
             int[] pins = new int[4];
-            for (int pin = 0; pin < (kind.controlled() ? 4 : 2); pin++) {
+            for (int pin = 0; pin < PcbModules.get(definition).pins(); pin++) {
                 int neighbor = pinCell(i, definition, pin);
                 if (neighbor < 0 || groups[neighbor] < 0) return null;
                 int group = root(groups, neighbor);
                 if (nodes[group] < 0) nodes[group] = nextNode++;
                 pins[pin] = nodes[group];
             }
-            boolean normallyClosed = kind == Kind.RELAY && ((definition - 1) & 8192) != 0;
-            Part part = new Part(kind, pins[0], pins[1], OHMS[resistance], pins[2], pins[3], VOLTS[threshold], normallyClosed);
+            boolean normallyClosed = kind == Kind.RELAY && normallyClosed(definition);
+            Part part = new Part(kind, pins[0], pins[1], OHMS[resistance], pins[2], pins[3], PcbModules.get(definition).timed() ? period(type, resistance) : VOLTS[threshold], normallyClosed);
             if (!part.valid() || parts.size() == 64) return null;
             parts.add(part);
         }

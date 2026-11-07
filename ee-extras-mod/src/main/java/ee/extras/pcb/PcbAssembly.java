@@ -24,6 +24,10 @@ final class PcbAssembly {
         return switch (kind) {
             case TRACE -> Items.AIR;
             case RESISTOR -> PcbItems.RESISTOR.get();
+            case RHEOSTAT -> PcbItems.RHEOSTAT.get();
+            case POTENTIOMETER -> PcbItems.POTENTIOMETER.get();
+            case MECHANICAL_TIMER -> PcbItems.MECHANICAL_TIMER.get();
+            case CLOCK -> PcbItems.CLOCK.get();
             case RELAY -> CEEBlocks.RELAY.asItem();
             case BUTTON -> Items.STONE_BUTTON;
             case SWITCH -> Items.LEVER;

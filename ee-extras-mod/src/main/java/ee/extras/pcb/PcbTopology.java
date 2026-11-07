@@ -10,7 +10,8 @@ public final class PcbTopology {
     public static final int SIZE = 16;
     public static final int CELLS = SIZE * SIZE;
     public static final int MAX_LAYERS = 3;
-    public static final int VERSION = 2;
+    public static final int VERSION = 3;
+    static final String UNSUPPORTED = "Старый формат проекта: очистите редактор и соберите схему заново";
 
     public static final int EMPTY = 0;
     public static final int TRACE = 1;
@@ -32,7 +33,7 @@ public final class PcbTopology {
         int level = Math.max(1, Math.min(MAX_LAYERS, source.getInt("Level")));
         if (!source.contains("Level")) level = fallbackLevel;
         CompoundTag result = create(level);
-        result.putInt("Version", source.getInt("Version") >= VERSION ? VERSION : 1);
+        result.putInt("Version", source.isEmpty() ? VERSION : source.getInt("Version"));
         byte[] old = source.getByteArray("Cells");
         byte[] cells = Arrays.copyOf(old, CELLS * MAX_LAYERS);
         for (int i = 0; i < cells.length; i++) {
@@ -131,6 +132,7 @@ public final class PcbTopology {
 
     /** Ошибка — русский текст для журнала/подсказки; null — проект пригоден к производству. */
     public static String validate(CompoundTag source) {
+        if (source.getInt("Version") != VERSION) return UNSUPPORTED;
         CompoundTag tag = normalize(source, 1);
         if (PcbWiring.active(tag)) return PcbWiring.compile(tag) == null ? PcbWiring.ERROR : null;
         int level = level(tag);

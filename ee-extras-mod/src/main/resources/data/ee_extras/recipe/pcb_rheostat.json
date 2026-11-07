@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "ee_extras:resistor"
+    },
+    {
+      "item": "ee_extras:connector"
+    },
+    {
+      "tag": "c:rods/wrought_iron"
+    }
+  ],
+  "result": {
+    "id": "ee_extras:pcb_rheostat",
+    "count": 1
+  }
+}

@@ -79,14 +79,27 @@ public final class PcbCircuitBlock extends SimpleElectricalDeviceBlock<PcbCircui
         return Direction.getNearest(vector.x, vector.y, vector.z);
     }
 
-    static int hitCell(Vec3 hit, Direction face) {
+    static Vec3 localPoint(Vec3 hit, Direction face) {
         Vec3 origin = mountedPoint(Vec3.ZERO, face);
         Vec3 delta = hit.subtract(origin);
         Vec3 right = mountedPoint(new Vec3(1, 0, 0), face).subtract(origin);
         Vec3 back = mountedPoint(new Vec3(0, 0, 1), face).subtract(origin);
-        int x = (int) Math.floor(delta.dot(right) / right.lengthSqr() * PcbTopology.SIZE);
-        int z = (int) Math.floor(delta.dot(back) / back.lengthSqr() * PcbTopology.SIZE);
+        return new Vec3(delta.dot(right) / right.lengthSqr(), 0, delta.dot(back) / back.lengthSqr());
+    }
+
+    static int hitCell(Vec3 hit, Direction face) {
+        Vec3 point = localPoint(hit, face);
+        int x = (int) Math.floor(point.x * PcbTopology.SIZE);
+        int z = (int) Math.floor(point.z * PcbTopology.SIZE);
         return x < 0 || z < 0 || x >= PcbTopology.SIZE || z >= PcbTopology.SIZE ? -1 : z * PcbTopology.SIZE + x;
+    }
+
+    static int sliderPosition(Vec3 point, int index, int definition) {
+        int anchor = index % PcbTopology.CELLS;
+        double x = (point.x * PcbTopology.SIZE - anchor % PcbTopology.SIZE) / PcbFootprint.width(definition);
+        double z = (point.z * PcbTopology.SIZE - anchor / PcbTopology.SIZE) / PcbFootprint.height(definition);
+        double value = switch (PcbWiring.rotation(definition)) { case 1 -> 1 - x; case 2 -> 1 - z; case 3 -> x; default -> z; };
+        return (int) Math.clamp(Math.round(value * 100), 0, 100);
     }
 
     static VoxelShape mountedShape(VoxelShape local, Direction face) {
@@ -203,7 +216,7 @@ public final class PcbCircuitBlock extends SimpleElectricalDeviceBlock<PcbCircui
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         int cell = hitCell(hit.getLocation().subtract(Vec3.atLowerCornerOf(pos)), state.getValue(FACING));
         int index = board.controlAt(cell);
-        if (state.getValue(BURNT) || index < 0 || board.hasCap(cell)
+        if (state.getValue(BURNT) || index < 0 || !board.acceptsCap(index) || board.hasCap(cell)
                 || (stack.is(PcbItems.SWITCH_CAP.get()) != board.isSwitch(index))) return ItemInteractionResult.FAIL;
         if (!level.isClientSide) {
             board.addCap(cell);
@@ -221,7 +234,17 @@ public final class PcbCircuitBlock extends SimpleElectricalDeviceBlock<PcbCircui
             if (index < 0) return InteractionResult.PASS;
             if (level instanceof ServerLevel server) {
                 var device = DevicesSavedData.load(server).getDevice(pos, PcbCircuitDevice.class);
-                if (device != null) device.interactComponent(board.componentOrdinal(index), level.getGameTime());
+                if (device != null) {
+                    if (board.adjustable(index)) {
+                        int definition = board.topology().getIntArray(PcbWiring.KEY)[index];
+                        int value = sliderPosition(localPoint(hit.getLocation().subtract(Vec3.atLowerCornerOf(pos)), state.getValue(FACING)), index, definition);
+                        if (device.adjustComponent(board.componentOrdinal(index), value))
+                            player.displayClientMessage(Component.literal("Положение: " + value + " %"), true);
+                    } else {
+                        String message = device.interactComponent(board.componentOrdinal(index), level.getGameTime(), player.isShiftKeyDown());
+                        if (message != null) player.displayClientMessage(Component.literal(message), true);
+                    }
+                }
             }
         } else if (level instanceof ServerLevel server) {
             var device = DevicesSavedData.load(server).getDevice(pos, PcbCircuitDevice.class);

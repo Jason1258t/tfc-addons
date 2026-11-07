@@ -33,6 +33,7 @@ public final class ClientTest {
             java.nio.file.Path.of("pcb-upgrade-photos"));
     private static final boolean PCB_MOUNT_PHOTOS = java.nio.file.Files.exists(
             java.nio.file.Path.of("pcb-mount-photos"));
+    private static final boolean PCB_MODULE_PHOTOS = java.nio.file.Files.exists(java.nio.file.Path.of("pcb-module-photos"));
     private static boolean started;
     private static int tick, fails;
     /** Перед игроком: его кликаем настоящим клиентом */
@@ -45,7 +46,7 @@ public final class ClientTest {
 
     @SubscribeEvent
     public static void screen(ScreenEvent.Init.Post e) {
-        if (PCB_UPGRADE_PHOTOS || PCB_MOUNT_PHOTOS || started || !(e.getScreen() instanceof TitleScreen)) return;
+        if (PCB_MODULE_PHOTOS || PCB_UPGRADE_PHOTOS || PCB_MOUNT_PHOTOS || started || !(e.getScreen() instanceof TitleScreen)) return;
         started = true;
         Minecraft mc = Minecraft.getInstance();
         mc.options.pauseOnLostFocus = false;
@@ -61,6 +62,10 @@ public final class ClientTest {
         tick++;
         var server = mc.getSingleplayerServer();
         try {
+            if (PCB_MODULE_PHOTOS) {
+                PcbModulePhotos.tick(mc, server, tick);
+                return;
+            }
             if (PCB_UPGRADE_PHOTOS) {
                 PcbUpgradePhotos.tick(mc, server, tick);
                 return;

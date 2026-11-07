@@ -1,0 +1,180 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "base": "minecraft:block/copper_block",
+    "dial": "minecraft:block/white_concrete",
+    "mark": "minecraft:block/black_concrete",
+    "particle": "#hand",
+    "hand": "minecraft:block/red_concrete"
+  },
+  "elements": [
+    {
+      "from": [2.36, 0, 2.36],
+      "to": [13.64, 2.6, 13.64],
+      "faces": {
+        "up": {
+          "texture": "#base"
+        },
+        "down": {
+          "texture": "#base"
+        },
+        "north": {
+          "texture": "#base"
+        },
+        "south": {
+          "texture": "#base"
+        },
+        "east": {
+          "texture": "#base"
+        },
+        "west": {
+          "texture": "#base"
+        }
+      }
+    },
+    {
+      "from": [3.08, 2.6, 3.08],
+      "to": [12.92, 3.4, 12.92],
+      "faces": {
+        "up": {
+          "texture": "#dial"
+        },
+        "down": {
+          "texture": "#dial"
+        },
+        "north": {
+          "texture": "#dial"
+        },
+        "south": {
+          "texture": "#dial"
+        },
+        "east": {
+          "texture": "#dial"
+        },
+        "west": {
+          "texture": "#dial"
+        }
+      }
+    },
+    {
+      "from": [7.58, 3.4, 3.5],
+      "to": [8.42, 3.6, 4.34],
+      "faces": {
+        "up": {
+          "texture": "#mark"
+        },
+        "down": {
+          "texture": "#mark"
+        },
+        "north": {
+          "texture": "#mark"
+        },
+        "south": {
+          "texture": "#mark"
+        },
+        "east": {
+          "texture": "#mark"
+        },
+        "west": {
+          "texture": "#mark"
+        }
+      }
+    },
+    {
+      "from": [7.58, 3.4, 11.66],
+      "to": [8.42, 3.6, 12.5],
+      "faces": {
+        "up": {
+          "texture": "#mark"
+        },
+        "down": {
+          "texture": "#mark"
+        },
+        "north": {
+          "texture": "#mark"
+        },
+        "south": {
+          "texture": "#mark"
+        },
+        "east": {
+          "texture": "#mark"
+        },
+        "west": {
+          "texture": "#mark"
+        }
+      }
+    },
+    {
+      "from": [3.5, 3.4, 7.58],
+      "to": [4.34, 3.6, 8.42],
+      "faces": {
+        "up": {
+          "texture": "#mark"
+        },
+        "down": {
+          "texture": "#mark"
+        },
+        "north": {
+          "texture": "#mark"
+        },
+        "south": {
+          "texture": "#mark"
+        },
+        "east": {
+          "texture": "#mark"
+        },
+        "west": {
+          "texture": "#mark"
+        }
+      }
+    },
+    {
+      "from": [11.66, 3.4, 7.58],
+      "to": [12.5, 3.6, 8.42],
+      "faces": {
+        "up": {
+          "texture": "#mark"
+        },
+        "down": {
+          "texture": "#mark"
+        },
+        "north": {
+          "texture": "#mark"
+        },
+        "south": {
+          "texture": "#mark"
+        },
+        "east": {
+          "texture": "#mark"
+        },
+        "west": {
+          "texture": "#mark"
+        }
+      }
+    },
+    {
+      "from": [7.64, 3.6, 4.16],
+      "to": [8.36, 4.4, 8.48],
+      "faces": {
+        "up": {
+          "texture": "#hand"
+        },
+        "down": {
+          "texture": "#hand"
+        },
+        "north": {
+          "texture": "#hand"
+        },
+        "south": {
+          "texture": "#hand"
+        },
+        "east": {
+          "texture": "#hand"
+        },
+        "west": {
+          "texture": "#hand"
+        }
+      }
+    }
+  ]
+}

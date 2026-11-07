@@ -360,5 +360,9 @@
   "ee_extras.surface_wire.too_far": "Too far for one click — click a surface halfway",
   "item.ee_extras.thin_insulated_wire_spool": "Thin Insulated Wire Spool",
   "item.ee_extras.thin_insulated_wire_spool.tooltip": "Thin twin wire for device leads: hangs like an EE wire, cores like EE insulated wire. Click a termination, insulator, box or device, then another. Cannot run between two insulators.",
-  "ee_extras.cable.thin_needs_device": "Thin wire goes only to a device or a duplex termination, not between two insulators"
+  "ee_extras.cable.thin_needs_device": "Thin wire goes only to a device or a duplex termination, not between two insulators",
+  "item.ee_extras.pcb_rheostat": "PCB Rheostat",
+  "item.ee_extras.pcb_potentiometer": "Slider Potentiometer",
+  "item.ee_extras.pcb_mechanical_timer": "PCB Mechanical Timer",
+  "item.ee_extras.pcb_clock": "PCB Clock Module"
 }

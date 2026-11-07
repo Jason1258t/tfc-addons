@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "ee_extras:transistor"
+    },
+    {
+      "item": "ee_extras:transistor"
+    },
+    {
+      "item": "ee_extras:capacitor"
+    },
+    {
+      "item": "ee_extras:capacitor"
+    },
+    {
+      "item": "ee_extras:resistor"
+    },
+    {
+      "item": "ee_extras:resistor"
+    },
+    {
+      "item": "ee_extras:connector"
+    }
+  ],
+  "result": {
+    "id": "ee_extras:pcb_clock",
+    "count": 1
+  }
+}

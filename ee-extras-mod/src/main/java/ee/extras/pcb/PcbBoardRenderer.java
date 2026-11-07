@@ -94,7 +94,7 @@ final class PcbBoardRenderer implements BlockEntityRenderer<PcbCircuitBlockEntit
                     int type = PcbWiring.type(definitions[index]);
                     boolean indicatorLit = !burnt && (type == 4 || type == 13)
                             && board.indicatorLit(PcbWiring.componentOrdinal(definitions, index));
-                    PcbPartModels.render(definitions[index], x, z, burnt, indicatorLit, board.hasCap(cell), poses, vertices, light, overlay);
+                    PcbPartModels.render(definitions[index], x, z, burnt, indicatorLit, board.hasCap(cell), board.controlActive(PcbWiring.componentOrdinal(definitions, index)), board.controlPosition(PcbWiring.componentOrdinal(definitions, index)), poses, vertices, light, overlay);
                     if (type == 13 && indicatorLit) {
                         var glow = new Painter(poses.last(), vertices, texture,
                                 net.minecraft.client.renderer.LightTexture.FULL_BRIGHT, overlay);
@@ -127,14 +127,13 @@ final class PcbBoardRenderer implements BlockEntityRenderer<PcbCircuitBlockEntit
         if (PcbTopology.cut(topology, to)) return false;
         int value = PcbTopology.get(topology, layer, to);
         if (PcbWiring.conductor(value)) return true;
-        int index = layer * PcbTopology.CELLS + to;
-        if (value != PcbTopology.COMPONENT || index >= definitions.length || definitions[index] <= 0) return false;
+        int index = PcbFootprint.owner(definitions, layer, to);
+        if (index < 0) return false;
         int definition = definitions[index];
         int type = PcbWiring.type(definition);
-        if (type >= PcbWiring.KINDS.length) return false;
-        int pins = PcbWiring.KINDS[type].controlled() ? 4 : 2;
+        int pins = PcbModules.get(definition).pins();
         for (int pin = 0; pin < pins; pin++) {
-            if (PcbWiring.pinCell(to, definition, pin) == from) return true;
+            if (PcbWiring.pinCell(index, definition, pin) % PcbTopology.CELLS == from) return true;
         }
         return false;
     }

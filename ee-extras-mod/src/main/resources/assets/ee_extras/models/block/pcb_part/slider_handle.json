@@ -1,0 +1,33 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "cap": "minecraft:block/copper_block",
+    "particle": "#cap"
+  },
+  "elements": [
+    {
+      "from": [7.58, 0.75, 7.88],
+      "to": [8.42, 1.7, 8.12],
+      "faces": {
+        "up": {
+          "texture": "#cap"
+        },
+        "down": {
+          "texture": "#cap"
+        },
+        "north": {
+          "texture": "#cap"
+        },
+        "south": {
+          "texture": "#cap"
+        },
+        "east": {
+          "texture": "#cap"
+        },
+        "west": {
+          "texture": "#cap"
+        }
+      }
+    }
+  ]
+}

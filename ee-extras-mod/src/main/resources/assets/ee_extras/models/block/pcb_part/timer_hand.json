@@ -1,0 +1,33 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "hand": "minecraft:block/red_concrete",
+    "particle": "#hand"
+  },
+  "elements": [
+    {
+      "from": [7.97, 0.9, 7.68],
+      "to": [8.03, 1.1, 8.04],
+      "faces": {
+        "up": {
+          "texture": "#hand"
+        },
+        "down": {
+          "texture": "#hand"
+        },
+        "north": {
+          "texture": "#hand"
+        },
+        "south": {
+          "texture": "#hand"
+        },
+        "east": {
+          "texture": "#hand"
+        },
+        "west": {
+          "texture": "#hand"
+        }
+      }
+    }
+  ]
+}

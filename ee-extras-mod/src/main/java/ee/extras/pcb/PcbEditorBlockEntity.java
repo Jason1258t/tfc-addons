@@ -39,17 +39,49 @@ public class PcbEditorBlockEntity extends BlockEntity implements MenuProvider, C
     }
 
     public void setCell(int layer, int cell, int value) {
-        PcbTopology.set(topology, layer, cell, value);
+        int owner = PcbFootprint.owner(topology, layer, cell);
+        if (owner >= 0) {
+            if (value != PcbTopology.EMPTY) return;
+            PcbTopology.set(topology, layer, owner % PcbTopology.CELLS, PcbTopology.EMPTY);
+        } else {
+            PcbTopology.set(topology, layer, cell, value);
+        }
         sync();
     }
 
-    public void setPart(int layer, int cell, int definition) {
+    public boolean setPart(int layer, int cell, int definition) {
+        if (!PcbFootprint.canPlace(topology, layer, cell, definition, -1)) return false;
         PcbTopology.set(topology, layer, cell, PcbTopology.COMPONENT);
         PcbTopology.setPart(topology, layer, cell, definition);
         sync();
+        return true;
+    }
+
+    boolean updatePart(int layer, int anchor, int definition) {
+        int index = layer * PcbTopology.CELLS + anchor;
+        int[] definitions = topology.getIntArray(PcbWiring.KEY);
+        if (index < 0 || index >= definitions.length || definitions[index] == 0
+                || !PcbFootprint.canPlace(topology, layer, anchor, definition, index)) return false;
+        PcbTopology.setPart(topology, layer, anchor, definition);
+        sync();
+        return true;
+    }
+
+    boolean movePart(int layer, int anchor, int target) {
+        int[] definitions = topology.getIntArray(PcbWiring.KEY);
+        int index = layer * PcbTopology.CELLS + anchor;
+        if (index >= definitions.length || definitions[index] == 0
+                || !PcbFootprint.canPlace(topology, layer, target, definitions[index], index)) return false;
+        int definition = definitions[index];
+        PcbTopology.set(topology, layer, anchor, PcbTopology.EMPTY);
+        return setPart(layer, target, definition);
     }
 
     void toggleCut(int cell) {
+        for (int layer = 0; layer < PcbTopology.level(topology); layer++) {
+            int owner = PcbFootprint.owner(topology, layer, cell);
+            if (owner >= 0) PcbTopology.set(topology, layer, owner % PcbTopology.CELLS, PcbTopology.EMPTY);
+        }
         PcbTopology.toggleCut(topology, cell);
         sync();
     }

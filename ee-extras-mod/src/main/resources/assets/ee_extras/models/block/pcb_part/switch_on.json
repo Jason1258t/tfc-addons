@@ -1,0 +1,68 @@
+{
+  "credit": "Made with Blockbench",
+  "textures": {
+    "0": "ee_extras:block/pcb_part/switch",
+    "particle": "ee_extras:block/pcb_part/switch"
+  },
+  "elements": [
+    {
+      "from": [8.0, 0.47, 7.765],
+      "to": [8.235, 0.705, 8.235],
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [8.0, 0.47, 7.8825]
+      },
+      "faces": {
+        "north": {
+          "uv": [6, 3, 7, 4],
+          "texture": "#0"
+        },
+        "east": {
+          "uv": [4, 2, 6, 3],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [3, 3, 4, 4],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [4, 4, 6, 5],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [4, 3, 6, 4],
+          "rotation": 90,
+          "texture": "#0"
+        }
+      }
+    },
+    {
+      "from": [7.53, 0.0, 7.6475],
+      "to": [8.47, 0.47, 8.3525],
+      "faces": {
+        "north": {
+          "uv": [0, 0, 4, 2],
+          "texture": "#0"
+        },
+        "east": {
+          "uv": [4, 0, 7, 2],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [7, 0, 11, 2],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [11, 0, 14, 2],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [0, 2, 3, 6],
+          "rotation": 90,
+          "texture": "#0"
+        }
+      }
+    }
+  ]
+}

@@ -60,6 +60,8 @@ public class DevTest {
         CommandDispatcher<CommandSourceStack> d = e.getDispatcher();
         Sync.register(d);
         PcbCircuitTest.register(d);
+        PcbModulesTest.register(d);
+        PcbTimersTest.register(d);
         PcbSupplyTest.register(d);
         Wire.register(d);
         ElectronicsTest.register(d);
