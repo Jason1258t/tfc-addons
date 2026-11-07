@@ -328,12 +328,12 @@ final class PcbCircuitTest {
             case "led", "led_reverse" -> {
                 power(level, 12);
                 boolean forward = mode.equals("led");
-                yield List.of(part(Kind.LED, forward ? 0 : 1, forward ? 1 : 0, 220, 3));
+                yield List.of(part(Kind.LED, forward ? 1 : 0, forward ? 0 : 1, 220, 3));
             }
-            case "diode" -> List.of(part(Kind.DIODE, 0, 4, 1, 1),
-                    part(Kind.RESISTOR, 4, 1, 1000, 1), part(Kind.VOLTMETER, 4, 1, 1, 48));
-            case "reverse" -> List.of(part(Kind.DIODE, 4, 0, 1, 1),
-                    part(Kind.RESISTOR, 4, 1, 1000, 1), part(Kind.VOLTMETER, 4, 1, 1, 48));
+            case "diode" -> List.of(part(Kind.DIODE, 1, 4, 1, 1),
+                    part(Kind.RESISTOR, 4, 0, 1000, 1), part(Kind.VOLTMETER, 4, 0, 1, 48));
+            case "reverse" -> List.of(part(Kind.DIODE, 4, 1, 1, 1),
+                    part(Kind.RESISTOR, 4, 0, 1000, 1), part(Kind.VOLTMETER, 4, 0, 1, 48));
             case "fuse", "ammeter" -> List.of(part(Kind.FUSE, 0, 4, 1, mode.equals("fuse") ? 24 : 48),
                     part(Kind.RESISTOR, 4, 5, 150, 1), part(Kind.AMMETER, 5, 1, 1, 48));
             case "transistor" -> List.of(part(Kind.BUTTON, 0, 4, 1, 1),

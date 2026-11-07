@@ -115,7 +115,7 @@ final class PcbWiring {
             for (int section = 0; section < module.sections(); section++) {
                 int first = module.sections() > 1 ? section * 2 : 0;
                 Part part = new Part(kind, pins[first], pins[first + 1], module.timed() ? OHMS[resistance] : nominal,
-                        module.sections() > 1 ? 0 : pins[2], module.sections() > 1 ? 0 : pins[3],
+                        module.sections() > 1 ? 0 : pins[2], module.sections() > 1 ? 0 : kind == Kind.TRANSISTOR ? pins[1] : pins[3],
                         module.timed() ? Math.round(nominal * 20) : limit, normallyClosed, i, type);
                 if (!part.valid() || parts.size() == 64) return null;
                 parts.add(part);

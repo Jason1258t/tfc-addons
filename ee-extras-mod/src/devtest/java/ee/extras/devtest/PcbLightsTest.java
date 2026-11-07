@@ -104,8 +104,8 @@ final class PcbLightsTest {
         for(int i=0;i<5;i++) {
             DevTest.place(level,source(i),Blocks.AIR.defaultBlockState()); DevTest.place(level,source(i),CEEBlocks.CREATIVE_BATTERY.getDefaultState());
             boolean flip=reverse && i==2;
-            check(DevTest.spoolWire(player,ee.extras.EeExtras.THIN_SINGLE_SPOOL.toStack(),source(i),0,BOARD,2*i+(flip?1:0)),"тонкий провод +");
-            check(DevTest.spoolWire(player,ee.extras.EeExtras.THIN_SINGLE_SPOOL.toStack(),source(i),1,BOARD,2*i+(flip?0:1)),"тонкий провод −");
+            check(DevTest.spoolWire(player,ee.extras.EeExtras.THIN_SINGLE_SPOOL.toStack(),source(i),1,BOARD,2*i+(flip?1:0)),"тонкий провод +");
+            check(DevTest.spoolWire(player,ee.extras.EeExtras.THIN_SINGLE_SPOOL.toStack(),source(i),0,BOARD,2*i+(flip?0:1)),"тонкий провод −");
         }
         power(level,0);
         source.sendSuccess(() -> Component.literal("Полоса: пять независимых секций, десять контактов, разрывы, расход одного модуля и установка платы — успешно"),false);

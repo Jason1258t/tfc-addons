@@ -21,7 +21,7 @@ final class PcbModulePhotos {
     static void tick(Minecraft mc, MinecraftServer server, int tick) {
         if (tick % 10 == 0) mc.gui.getChat().clearMessages(false);
         if (tick % 20 == 0) server.execute(() -> { var player=server.getPlayerList().getPlayer(mc.player.getUUID()); if(player!=null) player.removeAllEffects(); });
-        if (tick == 140 || tick >= 350 && tick < 1000) mc.options.hideGui = true;
+        if (tick == 140 || tick >= 510 && tick < 1160) mc.options.hideGui = true;
         if (tick == 60) server.execute(() -> {
             var player = server.getPlayerList().getPlayer(mc.player.getUUID());
             var level = player.serverLevel();
@@ -110,31 +110,46 @@ final class PcbModulePhotos {
         if (tick == 347 && mc.screen instanceof PcbEditorScreen screen)
             screen.keyPressed(org.lwjgl.glfw.GLFW.GLFW_KEY_M, 0, 0);
         if (tick == 350) Screenshot.grab(mc.gameDirectory, "pcb-modules-03d-bill.png", mc.getMainRenderTarget(), c -> {});
-        if (tick == 355) mc.player.closeContainer();
-        if (tick == 360) server.execute(() -> {
+        if (tick == 370 && mc.screen instanceof PcbEditorScreen screen)
+            screen.keyPressed(org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE, 0, 0);
+        if (tick == 400 && mc.screen instanceof PcbEditorScreen screen)
+            screen.keyPressed(org.lwjgl.glfw.GLFW.GLFW_KEY_F7, 0, 0);
+        if (tick == 430) Screenshot.grab(mc.gameDirectory, "pcb-modules-03e-errors.png", mc.getMainRenderTarget(), c -> {});
+        if (tick == 450 && mc.screen instanceof PcbEditorScreen screen) {
+            screen.mouseClicked(20, 60, 0);
+            try {
+                var field = PcbEditorScreen.class.getDeclaredField("diagnosticsOpen"); field.setAccessible(true);
+                ClientTest.check("переход закрывает список ошибок", !field.getBoolean(screen));
+                ClientTest.check("ошибка в центре холста", screen.cellScreenX(1) == (12 + mc.getWindow().getGuiScaledWidth() - 148) / 2
+                        && screen.cellScreenY(2) == (26 + mc.getWindow().getGuiScaledHeight() - 84) / 2);
+            } catch (ReflectiveOperationException e) { throw new IllegalStateException(e); }
+        }
+        if (tick == 480) Screenshot.grab(mc.gameDirectory, "pcb-modules-03f-jump.png", mc.getMainRenderTarget(), c -> {});
+        if (tick == 500) mc.player.closeContainer();
+        if (tick == 520) server.execute(() -> {
             var player = server.getPlayerList().getPlayer(mc.player.getUUID());
             stripBoard = table.east(5);
             PcbLightsTest.buildAt(player.createCommandSourceStack(), stripBoard);
             PcbLightsTest.power(player.serverLevel(), 21);
             camera(player, stripBoard);
         });
-        if (tick == 460) photo(mc, "04-strip-day");
-        if (tick == 480) server.execute(() -> {
+        if (tick == 620) photo(mc, "04-strip-day");
+        if (tick == 640) server.execute(() -> {
             var player = server.getPlayerList().getPlayer(mc.player.getUUID());
             lampBoard = table.east(8);
             lampFixture(player);
             camera(player, lampBoard);
         });
-        if (tick == 580) photo(mc, "05-lights-day");
-        if (tick == 600) server.execute(() -> { calendarHour(server, 0); darkRoom(server.overworld()); });
-        if (tick == 680) photo(mc, "06-lights-night");
-        if (tick == 700) server.execute(() -> lampPower(server.overworld(), 0));
-        if (tick == 780) photo(mc, "07-lights-off");
-        if (tick == 800) server.execute(() -> camera(server.getPlayerList().getPlayer(mc.player.getUUID()), stripBoard));
-        if (tick == 880) photo(mc, "08-strip-night");
-        if (tick == 900) server.execute(() -> PcbLightsTest.power(server.overworld(), 0));
-        if (tick == 980) photo(mc, "09-strip-off");
-        if (tick == 1000) {
+        if (tick == 740) photo(mc, "05-lights-day");
+        if (tick == 760) server.execute(() -> { calendarHour(server, 0); darkRoom(server.overworld()); });
+        if (tick == 840) photo(mc, "06-lights-night");
+        if (tick == 860) server.execute(() -> lampPower(server.overworld(), 0));
+        if (tick == 940) photo(mc, "07-lights-off");
+        if (tick == 960) server.execute(() -> camera(server.getPlayerList().getPlayer(mc.player.getUUID()), stripBoard));
+        if (tick == 1040) photo(mc, "08-strip-night");
+        if (tick == 1060) server.execute(() -> PcbLightsTest.power(server.overworld(), 0));
+        if (tick == 1140) photo(mc, "09-strip-off");
+        if (tick == 1160) {
             mc.options.hideGui = false;
             System.out.println("EECLIENT PCB MODULE PHOTOS DONE");
         }
@@ -189,8 +204,8 @@ final class PcbModulePhotos {
         player.setItemInHand(InteractionHand.MAIN_HAND,ItemStack.EMPTY);
         lampBattery=lampBoard.offset(2,-2,5);
         DevTest.place(level,lampBattery,Blocks.AIR.defaultBlockState()); DevTest.place(level,lampBattery,com.george_vi.electroenergetics.CEEBlocks.CREATIVE_BATTERY.getDefaultState());
-        ClientTest.check("тонкие провода светового стенда",DevTest.spoolWire(player,ee.extras.EeExtras.THIN_SINGLE_SPOOL.toStack(),lampBattery,0,lampBoard,0)
-                && DevTest.spoolWire(player,ee.extras.EeExtras.THIN_SINGLE_SPOOL.toStack(),lampBattery,1,lampBoard,1));
+        ClientTest.check("тонкие провода светового стенда",DevTest.spoolWire(player,ee.extras.EeExtras.THIN_SINGLE_SPOOL.toStack(),lampBattery,1,lampBoard,0)
+                && DevTest.spoolWire(player,ee.extras.EeExtras.THIN_SINGLE_SPOOL.toStack(),lampBattery,0,lampBoard,1));
         player.setItemInHand(InteractionHand.MAIN_HAND,ItemStack.EMPTY);
         lampPower(level,24);
     }

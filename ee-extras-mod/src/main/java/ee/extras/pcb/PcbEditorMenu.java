@@ -120,6 +120,8 @@ public class PcbEditorMenu extends AbstractContainerMenu {
     int selectedDefinition() {
         return PcbWiring.component(part(), rotation(), resistance(), threshold(), normallyClosed());
     }
+    long instanceId() { return selected() >= 0 && editor != null ? PcbModuleIds.get(editor.topology(), layer() * PcbTopology.CELLS + selected()) : 0; }
+
     double nominalValue() {
         return selected() >= 0 && editor != null ? PcbParameters.nominal(selectedDefinition(), PcbParameters.get(editor.topology(), layer() * PcbTopology.CELLS + selected()))
                 : Double.isFinite(draftNominal) ? draftNominal : PcbParameters.nominal(selectedDefinition(), new net.minecraft.nbt.CompoundTag());
@@ -137,7 +139,7 @@ public class PcbEditorMenu extends AbstractContainerMenu {
     }
     boolean applyParameters(PcbEditorPackets.Parameters packet) {
         if (editor == null || packet.container() != containerId || packet.anchor() != selected()
-                || packet.definition() != selectedDefinition() || editor.topology().getInt("Version") != PcbTopology.VERSION) return false;
+                || packet.definition() != selectedDefinition() || packet.instance() != instanceId() || editor.topology().getInt("Version") != PcbTopology.VERSION) return false;
         var parameters = new net.minecraft.nbt.CompoundTag();
         var module = PcbModules.ALL[part()];
         if (module.resistanceSetting()) parameters.putDouble("Nominal", packet.nominal());

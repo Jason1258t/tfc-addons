@@ -74,10 +74,13 @@ public class PcbEditorBlockEntity extends BlockEntity implements MenuProvider, C
                 || !PcbFootprint.canPlace(topology, layer, target, definitions[index], index)) return false;
         int definition = definitions[index];
         CompoundTag parameters = PcbParameters.get(topology, index).copy();
+        long instance = PcbModuleIds.get(topology, index);
         PcbTopology.set(topology, layer, anchor, PcbTopology.EMPTY);
         PcbTopology.set(topology, layer, target, PcbTopology.COMPONENT);
         PcbTopology.setPart(topology, layer, target, definition);
         PcbParameters.put(topology, layer * PcbTopology.CELLS + target, parameters);
+        PcbModuleIds.put(topology, layer * PcbTopology.CELLS + target, instance);
+        PcbModuleIds.ensure(topology, layer * PcbTopology.CELLS + target);
         sync();
         return true;
     }

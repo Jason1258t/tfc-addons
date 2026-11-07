@@ -11,12 +11,12 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 /** Параметры принимает только открытое меню с тем же выбранным экземпляром. */
 public final class PcbEditorPackets {
     private PcbEditorPackets() {}
-    public record Parameters(int container, int anchor, int definition, double nominal, double threshold) implements CustomPacketPayload {
+    public record Parameters(int container, int anchor, int definition, double nominal, double threshold, long instance) implements CustomPacketPayload {
         private static final Type<Parameters> TYPE = new Type<>(EeExtras.rl("pcb_parameters"));
         private static final StreamCodec<ByteBuf, Parameters> CODEC = StreamCodec.composite(
                 ByteBufCodecs.VAR_INT, Parameters::container, ByteBufCodecs.INT, Parameters::anchor,
                 ByteBufCodecs.VAR_INT, Parameters::definition, ByteBufCodecs.DOUBLE, Parameters::nominal,
-                ByteBufCodecs.DOUBLE, Parameters::threshold, Parameters::new);
+                ByteBufCodecs.DOUBLE, Parameters::threshold, ByteBufCodecs.VAR_LONG, Parameters::instance, Parameters::new);
         @Override public Type<Parameters> type() { return TYPE; }
     }
 

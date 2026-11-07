@@ -10,7 +10,7 @@ public final class PcbTopology {
     public static final int SIZE = 16;
     public static final int CELLS = SIZE * SIZE;
     public static final int MAX_LAYERS = 3;
-    public static final int VERSION = 3;
+    public static final int VERSION = 4;
     static final String UNSUPPORTED = "Старый формат проекта: очистите редактор и соберите схему заново";
 
     public static final int EMPTY = 0;
@@ -101,6 +101,7 @@ public final class PcbTopology {
             }
             if (!parameters.isEmpty()) result.put(PcbParameters.KEY, parameters);
         }
+        PcbModuleIds.normalize(source, result);
         return result;
     }
 
@@ -148,8 +149,14 @@ public final class PcbTopology {
 
     static void setPart(CompoundTag tag, int layer, int cell, int definition) {
         int[] parts = Arrays.copyOf(tag.getIntArray(PcbWiring.KEY), CELLS * MAX_LAYERS);
-        parts[layer * CELLS + cell] = definition;
-        if (definition == 0) PcbParameters.put(tag, layer * CELLS + cell, new CompoundTag());
+        int index = layer * CELLS + cell;
+        int previous = parts[index];
+        parts[index] = definition;
+        if (definition == 0 || previous != 0 && PcbWiring.type(previous) != PcbWiring.type(definition)) {
+            PcbParameters.put(tag, index, new CompoundTag());
+            PcbModuleIds.put(tag, index, 0);
+        }
+        if (PcbWiring.valid(definition)) PcbModuleIds.ensure(tag, index);
         tag.putIntArray(PcbWiring.KEY, parts);
         if (definition > 0 && PcbWiring.valid(definition)) PcbFootprint.isolatePins(tag, layer, cell, definition);
     }
@@ -171,6 +178,8 @@ public final class PcbTopology {
     }
 
     public static void copyInto(CompoundTag source, CompoundTag target) {
+        if (source.contains(PcbModuleIds.KEY)) target.put(PcbModuleIds.KEY, source.getCompound(PcbModuleIds.KEY).copy());
+        else target.remove(PcbModuleIds.KEY);
         if (source.contains(PcbParameters.KEY)) target.put(PcbParameters.KEY, source.getCompound(PcbParameters.KEY).copy());
         else target.remove(PcbParameters.KEY);
         target.putInt("Level", level(source));

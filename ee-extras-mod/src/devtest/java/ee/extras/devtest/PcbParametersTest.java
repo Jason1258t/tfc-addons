@@ -27,7 +27,7 @@ final class PcbParametersTest {
     private static boolean apply(PcbEditorMenu menu, double value, double threshold) {
         int anchor = PcbModulesTest.call(PcbEditorMenu.class, menu, "selected");
         int definition = PcbModulesTest.call(PcbEditorMenu.class, menu, "selectedDefinition");
-        return PcbModulesTest.call(PcbEditorMenu.class, menu, "applyParameters", new PcbEditorPackets.Parameters(menu.containerId, anchor, definition, value, threshold));
+        return PcbModulesTest.call(PcbEditorMenu.class, menu, "applyParameters", new PcbEditorPackets.Parameters(menu.containerId, anchor, definition, value, threshold, PcbModulesTest.call(PcbEditorMenu.class, menu, "instanceId")));
     }
     private static int build(CommandSourceStack source) {
         ServerLevel level = source.getLevel();
@@ -42,8 +42,11 @@ final class PcbParametersTest {
         check(editor.topology().getCompound("ModuleParameters").getCompound("68").getDouble("Nominal") == RESISTANCE, "установка сохраняет номинал");
         for (double invalid : new double[]{0, -1, Double.NaN, Double.POSITIVE_INFINITY, 1e10}) check(!apply(menu, invalid, 3), "отклонён номинал " + invalid);
         int definition = PcbModulesTest.call(PcbEditorMenu.class, menu, "selectedDefinition");
-        check(!(boolean) PcbModulesTest.call(PcbEditorMenu.class, menu, "applyParameters", new PcbEditorPackets.Parameters(999, 68, definition, 100, 3)), "чужое меню отклонено");
-        check(!(boolean) PcbModulesTest.call(PcbEditorMenu.class, menu, "applyParameters", new PcbEditorPackets.Parameters(84, 69, definition, 100, 3)), "устаревший выбор отклонён");
+        long instance = PcbModulesTest.call(PcbEditorMenu.class, menu, "instanceId");
+        check(instance != 0, "экземпляр имеет идентификатор");
+        check(!(boolean) PcbModulesTest.call(PcbEditorMenu.class, menu, "applyParameters", new PcbEditorPackets.Parameters(84, 68, definition, 100, 3, instance ^ 1)), "чужой экземпляр отклонён");
+        check(!(boolean) PcbModulesTest.call(PcbEditorMenu.class, menu, "applyParameters", new PcbEditorPackets.Parameters(999, 68, definition, 100, 3, instance)), "чужое меню отклонено");
+        check(!(boolean) PcbModulesTest.call(PcbEditorMenu.class, menu, "applyParameters", new PcbEditorPackets.Parameters(84, 69, definition, 100, 3, instance)), "устаревший выбор отклонён");
         menu.clickMenuButton(player, PcbEditorMenu.ROTATE);
         check(editor.topology().getCompound("ModuleParameters").getCompound("68").getDouble("Nominal") == RESISTANCE, "поворот сохраняет номинал");
         menu.clickMenuButton(player, PcbEditorMenu.ROTATE);
@@ -53,11 +56,18 @@ final class PcbParametersTest {
         menu.clickMenuButton(player, 68); menu.clickMenuButton(player, 100);
         check(!editor.topology().getCompound("ModuleParameters").contains("68")
                 && editor.topology().getCompound("ModuleParameters").getCompound("100").getDouble("Nominal") == RESISTANCE, "перенос атомарно переносит параметры");
+        check(editor.topology().getCompound("ModuleIds").getLong("100") == instance && !editor.topology().getCompound("ModuleIds").contains("68"), "перенос сохраняет идентичность");
         for (int x = 0; x < 16; x++) if (x != 4) editor.setCell(0, 96 + x, x == 0 || x == 15 ? PcbTopology.TERMINAL : PcbTopology.TRACE);
         check(PcbTopology.validate(editor.topology()) == null, "схема с номиналом валидна");
         var copy = PcbTopology.create(1); PcbTopology.copyInto(PcbTopology.normalize(editor.topology(), 1), copy);
         check(copy.getCompound("ModuleParameters").getCompound("100").getDouble("Nominal") == RESISTANCE, "нормализация и копирование");
+        check(diagnostics(copy).isEmpty(), "проверка принимает исправную схему");
+        var disconnected = copy.copy(); PcbTopology.set(disconnected, 0, 99, PcbTopology.EMPTY);
+        var issues = diagnostics(disconnected);
+        check(issues.stream().anyMatch(issue -> (int) PcbModulesTest.call(issue.getClass(), issue, "cell") == 99
+                && (int) PcbModulesTest.call(issue.getClass(), issue, "layer") == 0), "проверка указывает точное место обрыва");
         var erased = copy.copy(); PcbTopology.set(erased, 0, 100, PcbTopology.EMPTY);
+        check(!erased.getCompound("ModuleIds").contains("100"), "удаление освобождает идентификатор");
         check(!erased.getCompound("ModuleParameters").contains("100"), "удаление не оставляет параметров");
         var broken = copy.copy(); broken.getCompound("ModuleParameters").getCompound("100").putDouble("Nominal", Double.NaN);
         check(PcbTopology.validate(broken) != null, "поддельный чертёж отклонён");
@@ -79,6 +89,10 @@ final class PcbParametersTest {
         DevTest.wire(level, SUPPLY, 0, BOARD, 0); DevTest.wire(level, SUPPLY, 1, BOARD, 1);
         source.sendSuccess(() -> Component.literal("Параметры: дробный номинал, перенос, поворот, нормализация, удаление, неверные числа, поддельный чертёж и единицы — успешно"), false);
         return 1;
+    }
+    private static java.util.List<?> diagnostics(CompoundTag topology) {
+        try { return PcbModulesTest.call(Class.forName("ee.extras.pcb.PcbDiagnostics"), null, "check", topology); }
+        catch (ClassNotFoundException e) { throw new IllegalStateException(e); }
     }
     private static PcbCircuitDevice device(ServerLevel level) { return DevicesSavedData.load(level).getDevice(BOARD, PcbCircuitDevice.class); }
     private static int expect(CommandSourceStack source) {

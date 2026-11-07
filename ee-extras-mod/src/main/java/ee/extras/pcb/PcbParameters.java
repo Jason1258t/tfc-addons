@@ -30,6 +30,7 @@ final class PcbParameters {
 
     static double threshold(int definition, CompoundTag parameters) {
         if (parameters.contains("Threshold", Tag.TAG_DOUBLE)) return parameters.getDouble("Threshold");
+        if (PcbModules.get(definition).kind() == PcbCircuitDevice.Kind.TRANSISTOR) return 0.7;
         double value = PcbWiring.VOLTS[PcbWiring.threshold(definition)];
         return amps(PcbModules.get(definition)) ? value / 100 : value;
     }
