@@ -1,0 +1,23 @@
+{
+  "type": "create:mechanical_crafting",
+  "pattern": ["FRF", "CAC", "FRF"],
+  "key": {
+    "F": {
+      "item": "ee_extras:pcb_flip_flop"
+    },
+    "R": {
+      "item": "ee_extras:resistor"
+    },
+    "C": {
+      "item": "ee_extras:connector"
+    },
+    "A": {
+      "item": "create:andesite_alloy"
+    }
+  },
+  "result": {
+    "id": "ee_extras:pcb_counter",
+    "count": 1
+  },
+  "accept_mirrored": true
+}

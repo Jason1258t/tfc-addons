@@ -10,7 +10,7 @@ public final class PcbTopology {
     public static final int SIZE = 16;
     public static final int CELLS = SIZE * SIZE;
     public static final int MAX_LAYERS = 3;
-    public static final int VERSION = 7;
+    public static final int VERSION = 8;
     static final String UNSUPPORTED = "Старый формат проекта: очистите редактор и соберите схему заново";
 
     public static final int EMPTY = 0;

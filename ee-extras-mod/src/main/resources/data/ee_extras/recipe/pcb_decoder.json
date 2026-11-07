@@ -1,0 +1,20 @@
+{
+  "type": "create:mechanical_crafting",
+  "pattern": ["TDT", "DCD", "TDT"],
+  "key": {
+    "T": {
+      "item": "ee_extras:transistor"
+    },
+    "D": {
+      "item": "ee_extras:silicon_diode"
+    },
+    "C": {
+      "item": "ee_extras:connector"
+    }
+  },
+  "result": {
+    "id": "ee_extras:pcb_decoder",
+    "count": 1
+  },
+  "accept_mirrored": true
+}

@@ -369,5 +369,9 @@
   "item.ee_extras.pcb_led_strip": "Секционная световая полоса 2×5",
   "item.ee_extras.pcb_latching_relay": "Реле с фиксацией SET/RESET",
   "item.ee_extras.pcb_selector": "Переключатель на три положения",
-  "item.ee_extras.pcb_comparator": "Компаратор для платы"
+  "item.ee_extras.pcb_comparator": "Компаратор для платы",
+  "item.ee_extras.pcb_flip_flop": "D-триггер для платы",
+  "item.ee_extras.pcb_counter": "Счётчик для платы",
+  "item.ee_extras.pcb_register": "Регистр для платы",
+  "item.ee_extras.pcb_decoder": "Дешифратор для платы"
 }

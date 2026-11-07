@@ -20,6 +20,7 @@ final class PcbPartModels {
 
     static void register(ModelEvent.RegisterAdditional event) {
         for (String name : NAMES) event.register(id(name));
+        for (int bit=0;bit<4;bit++) event.register(id("logic_bit_"+bit));
         event.register(id("selector_left"));
         event.register(id("selector_right"));
         event.register(id("latching_relay_on"));
@@ -63,6 +64,14 @@ final class PcbPartModels {
         float tint = burnt ? 0.35f : 1f;
         minecraft.getBlockRenderer().getModelRenderer().renderModel(poses.last(), vertices, null, model,
                 tint, tint, tint, indicatorLit && module.sections() == 1 ? net.minecraft.client.renderer.LightTexture.FULL_BRIGHT : light, overlay);
+        if (PcbLogic.chip(module.kind())) {
+            for (int bit=0;bit<(module.kind()==PcbCircuitDevice.Kind.D_FLIP_FLOP ? 1 : 4);bit++) {
+                if ((position & (1<<bit))==0) continue;
+                var bitModel=minecraft.getModelManager().getModel(id("logic_bit_"+bit));
+                minecraft.getBlockRenderer().getModelRenderer().renderModel(poses.last(),vertices,null,bitModel,
+                        tint,tint,tint,light,overlay);
+            }
+        }
         if (module.sections() > 1) {
             var segment = minecraft.getModelManager().getModel(id("led_strip_segment_on"));
             for (int section = 0; section < module.sections(); section++) {

@@ -369,5 +369,9 @@
   "item.ee_extras.pcb_led_strip": "2×5 Sectional LED Strip",
   "item.ee_extras.pcb_latching_relay": "SET/RESET Latching Relay",
   "item.ee_extras.pcb_selector": "Three-position Selector",
-  "item.ee_extras.pcb_comparator": "PCB Comparator"
+  "item.ee_extras.pcb_comparator": "PCB Comparator",
+  "item.ee_extras.pcb_flip_flop": "PCB D Flip-Flop",
+  "item.ee_extras.pcb_counter": "PCB Counter",
+  "item.ee_extras.pcb_register": "PCB Register",
+  "item.ee_extras.pcb_decoder": "PCB Decoder"
 }

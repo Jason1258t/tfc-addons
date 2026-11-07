@@ -80,6 +80,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 if (part.kind.controlled()) join(group, part.coilA, part.coilB);
                 if (part.windingInput()) join(group, part.a, part.coilA);
                 if (part.kind == Kind.LATCHING_RELAY) { join(group, part.coilA, part.alternate); join(group, part.coilB, part.alternate); }
+                if (PcbLogic.chip(part.kind)) for (int pin : part.pins) join(group,part.a,pin);
                 if (part.poweredLogic()) { join(group,part.a,part.coilA); join(group,part.a,part.logicOutput()); if (part.kind == Kind.COMPARATOR) join(group,part.a,part.coilB); }
                 if (part.kind == Kind.POTENTIOMETER) join(group, part.a, part.coilA);
                 if (part.changeover()) join(group, part.a, part.alternateNode());
@@ -103,6 +104,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         return values;
     }
 
+    private volatile int[] logicWords = new int[MAX_PARTS], logicInputs = new int[MAX_PARTS];
     private volatile long logicHigh, logicPowered;
     private static final double LOGIC_DRIVER_OHMS = 100;
     private volatile long windingHigh;
@@ -135,7 +137,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
 
     public enum Kind {
         TRACE, RESISTOR, RELAY, BUTTON, SWITCH, LAMP, REDSTONE_IN, REDSTONE_OUT,
-        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP, LATCHING_RELAY, THREE_POSITION_SWITCH, COMPARATOR;
+        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP, LATCHING_RELAY, THREE_POSITION_SWITCH, COMPARATOR, D_FLIP_FLOP, COUNTER, REGISTER, DECODER;
 
         boolean led() { return this == LED || this == LED_PANEL || this == LED_STRIP; }
 
@@ -145,7 +147,12 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
     }
 
     public record Part(Kind kind, int a, int b, double ohms, int coilA, int coilB, double threshold,
-                       boolean normallyClosed, int moduleIndex, int moduleType, int alternate) {
+                       boolean normallyClosed, int moduleIndex, int moduleType, int alternate, int[] pins) {
+        public Part { pins = pins == null ? new int[0] : pins.clone(); }
+        @Override public int[] pins() { return pins.clone(); }
+        public Part(Kind kind,int a,int b,double ohms,int coilA,int coilB,double threshold,boolean normallyClosed,int moduleIndex,int moduleType,int alternate) {
+            this(kind,a,b,ohms,coilA,coilB,threshold,normallyClosed,moduleIndex,moduleType,alternate,new int[0]);
+        }
         public Part(Kind kind, int a, int b, double ohms, int coilA, int coilB, double threshold, boolean normallyClosed, int moduleIndex, int moduleType) {
             this(kind, a, b, ohms, coilA, coilB, threshold, normallyClosed, moduleIndex, moduleType, -1);
         }
@@ -169,6 +176,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                     && (moduleIndex == -1 && moduleType == -1 || moduleIndex >= 0 && moduleIndex < PcbTopology.CELLS * PcbTopology.MAX_LAYERS
                             && moduleType >= 0 && moduleType < PcbModules.ALL.length && PcbModules.ALL[moduleType].kind() == kind)
                     && node(a) && node(b) && a != b
+                    && (!PcbLogic.chip(kind) || pins.length == PcbLogic.pins(kind) && java.util.Arrays.stream(pins).allMatch(Part::node) && a == pins[pins.length-2] && b == pins[pins.length-1])
                     && Double.isFinite(ohms) && ohms >= CONTACT && ohms <= OPEN
                     && Double.isFinite(threshold) && threshold > 0 && threshold <= (kind == Kind.MECHANICAL_TIMER || kind == Kind.CLOCK ? 12000 : 10000)
                     && (kind != Kind.CLOCK && kind != Kind.MECHANICAL_TIMER || threshold >= 2 && threshold == Math.rint(threshold))
@@ -202,6 +210,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         timerDue = new long[MAX_PARTS];
         windingHigh = 0;
         logicHigh = logicPowered = 0;
+        logicWords = new int[MAX_PARTS]; logicInputs = new int[MAX_PARTS];
         pausedClocks = 0;
         closedMask = 0;
         latchedMask = 0;
@@ -295,6 +304,12 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             } else {
                 builder.resistor(part.a, branch, resistance(part, i) - sense);
             }
+            if (PcbLogic.chip(part.kind)) {
+                int inputs=PcbLogic.inputs(part.kind);
+                for (int input=0;input<inputs;input++) builder.resistor(part.pins[input],part.b,OPEN);
+                for (int output=0;output<PcbLogic.outputs(part.kind);output++)
+                    builder.resistor(part.pins[inputs+output],chipRail(part,i,output),logicResistance(i));
+            }
             if (part.poweredLogic()) {
                 builder.resistor(part.coilA,part.b,OPEN);
                 if (part.kind == Kind.COMPARATOR) builder.resistor(part.coilB,part.b,OPEN);
@@ -319,6 +334,10 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 builder.node(coil).resistor(part.coilA, coil, half).resistor(coil, part.coilB, half);
             }
         }
+    }
+
+    private int chipRail(Part part,int index,int output) {
+        return (logicPowered & (1L<<index))!=0 && PcbLogic.output(part.kind,logicWords[index],output) ? part.a : part.b;
     }
 
     private int logicRail(Part part,int index) {
@@ -411,6 +430,19 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 maxVoltage = Math.max(maxVoltage, Math.sqrt(alternateSquared));
                 maxCurrent = Math.max(maxCurrent, alternateAmps);
             }
+            if (PcbLogic.chip(part.kind)) {
+                int inputs=PcbLogic.inputs(part.kind);
+                for (int pin=0;pin<inputs;pin++) {
+                    double v2=results.getVoltageAtSqr(pos,part.pins[pin],part.b);
+                    watts+=v2/OPEN; maxVoltage=Math.max(maxVoltage,Math.sqrt(v2));
+                }
+                for (int output=0;output<PcbLogic.outputs(part.kind);output++) {
+                    int pin=part.pins[inputs+output];
+                    double v2=results.getVoltageAtSqr(pos,pin,chipRail(part,i,output)), ohms=logicResistance(i);
+                    watts+=v2/ohms; maxCurrent=Math.max(maxCurrent,Math.sqrt(v2)/ohms);
+                    maxVoltage=Math.max(maxVoltage,voltage(results,pin,part.b));
+                }
+            }
             if (part.poweredLogic()) {
                 double driver = results.getVoltageAtSqr(pos,part.logicOutput(),logicRail(part,i));
                 double driverOhms=logicResistance(i);
@@ -484,6 +516,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         long[] nextTimers = timerDue.clone();
         long nextWinding = windingHigh;
         long nextLogicHigh=0, nextLogicPowered=0;
+        int[] nextWords=logicWords.clone(), nextInputs=logicInputs.clone();
         double[] nextControls = new double[current.parts.size()];
         int component = -1;
         meterKind = null;
@@ -499,6 +532,26 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                     || part.kind == Kind.SWITCH && (switched != ((switches & (1L << i)) != 0)))
                 controlStates |= 1L << component;
             switch (part.kind) {
+                case D_FLIP_FLOP, COUNTER, REGISTER, DECODER -> {
+                    long bit=1L<<i;
+                    double supply=signedVoltage(results,part.a,part.b);
+                    boolean hasPower=supply>=3 && voltage(results,part.a,part.b)<=6;
+                    if (!hasPower) { nextWords[i]=0; nextInputs[i]=0; }
+                    else {
+                        nextLogicPowered |= bit;
+                        int inputs=logicInputs[i];
+                        for (int pin=0;pin<PcbLogic.inputs(part.kind);pin++) {
+                            double v=signedVoltage(results,part.pins[pin],part.b);
+                            if (v>=supply*.6) inputs |= 1<<pin;
+                            else if (v<=supply*.4) inputs &= ~(1<<pin);
+                        }
+                        int previous=(logicPowered & bit)==0 ? inputs : logicInputs[i];
+                        nextWords[i]=PcbLogic.next(part.kind,logicWords[i],inputs,previous);
+                        nextInputs[i]=inputs;
+                        if (nextWords[i]!=0) controlStates |= 1L<<component;
+                    }
+                    controlPositions[component]=nextWords[i];
+                }
                 case COMPARATOR -> {
                     long bit=1L<<i;
                     double supply=signedVoltage(results,part.a,part.b);
@@ -594,6 +647,8 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         timerDue = nextTimers;
         closedMask = closed;
         logicHigh=nextLogicHigh; logicPowered=nextLogicPowered;
+        if (!java.util.Arrays.equals(logicWords,nextWords) || !java.util.Arrays.equals(logicInputs,nextInputs)) deviceSD.setDirty();
+        logicWords=nextWords; logicInputs=nextInputs;
         if (latchedMask != nextLatched) { latchedMask = nextLatched; deviceSD.setDirty(); }
         controlVoltages = nextControls;
         indicatorVoltage = maxIndicatorVoltage;
@@ -641,8 +696,12 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         timerDue = new long[MAX_PARTS];
         windingHigh = 0;
         logicHigh = logicPowered = 0;
+        logicWords = new int[MAX_PARTS]; logicInputs = new int[MAX_PARTS];
         long[] savedTimers = tag.getLongArray("TimerDue");
         for (int i = 0; i < Math.min(savedTimers.length, timerDue.length); i++) timerDue[i] = Math.max(0, savedTimers[i]);
+        int[] savedWords=tag.getIntArray("LogicWords"), savedInputs=tag.getIntArray("LogicInputs");
+        for (int i=0;i<Math.min(savedWords.length,MAX_PARTS);i++) logicWords[i]=savedWords[i]&15;
+        for (int i=0;i<Math.min(savedInputs.length,MAX_PARTS);i++) logicInputs[i]=savedInputs[i]&31;
         windingHigh = tag.getLong("WindingHigh");
         pausedClocks = tag.getLong("PausedClocks");
         positions = defaultPositions();
@@ -669,7 +728,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 Part part = new Part(Kind.valueOf(item.getString("Kind")), item.getInt("A"), item.getInt("B"),
                         item.getDouble("Ohms"), item.getInt("CoilA"), item.getInt("CoilB"), item.getDouble("Threshold"),
                         item.getBoolean("NormallyClosed"), item.contains("ModuleIndex") ? item.getInt("ModuleIndex") : -1,
-                        item.contains("ModuleType") ? item.getInt("ModuleType") : -1, item.contains("Alternate") ? item.getInt("Alternate") : -1);
+                        item.contains("ModuleType") ? item.getInt("ModuleType") : -1, item.contains("Alternate") ? item.getInt("Alternate") : -1,item.getIntArray("Pins"));
                 if (!part.valid() || part.moduleIndex >= 0 && tag.getInt("CircuitVersion") != PcbTopology.VERSION) return;
                 parts.add(part);
             } catch (IllegalArgumentException ignored) {
@@ -691,6 +750,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         tag.putInt("Terminals", circuit.terminals);
         tag.putLongArray("TimerDue", timerDue);
         tag.putLong("WindingHigh", windingHigh);
+        tag.putIntArray("LogicWords",logicWords); tag.putIntArray("LogicInputs",logicInputs);
         tag.putLong("PausedClocks", pausedClocks);
         tag.putIntArray("Positions", positions);
         tag.putBoolean("Switch", switched);
@@ -713,6 +773,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         for (Part part : circuit.parts) {
             CompoundTag item = new CompoundTag();
             item.putString("Kind", part.kind.name());
+            if (part.pins.length>0) item.putIntArray("Pins",part.pins);
             item.putInt("A", part.a);
             item.putInt("B", part.b);
             item.putDouble("Ohms", part.ohms);
