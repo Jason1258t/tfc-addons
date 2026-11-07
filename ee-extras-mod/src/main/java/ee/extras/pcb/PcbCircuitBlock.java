@@ -238,8 +238,12 @@ public final class PcbCircuitBlock extends SimpleElectricalDeviceBlock<PcbCircui
                     if (board.adjustable(index)) {
                         int definition = board.topology().getIntArray(PcbWiring.KEY)[index];
                         int value = sliderPosition(localPoint(hit.getLocation().subtract(Vec3.atLowerCornerOf(pos)), state.getValue(FACING)), index, definition);
-                        if (device.adjustComponent(board.componentOrdinal(index), value))
-                            player.displayClientMessage(Component.literal("Положение: " + value + " %"), true);
+                        boolean selector = PcbModules.get(definition).kind() == PcbCircuitDevice.Kind.THREE_POSITION_SWITCH;
+                        if (selector) value = PcbCircuitDevice.selectorPosition(value);
+                        if (device.adjustComponent(board.componentOrdinal(index), value)) {
+                            String label = selector ? (value == 0 ? "контакт I" : value == 100 ? "контакт II" : "центр, цепи разомкнуты") : value + " %";
+                            player.displayClientMessage(Component.literal("Положение: " + label), true);
+                        }
                     } else {
                         String message = device.interactComponent(board.componentOrdinal(index), level.getGameTime(), player.isShiftKeyDown());
                         if (message != null) player.displayClientMessage(Component.literal(message), true);

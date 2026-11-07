@@ -24,9 +24,17 @@ final class PcbContactsTest {
     private static final BlockPos BOARD = new BlockPos(24, -60, 24), SUPPLY = BOARD.east(4), BASE = BOARD.east(6);
     static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("pcbcontacts").requires(s -> s.hasPermission(2))
-                .then(Commands.literal("switch").executes(c -> build(c.getSource(), false, false)))
-                .then(Commands.literal("transistor").executes(c -> build(c.getSource(), true, false)))
-                .then(Commands.literal("relay").executes(c -> build(c.getSource(), false, true)))
+                .then(Commands.literal("switch").executes(c -> build(c.getSource(), 3)))
+                .then(Commands.literal("transistor").executes(c -> build(c.getSource(), 12)))
+                .then(Commands.literal("relay").executes(c -> build(c.getSource(), 1)))
+                .then(Commands.literal("selector").executes(c -> build(c.getSource(), 21)))
+                .then(Commands.literal("select").then(Commands.argument("percent",com.mojang.brigadier.arguments.IntegerArgumentType.integer(0,100))
+                        .executes(c -> {
+                            var level=c.getSource().getLevel(); var player=FakePlayerFactory.getMinecraft(level);
+                            int percent=com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(c,"percent");
+                            Vec3 mounted=PcbModulesTest.call(PcbCircuitBlock.class,null,"mountedPoint",new Vec3(7.0/16,1.5/16,(6+3*percent/100.0)/16),Direction.UP);
+                            check(level.getBlockState(BOARD).useWithoutItem(level,player,new BlockHitResult(mounted.add(Vec3.atLowerCornerOf(BOARD)),Direction.UP,BOARD,false)).consumesAction(),"трёхпозиционный переключатель принимает положение");return 1;
+                        })))
                 .then(Commands.literal("click").executes(c -> {
                     var level = c.getSource().getLevel(); var player = FakePlayerFactory.getMinecraft(level);
                     Vec3 mounted = PcbModulesTest.call(PcbCircuitBlock.class, null, "mountedPoint", new Vec3(7.0/16, 1.5/16, 7.0/16), Direction.UP);
@@ -45,11 +53,12 @@ final class PcbContactsTest {
     private static PcbCircuitDevice device(ServerLevel level) { return DevicesSavedData.load(level).getDevice(BOARD, PcbCircuitDevice.class); }
     private static void trace(CompoundTag tag, int x, int y, boolean terminal) { PcbTopology.set(tag, 0, y * 16 + x, terminal ? PcbTopology.TERMINAL : PcbTopology.TRACE); }
     @SuppressWarnings("unchecked")
-    private static int build(CommandSourceStack source, boolean transistor, boolean relay) {
+    private static int build(CommandSourceStack source, int type) {
+        boolean transistor=type==12, relay=type==1, selector=type==21;
         var level = source.getLevel(); var player = FakePlayerFactory.getMinecraft(level);
         for (var pos : new BlockPos[]{BOARD, SUPPLY, BASE}) DevTest.place(level, pos, Blocks.AIR.defaultBlockState());
         var topology = PcbTopology.create(transistor ? 2 : 1);
-        int definition = PcbModulesTest.definition(transistor ? 12 : relay ? 1 : 3, 0);
+        int definition = PcbModulesTest.definition(type, 0);
         PcbTopology.set(topology, 0, 102, PcbTopology.COMPONENT);
         PcbModulesTest.call(PcbTopology.class, null, "setPart", topology, 0, 102, definition);
         int row = transistor || relay ? 6 : 7;
@@ -91,7 +100,7 @@ final class PcbContactsTest {
             DevTest.place(level, BASE, CEEBlocks.CREATIVE_BATTERY.getDefaultState()); power(level, BASE, transistor ? .5 : 0);
             DevTest.wire(level, BASE, 1, BOARD, 0); DevTest.wire(level, BASE, 0, BOARD, relay ? 4 : 2);
         }
-        source.sendSuccess(() -> Component.literal(transistor ? "Транзистор: коллектор, эмиттер и база с общим эмиттером" : relay ? "Реле: обмотка±, общий, НО и НЗ" : "Переключатель: общий, НО и НЗ, две независимые нагрузки"), false);
+        source.sendSuccess(() -> Component.literal(transistor ? "Транзистор: коллектор, эмиттер и база с общим эмиттером" : relay ? "Реле: обмотка±, общий, НО и НЗ" : selector ? "Трёхпозиционный переключатель: I / разрыв / II" : "Переключатель: общий, НО и НЗ, две независимые нагрузки"), false);
         return 1;
     }
     private static void power(ServerLevel level, BlockPos pos, double volts) {
@@ -109,6 +118,11 @@ final class PcbContactsTest {
         if (saved.getList("Circuit", net.minecraft.nbt.Tag.TAG_COMPOUND).getCompound(0).getString("Kind").equals("SWITCH"))
             check(Math.abs(watts - .576) < .005, "ровно одна нагрузка получает питание, мощность " + watts);
         var first = saved.getList("Circuit", net.minecraft.nbt.Tag.TAG_COMPOUND).getCompound(0);
+        if (first.getString("Kind").equals("THREE_POSITION_SWITCH")) {
+            int position=saved.getIntArray("Positions")[0];
+            check(position==0 || position==50 || position==100,"только три положения");
+            check(Math.abs(watts-(position==50?0:.576))<.005,"среднее положение размыкает обе цепи, крайнее питает одну");
+        }
         if (first.getString("Kind").equals("RELAY")) check(Math.abs(watts - (.576 + control * control / first.getDouble("Ohms"))) < .005, "перекидное реле учитывает НЗ и обмотку");
         source.sendSuccess(() -> Component.literal(String.format(java.util.Locale.ROOT, "Контакты: %.4fВ, ожидалось%.1fВ; мощность%.6fВт", value, expected, watts)), false);
         return 1;

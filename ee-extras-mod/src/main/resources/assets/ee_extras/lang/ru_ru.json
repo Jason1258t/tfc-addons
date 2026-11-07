@@ -366,5 +366,7 @@
   "item.ee_extras.pcb_mechanical_timer": "Механический таймер платы",
   "item.ee_extras.pcb_clock": "Тактовый модуль платы",
   "item.ee_extras.pcb_led_panel": "Световая панель 2×2",
-  "item.ee_extras.pcb_led_strip": "Секционная световая полоса 2×5"
+  "item.ee_extras.pcb_led_strip": "Секционная световая полоса 2×5",
+  "item.ee_extras.pcb_latching_relay": "Реле с фиксацией SET/RESET",
+  "item.ee_extras.pcb_selector": "Переключатель на три положения"
 }

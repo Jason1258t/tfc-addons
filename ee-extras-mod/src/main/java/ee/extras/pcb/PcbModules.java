@@ -12,13 +12,16 @@ final class PcbModules {
     }
     record Module(Kind kind, String name, String model, int width, int height, int level, int sections) {
         Module(Kind kind, String name, String model, int width, int height, int level) { this(kind, name, model, width, height, level, 1); }
-        int pins() { return sections > 1 ? 2 * sections : kind == Kind.RELAY ? 5 : kind == Kind.POTENTIOMETER || kind == Kind.SWITCH || kind == Kind.TRANSISTOR ? 3 : kind.controlled() ? 4 : 2; }
+        int pins() { return sections > 1 ? 2 * sections : kind == Kind.RELAY || kind == Kind.LATCHING_RELAY ? 5 : kind == Kind.POTENTIOMETER || kind == Kind.SWITCH || kind == Kind.THREE_POSITION_SWITCH || kind == Kind.TRANSISTOR || kind == Kind.MECHANICAL_TIMER ? 3 : kind.controlled() ? 4 : 2; }
         String pinName(int pin) {
             if (sections > 1) return "Секция " + (pin / 2 + 1) + (pin % 2 == 0 ? " +" : " −");
+            if (kind == Kind.THREE_POSITION_SWITCH) return switch (pin) { case 0 -> "Общий"; case 1 -> "Левый I"; default -> "Правый II"; };
+            if (kind == Kind.MECHANICAL_TIMER) return switch (pin) { case 0 -> "A / возврат взвода"; case 1 -> "B"; default -> "Взвод"; };
             if (kind == Kind.SWITCH) return switch (pin) { case 0 -> "Общий"; case 1 -> "НО"; default -> "НЗ"; };
             if (kind == Kind.TRANSISTOR) return switch (pin) { case 0 -> "Коллектор"; case 1 -> "Эмиттер"; default -> "База"; };
             if (kind == Kind.POTENTIOMETER) return switch (pin) { case 0 -> "Верх"; case 1 -> "Низ"; default -> "Движок"; };
             if (kind == Kind.CLOCK && pin >= 2) return pin == 2 ? "Питание +" : "Питание −";
+            if (kind == Kind.LATCHING_RELAY) return switch (pin) { case 0 -> "Общий"; case 1 -> "НО"; case 2 -> "SET"; case 3 -> "Обмотки −"; default -> "RESET"; };
             if (kind == Kind.RELAY) return switch (pin) { case 0 -> "Общий"; case 1 -> "НО"; case 2 -> "Обмотка +"; case 3 -> "Обмотка −"; default -> "НЗ"; };
             if (kind.controlled()) return switch (pin) { case 0 -> "Контакт A"; case 1 -> "Контакт B"; case 2 -> "Управление +"; default -> "Управление −"; };
             if (kind.led() || kind == Kind.DIODE) return pin == 0 ? "Анод +" : "Катод −";
@@ -33,7 +36,7 @@ final class PcbModules {
         String pinLabel(int pin) { return pinType(pin).symbol + " " + pinName(pin); }
         String section() {
             return switch (kind) {
-                case BUTTON, SWITCH, REDSTONE_IN, POTENTIOMETER -> "Управление";
+                case BUTTON, SWITCH, THREE_POSITION_SWITCH, REDSTONE_IN, POTENTIOMETER -> "Управление";
                 case LAMP, LED, LED_PANEL, LED_STRIP, REDSTONE_OUT, VOLTMETER, AMMETER -> "Индикация";
                 case RESISTOR, RHEOSTAT, CAPACITOR, FUSE -> "Пассивные";
                 case MECHANICAL_TIMER, CLOCK -> "Время";
@@ -50,13 +53,13 @@ final class PcbModules {
             return true;
         }
         boolean resistanceSetting() {
-            return switch (kind) { case RESISTOR, RELAY, LAMP, LED, LED_PANEL, LED_STRIP, CAPACITOR, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK -> true; default -> false; };
+            return switch (kind) { case RESISTOR, RELAY, LATCHING_RELAY, LAMP, LED, LED_PANEL, LED_STRIP, CAPACITOR, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK -> true; default -> false; };
         }
         boolean thresholdSetting() {
-            return switch (kind) { case RELAY, LAMP, LED, LED_PANEL, LED_STRIP, FUSE, VOLTMETER, AMMETER, TRANSISTOR, REDSTONE_OUT -> true; default -> false; };
+            return switch (kind) { case RELAY, LATCHING_RELAY, LAMP, LED, LED_PANEL, LED_STRIP, FUSE, VOLTMETER, AMMETER, TRANSISTOR, REDSTONE_OUT -> true; default -> false; };
         }
         boolean timed() { return kind == Kind.MECHANICAL_TIMER || kind == Kind.CLOCK; }
-        boolean adjustable() { return kind == Kind.RHEOSTAT || kind == Kind.POTENTIOMETER; }
+        boolean adjustable() { return kind == Kind.RHEOSTAT || kind == Kind.POTENTIOMETER || kind == Kind.THREE_POSITION_SWITCH; }
         boolean input() { return kind == Kind.BUTTON || kind == Kind.SWITCH || adjustable() || timed(); }
     }
 
@@ -80,7 +83,9 @@ final class PcbModules {
             new Module(Kind.MECHANICAL_TIMER, "Механический таймер", "mechanical_timer", 3, 3, 1),
             new Module(Kind.CLOCK, "Клок", "clock", 3, 3, 2),
             new Module(Kind.LED_PANEL, "Световая панель", "led_panel", 2, 2, 1),
-            new Module(Kind.LED_STRIP, "Световая полоса", "led_strip", 2, 5, 1, 5)
+            new Module(Kind.LED_STRIP, "Световая полоса", "led_strip", 2, 5, 1, 5),
+            new Module(Kind.LATCHING_RELAY, "Реле SET/RESET", "latching_relay", 2, 3, 1),
+            new Module(Kind.THREE_POSITION_SWITCH, "Переключатель на 3 положения", "selector", 2, 3, 1)
     };
 
     private PcbModules() {}

@@ -15,13 +15,13 @@ import net.minecraft.world.phys.BlockHitResult;
 
 /** Снимки реального редактора и монтажного макета в полном клиенте test1a. */
 final class PcbModulePhotos {
-    private static BlockPos table, board, stripBoard, lampBoard, lampBattery;
+    private static BlockPos table, board, stripBoard, lampBoard, lampBattery, latchBoard;
     private PcbModulePhotos() {}
 
     static void tick(Minecraft mc, MinecraftServer server, int tick) {
         if (tick % 10 == 0) mc.gui.getChat().clearMessages(false);
         if (tick % 20 == 0) server.execute(() -> { var player=server.getPlayerList().getPlayer(mc.player.getUUID()); if(player!=null) player.removeAllEffects(); });
-        if (tick == 140 || tick >= 510 && tick < 1160) mc.options.hideGui = true;
+        if (tick == 140 || tick >= 510 && tick < 1400) mc.options.hideGui = true;
         if (tick == 60) server.execute(() -> {
             var player = server.getPlayerList().getPlayer(mc.player.getUUID());
             var level = player.serverLevel();
@@ -34,7 +34,7 @@ final class PcbModulePhotos {
             DevTest.place(level, table, PcbItems.EDITOR_BLOCK.get().defaultBlockState());
             var editor = (PcbEditorBlockEntity) level.getBlockEntity(table);
             editor.clear(3);
-            int[][] modules = {{0,2,2},{7,8,2},{13,13,2},{2,2,6},{3,7,6},{15,12,6},{14,2,10},{12,7,12},{10,11,12}};
+            int[][] modules = {{0,2,2},{7,8,2},{13,13,2},{2,2,6},{3,7,6},{15,12,6},{14,2,10},{12,7,12},{10,11,12},{20,9,9}};
             for (int[] entry : modules) {
                 if (!editor.setPart(0, entry[2] * 16 + entry[1], PcbModulesTest.definition(entry[0], 0)))
                     throw new IllegalStateException("Не установлен модуль макета " + entry[0]);
@@ -148,7 +148,26 @@ final class PcbModulePhotos {
         if (tick == 1040) photo(mc, "08-strip-night");
         if (tick == 1060) server.execute(() -> PcbLightsTest.power(server.overworld(), 0));
         if (tick == 1140) photo(mc, "09-strip-off");
-        if (tick == 1160) {
+        if (tick == 1160) server.execute(() -> {
+            var player=server.getPlayerList().getPlayer(mc.player.getUUID());
+            calendarHour(server,12);
+            latchBoard=table.east(22);
+            PcbLatchTest.buildAt(player.createCommandSourceStack(),latchBoard);
+            ClientTest.check("рецепт реле с фиксацией доступен",server.getRecipeManager().byKey(net.minecraft.resources.ResourceLocation.parse("ee_extras:pcb_latching_relay")).isPresent());
+            camera(player,latchBoard);
+        });
+        if (tick == 1190) server.execute(() -> PcbLatchTest.expect(server.getPlayerList().getPlayer(mc.player.getUUID()).createCommandSourceStack(),false,0));
+        if (tick == 1200) photo(mc,"10-latch-off");
+        if (tick == 1220) server.execute(() -> PcbLatchTest.drive(server.overworld(),4,0,24));
+        if (tick == 1250) server.execute(() -> PcbLatchTest.expect(server.getPlayerList().getPlayer(mc.player.getUUID()).createCommandSourceStack(),true,24));
+        if (tick == 1260) photo(mc,"11-latch-set");
+        if (tick == 1280) server.execute(() -> PcbLatchTest.drive(server.overworld(),0,0,0));
+        if (tick == 1310) server.execute(() -> PcbLatchTest.expect(server.getPlayerList().getPlayer(mc.player.getUUID()).createCommandSourceStack(),true,0));
+        if (tick == 1320) photo(mc,"12-latch-unpowered");
+        if (tick == 1340) server.execute(() -> PcbLatchTest.drive(server.overworld(),0,4,24));
+        if (tick == 1370) server.execute(() -> PcbLatchTest.expect(server.getPlayerList().getPlayer(mc.player.getUUID()).createCommandSourceStack(),false,0));
+        if (tick == 1380) photo(mc,"13-latch-reset");
+        if (tick == 1400) {
             mc.options.hideGui = false;
             System.out.println("EECLIENT PCB MODULE PHOTOS DONE");
         }

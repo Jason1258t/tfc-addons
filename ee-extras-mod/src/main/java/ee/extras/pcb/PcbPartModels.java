@@ -20,6 +20,9 @@ final class PcbPartModels {
 
     static void register(ModelEvent.RegisterAdditional event) {
         for (String name : NAMES) event.register(id(name));
+        event.register(id("selector_left"));
+        event.register(id("selector_right"));
+        event.register(id("latching_relay_on"));
         event.register(id("slider_handle"));
         event.register(id("timer_hand"));
         event.register(id("led_on"));
@@ -43,7 +46,10 @@ final class PcbPartModels {
         boolean indicatorLit = sections != 0;
         var module = PcbModules.get(definition);
         var minecraft = Minecraft.getInstance();
-        String name = cap && (type == 2 || type == 3) ? NAMES[type] + "_cap" + (active ? "_on" : "")
+        String name = module.kind() == PcbCircuitDevice.Kind.THREE_POSITION_SWITCH
+                ? NAMES[type] + (position < 34 ? "_left" : position > 66 ? "_right" : "")
+                : module.kind() == PcbCircuitDevice.Kind.LATCHING_RELAY && active ? NAMES[type] + "_on"
+                : cap && (type == 2 || type == 3) ? NAMES[type] + "_cap" + (active ? "_on" : "")
                 : active && (type == 2 || type == 3) ? NAMES[type] + "_on"
                 : indicatorLit && module.kind().led() && module.sections() == 1 ? NAMES[type] + "_on" : NAMES[type];
         var model = minecraft.getModelManager().getModel(id(name));
@@ -67,7 +73,7 @@ final class PcbPartModels {
                 poses.popPose();
             }
         }
-        if (PcbModules.get(definition).adjustable()) {
+        if (module.kind() == PcbCircuitDevice.Kind.RHEOSTAT || module.kind() == PcbCircuitDevice.Kind.POTENTIOMETER) {
             poses.translate(0, 0, (position - 50) / 100f * 0.7f / 16);
             var handle = minecraft.getModelManager().getModel(id("slider_handle"));
             minecraft.getBlockRenderer().getModelRenderer().renderModel(poses.last(), vertices, null, handle,
