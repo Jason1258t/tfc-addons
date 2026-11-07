@@ -25,7 +25,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
     private static final int LEGACY_TERMINALS = 4;
     static final int MAX_TERMINALS = 4 * (PcbTopology.SIZE - 1);
     private static final int MAX_PARTS = 64;
-    private static final int MAX_NODES = MAX_TERMINALS + 2 * MAX_PARTS;
+    private static final int MAX_NODES = MAX_TERMINALS + PcbTopology.CELLS * PcbTopology.MAX_LAYERS;
     private static final double CONTACT = 0.01;
     private static final double OPEN = 1e9;
     private static final double CAPACITOR_ESR = 0.1;
@@ -78,7 +78,8 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             for (Part part : parts) {
                 join(group, part.a, part.b);
                 if (part.kind.controlled()) join(group, part.coilA, part.coilB);
-                if (part.kind == Kind.POTENTIOMETER || part.changeover()) join(group, part.a, part.coilA);
+                if (part.kind == Kind.POTENTIOMETER) join(group, part.a, part.coilA);
+                if (part.changeover()) join(group, part.a, part.alternateNode());
             }
             return group;
         }
@@ -137,7 +138,11 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
     }
 
     public record Part(Kind kind, int a, int b, double ohms, int coilA, int coilB, double threshold,
-                       boolean normallyClosed, int moduleIndex, int moduleType) {
+                       boolean normallyClosed, int moduleIndex, int moduleType, int alternate) {
+        public Part(Kind kind, int a, int b, double ohms, int coilA, int coilB, double threshold, boolean normallyClosed, int moduleIndex, int moduleType) {
+            this(kind, a, b, ohms, coilA, coilB, threshold, normallyClosed, moduleIndex, moduleType, -1);
+        }
+
         public Part(Kind kind, int a, int b, double ohms, int coilA, int coilB, double threshold, boolean normallyClosed) {
             this(kind, a, b, ohms, coilA, coilB, threshold, normallyClosed, -1, -1);
         }
@@ -146,7 +151,8 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             this(kind, a, b, ohms, coilA, coilB, threshold, false);
         }
 
-        boolean changeover() { return kind == Kind.SWITCH && moduleIndex >= 0; }
+        boolean changeover() { return moduleIndex >= 0 && (kind == Kind.SWITCH || kind == Kind.RELAY && alternate >= 0); }
+        int alternateNode() { return kind == Kind.SWITCH ? coilA : alternate; }
 
         boolean valid() {
             return kind != null
@@ -156,7 +162,8 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                     && Double.isFinite(ohms) && ohms >= CONTACT && ohms <= OPEN
                     && Double.isFinite(threshold) && threshold > 0 && threshold <= (kind == Kind.MECHANICAL_TIMER || kind == Kind.CLOCK ? 12000 : 10000)
                     && (kind != Kind.CLOCK && kind != Kind.MECHANICAL_TIMER || threshold >= 2 && threshold == Math.rint(threshold))
-                    && (!changeover() || node(coilA) && coilA != a && coilA != b)
+                    && (!changeover() || node(alternateNode()) && alternateNode() != a && alternateNode() != b)
+                    && (alternate == -1 || kind == Kind.RELAY && node(alternate))
                     && (kind != Kind.POTENTIOMETER || node(coilA) && coilA != a && coilA != b)
                     && (!kind.controlled() || node(coilA) && node(coilB) && coilA != coilB);
         }
@@ -275,8 +282,8 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             }
             if (part.changeover()) {
                 int alternate = MAX_NODES + MAX_PARTS * 2 + i;
-                double ohms = switchActive(i) ? OPEN : CONTACT;
-                builder.node(alternate).resistor(part.a, alternate, ohms - CONTACT / 2).resistor(alternate, part.coilA, CONTACT / 2);
+                double ohms = resistance(part, i) == CONTACT ? OPEN : CONTACT;
+                builder.node(alternate).resistor(part.a, alternate, ohms - CONTACT / 2).resistor(alternate, part.alternateNode(), CONTACT / 2);
             }
             if (part.kind.controlled()) {
                 int coil = MAX_NODES + MAX_PARTS + i;
@@ -360,8 +367,8 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             }
             maxCurrent = Math.max(maxCurrent, amps);
             if (part.changeover()) {
-                double alternateSquared = results.getVoltageAtSqr(pos, part.a, part.coilA);
-                double alternateSense = results.getVoltageAtSqr(pos, MAX_NODES + MAX_PARTS * 2 + i, part.coilA);
+                double alternateSquared = results.getVoltageAtSqr(pos, part.a, part.alternateNode());
+                double alternateSense = results.getVoltageAtSqr(pos, MAX_NODES + MAX_PARTS * 2 + i, part.alternateNode());
                 double alternateAmps = Math.sqrt(alternateSense) / (CONTACT / 2);
                 watts += Math.sqrt(alternateSquared) * alternateAmps;
                 maxVoltage = Math.max(maxVoltage, Math.sqrt(alternateSquared));
@@ -566,7 +573,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 Part part = new Part(Kind.valueOf(item.getString("Kind")), item.getInt("A"), item.getInt("B"),
                         item.getDouble("Ohms"), item.getInt("CoilA"), item.getInt("CoilB"), item.getDouble("Threshold"),
                         item.getBoolean("NormallyClosed"), item.contains("ModuleIndex") ? item.getInt("ModuleIndex") : -1,
-                        item.contains("ModuleType") ? item.getInt("ModuleType") : -1);
+                        item.contains("ModuleType") ? item.getInt("ModuleType") : -1, item.contains("Alternate") ? item.getInt("Alternate") : -1);
                 if (!part.valid() || part.moduleIndex >= 0 && tag.getInt("CircuitVersion") != PcbTopology.VERSION) return;
                 parts.add(part);
             } catch (IllegalArgumentException ignored) {
@@ -615,6 +622,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             item.putInt("CoilB", part.coilB);
             item.putDouble("Threshold", part.threshold);
             if (part.moduleIndex >= 0) { item.putInt("ModuleIndex", part.moduleIndex); item.putInt("ModuleType", part.moduleType); }
+            if (part.alternate >= 0) item.putInt("Alternate", part.alternate);
             if (part.normallyClosed) item.putBoolean("NormallyClosed", true);
             serialized.add(item);
         }

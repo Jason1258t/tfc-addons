@@ -12,13 +12,14 @@ final class PcbModules {
     }
     record Module(Kind kind, String name, String model, int width, int height, int level, int sections) {
         Module(Kind kind, String name, String model, int width, int height, int level) { this(kind, name, model, width, height, level, 1); }
-        int pins() { return sections > 1 ? 2 * sections : kind == Kind.POTENTIOMETER || kind == Kind.SWITCH || kind == Kind.TRANSISTOR ? 3 : kind.controlled() ? 4 : 2; }
+        int pins() { return sections > 1 ? 2 * sections : kind == Kind.RELAY ? 5 : kind == Kind.POTENTIOMETER || kind == Kind.SWITCH || kind == Kind.TRANSISTOR ? 3 : kind.controlled() ? 4 : 2; }
         String pinName(int pin) {
             if (sections > 1) return "Секция " + (pin / 2 + 1) + (pin % 2 == 0 ? " +" : " −");
             if (kind == Kind.SWITCH) return switch (pin) { case 0 -> "Общий"; case 1 -> "НО"; default -> "НЗ"; };
             if (kind == Kind.TRANSISTOR) return switch (pin) { case 0 -> "Коллектор"; case 1 -> "Эмиттер"; default -> "База"; };
             if (kind == Kind.POTENTIOMETER) return switch (pin) { case 0 -> "Верх"; case 1 -> "Низ"; default -> "Движок"; };
             if (kind == Kind.CLOCK && pin >= 2) return pin == 2 ? "Питание +" : "Питание −";
+            if (kind == Kind.RELAY) return switch (pin) { case 0 -> "Общий"; case 1 -> "НО"; case 2 -> "Обмотка +"; case 3 -> "Обмотка −"; default -> "НЗ"; };
             if (kind.controlled()) return switch (pin) { case 0 -> "Контакт A"; case 1 -> "Контакт B"; case 2 -> "Управление +"; default -> "Управление −"; };
             if (kind.led() || kind == Kind.DIODE) return pin == 0 ? "Анод +" : "Катод −";
             return pin == 0 ? "A" : "B";
@@ -61,7 +62,7 @@ final class PcbModules {
 
     static final Module[] ALL = {
             new Module(Kind.RESISTOR, "Резистор", "resistor", 1, 1, 1),
-            new Module(Kind.RELAY, "Реле", "relay", 3, 3, 1),
+            new Module(Kind.RELAY, "Реле", "relay", 2, 2, 1),
             new Module(Kind.BUTTON, "Кнопка", "button", 2, 2, 1),
             new Module(Kind.SWITCH, "Переключатель", "switch", 2, 3, 1),
             new Module(Kind.LAMP, "Лампа", "light_bulb", 2, 2, 1),

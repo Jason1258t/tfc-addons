@@ -196,20 +196,20 @@ public final class PcbModulesTest {
         var menu = new PcbEditorMenu(91, player.getInventory(), ContainerLevelAccess.create(level, pos), editor);
         menu.clickMenuButton(player, 1040 + 1);
         menu.clickMenuButton(player, 4 * 16 + 4);
-        int tail = 6 * 16 + 5;
+        int tail = 5 * 16 + 5;
         menu.clickMenuButton(player, 2000 + tail);
         check((int) call(PcbEditorMenu.class, menu, "selected") == 4 * 16 + 4, "настройка по дальней клетке реле");
         menu.clickMenuButton(player, PcbEditorMenu.OHMS);
         check(((editor.topology().getIntArray(PcbWiring.KEY)[68] - 1) >>> 10 & 15) == 1, "настройка меняет установленный модуль");
         menu.clickMenuButton(player, PcbEditorMenu.ROTATE);
-        check(PcbFootprint.width(editor.topology().getIntArray(PcbWiring.KEY)[68]) == 3, "поворот установленного модуля");
+        check(PcbFootprint.width(editor.topology().getIntArray(PcbWiring.KEY)[68]) == 2, "поворот установленного модуля");
         menu.clickMenuButton(player, PcbEditorMenu.SELECT_TOOL + 7);
-        menu.clickMenuButton(player, 5 * 16 + 6);
+        menu.clickMenuButton(player, 5 * 16 + 5);
         menu.clickMenuButton(player, 8 * 16 + 8);
         check(editor.topology().getIntArray(PcbWiring.KEY)[68] == 0
-                && PcbFootprint.owner(editor.topology(), 0, 9 * 16 + 10) == 136, "перенос по дальней клетке");
+                && PcbFootprint.owner(editor.topology(), 0, 9 * 16 + 9) == 136, "перенос по дальней клетке");
         menu.clickMenuButton(player, PcbEditorMenu.SELECT_TOOL + 4);
-        menu.clickMenuButton(player, 9 * 16 + 10);
+        menu.clickMenuButton(player, 9 * 16 + 9);
         check(!PcbWiring.active(editor.topology()), "ластик удаляет весь модуль");
         // Замкнутая трассировка: вывод — кнопка 2×2 — лампа 2×2 — вывод.
         editor.clear(1);

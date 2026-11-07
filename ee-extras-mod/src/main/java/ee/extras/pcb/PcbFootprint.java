@@ -67,8 +67,8 @@ final class PcbFootprint {
     static int pinCell(int anchor, int definition, int pin) {
         int w = baseWidth(definition);
         int h = baseHeight(definition);
-        int x = PcbModules.get(definition).sections() > 1 ? (pin % 2 == 0 ? -1 : w) : switch (pin) { case 0 -> -1; case 1 -> w; default -> (w - 1) / 2; };
-        int y = PcbModules.get(definition).sections() > 1 ? pin / 2 : switch (pin) { case 2 -> -1; case 3 -> h; default -> (h - 1) / 2; };
+        int x = PcbModules.get(definition).sections() > 1 ? (pin % 2 == 0 ? -1 : w) : switch (pin) { case 0 -> -1; case 1, 4 -> w; default -> (w - 1) / 2; };
+        int y = PcbModules.get(definition).sections() > 1 ? pin / 2 : switch (pin) { case 2 -> -1; case 3 -> h; case 4 -> h - 1; default -> (h - 1) / 2; };
         for (int r = 0; r < PcbWiring.rotation(definition); r++) {
             int nextX = h - 1 - y;
             y = x;
@@ -84,13 +84,12 @@ final class PcbFootprint {
     }
 
     static void isolatePins(CompoundTag tag, int layer, int anchor, int definition) {
-        if (PcbModules.get(definition).sections() <= 1) return;
         int count = PcbModules.get(definition).pins();
         for (int a = 0; a < count; a++) {
             int first = pinCell(anchor, definition, a);
             if (first < 0) continue;
             for (int b = a + 1; b < count; b++) {
-                if (a / 2 == b / 2) continue;
+                if (PcbModules.get(definition).sections() > 1 && a / 2 == b / 2) continue;
                 int second = pinCell(anchor, definition, b);
                 for (int direction = 0; direction < 4; direction++) {
                     if (PcbTopology.neighbor(first, direction) == second)

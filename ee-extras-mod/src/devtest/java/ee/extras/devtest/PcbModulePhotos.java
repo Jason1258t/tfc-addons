@@ -120,8 +120,7 @@ final class PcbModulePhotos {
             try {
                 var field = PcbEditorScreen.class.getDeclaredField("diagnosticsOpen"); field.setAccessible(true);
                 ClientTest.check("переход закрывает список ошибок", !field.getBoolean(screen));
-                ClientTest.check("ошибка в центре холста", screen.cellScreenX(1) == (12 + mc.getWindow().getGuiScaledWidth() - 148) / 2
-                        && screen.cellScreenY(2) == (26 + mc.getWindow().getGuiScaledHeight() - 84) / 2);
+                ClientTest.check("ошибка в центре холста", screen.cellScreenX(1) == screen.canvasCenterX() && screen.cellScreenY(2) == screen.canvasCenterY());
             } catch (ReflectiveOperationException e) { throw new IllegalStateException(e); }
         }
         if (tick == 480) Screenshot.grab(mc.gameDirectory, "pcb-modules-03f-jump.png", mc.getMainRenderTarget(), c -> {});
