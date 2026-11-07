@@ -1,0 +1,40 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "glow": "ee_extras:block/pcb_part/light_bulb",
+    "particle": "#glow"
+  },
+  "elements": [
+    {
+      "shade": false,
+      "from": [7.54, 0.3, 7.915],
+      "to": [8.46, 0.85, 8.085],
+      "faces": {
+        "up": {
+          "uv": [14, 1, 15, 2],
+          "texture": "#glow"
+        },
+        "down": {
+          "uv": [14, 1, 15, 2],
+          "texture": "#glow"
+        },
+        "north": {
+          "uv": [14, 1, 15, 2],
+          "texture": "#glow"
+        },
+        "south": {
+          "uv": [14, 1, 15, 2],
+          "texture": "#glow"
+        },
+        "east": {
+          "uv": [14, 1, 15, 2],
+          "texture": "#glow"
+        },
+        "west": {
+          "uv": [14, 1, 15, 2],
+          "texture": "#glow"
+        }
+      }
+    }
+  ]
+}

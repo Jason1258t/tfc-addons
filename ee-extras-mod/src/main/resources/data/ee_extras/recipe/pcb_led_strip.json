@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "ee_extras:pcb_led"
+    },
+    {
+      "item": "ee_extras:pcb_led"
+    },
+    {
+      "item": "ee_extras:pcb_led"
+    },
+    {
+      "item": "ee_extras:pcb_led"
+    },
+    {
+      "item": "ee_extras:pcb_led"
+    },
+    {
+      "item": "ee_extras:connector"
+    },
+    {
+      "item": "immersiveengineering:fiberboard"
+    }
+  ],
+  "result": {
+    "id": "ee_extras:pcb_led_strip",
+    "count": 1
+  }
+}

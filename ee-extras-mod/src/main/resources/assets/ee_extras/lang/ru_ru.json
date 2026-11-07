@@ -364,5 +364,7 @@
   "item.ee_extras.pcb_rheostat": "Реостат для платы",
   "item.ee_extras.pcb_potentiometer": "Ползунковый потенциометр",
   "item.ee_extras.pcb_mechanical_timer": "Механический таймер платы",
-  "item.ee_extras.pcb_clock": "Тактовый модуль платы"
+  "item.ee_extras.pcb_clock": "Тактовый модуль платы",
+  "item.ee_extras.pcb_led_panel": "Световая панель 2×2",
+  "item.ee_extras.pcb_led_strip": "Секционная световая полоса 2×5"
 }

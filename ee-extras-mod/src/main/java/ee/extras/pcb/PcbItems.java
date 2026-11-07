@@ -143,6 +143,8 @@ public final class PcbItems {
     public static final DeferredItem<Item> ENDER_TRANSCEIVER = item("ender_transceiver", 16);
     public static final DeferredItem<Item> SPEAKER_DRIVER = item("speaker_driver", 16);
     public static final DeferredItem<Item> AUDIO_AMPLIFIER = item("audio_amplifier", 16);
+    public static final DeferredItem<Item> LED_PANEL = item("pcb_led_panel", 16);
+    public static final DeferredItem<Item> LED_STRIP = item("pcb_led_strip", 16);
     public static final DeferredItem<Item> MECHANICAL_TIMER = item("pcb_mechanical_timer", 16);
     public static final DeferredItem<Item> CLOCK = item("pcb_clock", 16);
     public static final DeferredItem<Item> RHEOSTAT = item("pcb_rheostat", 16);
@@ -153,7 +155,7 @@ public final class PcbItems {
 
     private static final List<DeferredItem<? extends Item>> ELECTRONICS = List.of(COPPER_FOIL, GLASS_FIBER, GLASS_FABRIC,
             EPOXY_LAMINATE, PHOTORESIST, L2_BOARD_BLANK, L3_BOARD_BLANK, L2_PREPARED_BLANK, L3_PREPARED_BLANK,
-            L2_ETCHED_BOARD, L3_ETCHED_BOARD, L2_BOARD, L3_BOARD, SOLDER_WIRE, ROSIN_FLUX, LED, BUTTON_CAP, SWITCH_CAP, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, RESISTOR, CAPACITOR, INDUCTOR,
+            L2_ETCHED_BOARD, L3_ETCHED_BOARD, L2_BOARD, L3_BOARD, SOLDER_WIRE, ROSIN_FLUX, LED, BUTTON_CAP, SWITCH_CAP, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP, RESISTOR, CAPACITOR, INDUCTOR,
             CONNECTOR, SILICON_DIODE, TRANSISTOR, BASIC_IC, ADVANCED_IC, SILICON_WAFER, ABS_SHEET, ABS_KEYBOARD_BLANK,
             PET_FILM, RGB_PHOSPHOR, SHADOW_MASK, PERMANENT_MAGNET, SPEAKER_CONE, BATTERY_ELECTROLYTE, INK_CARTRIDGE,
             CONTROL_BOARD_L1,

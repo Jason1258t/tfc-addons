@@ -1,0 +1,42 @@
+{
+  "format_version": "1.9.0",
+  "credit": "Made with Blockbench",
+  "parent": "block/block",
+  "textures": {
+    "0": "ee_extras:block/pcb_part/light_bulb",
+    "particle": "ee_extras:block/pcb_part/light_bulb"
+  },
+  "elements": [
+    {
+      "from": [7.45167, 0.235, 7.45167],
+      "to": [8.54833, 1.33167, 8.54833],
+      "faces": {
+        "north": {
+          "uv": [14, 1, 15, 2],
+          "texture": "#0"
+        },
+        "east": {
+          "uv": [14, 1, 15, 2],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [14, 1, 15, 2],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [14, 1, 15, 2],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [14, 1, 15, 2],
+          "texture": "#0"
+        },
+        "down": {
+          "uv": [14, 1, 15, 2],
+          "texture": "#0"
+        }
+      },
+      "shade": false
+    }
+  ]
+}

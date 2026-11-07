@@ -1,0 +1,39 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "lens": "ee_extras:block/pcb_part/module_lens_on",
+    "particle": "#lens"
+  },
+  "elements": [
+    {
+      "from": [7.6, 0.56, 7.93],
+      "to": [8.4, 0.62, 8.07],
+      "faces": {
+        "up": {
+          "texture": "#lens",
+          "uv": [0, 0, 16, 16]
+        },
+        "down": {
+          "texture": "#lens",
+          "uv": [0, 0, 16, 16]
+        },
+        "north": {
+          "texture": "#lens",
+          "uv": [0, 0, 16, 16]
+        },
+        "south": {
+          "texture": "#lens",
+          "uv": [0, 0, 16, 16]
+        },
+        "east": {
+          "texture": "#lens",
+          "uv": [0, 0, 16, 16]
+        },
+        "west": {
+          "texture": "#lens",
+          "uv": [0, 0, 16, 16]
+        }
+      }
+    }
+  ]
+}

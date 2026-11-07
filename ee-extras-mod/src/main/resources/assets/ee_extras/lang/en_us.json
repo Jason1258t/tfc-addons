@@ -364,5 +364,7 @@
   "item.ee_extras.pcb_rheostat": "PCB Rheostat",
   "item.ee_extras.pcb_potentiometer": "Slider Potentiometer",
   "item.ee_extras.pcb_mechanical_timer": "PCB Mechanical Timer",
-  "item.ee_extras.pcb_clock": "PCB Clock Module"
+  "item.ee_extras.pcb_clock": "PCB Clock Module",
+  "item.ee_extras.pcb_led_panel": "2×2 LED Panel",
+  "item.ee_extras.pcb_led_strip": "2×5 Sectional LED Strip"
 }

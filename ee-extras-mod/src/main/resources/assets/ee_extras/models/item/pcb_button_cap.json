@@ -1,74 +1,144 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "base": "minecraft:block/polished_blackstone",
-    "cap": "minecraft:block/red_concrete",
+    "base": "ee_extras:block/pcb_part/module_housing",
+    "metal": "ee_extras:block/pcb_part/module_metal",
+    "cap": "ee_extras:block/pcb_part/module_red",
     "particle": "#base"
   },
   "elements": [
     {
-      "from": [
-        3,
-        0,
-        3
-      ],
-      "to": [
-        13,
-        4,
-        13
-      ],
+      "from": [1.4200000000000035, 0, 1.4200000000000035],
+      "to": [14.580000000000009, 2.2, 14.580000000000009],
       "faces": {
         "up": {
-          "texture": "#base"
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
         },
         "down": {
-          "texture": "#base"
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
         },
         "north": {
-          "texture": "#base"
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
         },
         "south": {
-          "texture": "#base"
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
         },
         "east": {
-          "texture": "#base"
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
         },
         "west": {
-          "texture": "#base"
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
         }
       }
     },
     {
-      "from": [
-        5,
-        4,
-        5
-      ],
-      "to": [
-        11,
-        8,
-        11
-      ],
+      "from": [2.120000000000001, 2.2, 2.120000000000001],
+      "to": [13.879999999999999, 3.2, 13.879999999999999],
       "faces": {
         "up": {
-          "texture": "#cap"
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
         },
         "down": {
-          "texture": "#cap"
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
         },
         "north": {
-          "texture": "#cap"
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
         },
         "south": {
-          "texture": "#cap"
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
         },
         "east": {
-          "texture": "#cap"
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
         },
         "west": {
-          "texture": "#cap"
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
+        }
+      }
+    },
+    {
+      "from": [3.6600000000000055, 3.3000000000000003, 3.100000000000005],
+      "to": [12.340000000000007, 7.0, 12.899999999999995],
+      "faces": {
+        "up": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        },
+        "down": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        },
+        "north": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        },
+        "south": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        },
+        "east": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        },
+        "west": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        }
+      }
+    },
+    {
+      "from": [3.100000000000005, 3.3000000000000003, 3.6600000000000055],
+      "to": [12.899999999999995, 7.0, 12.340000000000007],
+      "faces": {
+        "up": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        },
+        "down": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        },
+        "north": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        },
+        "south": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        },
+        "east": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        },
+        "west": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
         }
       }
     }
-  ]
+  ],
+  "display": {
+    "gui": {
+      "rotation": [30, 225, 0],
+      "translation": [0, 0, 0],
+      "scale": [0.8, 0.8, 0.8]
+    },
+    "ground": {
+      "scale": [0.4, 0.4, 0.4]
+    },
+    "fixed": {
+      "scale": [0.7, 0.7, 0.7]
+    }
+  }
 }

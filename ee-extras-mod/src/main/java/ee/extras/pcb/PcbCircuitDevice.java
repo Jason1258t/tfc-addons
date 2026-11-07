@@ -65,7 +65,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                     var capacitor = new CapacitorProperties();
                     capacitor.capacitance = part.ohms / 1000;
                     properties[i] = capacitor;
-                } else if (part.kind == Kind.DIODE || part.kind == Kind.LED) {
+                } else if (part.kind == Kind.DIODE || part.kind.led()) {
                     properties[i] = new DiodeProperties();
                 }
             }
@@ -126,7 +126,9 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
 
     public enum Kind {
         TRACE, RESISTOR, RELAY, BUTTON, SWITCH, LAMP, REDSTONE_IN, REDSTONE_OUT,
-        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK;
+        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP;
+
+        boolean led() { return this == LED || this == LED_PANEL || this == LED_STRIP; }
 
         boolean controlled() {
             return this == RELAY || this == TRANSISTOR || this == CLOCK;
@@ -134,13 +136,20 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
     }
 
     public record Part(Kind kind, int a, int b, double ohms, int coilA, int coilB, double threshold,
-                       boolean normallyClosed) {
+                       boolean normallyClosed, int moduleIndex, int moduleType) {
+        public Part(Kind kind, int a, int b, double ohms, int coilA, int coilB, double threshold, boolean normallyClosed) {
+            this(kind, a, b, ohms, coilA, coilB, threshold, normallyClosed, -1, -1);
+        }
+
         public Part(Kind kind, int a, int b, double ohms, int coilA, int coilB, double threshold) {
             this(kind, a, b, ohms, coilA, coilB, threshold, false);
         }
 
         boolean valid() {
-            return kind != null && node(a) && node(b) && a != b
+            return kind != null
+                    && (moduleIndex == -1 && moduleType == -1 || moduleIndex >= 0 && moduleIndex < PcbTopology.CELLS * PcbTopology.MAX_LAYERS
+                            && moduleType >= 0 && moduleType < PcbModules.ALL.length && PcbModules.ALL[moduleType].kind() == kind)
+                    && node(a) && node(b) && a != b
                     && Double.isFinite(ohms) && ohms >= CONTACT && ohms <= OPEN
                     && Double.isFinite(threshold) && threshold > 0 && threshold <= (kind == Kind.MECHANICAL_TIMER || kind == Kind.CLOCK ? 12000 : 10000)
                     && (kind != Kind.CLOCK && kind != Kind.MECHANICAL_TIMER || threshold >= 2 && threshold == Math.rint(threshold))
@@ -274,7 +283,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         return switch (part.kind) {
             case CAPACITOR -> CAPACITOR_ESR;
             case DIODE -> DIODE_SENSE;
-            case LED -> indicatorResistance(part.ohms);
+            case LED, LED_PANEL, LED_STRIP -> indicatorResistance(part.ohms);
             default -> CONTACT / 2;
         };
     }
@@ -421,7 +430,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                         controlPositions[component] = (int) (100 * phase / part.threshold);
                     }
                 }
-                case LED -> {
+                case LED, LED_PANEL, LED_STRIP -> {
                     double volts = voltage(results, part.a, part.b);
                     double ballastVoltage = voltage(results, MAX_NODES + i, part.b);
                     if (volts >= part.threshold && ballastVoltage / senseResistance(part) >= 0.001) {
@@ -526,7 +535,8 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             try {
                 Part part = new Part(Kind.valueOf(item.getString("Kind")), item.getInt("A"), item.getInt("B"),
                         item.getDouble("Ohms"), item.getInt("CoilA"), item.getInt("CoilB"), item.getDouble("Threshold"),
-                        item.getBoolean("NormallyClosed"));
+                        item.getBoolean("NormallyClosed"), item.contains("ModuleIndex") ? item.getInt("ModuleIndex") : -1,
+                        item.contains("ModuleType") ? item.getInt("ModuleType") : -1);
                 if (!part.valid()) return;
                 parts.add(part);
             } catch (IllegalArgumentException ignored) {
@@ -573,6 +583,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             item.putInt("CoilA", part.coilA);
             item.putInt("CoilB", part.coilB);
             item.putDouble("Threshold", part.threshold);
+            if (part.moduleIndex >= 0) { item.putInt("ModuleIndex", part.moduleIndex); item.putInt("ModuleType", part.moduleType); }
             if (part.normallyClosed) item.putBoolean("NormallyClosed", true);
             serialized.add(item);
         }

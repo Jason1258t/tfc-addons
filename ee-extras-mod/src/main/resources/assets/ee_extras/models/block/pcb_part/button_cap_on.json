@@ -1,56 +1,129 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "base": "minecraft:block/polished_blackstone",
-    "cap": "minecraft:block/red_concrete",
+    "base": "ee_extras:block/pcb_part/module_housing",
+    "metal": "ee_extras:block/pcb_part/module_metal",
+    "cap": "ee_extras:block/pcb_part/module_red",
     "particle": "#base"
   },
   "elements": [
     {
       "from": [7.53, 0, 7.53],
-      "to": [8.47, 0.7, 8.47],
+      "to": [8.47, 0.22, 8.47],
       "faces": {
         "up": {
-          "texture": "#base"
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
         },
         "down": {
-          "texture": "#base"
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
         },
         "north": {
-          "texture": "#base"
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
         },
         "south": {
-          "texture": "#base"
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
         },
         "east": {
-          "texture": "#base"
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
         },
         "west": {
-          "texture": "#base"
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
         }
       }
     },
     {
-      "from": [7.59, 0.7, 7.59],
-      "to": [8.41, 1.05, 8.41],
+      "from": [7.58, 0.22, 7.58],
+      "to": [8.42, 0.32, 8.42],
       "faces": {
         "up": {
-          "texture": "#cap"
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
         },
         "down": {
-          "texture": "#cap"
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
         },
         "north": {
-          "texture": "#cap"
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
         },
         "south": {
-          "texture": "#cap"
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
         },
         "east": {
-          "texture": "#cap"
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
         },
         "west": {
-          "texture": "#cap"
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
+        }
+      }
+    },
+    {
+      "from": [7.69, 0.23, 7.65],
+      "to": [8.31, 0.43, 8.35],
+      "faces": {
+        "up": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        },
+        "down": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        },
+        "north": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        },
+        "south": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        },
+        "east": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        },
+        "west": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        }
+      }
+    },
+    {
+      "from": [7.65, 0.23, 7.69],
+      "to": [8.35, 0.43, 8.31],
+      "faces": {
+        "up": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        },
+        "down": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        },
+        "north": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        },
+        "south": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        },
+        "east": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
+        },
+        "west": {
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
         }
       }
     }

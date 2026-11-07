@@ -19,6 +19,43 @@ public final class PcbTopology {
     public static final int VIA = 3;
     public static final int TERMINAL = 4;
 
+    static final String EDGES = "TraceCuts";
+
+    static int neighbor(int cell, int direction) {
+        int x = cell % SIZE, y = cell / SIZE;
+        return switch (direction) {
+            case 0 -> x > 0 ? cell - 1 : -1;
+            case 1 -> x < SIZE - 1 ? cell + 1 : -1;
+            case 2 -> y > 0 ? cell - SIZE : -1;
+            case 3 -> y < SIZE - 1 ? cell + SIZE : -1;
+            default -> -1;
+        };
+    }
+
+    static boolean edgeCut(CompoundTag tag, int layer, int cell, int direction) {
+        byte[] edges = tag.getByteArray(EDGES);
+        int index = layer * CELLS + cell;
+        return index >= 0 && index < edges.length && (edges[index] & (1 << direction)) != 0;
+    }
+
+    static boolean connected(CompoundTag tag, int layer, int first, int second) {
+        for (int direction = 0; direction < 4; direction++) {
+            if (neighbor(first, direction) == second)
+                return !edgeCut(tag, layer, first, direction) && !edgeCut(tag, layer, second, direction ^ 1);
+        }
+        return false;
+    }
+
+    static void setEdgeCut(CompoundTag tag, int layer, int cell, int direction, boolean blocked) {
+        int next = neighbor(cell, direction);
+        if (layer < 0 || layer >= MAX_LAYERS || next < 0) return;
+        byte[] edges = Arrays.copyOf(tag.getByteArray(EDGES), CELLS * MAX_LAYERS);
+        int index = layer * CELLS + cell, other = layer * CELLS + next;
+        edges[index] = (byte) (blocked ? edges[index] | (1 << direction) : edges[index] & ~(1 << direction));
+        edges[other] = (byte) (blocked ? edges[other] | (1 << (direction ^ 1)) : edges[other] & ~(1 << (direction ^ 1)));
+        tag.putByteArray(EDGES, edges);
+    }
+
     private PcbTopology() {}
 
     public static CompoundTag create(int level) {
@@ -40,6 +77,11 @@ public final class PcbTopology {
             if (cells[i] < EMPTY || cells[i] > TERMINAL || cut(source, i % CELLS)) cells[i] = EMPTY;
         }
         result.putByteArray("Cells", cells);
+        if (source.contains(EDGES)) {
+            byte[] edges = Arrays.copyOf(source.getByteArray(EDGES), CELLS * MAX_LAYERS);
+            for (int i = 0; i < edges.length; i++) edges[i] = i >= level * CELLS ? 0 : (byte) (edges[i] & 15);
+            result.putByteArray(EDGES, edges);
+        }
         if (source.contains("Cut")) result.putByteArray("Cut", Arrays.copyOf(source.getByteArray("Cut"), CELLS));
         if (source.contains(PcbWiring.KEY)) {
             int[] parts = Arrays.copyOf(source.getIntArray(PcbWiring.KEY), CELLS * MAX_LAYERS);
@@ -90,12 +132,14 @@ public final class PcbTopology {
         tag.putInt("Level", level(tag));
         tag.putInt("Version", VERSION);
         if (tag.contains(PcbWiring.KEY)) setPart(tag, layer, cell, 0);
+        if (value == EMPTY) for (int direction = 0; direction < 4; direction++) setEdgeCut(tag, layer, cell, direction, false);
     }
 
     static void setPart(CompoundTag tag, int layer, int cell, int definition) {
         int[] parts = Arrays.copyOf(tag.getIntArray(PcbWiring.KEY), CELLS * MAX_LAYERS);
         parts[layer * CELLS + cell] = definition;
         tag.putIntArray(PcbWiring.KEY, parts);
+        if (definition > 0 && PcbWiring.valid(definition)) PcbFootprint.isolatePins(tag, layer, cell, definition);
     }
 
     public static void setLevel(CompoundTag tag, int level) {
@@ -118,6 +162,8 @@ public final class PcbTopology {
         target.putInt("Level", level(source));
         target.putInt("Version", source.getInt("Version"));
         target.putByteArray("Cells", source.getByteArray("Cells").clone());
+        if (source.contains(EDGES)) target.putByteArray(EDGES, source.getByteArray(EDGES).clone());
+        else target.remove(EDGES);
         if (source.contains("Cut")) target.putByteArray("Cut", source.getByteArray("Cut").clone());
         else target.remove("Cut");
         if (source.contains(PcbWiring.KEY)) target.putIntArray(PcbWiring.KEY, source.getIntArray(PcbWiring.KEY).clone());
@@ -171,10 +217,10 @@ public final class PcbTopology {
             int cell = current % CELLS;
             int x = cell % SIZE;
             int y = cell / SIZE;
-            if (x > 0) visit(tag, reached, queue, index(layer, cell - 1));
-            if (x + 1 < SIZE) visit(tag, reached, queue, index(layer, cell + 1));
-            if (y > 0) visit(tag, reached, queue, index(layer, cell - SIZE));
-            if (y + 1 < SIZE) visit(tag, reached, queue, index(layer, cell + SIZE));
+            if (x > 0 && connected(tag, layer, cell, cell - 1)) visit(tag, reached, queue, index(layer, cell - 1));
+            if (x + 1 < SIZE && connected(tag, layer, cell, cell + 1)) visit(tag, reached, queue, index(layer, cell + 1));
+            if (y > 0 && connected(tag, layer, cell, cell - SIZE)) visit(tag, reached, queue, index(layer, cell - SIZE));
+            if (y + 1 < SIZE && connected(tag, layer, cell, cell + SIZE)) visit(tag, reached, queue, index(layer, cell + SIZE));
             if (get(tag, layer, cell) == VIA) {
                 for (int other = 0; other < level; other++) {
                     if (other != layer && get(tag, other, cell) != EMPTY) visit(tag, reached, queue, index(other, cell));

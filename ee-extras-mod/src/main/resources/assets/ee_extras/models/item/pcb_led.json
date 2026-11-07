@@ -1,137 +1,129 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "base": "minecraft:block/polished_blackstone",
-    "pin": "minecraft:block/cut_copper",
-    "lens": "minecraft:block/redstone_block",
+    "base": "ee_extras:block/pcb_part/module_housing",
+    "pin": "ee_extras:block/pcb_part/module_contact",
+    "lens": "ee_extras:block/pcb_part/module_lens_on",
     "particle": "#lens"
   },
   "elements": [
     {
-      "from": [
-        2,
-        0,
-        7
-      ],
-      "to": [
-        14,
-        1,
-        9
-      ],
+      "from": [2, 0, 7],
+      "to": [14, 1, 9],
       "faces": {
         "up": {
-          "texture": "#pin"
+          "texture": "#pin",
+          "uv": [0, 0, 16, 16]
         },
         "down": {
-          "texture": "#pin"
+          "texture": "#pin",
+          "uv": [0, 0, 16, 16]
         },
         "north": {
-          "texture": "#pin"
+          "texture": "#pin",
+          "uv": [0, 0, 16, 16]
         },
         "south": {
-          "texture": "#pin"
+          "texture": "#pin",
+          "uv": [0, 0, 16, 16]
         },
         "east": {
-          "texture": "#pin"
+          "texture": "#pin",
+          "uv": [0, 0, 16, 16]
         },
         "west": {
-          "texture": "#pin"
+          "texture": "#pin",
+          "uv": [0, 0, 16, 16]
         }
       }
     },
     {
-      "from": [
-        4,
-        1,
-        4
-      ],
-      "to": [
-        12,
-        2,
-        12
-      ],
+      "from": [4, 1, 4],
+      "to": [12, 2, 12],
       "faces": {
         "up": {
-          "texture": "#base"
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
         },
         "down": {
-          "texture": "#base"
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
         },
         "north": {
-          "texture": "#base"
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
         },
         "south": {
-          "texture": "#base"
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
         },
         "east": {
-          "texture": "#base"
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
         },
         "west": {
-          "texture": "#base"
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
         }
       }
     },
     {
-      "from": [
-        5,
-        2,
-        5
-      ],
-      "to": [
-        11,
-        5,
-        11
-      ],
+      "from": [5, 2, 5],
+      "to": [11, 5, 11],
       "faces": {
         "up": {
-          "texture": "#lens"
+          "texture": "#lens",
+          "uv": [0, 0, 16, 16]
         },
         "down": {
-          "texture": "#lens"
+          "texture": "#lens",
+          "uv": [0, 0, 16, 16]
         },
         "north": {
-          "texture": "#lens"
+          "texture": "#lens",
+          "uv": [0, 0, 16, 16]
         },
         "south": {
-          "texture": "#lens"
+          "texture": "#lens",
+          "uv": [0, 0, 16, 16]
         },
         "east": {
-          "texture": "#lens"
+          "texture": "#lens",
+          "uv": [0, 0, 16, 16]
         },
         "west": {
-          "texture": "#lens"
+          "texture": "#lens",
+          "uv": [0, 0, 16, 16]
         }
       }
     },
     {
-      "from": [
-        6,
-        5,
-        6
-      ],
-      "to": [
-        10,
-        6,
-        10
-      ],
+      "from": [6, 5, 6],
+      "to": [10, 6, 10],
       "faces": {
         "up": {
-          "texture": "#lens"
+          "texture": "#lens",
+          "uv": [0, 0, 16, 16]
         },
         "down": {
-          "texture": "#lens"
+          "texture": "#lens",
+          "uv": [0, 0, 16, 16]
         },
         "north": {
-          "texture": "#lens"
+          "texture": "#lens",
+          "uv": [0, 0, 16, 16]
         },
         "south": {
-          "texture": "#lens"
+          "texture": "#lens",
+          "uv": [0, 0, 16, 16]
         },
         "east": {
-          "texture": "#lens"
+          "texture": "#lens",
+          "uv": [0, 0, 16, 16]
         },
         "west": {
-          "texture": "#lens"
+          "texture": "#lens",
+          "uv": [0, 0, 16, 16]
         }
       }
     }

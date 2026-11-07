@@ -41,7 +41,7 @@ final class PcbFootprint {
     }
 
     static boolean canPlace(CompoundTag tag, int layer, int anchor, int definition, int ignored) {
-        if (!valid(definition) || layer < 0 || layer >= PcbTopology.level(tag)
+        if (!valid(definition) || layer != 0
                 || anchor < 0 || anchor >= PcbTopology.CELLS) return false;
         int ax = anchor % PcbTopology.SIZE;
         int ay = anchor / PcbTopology.SIZE;
@@ -67,8 +67,8 @@ final class PcbFootprint {
     static int pinCell(int anchor, int definition, int pin) {
         int w = baseWidth(definition);
         int h = baseHeight(definition);
-        int x = switch (pin) { case 0 -> -1; case 1 -> w; default -> (w - 1) / 2; };
-        int y = switch (pin) { case 2 -> -1; case 3 -> h; default -> (h - 1) / 2; };
+        int x = PcbModules.get(definition).sections() > 1 ? (pin % 2 == 0 ? -1 : w) : switch (pin) { case 0 -> -1; case 1 -> w; default -> (w - 1) / 2; };
+        int y = PcbModules.get(definition).sections() > 1 ? pin / 2 : switch (pin) { case 2 -> -1; case 3 -> h; default -> (h - 1) / 2; };
         for (int r = 0; r < PcbWiring.rotation(definition); r++) {
             int nextX = h - 1 - y;
             y = x;
@@ -83,6 +83,23 @@ final class PcbFootprint {
                 ? -1 : anchor / PcbTopology.CELLS * PcbTopology.CELLS + y * PcbTopology.SIZE + x;
     }
 
+    static void isolatePins(CompoundTag tag, int layer, int anchor, int definition) {
+        if (PcbModules.get(definition).sections() <= 1) return;
+        int count = PcbModules.get(definition).pins();
+        for (int a = 0; a < count; a++) {
+            int first = pinCell(anchor, definition, a);
+            if (first < 0) continue;
+            for (int b = a + 1; b < count; b++) {
+                if (a / 2 == b / 2) continue;
+                int second = pinCell(anchor, definition, b);
+                for (int direction = 0; direction < 4; direction++) {
+                    if (PcbTopology.neighbor(first, direction) == second)
+                        PcbTopology.setEdgeCut(tag, layer, first, direction, true);
+                }
+            }
+        }
+    }
+
     static boolean validate(CompoundTag tag) {
         int[] definitions = tag.getIntArray(PcbWiring.KEY);
         int[] occupied = new int[PcbTopology.CELLS];
@@ -90,7 +107,7 @@ final class PcbFootprint {
         for (int i = 0; i < definitions.length; i++) {
             int definition = definitions[i];
             if (definition == 0) continue;
-            if (i >= PcbTopology.CELLS * PcbTopology.level(tag) || !valid(definition)
+            if (i >= PcbTopology.CELLS || !valid(definition)
                     || PcbWiring.minimumLevel(PcbWiring.type(definition)) > PcbTopology.level(tag)
                     || PcbTopology.get(tag, i / PcbTopology.CELLS, i % PcbTopology.CELLS) != PcbTopology.COMPONENT) return false;
             int anchor = i % PcbTopology.CELLS;

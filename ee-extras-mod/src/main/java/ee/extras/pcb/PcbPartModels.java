@@ -23,6 +23,11 @@ final class PcbPartModels {
         event.register(id("slider_handle"));
         event.register(id("timer_hand"));
         event.register(id("led_on"));
+        event.register(id("light_glow"));
+        event.register(id("lamp_glow"));
+        event.register(id("light_segment_glow"));
+        event.register(id("led_panel_on"));
+        event.register(id("led_strip_segment_on"));
         event.register(id("button_on"));
         event.register(id("switch_on"));
         event.register(id("button_cap"));
@@ -31,14 +36,16 @@ final class PcbPartModels {
         event.register(id("switch_cap_on"));
     }
 
-    static void render(int definition, int x, int z, boolean burnt, boolean indicatorLit, boolean cap, boolean active, int position, PoseStack poses,
+    static void render(int definition, int x, int z, boolean burnt, long sections, boolean cap, boolean active, int position, PoseStack poses,
                        VertexConsumer vertices, int light, int overlay) {
         int type = PcbWiring.type(definition);
         if (definition <= 0 || type >= NAMES.length) return;
+        boolean indicatorLit = sections != 0;
+        var module = PcbModules.get(definition);
         var minecraft = Minecraft.getInstance();
         String name = cap && (type == 2 || type == 3) ? NAMES[type] + "_cap" + (active ? "_on" : "")
                 : active && (type == 2 || type == 3) ? NAMES[type] + "_on"
-                : indicatorLit && NAMES[type].equals("led") ? "led_on" : NAMES[type];
+                : indicatorLit && module.kind().led() && module.sections() == 1 ? NAMES[type] + "_on" : NAMES[type];
         var model = minecraft.getModelManager().getModel(id(name));
         poses.pushPose();
         poses.translate((x + PcbFootprint.width(definition) / 2f) / 16, 1f / 16,
@@ -48,7 +55,18 @@ final class PcbPartModels {
         poses.translate(-0.5, 0, -0.5);
         float tint = burnt ? 0.35f : 1f;
         minecraft.getBlockRenderer().getModelRenderer().renderModel(poses.last(), vertices, null, model,
-                tint, tint, tint, indicatorLit ? net.minecraft.client.renderer.LightTexture.FULL_BRIGHT : light, overlay);
+                tint, tint, tint, indicatorLit && module.sections() == 1 ? net.minecraft.client.renderer.LightTexture.FULL_BRIGHT : light, overlay);
+        if (module.sections() > 1) {
+            var segment = minecraft.getModelManager().getModel(id("led_strip_segment_on"));
+            for (int section = 0; section < module.sections(); section++) {
+                if ((sections & (1L << section)) == 0) continue;
+                poses.pushPose();
+                poses.translate(0, 0, ((section + 0.5f) / module.sections() - 0.5f) * 0.94f / 16);
+                minecraft.getBlockRenderer().getModelRenderer().renderModel(poses.last(), vertices, null, segment,
+                        1, 1, 1, net.minecraft.client.renderer.LightTexture.FULL_BRIGHT, overlay);
+                poses.popPose();
+            }
+        }
         if (PcbModules.get(definition).adjustable()) {
             poses.translate(0, 0, (position - 50) / 100f * 0.7f / 16);
             var handle = minecraft.getModelManager().getModel(id("slider_handle"));
@@ -65,4 +83,45 @@ final class PcbPartModels {
         }
         poses.popPose();
     }
+    /** Светодиод: аддитивное свечение щитка EE; крупные элементы: световой слой по Power Grid. */
+    static void glow(int definition, int x, int z, long sections, PoseStack poses,
+                     net.minecraft.client.renderer.MultiBufferSource buffers,
+                     net.minecraft.world.level.block.state.BlockState state, int overlay) {
+        if (sections == 0) return;
+        var module = PcbModules.get(definition);
+        poses.pushPose();
+        if (module.kind() == PcbCircuitDevice.Kind.LED) {
+            poses.translate((x + 0.5f) / 16, 1.45f / 16, (z + 0.5f) / 16);
+            poses.pushPose();
+            poses.scale(0.6f, 0.35f, 0.6f);
+            poses.translate(-0.25, -0.3125, -0.5);
+            net.createmod.catnip.render.CachedBuffers.partial(com.george_vi.electroenergetics.CEEPartialModels.INDICATOR_BULB_GLOW, state)
+                    .color(0xFF4828).light(net.minecraft.client.renderer.LightTexture.FULL_BRIGHT).disableDiffuse()
+                    .renderInto(poses, buffers.getBuffer(com.simibubi.create.foundation.render.RenderTypes.additive()));
+            poses.popPose();
+            poses.scale(0.38f, 0.24f, 0.38f);
+            poses.translate(-0.25, -0.3125, -0.5);
+            net.createmod.catnip.render.CachedBuffers.partial(com.george_vi.electroenergetics.CEEPartialModels.INDICATOR_BULB_CUBE, state)
+                    .color(0xFFFFFF).light(net.minecraft.client.renderer.LightTexture.FULL_BRIGHT).disableDiffuse()
+                    .renderInto(poses, buffers.getBuffer(com.simibubi.create.foundation.render.RenderTypes.additive()));
+        } else if (module.kind().led() || module.kind() == PcbCircuitDevice.Kind.LAMP) {
+            poses.translate((x + PcbFootprint.width(definition) / 2f) / 16, 1f / 16,
+                    (z + PcbFootprint.height(definition) / 2f) / 16);
+            poses.mulPose(Axis.YP.rotationDegrees(-90 * PcbWiring.rotation(definition)));
+            poses.scale(module.width(), 1, module.height());
+            poses.translate(-0.5, 0, -0.5);
+            var glow = Minecraft.getInstance().getModelManager().getModel(id(module.kind() == PcbCircuitDevice.Kind.LAMP ? "lamp_glow" : module.sections() > 1 ? "light_segment_glow" : "light_glow"));
+            var vertices = buffers.getBuffer(com.simibubi.create.foundation.render.RenderTypes.additive());
+            for (int section = 0; section < module.sections(); section++) {
+                if ((sections & (1L << section)) == 0) continue;
+                poses.pushPose();
+                if (module.sections() > 1) poses.translate(0, 0, ((section + 0.5f) / module.sections() - 0.5f) * 0.94f / 16);
+                Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(poses.last(), vertices, null, glow,
+                        1, 1, 1, net.minecraft.client.renderer.LightTexture.FULL_BRIGHT, overlay);
+                poses.popPose();
+            }
+        }
+        poses.popPose();
+    }
+
 }

@@ -33,6 +33,8 @@ final class PcbAssembly {
             case SWITCH -> Items.LEVER;
             case LAMP -> CEEBlocks.INDICATOR_BULB.asItem();
             case LED -> PcbItems.LED.get();
+            case LED_PANEL -> PcbItems.LED_PANEL.get();
+            case LED_STRIP -> PcbItems.LED_STRIP.get();
             case REDSTONE_IN, REDSTONE_OUT -> PcbItems.CONNECTOR.get();
             case CAPACITOR -> PcbItems.CAPACITOR.get();
             case DIODE -> PcbItems.SILICON_DIODE.get();
@@ -43,14 +45,21 @@ final class PcbAssembly {
         };
     }
 
-    static boolean consume(Player player, List<Part> parts) {
-        if (player == null) return false;
-        if (player.getAbilities().instabuild) return true;
+    static Map<Item, Integer> requirements(List<Part> parts) {
         Map<Item, Integer> needed = new LinkedHashMap<>();
+        var seen = new java.util.HashSet<Integer>();
         for (Part part : parts) {
+            if (part.moduleIndex() >= 0 && !seen.add(part.moduleIndex())) continue;
             Item item = item(part.kind());
             if (item != Items.AIR) needed.merge(item, 1, Integer::sum);
         }
+        return needed;
+    }
+
+    static boolean consume(Player player, List<Part> parts) {
+        if (player == null) return false;
+        if (player.getAbilities().instabuild) return true;
+        Map<Item, Integer> needed = requirements(parts);
         var inventory = player.getInventory();
         for (var entry : needed.entrySet()) {
             int count = inventory.items.stream().filter(stack -> stack.is(entry.getKey())).mapToInt(ItemStack::getCount).sum();
@@ -73,14 +82,16 @@ final class PcbAssembly {
     static int salvage(Player player, List<Part> parts, long blownFuses) {
         int recovered = 0;
         List<Item> candidates = new ArrayList<>();
+        var seen = new java.util.HashSet<Integer>();
         for (int i = 0; i < parts.size(); i++) {
+            if (parts.get(i).moduleIndex() >= 0 && !seen.add(parts.get(i).moduleIndex())) continue;
             Kind kind = parts.get(i).kind();
             Item item = item(kind);
             if (item == Items.AIR || (kind == Kind.FUSE && (blownFuses & (1L << i)) != 0)) continue;
             candidates.add(item);
             float chance = switch (kind) {
                 case BUTTON, SWITCH, REDSTONE_IN, REDSTONE_OUT -> 0.70f;
-                case TRANSISTOR, DIODE, LAMP, LED -> 0.45f;
+                case TRANSISTOR, DIODE, LAMP, LED, LED_PANEL, LED_STRIP -> 0.45f;
                 default -> 0.60f;
             };
             if (player.getRandom().nextFloat() < chance) {

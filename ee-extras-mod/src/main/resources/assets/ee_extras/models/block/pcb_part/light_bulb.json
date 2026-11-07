@@ -1,0 +1,110 @@
+{
+  "format_version": "1.9.0",
+  "credit": "Made with Blockbench",
+  "parent": "block/block",
+  "textures": {
+    "0": "ee_extras:block/pcb_part/light_bulb",
+    "particle": "ee_extras:block/pcb_part/light_bulb"
+  },
+  "elements": [
+    {
+      "from": [7.68667, 0.0, 7.68667],
+      "to": [8.31333, 0.31333, 8.31333],
+      "faces": {
+        "north": {
+          "uv": [2, 0, 0, 1],
+          "texture": "#0"
+        },
+        "east": {
+          "uv": [0, 0, 2, 1],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [2, 0, 0, 1],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [0, 0, 2, 1],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [0, 1, 2, 3],
+          "texture": "#0"
+        }
+      }
+    },
+    {
+      "from": [7.53, 0.31333, 7.53],
+      "to": [8.47, 1.25333, 8.47],
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [7.53, 0.31333, 7.53]
+      },
+      "faces": {
+        "north": {
+          "uv": [5, 0, 2, 3],
+          "texture": "#0"
+        },
+        "east": {
+          "uv": [2, 0, 5, 3],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [5, 0, 2, 3],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [2, 0, 5, 3],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [5, 0, 8, 3],
+          "texture": "#0"
+        },
+        "down": {
+          "uv": [8, 0, 11, 3],
+          "texture": "#0"
+        }
+      }
+    },
+    {
+      "from": [7.53, 0.31333, 8.0],
+      "to": [8.47, 0.94, 8.0],
+      "rotation": {
+        "angle": -45,
+        "axis": "y",
+        "origin": [8.0, 0.62667, 8.0]
+      },
+      "faces": {
+        "north": {
+          "uv": [11, 1, 14, 3],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [11, 1, 14, 3],
+          "texture": "#0"
+        }
+      }
+    },
+    {
+      "from": [7.53, 0.31333, 8.0],
+      "to": [8.47, 0.94, 8.0],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [8.0, 0.62667, 8.0]
+      },
+      "faces": {
+        "north": {
+          "uv": [11, 1, 14, 3],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [11, 1, 14, 3],
+          "texture": "#0"
+        }
+      }
+    }
+  ]
+}

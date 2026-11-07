@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "hand": "minecraft:block/red_concrete",
+    "hand": "ee_extras:block/pcb_part/module_red",
     "particle": "#hand"
   },
   "elements": [
@@ -10,22 +10,28 @@
       "to": [8.03, 1.1, 8.04],
       "faces": {
         "up": {
-          "texture": "#hand"
+          "texture": "#hand",
+          "uv": [0, 0, 16, 16]
         },
         "down": {
-          "texture": "#hand"
+          "texture": "#hand",
+          "uv": [0, 0, 16, 16]
         },
         "north": {
-          "texture": "#hand"
+          "texture": "#hand",
+          "uv": [0, 0, 16, 16]
         },
         "south": {
-          "texture": "#hand"
+          "texture": "#hand",
+          "uv": [0, 0, 16, 16]
         },
         "east": {
-          "texture": "#hand"
+          "texture": "#hand",
+          "uv": [0, 0, 16, 16]
         },
         "west": {
-          "texture": "#hand"
+          "texture": "#hand",
+          "uv": [0, 0, 16, 16]
         }
       }
     }

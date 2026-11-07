@@ -16,3 +16,7 @@ The PCB component models and textures (assets/ee_extras/{models,textures}/block/
 are adapted from Create: Power Grid, revision e22874b, Copyright 2025-2026 patryk3211,
 under the Apache License, Version 2.0. The models were rescaled and recentered for the
 EE Extras board grid, and texture paths were changed to the EE Extras namespace.
+
+The PCB light glow layer uses the light_bulb texture from Create: Power Grid, revision e22874b,
+under Apache-2.0. The glow geometry was adapted to flat panels and independent strip sections.
+Small PCB LEDs reference Electro Energetics' installed indicator models at runtime; no EE assets are redistributed.

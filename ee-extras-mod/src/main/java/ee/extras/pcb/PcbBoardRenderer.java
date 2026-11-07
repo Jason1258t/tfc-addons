@@ -43,8 +43,8 @@ final class PcbBoardRenderer implements BlockEntityRenderer<PcbCircuitBlockEntit
         poses.translate(-0.5, -0.5, -0.5);
         var painter = new Painter(poses.last(), vertices, texture, light, overlay);
         int[] definitions = topology.getIntArray(PcbWiring.KEY);
-        int layer = PcbTopology.level(topology) - 1;
-        int substrate = burnt ? 0xFF2C2928 : switch (layer) {
+        int layer = 0;
+        int substrate = burnt ? 0xFF2C2928 : switch (PcbTopology.level(topology) - 1) {
             case 1 -> 0xFF285742;
             case 2 -> 0xFF274756;
             default -> 0xFF615139;
@@ -92,18 +92,12 @@ final class PcbBoardRenderer implements BlockEntityRenderer<PcbCircuitBlockEntit
                 int index = partLayer * PcbTopology.CELLS + cell;
                 if (index < definitions.length && definitions[index] != 0) {
                     int type = PcbWiring.type(definitions[index]);
-                    boolean indicatorLit = !burnt && (type == 4 || type == 13)
-                            && board.indicatorLit(PcbWiring.componentOrdinal(definitions, index));
-                    PcbPartModels.render(definitions[index], x, z, burnt, indicatorLit, board.hasCap(cell), board.controlActive(PcbWiring.componentOrdinal(definitions, index)), board.controlPosition(PcbWiring.componentOrdinal(definitions, index)), poses, vertices, light, overlay);
-                    if (type == 13 && indicatorLit) {
-                        var glow = new Painter(poses.last(), vertices, texture,
-                                net.minecraft.client.renderer.LightTexture.FULL_BRIGHT, overlay);
-                        // Световое пятно шире корпуса, чтобы состояние читалось с обычной дистанции.
-                        glow.top((x - 0.35f) / 16, (z - 0.35f) / 16,
-                                (x + 1.35f) / 16, (z + 1.35f) / 16, 1.03f / 16, 0xFFEF351E);
-                        glow.top((x + 0.17f) / 16, (z + 0.17f) / 16,
-                                (x + 0.83f) / 16, (z + 0.83f) / 16, 1.46f / 16, 0xFFFFE4A3);
-                    }
+                    var module = PcbModules.get(definitions[index]);
+                    int ordinal = PcbWiring.componentOrdinal(definitions, index);
+                    long sections = !burnt && (module.kind().led() || module.kind() == PcbCircuitDevice.Kind.LAMP)
+                            ? board.indicatorSections(ordinal, module.sections()) : 0;
+                    PcbPartModels.render(definitions[index], x, z, burnt, sections, board.hasCap(cell), board.controlActive(ordinal), board.controlPosition(ordinal), poses, vertices, light, overlay);
+                    PcbPartModels.glow(definitions[index], x, z, sections, poses, buffers, board.getBlockState(), overlay);
                     break;
                 }
             }
@@ -123,8 +117,8 @@ final class PcbBoardRenderer implements BlockEntityRenderer<PcbCircuitBlockEntit
         poses.popPose();
     }
 
-    private static boolean joins(CompoundTag topology, int[] definitions, int layer, int from, int to) {
-        if (PcbTopology.cut(topology, to)) return false;
+    static boolean joins(CompoundTag topology, int[] definitions, int layer, int from, int to) {
+        if (PcbTopology.cut(topology, to) || !PcbTopology.connected(topology, layer, from, to)) return false;
         int value = PcbTopology.get(topology, layer, to);
         if (PcbWiring.conductor(value)) return true;
         int index = PcbFootprint.owner(definitions, layer, to);

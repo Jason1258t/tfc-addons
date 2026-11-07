@@ -30,6 +30,8 @@ public class PcbEditorMenu extends AbstractContainerMenu {
     static final int SELECT_PART = 1040;
     static final int CUT_TOOL = 6;
     static final int MOVE_TOOL = 7;
+    static final int EDGE_TOOL = 8;
+    static final int EDGE = 3000;
     static final int PICK = 2000;
 
     private final ContainerLevelAccess access;
@@ -51,7 +53,7 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             "Выводы должны быть на краю нижнего слоя", "Нужно компонентов: не менее 2",
             "Нужно компонентов: не менее 4", "Нужно компонентов: не менее 8",
             "Нужно не менее двух выводов на краю платы", "Пустой проект", "Есть обрыв или неподключённый вывод",
-            PcbWiring.ERROR, PcbBoardItem.EDITOR_ERROR, PcbAssembly.MISSING, PcbAssembly.RECOVERED, PcbAssembly.NO_RECOVERY, PcbFootprint.ERROR, PcbTopology.UNSUPPORTED
+            PcbWiring.ERROR, PcbBoardItem.EDITOR_ERROR, PcbAssembly.MISSING, PcbAssembly.RECOVERED, PcbAssembly.NO_RECOVERY, PcbFootprint.ERROR, PcbTopology.UNSUPPORTED, "Компоненты устанавливаются на слое 1"
     };
 
     /** Клиентская фабрика MenuType. */
@@ -72,9 +74,9 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             }
         });
         for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 9; col++) addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 174 + row * 18));
+            for (int col = 0; col < 9; col++) addSlot(new Slot(inventory, col + row * 9 + 9, 4 + col * 18, 176 + row * 18));
         }
-        for (int col = 0; col < 9; col++) addSlot(new Slot(inventory, col, 8 + col * 18, 228));
+        for (int col = 0; col < 9; col++) addSlot(new Slot(inventory, col, 4 + col * 18, 230));
         level.set(editor == null ? 1 : PcbTopology.level(editor.topology()));
         selected.set(-1);
         addDataSlot(selected);
@@ -89,6 +91,23 @@ public class PcbEditorMenu extends AbstractContainerMenu {
         addDataSlot(resistance);
         addDataSlot(threshold);
         addDataSlot(contact);
+    }
+
+    /** Только координаты клиентского экрана; серверная нумерация и содержимое слотов сохраняются. */
+    void layoutClientSlots(int width, int height) {
+        for (int i = 0; i < slots.size(); i++) {
+            Slot previous = slots.get(i);
+            int x, y;
+            if (i == 0) { x = width - 36; y = 8; }
+            else if (i <= 27) { x = 12 + (i - 1) % 9 * 18; y = height - 74 + (i - 1) / 9 * 18; }
+            else { x = 12 + (i - 28) * 18; y = height - 20; }
+            Slot replacement = new Slot(previous.container, previous.getContainerSlot(), x, y) {
+                @Override public boolean mayPlace(ItemStack stack) { return previous.mayPlace(stack); }
+                @Override public boolean mayPickup(Player player) { return previous.mayPickup(player); }
+            };
+            replacement.index = previous.index;
+            slots.set(i, replacement);
+        }
     }
 
     int selected() { return selected.get(); }
@@ -138,7 +157,7 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             layer.set(Math.min(layer(), currentLevel - 1));
             if (!available(part())) part.set(0);
         }
-        if (id >= SELECT_TOOL && id <= SELECT_TOOL + MOVE_TOOL) {
+        if (id >= SELECT_TOOL && id <= SELECT_TOOL + EDGE_TOOL) {
             moving.set(-1);
             selected.set(-1);
             tool.set(id - SELECT_TOOL);
@@ -149,7 +168,16 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             if (!available(type)) return false;
             part.set(type);
             selected.set(-1);
+            moving.set(-1);
+            layer.set(0);
             tool.set(5);
+            return true;
+        }
+        if (id >= EDGE && id < EDGE + PcbTopology.CELLS * 4) {
+            if (tool() != EDGE_TOOL) return false;
+            int encoded = id - EDGE;
+            if (!editor.toggleEdge(layer(), encoded / 4, encoded % 4)) return false;
+            status.set(0);
             return true;
         }
         if (id >= PICK && id < PICK + PcbTopology.CELLS) {
@@ -165,6 +193,7 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             return true;
         }
         if (id >= 0 && id < PcbTopology.CELLS) {
+            if (tool() == EDGE_TOOL) return false;
             if (tool() == MOVE_TOOL) {
                 if (moving() < 0) {
                     int owner = PcbFootprint.owner(editor.topology(), layer(), id);
@@ -182,6 +211,7 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             }
             if (PcbTopology.cut(editor.topology(), id)) return false;
             if (tool.get() == 5) {
+                if (layer() != 0) { status.set(statusCode("Компоненты устанавливаются на слое 1")); return true; }
                 if (!available(part())) return false;
                 status.set(editor.setPart(layer.get(), id, selectedDefinition()) ? 0 : statusCode(PcbFootprint.ERROR));
                 return true;
@@ -199,9 +229,12 @@ public class PcbEditorMenu extends AbstractContainerMenu {
         }
         int previousDefinition = selectedDefinition();
         switch (id) {
-            case TOOL -> tool.set((tool.get() + 1) % (MOVE_TOOL + 1));
+            case TOOL -> tool.set((tool.get() + 1) % (EDGE_TOOL + 1));
             case PART -> {
                 tool.set(5);
+                selected.set(-1);
+                moving.set(-1);
+                layer.set(0);
                 do {
                     part.set((part.get() + 1) % PcbWiring.KINDS.length);
                 } while (!available(part()));

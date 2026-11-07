@@ -74,10 +74,14 @@ public final class PcbModulesTest {
         return 1;
     }
 
+    private static int potentiometerHeight() { return PcbFootprint.height(definition(15, 0)); }
+
     private static int knobSet(CommandSourceStack source, int value) {
         var level = source.getLevel();
         var player = FakePlayerFactory.getMinecraft(level);
-        var local = new net.minecraft.world.phys.Vec3(6.0 / 16, 2.0 / 16, (5 + 4 * value / 100.0) / 16);
+        var circuit = new CompoundTag(); knob(level).write(circuit);
+        boolean potentiometer = circuit.getList("Circuit", net.minecraft.nbt.Tag.TAG_COMPOUND).getCompound(0).getString("Kind").equals("POTENTIOMETER");
+        var local = new net.minecraft.world.phys.Vec3(6.0 / 16, 2.0 / 16, (5 + (potentiometer ? potentiometerHeight() : 4) * value / 100.0) / 16);
         net.minecraft.world.phys.Vec3 mounted = call(PcbCircuitBlock.class, null, "mountedPoint", local, net.minecraft.core.Direction.UP);
         var hit = new net.minecraft.world.phys.BlockHitResult(mounted.add(net.minecraft.world.phys.Vec3.atLowerCornerOf(KNOB)), net.minecraft.core.Direction.UP, KNOB, false);
         check(level.getBlockState(KNOB).useWithoutItem(level, player, hit).consumesAction(), "ползунок принимает клик");
@@ -92,6 +96,11 @@ public final class PcbModulesTest {
         check(!saved.getBoolean("Burnt") && Math.abs(value - expected) < 0.12, "напряжение " + value + " вместо " + expected);
         source.sendSuccess(() -> Component.literal(String.format(java.util.Locale.ROOT, "Ползунок: %.3f В (ожидалось %.3f В), положение %d%%", value, expected, saved.getIntArray("Positions")[0])), false);
         return 1;
+    }
+
+    static int modulePins(int definition) {
+        Object module = call(internal("PcbModules"), null, "get", definition);
+        return call(module.getClass(), module, "pins");
     }
 
     static int definition(int type, int rotation) { return PcbWiring.component(type, rotation, 5, 0, false); }
@@ -161,7 +170,7 @@ public final class PcbModulesTest {
                 call(PcbTopology.class, null, "setPart", tag, 0, anchor, definition);
                 check(PcbFootprint.validate(tag), "валидный корпус");
                 HashSet<Integer> pins = new HashSet<>();
-                for (int pin = 0; pin < (PcbWiring.KINDS[type] == PcbCircuitDevice.Kind.POTENTIOMETER ? 3 : (boolean) call(PcbCircuitDevice.Kind.class, PcbWiring.KINDS[type], "controlled") ? 4 : 2); pin++) {
+                for (int pin = 0; pin < modulePins(definition); pin++) {
                     int cell = PcbWiring.pinCell(anchor, definition, pin);
                     check(cell >= 0 && pins.add(cell) && !PcbFootprint.contains(anchor, definition, cell), "независимый вывод снаружи корпуса");
                 }
@@ -253,7 +262,7 @@ public final class PcbModulesTest {
             for (var face : net.minecraft.core.Direction.values()) {
                 for (int percent : new int[]{0, 25, 50, 75, 100}) {
                     double x = 0;
-                    double z = 4 * (percent / 100.0 - .5);
+                    double z = potentiometerHeight() * (percent / 100.0 - .5);
                     for (int turn = 0; turn < rotation; turn++) {
                         double nextX = -z; z = x; x = nextX;
                     }

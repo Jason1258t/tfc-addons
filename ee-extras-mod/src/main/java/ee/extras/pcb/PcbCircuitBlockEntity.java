@@ -162,6 +162,8 @@ public final class PcbCircuitBlockEntity extends BlockEntity {
         return (controlStates & (1L << ordinal)) != 0;
     }
 
+    long indicatorSections(int ordinal, int count) { return (litIndicators >>> ordinal) & ((1L << count) - 1); }
+
     boolean indicatorLit(int ordinal) {
         return (litIndicators & (1L << ordinal)) != 0;
     }

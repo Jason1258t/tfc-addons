@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "cap": "minecraft:block/copper_block",
+    "cap": "ee_extras:block/pcb_part/module_handle",
     "particle": "#cap"
   },
   "elements": [
@@ -10,22 +10,28 @@
       "to": [8.42, 1.7, 8.12],
       "faces": {
         "up": {
-          "texture": "#cap"
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
         },
         "down": {
-          "texture": "#cap"
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
         },
         "north": {
-          "texture": "#cap"
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
         },
         "south": {
-          "texture": "#cap"
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
         },
         "east": {
-          "texture": "#cap"
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
         },
         "west": {
-          "texture": "#cap"
+          "texture": "#cap",
+          "uv": [0, 0, 16, 16]
         }
       }
     }

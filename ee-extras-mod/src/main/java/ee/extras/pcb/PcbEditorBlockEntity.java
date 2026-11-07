@@ -77,6 +77,15 @@ public class PcbEditorBlockEntity extends BlockEntity implements MenuProvider, C
         return setPart(layer, target, definition);
     }
 
+    boolean toggleEdge(int layer, int cell, int direction) {
+        int next = PcbTopology.neighbor(cell, direction);
+        if (next < 0 || PcbTopology.cut(topology, cell) || PcbTopology.cut(topology, next)
+                || PcbFootprint.owner(topology, layer, cell) >= 0 || PcbFootprint.owner(topology, layer, next) >= 0) return false;
+        PcbTopology.setEdgeCut(topology, layer, cell, direction, !PcbTopology.edgeCut(topology, layer, cell, direction));
+        sync();
+        return true;
+    }
+
     void toggleCut(int cell) {
         for (int layer = 0; layer < PcbTopology.level(topology); layer++) {
             int owner = PcbFootprint.owner(topology, layer, cell);

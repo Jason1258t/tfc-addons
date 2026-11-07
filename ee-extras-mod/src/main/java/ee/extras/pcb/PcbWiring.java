@@ -67,8 +67,8 @@ final class PcbWiring {
             if (groups[i] < 0) continue;
             int x = i % SIZE;
             int y = i % CELLS / SIZE;
-            if (x > 0 && groups[i - 1] >= 0) join(groups, i, i - 1);
-            if (y > 0 && groups[i - SIZE] >= 0) join(groups, i, i - SIZE);
+            if (x > 0 && groups[i - 1] >= 0 && PcbTopology.connected(tag, i / CELLS, i % CELLS, i % CELLS - 1)) join(groups, i, i - 1);
+            if (y > 0 && groups[i - SIZE] >= 0 && PcbTopology.connected(tag, i / CELLS, i % CELLS, i % CELLS - SIZE)) join(groups, i, i - SIZE);
             if (cells[i] == PcbTopology.VIA) {
                 for (int j = i % CELLS; j < size; j += CELLS) {
                     if (groups[j] >= 0) join(groups, i, j);
@@ -99,7 +99,8 @@ final class PcbWiring {
             if (!valid(definition))
                 return null;
             Kind kind = KINDS[type];
-            int[] pins = new int[4];
+            var module = PcbModules.get(definition);
+            int[] pins = new int[Math.max(4, module.pins())];
             for (int pin = 0; pin < PcbModules.get(definition).pins(); pin++) {
                 int neighbor = pinCell(i, definition, pin);
                 if (neighbor < 0 || groups[neighbor] < 0) return null;
@@ -108,16 +109,21 @@ final class PcbWiring {
                 pins[pin] = nodes[group];
             }
             boolean normallyClosed = kind == Kind.RELAY && normallyClosed(definition);
-            Part part = new Part(kind, pins[0], pins[1], OHMS[resistance], pins[2], pins[3], PcbModules.get(definition).timed() ? period(type, resistance) : VOLTS[threshold], normallyClosed);
-            if (!part.valid() || parts.size() == 64) return null;
-            parts.add(part);
+            for (int section = 0; section < module.sections(); section++) {
+                int first = module.sections() > 1 ? section * 2 : 0;
+                Part part = new Part(kind, pins[first], pins[first + 1], OHMS[resistance],
+                        module.sections() > 1 ? 0 : pins[2], module.sections() > 1 ? 0 : pins[3],
+                        module.timed() ? period(type, resistance) : VOLTS[threshold], normallyClosed, i, type);
+                if (!part.valid() || parts.size() == 64) return null;
+                parts.add(part);
+            }
         }
         return parts.isEmpty() || parts.size() > 64 ? null : List.copyOf(parts);
     }
 
     static int componentOrdinal(int[] definitions, int index) {
         int ordinal = 0;
-        for (int i = 0; i < index; i++) if (definitions[i] != 0) ordinal++;
+        for (int i = 0; i < index; i++) if (definitions[i] != 0) ordinal += PcbModules.get(definitions[i]).sections();
         return ordinal;
     }
 

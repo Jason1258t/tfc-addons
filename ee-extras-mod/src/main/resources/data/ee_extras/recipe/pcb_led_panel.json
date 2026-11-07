@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "ee_extras:pcb_led"
+    },
+    {
+      "item": "ee_extras:pcb_led"
+    },
+    {
+      "item": "ee_extras:pcb_led"
+    },
+    {
+      "item": "ee_extras:pcb_led"
+    },
+    {
+      "item": "ee_extras:connector"
+    },
+    {
+      "tag": "c:glass_panes"
+    }
+  ],
+  "result": {
+    "id": "ee_extras:pcb_led_panel",
+    "count": 1
+  }
+}
