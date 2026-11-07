@@ -59,7 +59,7 @@ final class PcbTimersTest {
 
     private static void tick(ServerTickEvent.Post event) {
         if (watched == null || samples >= 100) return;
-        boolean state = volts(watched) > 12;
+        boolean state = volts(watched) > 2;
         if (state) high++; else low++;
         if (samples > 0 && previous != state) edges++;
         previous = state; samples++;
@@ -67,28 +67,36 @@ final class PcbTimersTest {
 
     private static int build(CommandSourceStack source, boolean clock) {
         if (!clock) return mechanical(source);
-        var level = source.getLevel();
-        DevTest.place(level, BOARD, Blocks.AIR.defaultBlockState()); DevTest.place(level, BATTERY, Blocks.AIR.defaultBlockState());
-        DevTest.place(level, BOARD, PcbItems.CIRCUIT_BLOCK.get().defaultBlockState().setValue(PcbCircuitBlock.CUSTOM,true));
-        DevTest.place(level, BATTERY, CEEBlocks.CREATIVE_BATTERY.getDefaultState());
-        DevTest.place(level, WIND, Blocks.AIR.defaultBlockState());
-        DevTest.place(level, WIND, CEEBlocks.CREATIVE_BATTERY.getDefaultState());
-        var topology = PcbTopology.create(clock ? 2 : 1);
-        PcbTopology.set(topology,0,0,PcbTopology.TERMINAL); PcbTopology.set(topology,0,15,PcbTopology.TERMINAL);
+        var level=source.getLevel();
+        for (var pos:new BlockPos[]{BOARD,BATTERY,WIND}) DevTest.place(level,pos,Blocks.AIR.defaultBlockState());
+        var topology=PcbTopology.create(2);
         PcbTopology.set(topology,0,85,PcbTopology.COMPONENT);
-        PcbModulesTest.call(PcbTopology.class,null,"setPart",topology,0,85,PcbModulesTest.definition(clock ? 17 : 16,0));
-        var stack = clock ? PcbItems.L2_BOARD.toStack() : PcbItems.L1_BOARD.toStack();
-        PcbTopology.attach(stack,topology);
+        PcbModulesTest.call(PcbTopology.class,null,"setPart",topology,0,85,PcbModulesTest.definition(17,0));
+        var parameter=new CompoundTag(); parameter.putDouble("Nominal",2);
+        var parameters=new CompoundTag(); parameters.put("85",parameter); topology.put("ModuleParameters",parameters);
+        for (int x=0;x<=4;x++) PcbTopology.set(topology,0,5*16+x,x==0?PcbTopology.TERMINAL:PcbTopology.TRACE);
+        for (int x=7;x<16;x++) PcbTopology.set(topology,0,5*16+x,x==15?PcbTopology.TERMINAL:PcbTopology.TRACE);
+        for (int y=0;y<=4;y++) PcbTopology.set(topology,0,y*16+5,y==0?PcbTopology.TERMINAL:PcbTopology.TRACE);
+        for (int y=7;y<16;y++) PcbTopology.set(topology,0,y*16+5,y==15?PcbTopology.TERMINAL:PcbTopology.TRACE);
+        List<PcbCircuitDevice.Part> compiled;
+        try { compiled=PcbModulesTest.call(Class.forName("ee.extras.pcb.PcbWiring"),null,"compile",topology); }
+        catch (ClassNotFoundException e) { throw new IllegalStateException(e); }
+        if (compiled==null || compiled.size()!=1) throw new IllegalStateException("Клок не компилируется с четырьмя выводами");
+        var clockPart=compiled.get(0);
+        if (clockPart.a()!=0 || clockPart.b()!=3 || clockPart.coilA()!=1 || clockPart.coilB()!=2)
+            throw new IllegalStateException("Неверные контакты разрешения/выхода/П/З");
+        var parts=new java.util.ArrayList<>(compiled);
+        parts.add(new PcbCircuitDevice.Part(PcbCircuitDevice.Kind.RESISTOR,2,3,1000,0,0,5));
+        parts.add(new PcbCircuitDevice.Part(PcbCircuitDevice.Kind.VOLTMETER,2,3,1e9,0,0,5));
+        DevTest.place(level,BOARD,PcbItems.CIRCUIT_BLOCK.get().defaultBlockState().setValue(PcbCircuitBlock.CUSTOM,true));
+        var stack=PcbItems.L2_BOARD.toStack(); PcbTopology.attach(stack,topology);
         PcbModulesTest.call(PcbCircuitBlockEntity.class,level.getBlockEntity(BOARD),"setBoard",stack);
-        var parts = List.of(new PcbCircuitDevice.Part(clock ? PcbCircuitDevice.Kind.CLOCK : PcbCircuitDevice.Kind.MECHANICAL_TIMER,0,2,1000,clock ? 0 : 3,clock ? 1 : 0,clock ? 40 : 60,false,85,clock ? 17 : 16),
-                new PcbCircuitDevice.Part(PcbCircuitDevice.Kind.RESISTOR,2,1,1000,0,0,24),
-                new PcbCircuitDevice.Part(PcbCircuitDevice.Kind.VOLTMETER,2,1,1e9,0,0,24));
-        try {
-            var setter = PcbCircuitDevice.class.getDeclaredMethod("setCircuit",List.class,PcbCircuitDevice.Rating.class,int.class);
-            setter.setAccessible(true); setter.invoke(device(level),parts,clock ? PcbCircuitDevice.Rating.L2 : PcbCircuitDevice.Rating.L1,clock ? 2 : 4);
-        } catch (ReflectiveOperationException e) { throw new IllegalStateException(e); }
-        DevTest.wire(level,BATTERY,0,BOARD,0); DevTest.wire(level,BATTERY,1,BOARD,1);
-        power(level,WIND,0); power(level,24); return 1;
+        PcbModulesTest.call(PcbCircuitDevice.class,device(level),"setCircuit",List.copyOf(parts),PcbCircuitDevice.Rating.L2,4);
+        for(var pos:new BlockPos[]{BATTERY,WIND}) DevTest.place(level,pos,CEEBlocks.CREATIVE_BATTERY.getDefaultState());
+        DevTest.wire(level,BATTERY,1,BOARD,0); DevTest.wire(level,BATTERY,0,BOARD,3);
+        DevTest.wire(level,WIND,1,BOARD,1); DevTest.wire(level,WIND,0,BOARD,3);
+        power(level,WIND,5); power(level,5);
+        source.sendSuccess(()->Component.literal("Клок2×2: разрешение/выход/П/З, питание5В, период40тиков"),false);return 1;
     }
 
     private static int mechanical(CommandSourceStack source) {

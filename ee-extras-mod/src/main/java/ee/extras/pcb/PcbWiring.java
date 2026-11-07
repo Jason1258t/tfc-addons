@@ -114,9 +114,29 @@ final class PcbWiring {
             boolean normallyClosed = false;
             for (int section = 0; section < module.sections(); section++) {
                 int first = module.sections() > 1 ? section * 2 : 0;
-                Part part = new Part(kind, pins[first], pins[first + 1], module.timed() ? OHMS[resistance] : nominal,
-                        module.sections() > 1 ? 0 : pins[2], module.sections() > 1 ? 0 : kind == Kind.MECHANICAL_TIMER ? pins[0] : kind == Kind.TRANSISTOR ? pins[1] : kind == Kind.LATCHING_RELAY ? pins[4] : pins[3],
-                        module.timed() ? Math.round(nominal * 20) : limit, normallyClosed, i, type, kind == Kind.RELAY ? pins[4] : kind == Kind.LATCHING_RELAY ? pins[3] : -1);
+                int a = pins[first], b = pins[first + 1];
+                int inputA = module.sections() > 1 ? 0 : pins[2];
+                int inputB = module.sections() > 1 ? 0 : switch (kind) {
+                    case MECHANICAL_TIMER -> pins[0];
+                    case TRANSISTOR -> pins[1];
+                    case LATCHING_RELAY -> pins[4];
+                    default -> pins[3];
+                };
+                int alternate = switch (kind) {
+                    case RELAY -> pins[4];
+                    case LATCHING_RELAY -> pins[3];
+                    default -> -1;
+                };
+                double ohms = module.timed() ? OHMS[resistance] : nominal;
+                if (kind == Kind.COMPARATOR || kind == Kind.CLOCK) {
+                    a = pins[kind == Kind.CLOCK ? 2 : 3];
+                    b = pins[kind == Kind.CLOCK ? 3 : 4];
+                    inputA = pins[0]; inputB = pins[1];
+                    alternate = kind == Kind.COMPARATOR ? pins[2] : -1;
+                    ohms = 10000;
+                }
+                Part part = new Part(kind, a, b, ohms, inputA, inputB,
+                        module.timed() ? Math.round(nominal * 20) : limit, normallyClosed, i, type, alternate);
                 if (!part.valid() || parts.size() == 64) return null;
                 parts.add(part);
             }

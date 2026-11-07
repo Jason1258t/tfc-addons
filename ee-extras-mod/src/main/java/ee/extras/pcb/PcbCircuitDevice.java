@@ -80,6 +80,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 if (part.kind.controlled()) join(group, part.coilA, part.coilB);
                 if (part.windingInput()) join(group, part.a, part.coilA);
                 if (part.kind == Kind.LATCHING_RELAY) { join(group, part.coilA, part.alternate); join(group, part.coilB, part.alternate); }
+                if (part.poweredLogic()) { join(group,part.a,part.coilA); join(group,part.a,part.logicOutput()); if (part.kind == Kind.COMPARATOR) join(group,part.a,part.coilB); }
                 if (part.kind == Kind.POTENTIOMETER) join(group, part.a, part.coilA);
                 if (part.changeover()) join(group, part.a, part.alternateNode());
             }
@@ -102,6 +103,8 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         return values;
     }
 
+    private volatile long logicHigh, logicPowered;
+    private static final double LOGIC_DRIVER_OHMS = 100;
     private volatile long windingHigh;
     private volatile long[] timerDue = new long[MAX_PARTS];
     private long pausedClocks;
@@ -132,12 +135,12 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
 
     public enum Kind {
         TRACE, RESISTOR, RELAY, BUTTON, SWITCH, LAMP, REDSTONE_IN, REDSTONE_OUT,
-        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP, LATCHING_RELAY, THREE_POSITION_SWITCH;
+        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP, LATCHING_RELAY, THREE_POSITION_SWITCH, COMPARATOR;
 
         boolean led() { return this == LED || this == LED_PANEL || this == LED_STRIP; }
 
         boolean controlled() {
-            return this == RELAY || this == TRANSISTOR || this == CLOCK;
+            return this == RELAY || this == TRANSISTOR;
         }
     }
 
@@ -155,6 +158,8 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             this(kind, a, b, ohms, coilA, coilB, threshold, false);
         }
 
+        boolean poweredLogic() { return kind == Kind.COMPARATOR || kind == Kind.CLOCK; }
+        int logicOutput() { return kind == Kind.COMPARATOR ? alternate : coilB; }
         boolean windingInput() { return kind == Kind.MECHANICAL_TIMER && moduleIndex >= 0; }
         boolean changeover() { return moduleIndex >= 0 && (kind == Kind.SWITCH || kind == Kind.THREE_POSITION_SWITCH || kind == Kind.RELAY && alternate >= 0); }
         int alternateNode() { return kind == Kind.SWITCH || kind == Kind.THREE_POSITION_SWITCH ? coilA : alternate; }
@@ -169,7 +174,8 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                     && (kind != Kind.CLOCK && kind != Kind.MECHANICAL_TIMER || threshold >= 2 && threshold == Math.rint(threshold))
                     && (!windingInput() || node(coilA) && coilA != a && coilB == a)
                     && (!changeover() || node(alternateNode()) && alternateNode() != a && alternateNode() != b)
-                    && (alternate == -1 || (kind == Kind.RELAY || kind == Kind.LATCHING_RELAY) && node(alternate))
+                    && (alternate == -1 || (kind == Kind.RELAY || kind == Kind.LATCHING_RELAY || kind == Kind.COMPARATOR) && node(alternate))
+                    && (!poweredLogic() || node(coilA) && node(coilB) && node(logicOutput()))
                     && (kind != Kind.LATCHING_RELAY || node(coilA) && node(coilB) && node(alternate) && coilA != alternate && coilB != alternate)
                     && (kind != Kind.POTENTIOMETER || node(coilA) && coilA != a && coilA != b)
                     && (!kind.controlled() || node(coilA) && node(coilB) && coilA != coilB);
@@ -195,6 +201,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         positions = defaultPositions();
         timerDue = new long[MAX_PARTS];
         windingHigh = 0;
+        logicHigh = logicPowered = 0;
         pausedClocks = 0;
         closedMask = 0;
         latchedMask = 0;
@@ -288,6 +295,11 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             } else {
                 builder.resistor(part.a, branch, resistance(part, i) - sense);
             }
+            if (part.poweredLogic()) {
+                builder.resistor(part.coilA,part.b,OPEN);
+                if (part.kind == Kind.COMPARATOR) builder.resistor(part.coilB,part.b,OPEN);
+                builder.resistor(part.logicOutput(),logicRail(part,i),logicResistance(i));
+            }
             if (part.windingInput()) builder.resistor(part.coilA, part.a, part.ohms);
             if (part.kind == Kind.POTENTIOMETER) {
                 builder.resistor(part.coilA, part.b, segmentResistance(part, i, true));
@@ -309,8 +321,15 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         }
     }
 
+    private int logicRail(Part part,int index) {
+        long bit=1L<<index;
+        return (logicPowered & logicHigh & bit)!=0 ? part.a : part.b;
+    }
+
+    private double logicResistance(int index) { return (logicPowered & (1L<<index))!=0 ? LOGIC_DRIVER_OHMS : OPEN; }
+
     private static double coilResistance(Part part) {
-        return part.kind == Kind.CLOCK ? 10000 : part.kind == Kind.RELAY ? part.ohms : OPEN;
+        return part.kind == Kind.RELAY ? part.ohms : OPEN;
     }
 
     private static double senseResistance(Part part) {
@@ -336,7 +355,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             case SWITCH -> switchActive(index) ? CONTACT : OPEN;
             case THREE_POSITION_SWITCH -> positions[index] == 0 ? CONTACT : OPEN;
             case REDSTONE_IN -> powered ? CONTACT : OPEN;
-            case MECHANICAL_TIMER, CLOCK -> (closedMask & bit) != 0 ? CONTACT : OPEN;
+            case MECHANICAL_TIMER -> (closedMask & bit) != 0 ? CONTACT : OPEN;
             case LATCHING_RELAY -> (latchedMask & bit) != 0 ? CONTACT : OPEN;
             case RELAY, TRANSISTOR -> ((closedMask & bit) != 0) != part.normallyClosed ? CONTACT : OPEN;
             case FUSE -> (blownFuses & bit) == 0 ? CONTACT : OPEN;
@@ -391,6 +410,14 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 watts += Math.sqrt(alternateSquared) * alternateAmps;
                 maxVoltage = Math.max(maxVoltage, Math.sqrt(alternateSquared));
                 maxCurrent = Math.max(maxCurrent, alternateAmps);
+            }
+            if (part.poweredLogic()) {
+                double driver = results.getVoltageAtSqr(pos,part.logicOutput(),logicRail(part,i));
+                double driverOhms=logicResistance(i);
+                double inputA=results.getVoltageAtSqr(pos,part.coilA,part.b), inputB=part.kind == Kind.COMPARATOR ? results.getVoltageAtSqr(pos,part.coilB,part.b) : 0;
+                watts += driver/driverOhms + (inputA+inputB)/OPEN;
+                maxCurrent=Math.max(maxCurrent,Math.sqrt(driver)/driverOhms);
+                maxVoltage=Math.max(maxVoltage,Math.sqrt(Math.max(inputA,Math.max(inputB,results.getVoltageAtSqr(pos,part.logicOutput(),part.b)))));
             }
             if (part.windingInput()) {
                 double windSquared = results.getVoltageAtSqr(pos, part.coilA, part.a);
@@ -456,6 +483,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         int[] controlPositions = new int[current.parts.size()];
         long[] nextTimers = timerDue.clone();
         long nextWinding = windingHigh;
+        long nextLogicHigh=0, nextLogicPowered=0;
         double[] nextControls = new double[current.parts.size()];
         int component = -1;
         meterKind = null;
@@ -471,6 +499,17 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                     || part.kind == Kind.SWITCH && (switched != ((switches & (1L << i)) != 0)))
                 controlStates |= 1L << component;
             switch (part.kind) {
+                case COMPARATOR -> {
+                    long bit=1L<<i;
+                    double supply=signedVoltage(results,part.a,part.b);
+                    boolean enabled=supply>=3 && voltage(results,part.a,part.b)<=6;
+                    if (enabled) {
+                        nextLogicPowered |= bit;
+                        double difference=signedVoltage(results,part.coilA,part.b)-signedVoltage(results,part.coilB,part.b);
+                        nextControls[i]=difference;
+                        if (difference>0.001) { nextLogicHigh |= bit; controlStates |= 1L<<component; }
+                    }
+                }
                 case MECHANICAL_TIMER -> {
                     long bit = 1L << i;
                     if (part.windingInput()) {
@@ -486,17 +525,18 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                             Math.ceil(100.0 * (nextTimers[i] - now) / part.threshold), 0, 100);
                 }
                 case CLOCK -> {
-                    controlPositions[component] = 0;
-                    boolean enabled = (pausedClocks & (1L << i)) == 0 && voltage(results, part.coilA, part.coilB) >= 3;
-                    if (!enabled) nextTimers[i] = 0;
+                    long bit=1L<<i;
+                    controlPositions[component]=0;
+                    double supply=signedVoltage(results,part.a,part.b);
+                    boolean hasPower=supply>=3 && voltage(results,part.a,part.b)<=6;
+                    if (hasPower) nextLogicPowered |= bit;
+                    boolean enabled=hasPower && (pausedClocks & bit)==0 && signedVoltage(results,part.coilA,part.b)>=supply*.6;
+                    if (!enabled) nextTimers[i]=0;
                     else {
-                        if (timerDue[i] == 0) nextTimers[i] = now;
-                        long phase = Math.floorMod(now - nextTimers[i], (long) part.threshold);
-                        if (phase < part.threshold / 2) {
-                            closed |= 1L << i;
-                            controlStates |= 1L << component;
-                        }
-                        controlPositions[component] = (int) (100 * phase / part.threshold);
+                        if (nextTimers[i]==0) nextTimers[i]=now;
+                        long phase=Math.floorMod(now-nextTimers[i],(long)part.threshold);
+                        if (phase<part.threshold/2) { nextLogicHigh |= bit; controlStates |= 1L<<component; }
+                        controlPositions[component]=(int)(100*phase/part.threshold);
                     }
                 }
                 case LED, LED_PANEL, LED_STRIP -> {
@@ -553,6 +593,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         if (!java.util.Arrays.equals(timerDue, nextTimers)) deviceSD.setDirty();
         timerDue = nextTimers;
         closedMask = closed;
+        logicHigh=nextLogicHigh; logicPowered=nextLogicPowered;
         if (latchedMask != nextLatched) { latchedMask = nextLatched; deviceSD.setDirty(); }
         controlVoltages = nextControls;
         indicatorVoltage = maxIndicatorVoltage;
@@ -599,6 +640,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         circuit = new Circuit(List.of(), LEGACY_TERMINALS);
         timerDue = new long[MAX_PARTS];
         windingHigh = 0;
+        logicHigh = logicPowered = 0;
         long[] savedTimers = tag.getLongArray("TimerDue");
         for (int i = 0; i < Math.min(savedTimers.length, timerDue.length); i++) timerDue[i] = Math.max(0, savedTimers[i]);
         windingHigh = tag.getLong("WindingHigh");

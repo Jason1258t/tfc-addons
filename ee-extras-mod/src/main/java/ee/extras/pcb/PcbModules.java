@@ -12,15 +12,16 @@ final class PcbModules {
     }
     record Module(Kind kind, String name, String model, int width, int height, int level, int sections) {
         Module(Kind kind, String name, String model, int width, int height, int level) { this(kind, name, model, width, height, level, 1); }
-        int pins() { return sections > 1 ? 2 * sections : kind == Kind.RELAY || kind == Kind.LATCHING_RELAY ? 5 : kind == Kind.POTENTIOMETER || kind == Kind.SWITCH || kind == Kind.THREE_POSITION_SWITCH || kind == Kind.TRANSISTOR || kind == Kind.MECHANICAL_TIMER ? 3 : kind.controlled() ? 4 : 2; }
+        int pins() { return kind == Kind.CLOCK ? 4 : sections > 1 ? 2 * sections : kind == Kind.RELAY || kind == Kind.LATCHING_RELAY || kind == Kind.COMPARATOR ? 5 : kind == Kind.POTENTIOMETER || kind == Kind.SWITCH || kind == Kind.THREE_POSITION_SWITCH || kind == Kind.TRANSISTOR || kind == Kind.MECHANICAL_TIMER ? 3 : kind.controlled() ? 4 : 2; }
         String pinName(int pin) {
             if (sections > 1) return "Секция " + (pin / 2 + 1) + (pin % 2 == 0 ? " +" : " −");
+            if (kind == Kind.COMPARATOR) return switch (pin) { case 0 -> "Вход"; case 1 -> "Порог"; case 2 -> "Выход"; case 3 -> "Питание + (3–6 В)"; default -> "Земля"; };
             if (kind == Kind.THREE_POSITION_SWITCH) return switch (pin) { case 0 -> "Общий"; case 1 -> "Левый I"; default -> "Правый II"; };
             if (kind == Kind.MECHANICAL_TIMER) return switch (pin) { case 0 -> "A / возврат взвода"; case 1 -> "B"; default -> "Взвод"; };
             if (kind == Kind.SWITCH) return switch (pin) { case 0 -> "Общий"; case 1 -> "НО"; default -> "НЗ"; };
             if (kind == Kind.TRANSISTOR) return switch (pin) { case 0 -> "Коллектор"; case 1 -> "Эмиттер"; default -> "База"; };
             if (kind == Kind.POTENTIOMETER) return switch (pin) { case 0 -> "Верх"; case 1 -> "Низ"; default -> "Движок"; };
-            if (kind == Kind.CLOCK && pin >= 2) return pin == 2 ? "Питание +" : "Питание −";
+            if (kind == Kind.CLOCK) return switch (pin) { case 0 -> "Разрешение"; case 1 -> "Выход"; case 2 -> "Питание + (3–6 В)"; default -> "Земля"; };
             if (kind == Kind.LATCHING_RELAY) return switch (pin) { case 0 -> "Общий"; case 1 -> "НО"; case 2 -> "SET"; case 3 -> "Обмотки −"; default -> "RESET"; };
             if (kind == Kind.RELAY) return switch (pin) { case 0 -> "Общий"; case 1 -> "НО"; case 2 -> "Обмотка +"; case 3 -> "Обмотка −"; default -> "НЗ"; };
             if (kind.controlled()) return switch (pin) { case 0 -> "Контакт A"; case 1 -> "Контакт B"; case 2 -> "Управление +"; default -> "Управление −"; };
@@ -28,9 +29,10 @@ final class PcbModules {
             return pin == 0 ? "A" : "B";
         }
         PinType pinType(int pin) {
+            if (kind == Kind.COMPARATOR) return pin < 2 ? PinType.ANALOG : pin == 2 ? PinType.LOGIC : pin == 3 ? PinType.POWER : PinType.GROUND;
             if (kind == Kind.TRANSISTOR && pin == 2) return PinType.LOGIC;
             if (kind == Kind.POTENTIOMETER || kind == Kind.VOLTMETER) return PinType.ANALOG;
-            if (kind == Kind.CLOCK && pin >= 2) return pin == 2 ? PinType.POWER : PinType.GROUND;
+            if (kind == Kind.CLOCK) return pin < 2 ? PinType.LOGIC : pin == 2 ? PinType.POWER : PinType.GROUND;
             return PinType.CONTACT;
         }
         String pinLabel(int pin) { return pinType(pin).symbol + " " + pinName(pin); }
@@ -40,6 +42,7 @@ final class PcbModules {
                 case LAMP, LED, LED_PANEL, LED_STRIP, REDSTONE_OUT, VOLTMETER, AMMETER -> "Индикация";
                 case RESISTOR, RHEOSTAT, CAPACITOR, FUSE -> "Пассивные";
                 case MECHANICAL_TIMER, CLOCK -> "Время";
+                case COMPARATOR -> "Логика";
                 default -> "Коммутация";
             };
         }
@@ -81,11 +84,12 @@ final class PcbModules {
             new Module(Kind.RHEOSTAT, "Реостат", "rheostat", 2, 4, 1),
             new Module(Kind.POTENTIOMETER, "Ползунок", "potentiometer", 2, 5, 1),
             new Module(Kind.MECHANICAL_TIMER, "Механический таймер", "mechanical_timer", 3, 3, 1),
-            new Module(Kind.CLOCK, "Клок", "clock", 3, 3, 2),
+            new Module(Kind.CLOCK, "Клок", "clock", 2, 2, 2),
             new Module(Kind.LED_PANEL, "Световая панель", "led_panel", 2, 2, 1),
             new Module(Kind.LED_STRIP, "Световая полоса", "led_strip", 2, 5, 1, 5),
             new Module(Kind.LATCHING_RELAY, "Реле SET/RESET", "latching_relay", 2, 3, 1),
-            new Module(Kind.THREE_POSITION_SWITCH, "Переключатель на 3 положения", "selector", 2, 3, 1)
+            new Module(Kind.THREE_POSITION_SWITCH, "Переключатель на 3 положения", "selector", 2, 3, 1),
+            new Module(Kind.COMPARATOR, "Компаратор", "comparator", 2, 2, 2)
     };
 
     private PcbModules() {}

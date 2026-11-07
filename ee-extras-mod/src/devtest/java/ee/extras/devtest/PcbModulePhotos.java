@@ -154,7 +154,7 @@ final class PcbModulePhotos {
             latchBoard=table.east(22);
             PcbLatchTest.buildAt(player.createCommandSourceStack(),latchBoard);
             ClientTest.check("рецепт реле с фиксацией доступен",server.getRecipeManager().byKey(net.minecraft.resources.ResourceLocation.parse("ee_extras:pcb_latching_relay")).isPresent());
-            camera(player,latchBoard);
+            camera(player,latchBoard,.5);
         });
         if (tick == 1190) server.execute(() -> PcbLatchTest.expect(server.getPlayerList().getPlayer(mc.player.getUUID()).createCommandSourceStack(),false,0));
         if (tick == 1200) photo(mc,"10-latch-off");
@@ -197,8 +197,12 @@ final class PcbModulePhotos {
     }
 
     private static void camera(net.minecraft.server.level.ServerPlayer player, BlockPos pos) {
+        camera(player,pos,1);
+    }
+
+    private static void camera(net.minecraft.server.level.ServerPlayer player, BlockPos pos,double distance) {
         Vec3 target = Vec3.atLowerCornerOf(pos).add(.5,.08,.5);
-        Vec3 eye = target.add(.15,1.2,1.0), delta = target.subtract(eye);
+        Vec3 eye = target.add(.15*distance,1.2*distance,1.0*distance), delta = target.subtract(eye);
         float yaw = (float)Math.toDegrees(Math.atan2(-delta.x,delta.z));
         float pitch = (float)-Math.toDegrees(Math.atan2(delta.y,Math.hypot(delta.x,delta.z)));
         player.teleportTo(player.serverLevel(),eye.x,eye.y-player.getEyeHeight(),eye.z,yaw,pitch);

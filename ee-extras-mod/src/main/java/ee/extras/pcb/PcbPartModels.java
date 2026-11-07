@@ -23,6 +23,7 @@ final class PcbPartModels {
         event.register(id("selector_left"));
         event.register(id("selector_right"));
         event.register(id("latching_relay_on"));
+        event.register(id("comparator_on"));
         event.register(id("slider_handle"));
         event.register(id("timer_hand"));
         event.register(id("led_on"));
@@ -48,7 +49,7 @@ final class PcbPartModels {
         var minecraft = Minecraft.getInstance();
         String name = module.kind() == PcbCircuitDevice.Kind.THREE_POSITION_SWITCH
                 ? NAMES[type] + (position < 34 ? "_left" : position > 66 ? "_right" : "")
-                : module.kind() == PcbCircuitDevice.Kind.LATCHING_RELAY && active ? NAMES[type] + "_on"
+                : (module.kind() == PcbCircuitDevice.Kind.LATCHING_RELAY || module.kind() == PcbCircuitDevice.Kind.COMPARATOR) && active ? NAMES[type] + "_on"
                 : cap && (type == 2 || type == 3) ? NAMES[type] + "_cap" + (active ? "_on" : "")
                 : active && (type == 2 || type == 3) ? NAMES[type] + "_on"
                 : indicatorLit && module.kind().led() && module.sections() == 1 ? NAMES[type] + "_on" : NAMES[type];

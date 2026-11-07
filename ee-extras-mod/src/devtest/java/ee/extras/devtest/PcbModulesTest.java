@@ -160,6 +160,16 @@ public final class PcbModulesTest {
 
     private static int run(CommandSourceStack source) {
         int checks = 0;
+        // Регистр3×2: девять сигналов и явные П/З помещаются без увеличения корпуса.
+        for (int rotation=0;rotation<4;rotation++) {
+            var pins=new HashSet<Integer>();
+            int w=(rotation&1)==0?3:2, h=(rotation&1)==0?2:3;
+            for (int pin=0;pin<11;pin++) {
+                int cell=call(PcbFootprint.TYPE,null,"ringCell",85,3,2,rotation,pin,11);
+                int x=cell%16-5, y=cell/16-5;
+                check(cell>=0 && pins.add(cell) && (x<0 || x>=w || y<0 || y>=h),"11 отдельных выводов регистра3×2 с П/З");
+            }
+        }
         for (int type = 0; type < PcbWiring.KINDS.length; type++) {
             for (int rotation = 0; rotation < 4; rotation++) {
                 int definition = PcbWiring.component(type, rotation, 3, 0, false);
@@ -275,7 +285,7 @@ public final class PcbModulesTest {
                 }
             }
         }
-        source.sendSuccess(() -> Component.literal("Платы: " + (PcbWiring.KINDS.length * 4) + " вариантов корпуса и поворота, настройка/перенос/удаление через меню, компиляция, намеренный обрыв, слои, старый формат, шесть граней и 120 положений ползунка — успешно"), false);
+        source.sendSuccess(() -> Component.literal("Платы: " + (PcbWiring.KINDS.length * 4) + " вариантов корпуса и поворота, настройка/перенос/удаление через меню, компиляция, намеренный обрыв, слои, старый формат, шесть граней, 120 положений ползунка и 11 выводов на корпусе регистра3×2 — успешно"), false);
         return checks;
     }
 }

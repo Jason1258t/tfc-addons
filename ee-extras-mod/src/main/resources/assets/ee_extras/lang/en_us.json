@@ -368,5 +368,6 @@
   "item.ee_extras.pcb_led_panel": "2×2 LED Panel",
   "item.ee_extras.pcb_led_strip": "2×5 Sectional LED Strip",
   "item.ee_extras.pcb_latching_relay": "SET/RESET Latching Relay",
-  "item.ee_extras.pcb_selector": "Three-position Selector"
+  "item.ee_extras.pcb_selector": "Three-position Selector",
+  "item.ee_extras.pcb_comparator": "PCB Comparator"
 }

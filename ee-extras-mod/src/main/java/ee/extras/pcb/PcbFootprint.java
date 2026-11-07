@@ -67,6 +67,8 @@ final class PcbFootprint {
     static int pinCell(int anchor, int definition, int pin) {
         int w = baseWidth(definition);
         int h = baseHeight(definition);
+        if (PcbModules.get(definition).sections() == 1 && PcbModules.get(definition).pins() > 5)
+            return ringCell(anchor,w,h,PcbWiring.rotation(definition),pin,PcbModules.get(definition).pins());
         int x = PcbModules.get(definition).sections() > 1 ? (pin % 2 == 0 ? -1 : w) : switch (pin) { case 0 -> -1; case 1, 4 -> w; default -> (w - 1) / 2; };
         int y = PcbModules.get(definition).sections() > 1 ? pin / 2 : switch (pin) { case 2 -> -1; case 3 -> h; case 4 -> h - 1; default -> (h - 1) / 2; };
         for (int r = 0; r < PcbWiring.rotation(definition); r++) {
@@ -81,6 +83,24 @@ final class PcbFootprint {
         y += anchor / PcbTopology.SIZE;
         return x < 0 || y < 0 || x >= PcbTopology.SIZE || y >= PcbTopology.SIZE
                 ? -1 : anchor / PcbTopology.CELLS * PcbTopology.CELLS + y * PcbTopology.SIZE + x;
+    }
+
+    /** Плотные корпуса: все клетки внешнего периметра, включая углы, доступны выводам. */
+    static int ringCell(int anchor,int w,int h,int rotation,int pin,int count) {
+        int capacity=2*w+2*h+4;
+        if (w<1 || h<1 || count<1 || count>capacity || pin<0 || pin>=count) return -1;
+        int slot=pin*capacity/count;
+        int x,y;
+        if (slot<w+2) { x=slot-1; y=-1; }
+        else if ((slot-=w+2)<h+1) { x=w; y=slot; }
+        else if ((slot-=h+1)<w+1) { x=w-1-slot; y=h; }
+        else { slot-=w+1; x=-1; y=h-1-slot; }
+        for (int r=0;r<rotation;r++) {
+            int nextX=h-1-y; y=x; x=nextX;
+            int nextWidth=h; h=w; w=nextWidth;
+        }
+        x+=anchor%PcbTopology.SIZE; y+=anchor/PcbTopology.SIZE;
+        return x<0 || y<0 || x>=PcbTopology.SIZE || y>=PcbTopology.SIZE ? -1 : y*PcbTopology.SIZE+x;
     }
 
     static void isolatePins(CompoundTag tag, int layer, int anchor, int definition) {

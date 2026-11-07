@@ -1,0 +1,23 @@
+{
+  "type": "create:mechanical_crafting",
+  "pattern": ["TRT", "CRC", " A "],
+  "key": {
+    "T": {
+      "item": "ee_extras:transistor"
+    },
+    "R": {
+      "item": "ee_extras:resistor"
+    },
+    "C": {
+      "item": "ee_extras:connector"
+    },
+    "A": {
+      "item": "create:andesite_alloy"
+    }
+  },
+  "result": {
+    "id": "ee_extras:pcb_comparator",
+    "count": 1
+  },
+  "accept_mirrored": true
+}

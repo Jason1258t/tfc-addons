@@ -28,6 +28,7 @@ final class PcbAssembly {
             case POTENTIOMETER -> PcbItems.POTENTIOMETER.get();
             case MECHANICAL_TIMER -> PcbItems.MECHANICAL_TIMER.get();
             case CLOCK -> PcbItems.CLOCK.get();
+            case COMPARATOR -> PcbItems.COMPARATOR.get();
             case RELAY -> CEEBlocks.RELAY.asItem();
             case LATCHING_RELAY -> PcbItems.LATCHING_RELAY.get();
             case BUTTON -> Items.STONE_BUTTON;

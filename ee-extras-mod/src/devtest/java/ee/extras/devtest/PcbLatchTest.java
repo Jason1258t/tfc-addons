@@ -19,9 +19,11 @@ import net.neoforged.neoforge.common.util.FakePlayerFactory;
 /** Флаг записывается электрически, снимается питание, затем проверяется сохранённый контакт. */
 final class PcbLatchTest {
     private static BlockPos BOARD = new BlockPos(8,-60,8), LOAD = BOARD.east(4), SET = BOARD.east(6), RESET = BOARD.east(8);
+    private static net.minecraft.server.level.ServerPlayer photoPlayer;
     static int buildAt(CommandSourceStack source, BlockPos board) {
         BOARD=board; LOAD=board.east(4); SET=board.east(6); RESET=board.east(8);
-        return build(source);
+        photoPlayer=source.getPlayer();
+        try { return build(source); } finally { photoPlayer=null; }
     }
     static void drive(ServerLevel level,int set,int reset,int load) {
         power(level,SET,set); power(level,RESET,reset); power(level,LOAD,load);
@@ -72,10 +74,14 @@ final class PcbLatchTest {
         for(var pos:new BlockPos[]{LOAD,SET,RESET}) DevTest.place(level,pos,CEEBlocks.CREATIVE_BATTERY.getDefaultState());
         for(int i=0;i<3;i++) {
             BlockPos battery=new BlockPos[]{LOAD,SET,RESET}[i]; int contact=new int[]{1,0,3}[i];
-            DevTest.wire(level,battery,1,BOARD,contact); DevTest.wire(level,battery,0,BOARD,4);
+            wire(level,battery,1,BOARD,contact); wire(level,battery,0,BOARD,4);
             power(level,battery,i==0?24:0);
         }
         source.sendSuccess(()->Component.literal("Реле SET/RESET L1: две обмотки и нагрузка подключены, начальное состояние 0"),false);return 1;
+    }
+    private static void wire(ServerLevel level,BlockPos a,int na,BlockPos b,int nb) {
+        if (photoPlayer==null) DevTest.wire(level,a,na,b,nb);
+        else check(DevTest.spoolWire(photoPlayer,ee.extras.EeExtras.THIN_SINGLE_SPOOL.toStack(),a,na,b,nb),"тонкий провод фотостенда");
     }
     private static void power(ServerLevel level,BlockPos pos,int volts) {
         var entity=(com.simibubi.create.foundation.blockEntity.SmartBlockEntity)level.getBlockEntity(pos);
