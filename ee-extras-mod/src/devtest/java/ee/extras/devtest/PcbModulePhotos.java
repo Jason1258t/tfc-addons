@@ -68,6 +68,21 @@ final class PcbModulePhotos {
             server.execute(() -> ((PcbEditorBlockEntity) server.overworld().getBlockEntity(table))
                     .open(server.getPlayerList().getPlayer(mc.player.getUUID())));
         }
+        if (tick == 200 && mc.screen instanceof PcbEditorScreen screen)
+            screen.mouseClicked(screen.cellScreenX(2), screen.cellScreenY(2), 1);
+        if (tick == 210 && mc.screen instanceof PcbEditorScreen screen) {
+            try {
+                var field = PcbEditorScreen.class.getDeclaredField("nominalInput"); field.setAccessible(true);
+                var input = (net.minecraft.client.gui.components.EditBox) field.get(screen);
+                screen.mouseClicked(input.getX() + 3, input.getY() + 4, 0);
+                input.setValue("733,25");
+                screen.keyPressed(org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER, 0, 0);
+            } catch (ReflectiveOperationException e) { throw new IllegalStateException(e); }
+        }
+        if (tick == 225) server.execute(() -> {
+            var editor = (PcbEditorBlockEntity) server.overworld().getBlockEntity(table);
+            ClientTest.check("числовой ввод дошёл до сервера", editor.topology().getCompound("ModuleParameters").getCompound("34").getDouble("Nominal") == 733.25);
+        });
         if (tick == 230) {
             ClientTest.check("новый редактор открыт", mc.screen instanceof PcbEditorScreen);
             Screenshot.grab(mc.gameDirectory, "pcb-modules-02-editor.png", mc.getMainRenderTarget(), c -> {});

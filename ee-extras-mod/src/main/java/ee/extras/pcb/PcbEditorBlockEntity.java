@@ -73,8 +73,22 @@ public class PcbEditorBlockEntity extends BlockEntity implements MenuProvider, C
         if (index >= definitions.length || definitions[index] == 0
                 || !PcbFootprint.canPlace(topology, layer, target, definitions[index], index)) return false;
         int definition = definitions[index];
+        CompoundTag parameters = PcbParameters.get(topology, index).copy();
         PcbTopology.set(topology, layer, anchor, PcbTopology.EMPTY);
-        return setPart(layer, target, definition);
+        PcbTopology.set(topology, layer, target, PcbTopology.COMPONENT);
+        PcbTopology.setPart(topology, layer, target, definition);
+        PcbParameters.put(topology, layer * PcbTopology.CELLS + target, parameters);
+        sync();
+        return true;
+    }
+
+    boolean setParameters(int index, CompoundTag parameters) {
+        int[] definitions = topology.getIntArray(PcbWiring.KEY);
+        if (index < 0 || index >= definitions.length || !PcbWiring.valid(definitions[index])
+                || !PcbParameters.valid(definitions[index], parameters)) return false;
+        PcbParameters.put(topology, index, parameters);
+        sync();
+        return true;
     }
 
     boolean toggleEdge(int layer, int cell, int direction) {

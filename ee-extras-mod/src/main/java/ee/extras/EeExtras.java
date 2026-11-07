@@ -263,6 +263,7 @@ public class EeExtras {
         if (ModList.get().isLoaded("immersiveengineering")) EeFloodlight.init(modBus);
         Tension.register(modBus);
         PcbItems.register(modBus);
+        ee.extras.pcb.PcbEditorPackets.register(modBus);
         ee.extras.wire.SurfaceWires.register(modBus, container);
         ee.extras.wire.WireComponents.register(modBus);
         BLOCKS.register(modBus);

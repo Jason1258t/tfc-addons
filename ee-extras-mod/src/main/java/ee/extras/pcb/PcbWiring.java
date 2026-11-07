@@ -53,7 +53,7 @@ final class PcbWiring {
     }
 
     static List<Part> compile(CompoundTag tag) {
-        if (tag.getInt("Version") != PcbTopology.VERSION || !PcbFootprint.validate(tag)) return null;
+        if (tag.getInt("Version") != PcbTopology.VERSION || !PcbFootprint.validate(tag) || !PcbParameters.valid(tag)) return null;
         int[] definitions = Arrays.copyOf(tag.getIntArray(KEY), PcbTopology.MAX_LAYERS * CELLS);
         byte[] cells = tag.getByteArray("Cells");
         int size = PcbTopology.level(tag) * CELLS;
@@ -108,12 +108,15 @@ final class PcbWiring {
                 if (nodes[group] < 0) nodes[group] = nextNode++;
                 pins[pin] = nodes[group];
             }
+            var parameters = PcbParameters.get(tag, i);
+            double nominal = PcbParameters.nominal(definition, parameters);
+            double limit = PcbParameters.threshold(definition, parameters) * (PcbParameters.amps(module) ? 100 : 1);
             boolean normallyClosed = kind == Kind.RELAY && normallyClosed(definition);
             for (int section = 0; section < module.sections(); section++) {
                 int first = module.sections() > 1 ? section * 2 : 0;
-                Part part = new Part(kind, pins[first], pins[first + 1], OHMS[resistance],
+                Part part = new Part(kind, pins[first], pins[first + 1], module.timed() ? OHMS[resistance] : nominal,
                         module.sections() > 1 ? 0 : pins[2], module.sections() > 1 ? 0 : pins[3],
-                        module.timed() ? period(type, resistance) : VOLTS[threshold], normallyClosed, i, type);
+                        module.timed() ? Math.round(nominal * 20) : limit, normallyClosed, i, type);
                 if (!part.valid() || parts.size() == 64) return null;
                 parts.add(part);
             }

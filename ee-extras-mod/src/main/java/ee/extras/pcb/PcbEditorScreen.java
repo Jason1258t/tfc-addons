@@ -11,6 +11,12 @@ import net.minecraft.world.item.ItemStack;
 
 /** Русский экран редактора: клик по ячейке применяет выбранный инструмент на текущем слое. */
 public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
+    private net.minecraft.client.gui.components.EditBox nominalInput;
+    private net.minecraft.client.gui.components.EditBox thresholdInput;
+    private boolean numbersDirty;
+    private boolean refreshingNumbers;
+    private int numbersAnchor = -2;
+    private int numbersDefinition;
     private boolean catalogOpen;
     private boolean bomOpen;
     private int bomScroll;
@@ -91,6 +97,61 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
         catalogSearch.setResponder(value -> catalogScroll = 0);
         catalogSearch.setVisible(catalogOpen);
         addRenderableWidget(catalogSearch);
+        nominalInput = numberField(SETTINGS_Y + SETTINGS_ROW);
+        thresholdInput = numberField(SETTINGS_Y + SETTINGS_ROW * 2);
+        numbersAnchor = -2;
+        numbersDirty = false;
+    }
+
+    private net.minecraft.client.gui.components.EditBox numberField(int y) {
+        var field = new net.minecraft.client.gui.components.EditBox(font, PALETTE_X + 2, y, 66, 14, Component.literal("Числовое значение"));
+        field.setMaxLength(16);
+        field.setFilter(value -> value.matches("[0-9eE+.,\\-]*"));
+        field.setResponder(value -> { if (!refreshingNumbers) numbersDirty = true; });
+        addRenderableWidget(field);
+        return field;
+    }
+
+    private static String number(double value) { return java.math.BigDecimal.valueOf(value).stripTrailingZeros().toPlainString(); }
+
+    private void releaseNumbers() {
+        nominalInput.setFocused(false); thresholdInput.setFocused(false);
+        if (getFocused() == nominalInput || getFocused() == thresholdInput) setFocused(null);
+    }
+
+    private void refreshNumbers() {
+        boolean changed = numbersAnchor != menu.selected() || numbersDefinition != menu.selectedDefinition();
+        if (changed) { releaseNumbers(); numbersDirty = false; }
+        numbersAnchor = menu.selected(); numbersDefinition = menu.selectedDefinition();
+        var module = PcbModules.ALL[menu.part()];
+        nominalInput.setVisible(!catalogOpen && !bomOpen && module.resistanceSetting());
+        thresholdInput.setVisible(!catalogOpen && !bomOpen && module.thresholdSetting() && !(menu.getSlot(0).getItem().getItem() instanceof PcbSupplyItem));
+        if (!numbersDirty && !nominalInput.isFocused() && !thresholdInput.isFocused()) {
+            refreshingNumbers = true;
+            nominalInput.setValue(number(menu.nominalValue()));
+            thresholdInput.setValue(number(menu.thresholdValue()));
+            refreshingNumbers = false;
+            nominalInput.setTextColor(0xFFE3E9DE); thresholdInput.setTextColor(0xFFE3E9DE);
+        }
+    }
+
+    private boolean commitNumbers() {
+        if (!numbersDirty) return true;
+        double nominal, threshold;
+        try {
+            nominal = nominalInput.isVisible() ? Double.parseDouble(nominalInput.getValue().replace(',', '.')) : menu.nominalValue();
+            threshold = thresholdInput.isVisible() ? Double.parseDouble(thresholdInput.getValue().replace(',', '.')) : menu.thresholdValue();
+        } catch (NumberFormatException ignored) {
+            nominalInput.setTextColor(0xFFE57C72); thresholdInput.setTextColor(0xFFE57C72); return false;
+        }
+        var packet = new PcbEditorPackets.Parameters(menu.containerId, numbersAnchor, numbersDefinition, nominal, threshold);
+        if (!menu.applyParameters(packet)) {
+            nominalInput.setTextColor(0xFFE57C72); thresholdInput.setTextColor(0xFFE57C72); return false;
+        }
+        net.neoforged.neoforge.network.PacketDistributor.sendToServer(packet);
+        numbersDirty = false;
+        releaseNumbers();
+        return true;
     }
 
     private void openCatalog(boolean open) {
@@ -123,13 +184,24 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
 
     @Override
     public boolean keyPressed(int key, int scan, int modifiers) {
+        if (nominalInput.isFocused() || thresholdInput.isFocused()) {
+            if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER || key == org.lwjgl.glfw.GLFW.GLFW_KEY_KP_ENTER) { commitNumbers(); return true; }
+            if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) { numbersDirty = false; releaseNumbers(); return true; }
+            if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_TAB) {
+                var target = nominalInput.isFocused() && thresholdInput.isVisible() ? thresholdInput : nominalInput;
+                nominalInput.setFocused(false); thresholdInput.setFocused(false); target.setFocused(true); setFocused(target); return true;
+            }
+            (nominalInput.isFocused() ? nominalInput : thresholdInput).keyPressed(key, scan, modifiers);
+            return true;
+        }
         if (bomOpen) {
             if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE || key == org.lwjgl.glfw.GLFW.GLFW_KEY_M) { bomOpen = false; return true; }
             return true;
         }
         if (catalogOpen) {
             if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) { openCatalog(false); return true; }
-            return super.keyPressed(key, scan, modifiers);
+            catalogSearch.keyPressed(key, scan, modifiers);
+            return true;
         }
         if (hasControlDown() || hasAltDown()) return super.keyPressed(key, scan, modifiers);
         if (key >= 49 && key <= 53 && key - 49 < recent.size()) { choosePart(recent.get(key - 49)); return true; }
@@ -165,6 +237,17 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (!catalogOpen && !bomOpen) {
+            boolean nominalHit = nominalInput.isVisible() && nominalInput.isMouseOver(mouseX, mouseY);
+            boolean thresholdHit = thresholdInput.isVisible() && thresholdInput.isMouseOver(mouseX, mouseY);
+            if (!nominalHit && !thresholdHit && !commitNumbers()) return true;
+            if (nominalHit || thresholdHit) {
+                var target = nominalHit ? nominalInput : thresholdInput;
+                nominalInput.setFocused(false); thresholdInput.setFocused(false);
+                target.mouseClicked(mouseX, mouseY, button); setFocused(target); return true;
+            }
+            releaseNumbers();
+        }
         if (bomOpen) { if (mouseY < 22 && mouseX >= width - 52) bomOpen = false; return true; }
         if (catalogOpen) {
             if (mouseY < 22 && mouseX >= width - 52) { openCatalog(false); return true; }
@@ -211,7 +294,7 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
             int action = PART_BUTTONS[(int) (localY - SETTINGS_Y) / SETTINGS_ROW];
             if (action == PcbEditorMenu.ROTATE && button == 1
                     && PcbWiring.KINDS[menu.part()] == PcbCircuitDevice.Kind.RELAY) action = PcbEditorMenu.CONTACT;
-            click(action);
+            if (action == PcbEditorMenu.ROTATE || action == PcbEditorMenu.CONTACT || menu.getSlot(0).getItem().getItem() instanceof PcbSupplyItem) click(action);
             return true;
         }
         if (!insideCanvas(localX, localY)) return super.mouseClicked(mouseX, mouseY, button);
@@ -299,6 +382,7 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        refreshNumbers();
         int hoverX = mouseX - leftPos - GRID_X, hoverY = mouseY - topPos - GRID_Y;
         lastHoverCell = insideCanvas(mouseX - leftPos, mouseY - topPos) && hoverX >= 0 && hoverY >= 0 && hoverX < CELL * 16 && hoverY < CELL * 16
                 ? hoverY / CELL * 16 + hoverX / CELL : -1;
@@ -310,6 +394,15 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
         if (bomOpen) { renderBill(graphics); return; }
         if (catalogOpen) { renderCatalog(graphics, mouseX, mouseY, partialTick); return; }
         renderTooltip(graphics, mouseX, mouseY);
+        var inputModule = PcbModules.ALL[menu.part()];
+        if (nominalInput.isVisible() && nominalInput.isMouseOver(mouseX, mouseY)) {
+            String hint = "От " + number(PcbParameters.minimum(inputModule)) + " до " + number(PcbParameters.maximum(inputModule)) + " " + PcbParameters.unit(inputModule)
+                    + (inputModule.timed() ? "; шаг 0,05 с" : "; ряд: 10, 47, 100, 220, 470, 1000") + ". Enter — применить";
+            graphics.renderTooltip(font, Component.literal(hint), mouseX, mouseY); return;
+        }
+        if (thresholdInput.isVisible() && thresholdInput.isMouseOver(mouseX, mouseY)) {
+            graphics.renderTooltip(font, Component.literal("Больше 0, до " + number(PcbParameters.maxThreshold(inputModule)) + (PcbParameters.amps(inputModule) ? " А" : " В") + ". Enter — применить"), mouseX, mouseY); return;
+        }
         int tool = toolAt(mouseX - leftPos, mouseY - topPos);
         if (tool >= 0) {
             graphics.renderTooltip(font, Component.literal(TOOL_HINTS[tool]), mouseX, mouseY);
@@ -684,7 +777,13 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
             partLabels[2] = PcbModules.ALL[menu.part()].adjustable() ? "Положение в мире" : "Без порога";
         if (kind == PcbCircuitDevice.Kind.MECHANICAL_TIMER) partLabels[2] = "Shift: отмена";
         if (kind == PcbCircuitDevice.Kind.CLOCK) partLabels[2] = "Питание ≥ 3 В";
+        partLabels[1] = nominalInput.isVisible() ? PcbParameters.unit(PcbModules.ALL[menu.part()]) : partLabels[1];
+        partLabels[2] = thresholdInput.isVisible() ? (PcbParameters.amps(PcbModules.ALL[menu.part()]) ? "А" : "В") : partLabels[2];
         for (int row = 0; row < partLabels.length; row++) {
+            if (row == 1 && nominalInput.isVisible() || row == 2 && thresholdInput.isVisible()) {
+                graphics.drawString(font, partLabels[row], PALETTE_X + 72, SETTINGS_Y + 3 + row * SETTINGS_ROW, 0xFFE3E9DE, false);
+                continue;
+            }
             graphics.drawCenteredString(font, partLabels[row], PALETTE_X + 45, SETTINGS_Y + 3 + row * SETTINGS_ROW, 0xFFFFFFFF);
         }
         if (TOOL_X > 260) {

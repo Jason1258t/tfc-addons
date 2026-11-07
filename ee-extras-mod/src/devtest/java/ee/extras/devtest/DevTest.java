@@ -61,6 +61,7 @@ public class DevTest {
         Sync.register(d);
         PcbCircuitTest.register(d);
         PcbModulesTest.register(d);
+        PcbParametersTest.register(d);
         PcbTimersTest.register(d);
         PcbLightsTest.register(d);
         PcbSupplyTest.register(d);

@@ -90,6 +90,17 @@ public final class PcbTopology {
             }
             result.putIntArray(PcbWiring.KEY, parts);
         }
+        if (source.contains(PcbParameters.KEY)) {
+            CompoundTag parameters = source.getCompound(PcbParameters.KEY).copy();
+            int[] definitions = result.getIntArray(PcbWiring.KEY);
+            for (String key : java.util.Set.copyOf(parameters.getAllKeys())) {
+                try {
+                    int index = Integer.parseInt(key);
+                    if (index < 0 || index >= definitions.length || definitions[index] == 0) parameters.remove(key);
+                } catch (NumberFormatException ignored) { parameters.remove(key); }
+            }
+            if (!parameters.isEmpty()) result.put(PcbParameters.KEY, parameters);
+        }
         return result;
     }
 
@@ -138,6 +149,7 @@ public final class PcbTopology {
     static void setPart(CompoundTag tag, int layer, int cell, int definition) {
         int[] parts = Arrays.copyOf(tag.getIntArray(PcbWiring.KEY), CELLS * MAX_LAYERS);
         parts[layer * CELLS + cell] = definition;
+        if (definition == 0) PcbParameters.put(tag, layer * CELLS + cell, new CompoundTag());
         tag.putIntArray(PcbWiring.KEY, parts);
         if (definition > 0 && PcbWiring.valid(definition)) PcbFootprint.isolatePins(tag, layer, cell, definition);
     }
@@ -159,6 +171,8 @@ public final class PcbTopology {
     }
 
     public static void copyInto(CompoundTag source, CompoundTag target) {
+        if (source.contains(PcbParameters.KEY)) target.put(PcbParameters.KEY, source.getCompound(PcbParameters.KEY).copy());
+        else target.remove(PcbParameters.KEY);
         target.putInt("Level", level(source));
         target.putInt("Version", source.getInt("Version"));
         target.putByteArray("Cells", source.getByteArray("Cells").clone());
@@ -179,6 +193,7 @@ public final class PcbTopology {
     /** Ошибка — русский текст для журнала/подсказки; null — проект пригоден к производству. */
     public static String validate(CompoundTag source) {
         if (source.getInt("Version") != VERSION) return UNSUPPORTED;
+        if (!PcbParameters.valid(source)) return PcbParameters.ERROR;
         CompoundTag tag = normalize(source, 1);
         if (PcbWiring.active(tag)) return PcbWiring.compile(tag) == null ? PcbWiring.ERROR : null;
         int level = level(tag);

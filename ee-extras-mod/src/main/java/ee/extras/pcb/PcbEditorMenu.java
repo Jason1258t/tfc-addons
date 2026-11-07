@@ -34,6 +34,8 @@ public class PcbEditorMenu extends AbstractContainerMenu {
     static final int EDGE = 3000;
     static final int PICK = 2000;
 
+    private double draftNominal = Double.NaN;
+    private double draftThreshold = Double.NaN;
     private final ContainerLevelAccess access;
     private final PcbEditorBlockEntity editor;
     private final DataSlot selected = DataSlot.standalone();
@@ -53,7 +55,7 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             "Выводы должны быть на краю нижнего слоя", "Нужно компонентов: не менее 2",
             "Нужно компонентов: не менее 4", "Нужно компонентов: не менее 8",
             "Нужно не менее двух выводов на краю платы", "Пустой проект", "Есть обрыв или неподключённый вывод",
-            PcbWiring.ERROR, PcbBoardItem.EDITOR_ERROR, PcbAssembly.MISSING, PcbAssembly.RECOVERED, PcbAssembly.NO_RECOVERY, PcbFootprint.ERROR, PcbTopology.UNSUPPORTED, "Компоненты устанавливаются на слое 1"
+            PcbWiring.ERROR, PcbBoardItem.EDITOR_ERROR, PcbAssembly.MISSING, PcbAssembly.RECOVERED, PcbAssembly.NO_RECOVERY, PcbFootprint.ERROR, PcbTopology.UNSUPPORTED, "Компоненты устанавливаются на слое 1", PcbParameters.ERROR
     };
 
     /** Клиентская фабрика MenuType. */
@@ -118,6 +120,40 @@ public class PcbEditorMenu extends AbstractContainerMenu {
     int selectedDefinition() {
         return PcbWiring.component(part(), rotation(), resistance(), threshold(), normallyClosed());
     }
+    double nominalValue() {
+        return selected() >= 0 && editor != null ? PcbParameters.nominal(selectedDefinition(), PcbParameters.get(editor.topology(), layer() * PcbTopology.CELLS + selected()))
+                : Double.isFinite(draftNominal) ? draftNominal : PcbParameters.nominal(selectedDefinition(), new net.minecraft.nbt.CompoundTag());
+    }
+    double thresholdValue() {
+        return selected() >= 0 && editor != null ? PcbParameters.threshold(selectedDefinition(), PcbParameters.get(editor.topology(), layer() * PcbTopology.CELLS + selected()))
+                : Double.isFinite(draftThreshold) ? draftThreshold : PcbParameters.threshold(selectedDefinition(), new net.minecraft.nbt.CompoundTag());
+    }
+    private net.minecraft.nbt.CompoundTag draftParameters() {
+        var parameters = new net.minecraft.nbt.CompoundTag();
+        var module = PcbModules.ALL[part()];
+        if (module.resistanceSetting() && Double.isFinite(draftNominal)) parameters.putDouble("Nominal", draftNominal);
+        if (module.thresholdSetting() && Double.isFinite(draftThreshold)) parameters.putDouble("Threshold", draftThreshold);
+        return parameters;
+    }
+    boolean applyParameters(PcbEditorPackets.Parameters packet) {
+        if (editor == null || packet.container() != containerId || packet.anchor() != selected()
+                || packet.definition() != selectedDefinition() || editor.topology().getInt("Version") != PcbTopology.VERSION) return false;
+        var parameters = new net.minecraft.nbt.CompoundTag();
+        var module = PcbModules.ALL[part()];
+        if (module.resistanceSetting()) parameters.putDouble("Nominal", packet.nominal());
+        if (module.thresholdSetting()) parameters.putDouble("Threshold", packet.threshold());
+        if (!PcbParameters.valid(selectedDefinition(), parameters)) { status.set(statusCode(PcbParameters.ERROR)); return false; }
+        if (selected() >= 0) {
+            int index = layer() * PcbTopology.CELLS + selected();
+            int[] definitions = editor.topology().getIntArray(PcbWiring.KEY);
+            if (index >= definitions.length || definitions[index] != selectedDefinition() || !editor.setParameters(index, parameters)) return false;
+        }
+        draftNominal = module.resistanceSetting() ? packet.nominal() : Double.NaN;
+        draftThreshold = module.thresholdSetting() ? packet.threshold() : Double.NaN;
+        status.set(0);
+        return true;
+    }
+
     int rotation() { return rotation.get(); }
     int resistance() { return resistance.get(); }
     int threshold() { return threshold.get(); }
@@ -167,6 +203,7 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             int type = id - SELECT_PART;
             if (!available(type)) return false;
             part.set(type);
+            draftNominal = draftThreshold = Double.NaN;
             selected.set(-1);
             moving.set(-1);
             layer.set(0);
@@ -190,6 +227,8 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             resistance.set(PcbWiring.resistance(definition));
             threshold.set(PcbWiring.threshold(definition));
             contact.set(PcbWiring.normallyClosed(definition) ? 1 : 0);
+            draftNominal = PcbParameters.nominal(definition, PcbParameters.get(editor.topology(), owner));
+            draftThreshold = PcbParameters.threshold(definition, PcbParameters.get(editor.topology(), owner));
             return true;
         }
         if (id >= 0 && id < PcbTopology.CELLS) {
@@ -213,7 +252,11 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             if (tool.get() == 5) {
                 if (layer() != 0) { status.set(statusCode("Компоненты устанавливаются на слое 1")); return true; }
                 if (!available(part())) return false;
-                status.set(editor.setPart(layer.get(), id, selectedDefinition()) ? 0 : statusCode(PcbFootprint.ERROR));
+                if (editor.setPart(layer.get(), id, selectedDefinition())) {
+                    editor.setParameters(layer() * PcbTopology.CELLS + id, draftParameters());
+                    selected.set(id);
+                    status.set(0);
+                } else status.set(statusCode(PcbFootprint.ERROR));
                 return true;
             }
             int value = switch (tool.get()) {
@@ -231,6 +274,7 @@ public class PcbEditorMenu extends AbstractContainerMenu {
         switch (id) {
             case TOOL -> tool.set((tool.get() + 1) % (EDGE_TOOL + 1));
             case PART -> {
+                draftNominal = draftThreshold = Double.NaN;
                 tool.set(5);
                 selected.set(-1);
                 moving.set(-1);
@@ -242,10 +286,12 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             case CONTACT -> contact.set(1 - contact.get());
             case ROTATE -> rotation.set((rotation.get() + 1) % 4);
             case OHMS -> {
+                draftNominal = Double.NaN;
                 if (!PcbModules.ALL[part()].resistanceSetting()) return false;
                 resistance.set((resistance.get() + 1) % PcbWiring.OHMS.length);
             }
             case VOLTS -> {
+                draftThreshold = Double.NaN;
                 var item = getSlot(0).getItem();
                 if (item.getItem() instanceof PcbSupplyItem) {
                     PcbSupplyItem.configure(item, (PcbSupplyItem.setting(item) + 1) % PcbSupplyBlock.VOLTS.length);
@@ -295,6 +341,12 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             threshold.set(PcbWiring.threshold(previousDefinition));
             contact.set(PcbWiring.normallyClosed(previousDefinition) ? 1 : 0);
             status.set(statusCode(PcbFootprint.ERROR));
+        }
+        if (selected() >= 0 && (id == OHMS || id == VOLTS)) {
+            int index = layer() * PcbTopology.CELLS + selected();
+            var parameters = PcbParameters.get(editor.topology(), index).copy();
+            parameters.remove(id == OHMS ? "Nominal" : "Threshold");
+            editor.setParameters(index, parameters);
         }
         return true;
     }
