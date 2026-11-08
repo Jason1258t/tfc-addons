@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.Blocks;
 
 /** Подготовленный сценарий: выполнять только после освобождения стенда, MICROTICKS=8. */
 final class PcbStepUpTest {
-    static final BlockPos BOARD=new BlockPos(24,-60,24), BATTERY=BOARD.east(4), LOAD=BOARD.south(4), METER=BOARD.west(4);
+    static BlockPos BOARD=new BlockPos(24,-60,24), BATTERY=BOARD.east(4), LOAD=BOARD.south(4), METER=BOARD.west(4);
     private static final int TYPE=28;
 
     static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -41,6 +41,7 @@ final class PcbStepUpTest {
             for (String key:restored.getAllKeys()) check(restored.getCompound(key).getInt("Cooldown")==100 && !restored.getCompound(key).getBoolean("AcInput"),"выдержка защиты сохранена, разрешение AC проверяется заново");
             return 1;
         }));
+        root.then(Commands.literal("volts").then(Commands.argument("value",DoubleArgumentType.doubleArg(0,60)).executes(c->{power(c.getSource(),DoubleArgumentType.getDouble(c,"value"),true);return 1;})));
         root.then(Commands.literal("off").executes(c->{power(c.getSource(),0,true);return 1;}));
         dispatcher.register(root);
     }
@@ -50,7 +51,7 @@ final class PcbStepUpTest {
     private static PcbCircuitDevice device(CommandSourceStack source) { return DevicesSavedData.load(source.getLevel()).getDevice(BOARD,PcbCircuitDevice.class); }
     private static CompoundTag snapshot(CommandSourceStack source) { var tag=new CompoundTag();device(source).write(tag);return tag; }
 
-    private static CompoundTag topology(int rotation,boolean mirror) {
+    static CompoundTag topology(int rotation,boolean mirror) {
         var topology=PcbTopology.create(1);
         int definition=PcbModulesTest.definition(TYPE,rotation);
         if (mirror) definition=PcbModulesTest.call(wiring(),null,"mirror",definition);
@@ -99,11 +100,17 @@ final class PcbStepUpTest {
     }
     private static Class<?> circuitClass() { try {return Class.forName("ee.extras.pcb.PcbCircuitDevice$Circuit");}catch(ClassNotFoundException e){throw new IllegalStateException(e);} }
 
-    private static int build(CommandSourceStack source,String mode) {
+    static int buildAt(CommandSourceStack source,BlockPos pos,String mode) {
+        BOARD=pos;BATTERY=pos.east(4);LOAD=pos.south(4);METER=pos.west(4);return build(source,mode);
+    }
+
+    static int build(CommandSourceStack source,String mode) { return build(source,mode,0,false); }
+
+    static int build(CommandSourceStack source,String mode,int rotation,boolean mirror) {
         var level=source.getLevel();
         check(source.getServer().getRecipeManager().byKey(net.minecraft.resources.ResourceLocation.parse("ee_extras:pcb_step_up_transformer")).isPresent(),"рецепт загружен");
         for (var pos:new BlockPos[]{BOARD,BATTERY,LOAD,METER}) DevTest.place(level,pos,Blocks.AIR.defaultBlockState());
-        var topology=topology(0,false);var parts=new ArrayList<>(compile(topology));
+        var topology=topology(rotation,mirror);var parts=new ArrayList<>(compile(topology));
         var part=parts.stream().filter(p->p.kind()==PcbCircuitDevice.Kind.STEP_UP_TRANSFORMER).findFirst().orElseThrow();
         if (mode.equals("ordinary")) parts.add(new PcbCircuitDevice.Part(PcbCircuitDevice.Kind.RESISTOR,part.coilA(),part.coilB(),1e6,0,0,1));
         if (mode.equals("overload")) parts.add(new PcbCircuitDevice.Part(PcbCircuitDevice.Kind.RESISTOR,part.a(),part.b(),20,0,0,1));
@@ -115,6 +122,7 @@ final class PcbStepUpTest {
         DevTest.wire(level,BATTERY,0,BOARD,part.a());DevTest.wire(level,BATTERY,1,BOARD,part.b());
         if (!mode.equals("open")) {
             DevTest.place(level,LOAD,CEEBlocks.RESISTOR.getDefaultState());
+            ((com.george_vi.electroenergetics.content.electronic_components.resistor.ResistorBlockEntity)level.getBlockEntity(LOAD)).setResistance(mode.equals("short")?1:100000);
             var load=DevicesSavedData.load(level).getDevice(LOAD,ResistorDevice.class);load.properties=ElectricalProperties.resistor(mode.equals("short")?1:100000);
             DevTest.wire(level,BOARD,part.coilA(),LOAD,0);DevTest.wire(level,BOARD,part.coilB(),LOAD,1);
         }
@@ -130,19 +138,24 @@ final class PcbStepUpTest {
         battery.voltage=rms*(ac?Math.sqrt(2):1);battery.acFrequency=ac?1:0;
     }
 
-    private static int expect(CommandSourceStack source,double expected) {
+    static int expect(CommandSourceStack source,double expected) {
         var tag=snapshot(source);var saved=tag.getCompound("StepUpPower");
         check(!saved.isEmpty(),"сохранено состояние ВВ-модуля");var power=saved.getCompound(saved.getAllKeys().iterator().next());
         var meter=DevicesSavedData.load(source.getLevel()).getDevice(METER,GaugeDevice.class);
         double measured=meter.rmsVoltages.get();
-        check(!tag.getBoolean("Burnt") && Math.abs(measured-expected)<.15,"внешний вольтметр="+measured+", ожидалось "+expected+", плата должна быть целой");
+        check(!tag.getBoolean("Burnt") && Math.abs(measured-expected)<(expected>0 && expected<1?.002:.15),"внешний вольтметр="+measured+", ожидалось "+expected+", плата должна быть целой");
         check(Math.abs(power.getDouble("OutputRms")-measured)<.05,"реальный внешний вольтметр согласен с модулем");
         double current=power.getDouble("OutputAmps");
         check(current<=.02501 && power.getDouble("InputAmps")<=.50001,"ограничение токов");
-        if (expected>1) {
+        if (expected>0 && expected<1) check(current>.005 && power.getBoolean("AcInput"),"КЗограничено, но обмотка действительно работает");
+        if (expected>0) {
+            double primary=power.getDouble("InputAmps"),vin=power.getDouble("InputRms");
+            double copper=.1*primary*primary+20000.1*current*current+vin*vin/1e8;
+            double upper=copper+101*vin*vin/1e8;
+            check(power.getDouble("LossWatts")>=copper-1e-5 && power.getDouble("LossWatts")<=upper+1e-5,"тепло в пределах потерь сопротивлений и конечной проводимости EE");
             // Баланс использует действительный ток EE, включая внешние провода и вольтметр.
             double useful=measured*current;
-            check(Math.abs(power.getDouble("InputWatts")-power.getDouble("LossWatts")-useful)<.001,"баланс входа, выходной мощности и потерь");
+            check(Math.abs(power.getDouble("InputWatts")-power.getDouble("LossWatts")-useful)<1e-5,"баланс входа, выходной мощности и потерь: "+power+", полезная="+useful);
         }
         source.sendSuccess(()->Component.literal("ВВ-трансформатор:внешний выход="+measured+"В; баланс/токи/плата — OK"),false);return 1;
     }

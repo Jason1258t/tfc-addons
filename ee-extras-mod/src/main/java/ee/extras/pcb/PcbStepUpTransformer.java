@@ -50,18 +50,28 @@ final class PcbStepUpTransformer {
             int count = Math.min(a.length,Math.min(b.length,sense.length));
             for (int n=0;n<count;n++) inputWatts += (a[n]-b[n])*(a[n]-sense[n])/WINDING_OHMS;
             if (count>0) inputWatts /= count;
+            double[] outputA=results.getVoltages(node(part.coilA())), outputB=results.getVoltages(node(part.coilB()));
+            double[] returnEnd=results.getVoltages(node(outputLimit)), returnSense=results.getVoltages(node(secondarySense));
+            int outputs=Math.min(Math.min(outputA.length,outputB.length),Math.min(returnEnd.length,returnSense.length));
+            double outputWatts=0;
+            for (int n=0;n<outputs;n++) outputWatts+=(outputA[n]-outputB[n])*(returnEnd[n]-returnSense[n])/WINDING_OHMS;
+            if (outputs>0) outputWatts/=outputs;
+            // EE может исключить регуляризующие сопротивления при оптимизации связанной цепи.
+            // Без внутреннего накопителя активная разность входа/выхода — фактическое тепло;
+            // минимум обмоток/балласта защищает от малой погрешности вычитания близких величин.
+            lossWatts=Math.max(lossWatts,inputWatts-outputWatts);
         }
         double bleed = Double.isFinite(inputRms) ? inputRms*inputRms/BLEED_OHMS : 0;
         inputWatts += bleed; lossWatts += bleed;
         if (cooldown>0) cooldown--;
         overload = Math.clamp(overload + (Math.abs(inputWatts)>12 ? 1 : -2),0,40);
-        if (!Double.isFinite(inputRms) || !Double.isFinite(outputRms) || !Double.isFinite(primaryAmps) || !Double.isFinite(secondaryAmps) || !Double.isFinite(inputWatts) || !Double.isFinite(lossWatts) || inputRms>MAX_INPUT || primaryAmps>.5 || secondaryAmps>.025 || overload>=40) {
+        if (!Double.isFinite(inputRms) || !Double.isFinite(outputRms) || !Double.isFinite(primaryAmps) || !Double.isFinite(secondaryAmps) || !Double.isFinite(inputWatts) || !Double.isFinite(lossWatts) || inputRms>MAX_INPUT+1e-6 || primaryAmps>.5 || secondaryAmps>.025 || overload>=40) {
             cooldown=100; overload=0;
         }
         double[] a = results.getVoltages(node(part.a())), b = results.getVoltages(node(part.b()));
         double min=Double.POSITIVE_INFINITY,max=Double.NEGATIVE_INFINITY;
         for (int n=0;n<Math.min(a.length,b.length);n++) { double v=a[n]-b[n]; min=Math.min(min,v); max=Math.max(max,v); }
-        enabled = cooldown==0 && Double.isFinite(inputRms) && inputRms<=MAX_INPUT && min<-.1 && max>.1;
+        enabled = cooldown==0 && Double.isFinite(inputRms) && inputRms<=MAX_INPUT+1e-6 && min<-.1 && max>.1;
     }
 
     double losses() { return Double.isFinite(lossWatts) ? lossWatts : 0; }
