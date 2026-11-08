@@ -374,5 +374,6 @@
   "item.ee_extras.pcb_counter": "PCB Counter",
   "item.ee_extras.pcb_register": "PCB Register",
   "item.ee_extras.pcb_decoder": "PCB Decoder",
-  "item.ee_extras.pcb_onboard_transformer": "Onboard Step-down Transformer"
+  "item.ee_extras.pcb_onboard_transformer": "Onboard Step-down Transformer",
+  "item.ee_extras.pcb_step_up_transformer": "PCB Step-Up Transformer ×10"
 }

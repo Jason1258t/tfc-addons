@@ -630,6 +630,12 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
             details.add(Component.literal("Вход: двухжильный кабель 300 В~ прямо к корпусу"));
             details.add(Component.literal("Холостой выход: 1–48 В~, ток ограничен; DC не преобразуется"));
         }
+        if (PcbWiring.KINDS[type] == PcbCircuitDevice.Kind.STEP_UP_TRANSFORMER) {
+            details.add(Component.literal("Вход до 48 В~ · Холостой выход ×10, до 480 В~"));
+            details.add(Component.literal("Вторичка: балласт 20 кОм · максимум 24 мА при 48 В на входе"));
+            details.add(Component.literal("ВВ выводить наружу: обычные детали сохраняют предел платы"));
+            details.add(Component.literal("DC не повышает · Пустая рука: измерения"));
+        }
         details.add(Component.literal("ПКМ: настроить · Перенос: переместить"));
         graphics.renderTooltip(font, details, Optional.empty(), mouseX, mouseY);
     }

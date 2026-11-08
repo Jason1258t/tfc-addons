@@ -1,0 +1,30 @@
+{
+  "type": "create:mechanical_crafting",
+  "pattern": [
+    "WWW",
+    "LPL",
+    "ACA"
+  ],
+  "key": {
+    "W": {
+      "item": "electroenergetics:copper_wire_spool"
+    },
+    "P": {
+      "item": "minecraft:paper"
+    },
+    "L": {
+      "item": "electroenergetics:transformer_core_lamination"
+    },
+    "A": {
+      "item": "create:andesite_alloy"
+    },
+    "C": {
+      "item": "ee_extras:connector"
+    }
+  },
+  "result": {
+    "id": "ee_extras:pcb_step_up_transformer",
+    "count": 1
+  },
+  "accept_mirrored": true
+}

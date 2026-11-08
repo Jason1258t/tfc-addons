@@ -51,9 +51,9 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         }
     }
 
-    private record Circuit(List<Part> parts, int terminals, int[] groups, ElectricalProperties[] reactive, boolean hasCapacitor) {
+    private record Circuit(List<Part> parts, int terminals, int[] groups, int[] highVoltageGroups, ElectricalProperties[] reactive, boolean hasCapacitor) {
         Circuit(List<Part> parts, int terminals) {
-            this(List.copyOf(parts), terminals, terminalGroups(parts), reactiveParts(parts),
+            this(List.copyOf(parts), terminals, terminalGroups(parts), highVoltageGroups(parts), reactiveParts(parts),
                     parts.stream().anyMatch(part -> part.kind == Kind.CAPACITOR));
         }
 
@@ -77,6 +77,8 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             for (int i = 0; i < group.length; i++) group[i] = i;
             for (Part part : parts) {
                 join(group, part.a, part.b);
+                // ВВ-вторичка изолирована внутри корпуса. Её полюса не объединяются в общий
+                // низковольтный контур; подключённая обычная деталь проверяется по прежнему пределу.
                 if (part.kind.controlled()) join(group, part.coilA, part.coilB);
                 if (part.windingInput()) join(group, part.a, part.coilA);
                 if (part.kind == Kind.LATCHING_RELAY) { join(group, part.coilA, part.alternate); join(group, part.coilB, part.alternate); }
@@ -88,6 +90,12 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             return group;
         }
 
+        private static int[] highVoltageGroups(List<Part> parts) {
+            int[] groups=terminalGroups(parts);
+            for (Part part:parts) if (part.kind == Kind.STEP_UP_TRANSFORMER) join(groups,part.coilA,part.coilB);
+            return groups;
+        }
+
         private static void join(int[] group, int a, int b) {
             int old = group[b];
             int replacement = group[a];
@@ -96,6 +104,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
     }
 
     private final PcbOnboardTransformer onboardPower;
+    private PcbStepUpTransformer[] stepUps = new PcbStepUpTransformer[MAX_PARTS];
     private Circuit collectedCircuit;
     private CircuitBuilder collectedBuilder;
     private volatile Circuit circuit = new Circuit(List.of(), LEGACY_TERMINALS);
@@ -139,7 +148,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
 
     public enum Kind {
         TRACE, RESISTOR, RELAY, BUTTON, SWITCH, LAMP, REDSTONE_IN, REDSTONE_OUT,
-        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP, LATCHING_RELAY, THREE_POSITION_SWITCH, COMPARATOR, D_FLIP_FLOP, COUNTER, REGISTER, DECODER, ONBOARD_TRANSFORMER;
+        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP, LATCHING_RELAY, THREE_POSITION_SWITCH, COMPARATOR, D_FLIP_FLOP, COUNTER, REGISTER, DECODER, ONBOARD_TRANSFORMER, STEP_UP_TRANSFORMER;
 
         boolean supply() { return this == ONBOARD_TRANSFORMER; }
 
@@ -191,6 +200,8 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                     && (!poweredLogic() || node(coilA) && node(coilB) && node(logicOutput()))
                     && (kind != Kind.LATCHING_RELAY || node(coilA) && node(coilB) && node(alternate) && coilA != alternate && coilB != alternate)
                     && (kind != Kind.POTENTIOMETER || node(coilA) && coilA != a && coilA != b)
+                    && (kind != Kind.STEP_UP_TRANSFORMER || node(coilA) && node(coilB) && coilA != coilB
+                            && coilA != a && coilA != b && coilB != a && coilB != b)
                     && (!kind.controlled() || node(coilA) && node(coilB) && coilA != coilB);
         }
 
@@ -212,6 +223,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             throw new IllegalArgumentException("Недопустимая схема платы");
         }
         onboardPower.reset();
+        resetStepUps(parts);
         positions = defaultPositions();
         timerDue = new long[MAX_PARTS];
         windingHigh = 0;
@@ -227,6 +239,11 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         this.rating = rating;
         circuit = new Circuit(parts, terminals);
         deviceSD.setDirty();
+    }
+
+    private void resetStepUps(List<Part> parts) {
+        stepUps = new PcbStepUpTransformer[MAX_PARTS];
+        for (int i=0;i<parts.size();i++) if (parts.get(i).kind == Kind.STEP_UP_TRANSFORMER) stepUps[i] = new PcbStepUpTransformer(pos,i);
     }
 
     public void interact(boolean toggle, long now) {
@@ -245,6 +262,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         for (int i = 0; i < circuit.parts.size(); i++) {
             Kind kind = circuit.parts.get(i).kind;
             if (kind == Kind.TRACE || ordinal-- != 0) continue;
+            if (kind == Kind.STEP_UP_TRANSFORMER) return stepUps[i].status();
             if (kind.supply()) return onboardPower.status(circuit.parts.get(i).threshold);
             if (kind == Kind.SWITCH) {
                 switches ^= 1L << i;
@@ -301,6 +319,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         for (int i = 0; i < parts.size(); i++) {
             Part part = parts.get(i);
             if (part.kind.supply()) { onboardPower.preTick(collector, part); continue; }
+            if (part.kind == Kind.STEP_UP_TRANSFORMER) { stepUps[i].preTick(collector,part); continue; }
             int branch = MAX_NODES + i;
             double sense = senseResistance(part);
             int returnNode = part.kind == Kind.POTENTIOMETER ? part.coilA : part.b;
@@ -398,11 +417,13 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         if (burnt || collectedBuilder != results.circuitBuilder || collectedCircuit != circuit) return;
         collectedBuilder = null;
         double watts = 0;
-        double maxVoltage = 0;
+        double maxVoltage = 0, maxInsulationVoltage = 0;
         Circuit current = circuit;
         int[] groups = current.groups;
         for (int a = 0; a < current.terminals; a++) {
             for (int b = a + 1; b < current.terminals; b++) {
+                if (current.highVoltageGroups[a] == current.highVoltageGroups[b])
+                    maxInsulationVoltage = Math.max(maxInsulationVoltage,Math.sqrt(results.getVoltageAtSqr(pos,a,b)));
                 if (groups[a] == groups[b]) {
                     maxVoltage = Math.max(maxVoltage, Math.sqrt(results.getVoltageAtSqr(pos, a, b)));
                 }
@@ -418,6 +439,15 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 watts += onboardPower.losses();
                 maxVoltage = Math.max(maxVoltage, onboardPower.output());
                 maxCurrent = Math.max(maxCurrent, onboardPower.current());
+                continue;
+            }
+            if (part.kind == Kind.STEP_UP_TRANSFORMER) {
+                stepUps[i].postTick(results,part);
+                watts += stepUps[i].losses();
+                maxVoltage = Math.max(maxVoltage,stepUps[i].input());
+                maxInsulationVoltage = Math.max(maxInsulationVoltage,stepUps[i].output());
+                maxCurrent = Math.max(maxCurrent,stepUps[i].current());
+                deviceSD.setDirty();
                 continue;
             }
             double squared = results.getVoltageAtSqr(pos, part.a, part.b);
@@ -499,7 +529,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         double nextOverload = Math.max(0, overload + load - 1);
         if (nextOverload != overload || current.hasCapacitor) deviceSD.setDirty();
         overload = nextOverload;
-        if (maxVoltage > rating.volts + 1e-6 || overload >= OVERLOAD_TICKS) {
+        if (maxVoltage > rating.volts + 1e-6 || maxInsulationVoltage > 480 + 1e-6 || overload >= OVERLOAD_TICKS) {
             burnt = true;
             deviceSD.setDirty();
             level.setBlockAndUpdate(pos, state.setValue(PcbCircuitBlock.BURNT, true)
@@ -709,6 +739,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
     @Override
     public void read(CompoundTag tag) {
         onboardPower.read(tag.getCompound("OnboardPower"));
+        stepUps = new PcbStepUpTransformer[MAX_PARTS];
         circuit = new Circuit(List.of(), LEGACY_TERMINALS);
         timerDue = new long[MAX_PARTS];
         windingHigh = 0;
@@ -755,6 +786,9 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         if (parts.stream().filter(part -> part.kind.supply()).count() > 1) return;
         int terminals = tag.contains("Terminals") ? Math.clamp(tag.getInt("Terminals"), 0, MAX_TERMINALS) : LEGACY_TERMINALS;
         circuit = new Circuit(parts, terminals);
+        resetStepUps(parts);
+        var savedStepUps = tag.getCompound("StepUpPower");
+        for (int i=0;i<parts.size();i++) if (stepUps[i] != null) stepUps[i].read(savedStepUps.getCompound(Integer.toString(i)));
         ListTag charges = tag.getList("Charge", Tag.TAG_DOUBLE);
         for (int i = 0; i < Math.min(charges.size(), circuit.reactive.length); i++) {
             if (circuit.reactive[i] instanceof CapacitorProperties capacitor && charges.get(i) instanceof net.minecraft.nbt.DoubleTag charge)
@@ -767,6 +801,11 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         var supply = new CompoundTag();
         onboardPower.write(supply);
         tag.put("OnboardPower", supply);
+        var highVoltage = new CompoundTag();
+        for (int i=0;i<circuit.parts.size();i++) if (stepUps[i] != null) {
+            var saved = new CompoundTag(); stepUps[i].write(saved); highVoltage.put(Integer.toString(i),saved);
+        }
+        tag.put("StepUpPower",highVoltage);
         tag.putInt("CircuitVersion", PcbTopology.VERSION);
         tag.putInt("Terminals", circuit.terminals);
         tag.putLongArray("TimerDue", timerDue);
