@@ -47,6 +47,10 @@ final class PcbFootprint {
         int ay = anchor / PcbTopology.SIZE;
         if (ax + width(definition) > PcbTopology.SIZE || ay + height(definition) > PcbTopology.SIZE) return false;
         int[] definitions = tag.getIntArray(PcbWiring.KEY);
+        if (PcbModules.get(definition).kind().supply()) {
+            for (int i = 0; i < definitions.length; i++)
+                if (i != ignored && valid(definitions[i]) && PcbModules.get(definitions[i]).kind().supply()) return false;
+        }
         for (int y = 0; y < height(definition); y++) {
             for (int x = 0; x < width(definition); x++) {
                 int cell = anchor + y * PcbTopology.SIZE + x;
@@ -143,6 +147,7 @@ final class PcbFootprint {
 
     static boolean validate(CompoundTag tag) {
         int[] definitions = tag.getIntArray(PcbWiring.KEY);
+        int supplies = 0;
         int[] occupied = new int[PcbTopology.CELLS];
         Arrays.fill(occupied, -1);
         for (int i = 0; i < definitions.length; i++) {
@@ -151,6 +156,7 @@ final class PcbFootprint {
             if (i >= PcbTopology.CELLS || !valid(definition)
                     || PcbWiring.minimumLevel(PcbWiring.type(definition)) > PcbTopology.level(tag)
                     || PcbTopology.get(tag, i / PcbTopology.CELLS, i % PcbTopology.CELLS) != PcbTopology.COMPONENT) return false;
+            if (PcbModules.get(definition).kind().supply() && ++supplies > 1) return false;
             int anchor = i % PcbTopology.CELLS;
             if (anchor % PcbTopology.SIZE + width(definition) > PcbTopology.SIZE
                     || anchor / PcbTopology.SIZE + height(definition) > PcbTopology.SIZE) return false;

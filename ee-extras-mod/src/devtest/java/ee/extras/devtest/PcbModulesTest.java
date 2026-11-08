@@ -110,7 +110,7 @@ public final class PcbModulesTest {
         try {
             Class<?>[] signature = new Class<?>[args.length];
             for (int i = 0; i < args.length; i++) signature[i] = args[i] instanceof Integer ? int.class
-                    : args[i] instanceof Boolean ? boolean.class : args[i] instanceof java.util.List<?> ? java.util.List.class : args[i].getClass();
+                    : args[i] instanceof Boolean ? boolean.class : args[i] instanceof Long ? long.class : args[i] instanceof Double ? double.class : args[i] instanceof java.util.List<?> ? java.util.List.class : args[i].getClass();
             var method = type.getDeclaredMethod(name, signature);
             method.setAccessible(true);
             return (T) method.invoke(receiver, args);

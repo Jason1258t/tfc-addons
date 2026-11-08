@@ -151,6 +151,7 @@ public final class PcbCircuitBlock extends SimpleElectricalDeviceBlock<PcbCircui
                     nodes.put(id, mountedPoint(new Vec3((cell % PcbTopology.SIZE + 0.5) / PcbTopology.SIZE,
                             2.0 / 16, (cell / PcbTopology.SIZE + 0.5) / PcbTopology.SIZE), state.getValue(FACING)));
                 }
+                PcbPowerInlet.addNodes(board, state, nodes);
                 return nodes;
             }
         }
@@ -160,12 +161,18 @@ public final class PcbCircuitBlock extends SimpleElectricalDeviceBlock<PcbCircui
     }
 
     @Override
+    public boolean isNodeAccessible(Level level, BlockPos pos, BlockState state, int node) {
+        return node < PcbPowerInlet.BASE;
+    }
+
+    @Override
     public Vec3 getNodePosition(Level level, BlockPos pos, BlockState state, int node) {
         return getNodePositions(level, pos, state).get(node);
     }
 
     @Override
     public MutableComponent getNodeLabel(Level level, BlockPos pos, BlockState state, int node) {
+        if (node >= PcbPowerInlet.BASE) return Component.literal(node == PcbPowerInlet.BASE ? "Ввод бортового трансформатора" : "Первичная жила " + (node-PcbPowerInlet.BASE));
         return Component.translatable("ee_extras.pcb.terminal", node + 1);
     }
 

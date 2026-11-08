@@ -45,7 +45,7 @@ final class PcbParameters {
     }
 
     static double maximum(PcbModules.Module module) { return module.timed() ? 600 : 1e9; }
-    static double maxThreshold(PcbModules.Module module) { return amps(module) ? 100 : 10000; }
+    static double maxThreshold(PcbModules.Module module) { return module.kind().supply() ? 48 : amps(module) ? 100 : 10000; }
     static String unit(PcbModules.Module module) {
         return module.timed() ? "с" : module.kind() == PcbCircuitDevice.Kind.CAPACITOR ? "мФ" : "Ом";
     }
@@ -60,7 +60,7 @@ final class PcbParameters {
                 if (!module.resistanceSetting() || value < minimum(module) || value > maximum(module)) return false;
                 if (module.timed() && Math.abs(value * 20 - Math.rint(value * 20)) > 1e-6) return false;
             } else if (name.equals("Threshold")) {
-                if (!module.thresholdSetting() || value <= 0 || value > maxThreshold(module)) return false;
+                if (!module.thresholdSetting() || value <= 0 || value > maxThreshold(module) || module.kind().supply() && value < 1) return false;
             } else return false;
         }
         return true;

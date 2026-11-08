@@ -373,5 +373,6 @@
   "item.ee_extras.pcb_flip_flop": "PCB D Flip-Flop",
   "item.ee_extras.pcb_counter": "PCB Counter",
   "item.ee_extras.pcb_register": "PCB Register",
-  "item.ee_extras.pcb_decoder": "PCB Decoder"
+  "item.ee_extras.pcb_decoder": "PCB Decoder",
+  "item.ee_extras.pcb_onboard_transformer": "Onboard Step-down Transformer"
 }

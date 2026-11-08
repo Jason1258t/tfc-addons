@@ -52,6 +52,7 @@ public class CableCap extends SavedData {
 
     /** Контакты блока для проводов по возрастанию номеров; null — не прибор EE или сам конец кабеля */
     public static int[] contacts(Level level, BlockPos pos, BlockState state) {
+        if (ee.extras.pcb.PcbPowerInlet.cableEnd(level,pos,state) != null) return null;
         if (!(state.getBlock() instanceof ElectricalDeviceBlock<?> d) || state.getBlock() instanceof BundledWireTerminationBlock
                 || state.getBlock() instanceof CableJunction) return null;
         Map<Integer, Vec3> nodes = d.getNodePositions(level, pos, state);
@@ -81,6 +82,8 @@ public class CableCap extends SavedData {
     /** Крышкой по прибору: поставить, если подходит, иначе — понятный отказ */
     public static InteractionResult put(Level level, BlockPos pos, Player player, ItemStack stack) {
         BlockState state = level.getBlockState(pos);
+        if (ee.extras.pcb.PcbPowerInlet.cableEnd(level,pos,state) != null)
+            return deny(level,player,pos,Component.literal("У платы уже есть кабельный ввод блока питания"));
         int[] c = contacts(level, pos, state);
         if (!(level instanceof ServerLevel sl))
             return c != null && c.length == 2 && !present(level, pos) && !CableClient.hasWires(pos, c)

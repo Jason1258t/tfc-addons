@@ -29,6 +29,7 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
 /** Настоящий клиент (test-client.sh): прожектор IE превращается кликом катушкой, состояние и блок-сущность доходят до клиента, снимки вида */
 @EventBusSubscriber(modid = "ee_extras_devtest", value = Dist.CLIENT)
 public final class ClientTest {
+    private static final boolean PCB_POWER_PHOTOS = java.nio.file.Files.exists(java.nio.file.Path.of("pcb-power-photos"));
     private static final boolean PCB_UPGRADE_PHOTOS = java.nio.file.Files.exists(
             java.nio.file.Path.of("pcb-upgrade-photos"));
     private static final boolean PCB_MOUNT_PHOTOS = java.nio.file.Files.exists(
@@ -46,7 +47,7 @@ public final class ClientTest {
 
     @SubscribeEvent
     public static void screen(ScreenEvent.Init.Post e) {
-        if (PCB_MODULE_PHOTOS || PCB_UPGRADE_PHOTOS || PCB_MOUNT_PHOTOS || started || !(e.getScreen() instanceof TitleScreen)) return;
+        if (PCB_POWER_PHOTOS || PCB_MODULE_PHOTOS || PCB_UPGRADE_PHOTOS || PCB_MOUNT_PHOTOS || started || !(e.getScreen() instanceof TitleScreen)) return;
         started = true;
         Minecraft mc = Minecraft.getInstance();
         mc.options.pauseOnLostFocus = false;
@@ -62,6 +63,7 @@ public final class ClientTest {
         tick++;
         var server = mc.getSingleplayerServer();
         try {
+            if (PCB_POWER_PHOTOS) { PcbPowerPhotos.tick(mc,server,tick); return; }
             if (PCB_MODULE_PHOTOS) {
                 PcbModulePhotos.tick(mc, server, tick);
                 return;

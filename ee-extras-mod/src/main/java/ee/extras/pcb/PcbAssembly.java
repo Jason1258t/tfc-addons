@@ -48,6 +48,7 @@ case DECODER -> PcbItems.DECODER.get();
             case FUSE -> CEEBlocks.FUSE.asItem();
             case VOLTMETER -> CEEBlocks.VOLTMETER.asItem();
             case AMMETER -> CEEBlocks.AMMETER.asItem();
+            case ONBOARD_TRANSFORMER -> PcbItems.ONBOARD_TRANSFORMER.get();
             case TRANSISTOR -> PcbItems.TRANSISTOR.get();
         };
     }

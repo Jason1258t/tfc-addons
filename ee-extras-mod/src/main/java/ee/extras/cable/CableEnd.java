@@ -26,6 +26,7 @@ public record CableEnd(BlockPos pos, CableKind kind, boolean eeTermination, int 
     /** Как of(pos, state), но знает и приборы с крышкой */
     public static CableEnd of(Level level, BlockPos pos, BlockState state) {
         CableEnd end = of(pos, state);
+        if (end == null) end = ee.extras.pcb.PcbPowerInlet.cableEnd(level, pos, state);
         return end == null ? CableCap.end(level, pos, state) : end;
     }
 

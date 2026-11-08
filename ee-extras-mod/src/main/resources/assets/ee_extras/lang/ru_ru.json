@@ -373,5 +373,6 @@
   "item.ee_extras.pcb_flip_flop": "D-триггер для платы",
   "item.ee_extras.pcb_counter": "Счётчик для платы",
   "item.ee_extras.pcb_register": "Регистр для платы",
-  "item.ee_extras.pcb_decoder": "Дешифратор для платы"
+  "item.ee_extras.pcb_decoder": "Дешифратор для платы",
+  "item.ee_extras.pcb_onboard_transformer": "Бортовой понижающий трансформатор"
 }

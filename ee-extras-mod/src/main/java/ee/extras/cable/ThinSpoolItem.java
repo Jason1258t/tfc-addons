@@ -49,12 +49,15 @@ public class ThinSpoolItem extends BundledWireItem {
             stack.remove(CEEDataComponents.SELECTED_WIRE_TERMINATION);
             return InteractionResult.SUCCESS;
         }
+        if (first == null && state.getBlock() instanceof PcbCircuitBlock
+                && (stack.has(CEEDataComponents.SELECTED_WIRE_TERMINATION) || ee.extras.pcb.PcbPowerInlet.hit(level,pos,state,context.getClickLocation()))) return null;
         if (!(state.getBlock() instanceof ElectricalDeviceBlock<?> device) || CableCap.present(level, pos))
             return InteractionResult.FAIL;
         Vec3 hit = context.getClickLocation().subtract(Vec3.atLowerCornerOf(pos));
         InWorldNode target = null;
         double distance = state.getBlock() instanceof PcbCircuitBlock ? 1.0 / 64 : 1.5 * 1.5;
         for (var entry : device.getNodePositions(level, pos, state).entrySet()) {
+            if (!device.isNodeAccessible(level,pos,state,entry.getKey())) continue;
             double candidate = hit.distanceToSqr(entry.getValue());
             if (candidate >= distance) continue;
             distance = candidate;
@@ -72,7 +75,8 @@ public class ThinSpoolItem extends BundledWireItem {
         if (!level.isLoaded(origin)) return InteractionResult.FAIL;
         var originState = level.getBlockState(origin);
         if (!(originState.getBlock() instanceof PcbCircuitBlock board)
-                || board.getNodePosition(level, origin, originState, first.id()) == null) {
+                || board.getNodePosition(level, origin, originState, first.id()) == null
+                || !board.isNodeAccessible(level,origin,originState,first.id())) {
             stack.remove(CEEDataComponents.SELECTED_NODE);
             return InteractionResult.FAIL;
         }

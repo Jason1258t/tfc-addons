@@ -95,6 +95,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         }
     }
 
+    private final PcbOnboardTransformer onboardPower;
     private Circuit collectedCircuit;
     private CircuitBuilder collectedBuilder;
     private volatile Circuit circuit = new Circuit(List.of(), LEGACY_TERMINALS);
@@ -133,11 +134,14 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
 
     public PcbCircuitDevice(Level level, BlockPos pos, DevicesSavedData devices, SimulatedDeviceType<?> type) {
         super(level, pos, devices, type);
+        onboardPower = new PcbOnboardTransformer(pos);
     }
 
     public enum Kind {
         TRACE, RESISTOR, RELAY, BUTTON, SWITCH, LAMP, REDSTONE_IN, REDSTONE_OUT,
-        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP, LATCHING_RELAY, THREE_POSITION_SWITCH, COMPARATOR, D_FLIP_FLOP, COUNTER, REGISTER, DECODER;
+        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP, LATCHING_RELAY, THREE_POSITION_SWITCH, COMPARATOR, D_FLIP_FLOP, COUNTER, REGISTER, DECODER, ONBOARD_TRANSFORMER;
+
+        boolean supply() { return this == ONBOARD_TRANSFORMER; }
 
         boolean led() { return this == LED || this == LED_PANEL || this == LED_STRIP; }
 
@@ -178,6 +182,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                     && node(a) && node(b) && a != b
                     && (!PcbLogic.chip(kind) || pins.length == PcbLogic.pins(kind) && java.util.Arrays.stream(pins).allMatch(Part::node) && a == pins[pins.length-2] && b == pins[pins.length-1])
                     && Double.isFinite(ohms) && ohms >= CONTACT && ohms <= OPEN
+                    && (!kind.supply() || threshold >= 1 && threshold <= 48)
                     && Double.isFinite(threshold) && threshold > 0 && threshold <= (kind == Kind.MECHANICAL_TIMER || kind == Kind.CLOCK ? 12000 : 10000)
                     && (kind != Kind.CLOCK && kind != Kind.MECHANICAL_TIMER || threshold >= 2 && threshold == Math.rint(threshold))
                     && (!windingInput() || node(coilA) && coilA != a && coilB == a)
@@ -203,9 +208,10 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
     }
 
     void setCircuit(List<Part> parts, Rating rating, int terminals) {
-        if (parts.size() > MAX_PARTS || parts.stream().anyMatch(part -> !part.valid())) {
+        if (parts.size() > MAX_PARTS || parts.stream().anyMatch(part -> !part.valid()) || parts.stream().filter(part -> part.kind.supply()).count() > 1) {
             throw new IllegalArgumentException("Недопустимая схема платы");
         }
+        onboardPower.reset();
         positions = defaultPositions();
         timerDue = new long[MAX_PARTS];
         windingHigh = 0;
@@ -239,6 +245,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         for (int i = 0; i < circuit.parts.size(); i++) {
             Kind kind = circuit.parts.get(i).kind;
             if (kind == Kind.TRACE || ordinal-- != 0) continue;
+            if (kind.supply()) return onboardPower.status(circuit.parts.get(i).threshold);
             if (kind == Kind.SWITCH) {
                 switches ^= 1L << i;
                 deviceSD.setDirty();
@@ -293,6 +300,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         List<Part> parts = current.parts;
         for (int i = 0; i < parts.size(); i++) {
             Part part = parts.get(i);
+            if (part.kind.supply()) { onboardPower.preTick(collector, part); continue; }
             int branch = MAX_NODES + i;
             double sense = senseResistance(part);
             int returnNode = part.kind == Kind.POTENTIOMETER ? part.coilA : part.b;
@@ -404,6 +412,14 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         long nextFuses = blownFuses;
         for (int i = 0; i < current.parts.size(); i++) {
             Part part = current.parts.get(i);
+            if (part.kind.supply()) {
+                onboardPower.postTick(results, part);
+                deviceSD.setDirty();
+                watts += onboardPower.losses();
+                maxVoltage = Math.max(maxVoltage, onboardPower.output());
+                maxCurrent = Math.max(maxCurrent, onboardPower.current());
+                continue;
+            }
             double squared = results.getVoltageAtSqr(pos, part.a, part.b);
             maxVoltage = Math.max(maxVoltage, Math.sqrt(squared));
             double sense = senseResistance(part);
@@ -692,6 +708,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
 
     @Override
     public void read(CompoundTag tag) {
+        onboardPower.read(tag.getCompound("OnboardPower"));
         circuit = new Circuit(List.of(), LEGACY_TERMINALS);
         timerDue = new long[MAX_PARTS];
         windingHigh = 0;
@@ -735,6 +752,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 return;
             }
         }
+        if (parts.stream().filter(part -> part.kind.supply()).count() > 1) return;
         int terminals = tag.contains("Terminals") ? Math.clamp(tag.getInt("Terminals"), 0, MAX_TERMINALS) : LEGACY_TERMINALS;
         circuit = new Circuit(parts, terminals);
         ListTag charges = tag.getList("Charge", Tag.TAG_DOUBLE);
@@ -746,6 +764,9 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
 
     @Override
     public void write(CompoundTag tag) {
+        var supply = new CompoundTag();
+        onboardPower.write(supply);
+        tag.put("OnboardPower", supply);
         tag.putInt("CircuitVersion", PcbTopology.VERSION);
         tag.putInt("Terminals", circuit.terminals);
         tag.putLongArray("TimerDue", timerDue);

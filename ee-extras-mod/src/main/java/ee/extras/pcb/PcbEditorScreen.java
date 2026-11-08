@@ -623,8 +623,15 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
         if (type >= PARTS.length) return;
         var item = PcbAssembly.item(PcbWiring.KINDS[type]);
         var component = new net.minecraft.world.item.ItemStack(item);
-        graphics.renderTooltip(font, List.of(Component.literal(PARTS[type] + " · " + PcbFootprint.width(definitions[index]) + "×" + PcbFootprint.height(definitions[index])), component.getHoverName(), Component.literal("ПКМ: настроить · Перенос: переместить")), Optional.empty(),
-                mouseX, mouseY);
+        var details = new java.util.ArrayList<Component>();
+        details.add(Component.literal(PARTS[type] + " · " + PcbFootprint.width(definitions[index]) + "×" + PcbFootprint.height(definitions[index])));
+        details.add(component.getHoverName());
+        if (PcbWiring.KINDS[type].supply()) {
+            details.add(Component.literal("Вход: двухжильный кабель 300 В~ прямо к корпусу"));
+            details.add(Component.literal("Холостой выход: 1–48 В~, ток ограничен; DC не преобразуется"));
+        }
+        details.add(Component.literal("ПКМ: настроить · Перенос: переместить"));
+        graphics.renderTooltip(font, details, Optional.empty(), mouseX, mouseY);
     }
 
     @Override
@@ -1005,6 +1012,10 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
         if (PALETTE_Y >= 205) {
             graphics.drawString(font, font.plainSubstrByWidth(selectedModule.name(), 124), TOOL_X, 154, 0xFFE3E9DE, false);
             graphics.drawString(font, selectedModule.width() + "×" + selectedModule.height() + " · L" + selectedModule.level(), TOOL_X, 168, 0xFFA4C1B2, false);
+            if (selectedModule.kind().supply() && PALETTE_Y >= 242) {
+                graphics.drawString(font, "Вход: кабель 300 В~", TOOL_X, 208, 0xFFE9A175, false);
+                graphics.drawString(font, "Холостой выход 1–48 В~", TOOL_X, 220, 0xFFA4C1B2, false);
+            }
             for (int pin = 0; pin < selectedModule.pins() && 182 + pin * 11 < PALETTE_Y - 12; pin++)
                 graphics.drawString(font, font.plainSubstrByWidth(selectedModule.pinLabel(pin), 124), TOOL_X, 182 + pin * 11, selectedModule.pinType(pin).color, false);
         }
@@ -1032,7 +1043,7 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
         if (kind == PcbCircuitDevice.Kind.MECHANICAL_TIMER) partLabels[2] = "Shift: отмена";
         if (kind == PcbCircuitDevice.Kind.CLOCK) partLabels[2] = "Питание ≥ 3 В";
         partLabels[1] = nominalInput.isVisible() ? PcbParameters.unit(PcbModules.ALL[menu.part()]) : partLabels[1];
-        partLabels[2] = thresholdInput.isVisible() ? (PcbParameters.amps(PcbModules.ALL[menu.part()]) ? "А" : "В") : partLabels[2];
+        partLabels[2] = thresholdInput.isVisible() ? (PcbModules.ALL[menu.part()].kind().supply() ? "В~" : PcbParameters.amps(PcbModules.ALL[menu.part()]) ? "А" : "В") : partLabels[2];
         for (int row = 0; row < partLabels.length; row++) {
             if (row == 1 && nominalInput.isVisible() || row == 2 && thresholdInput.isVisible()) {
                 graphics.drawString(font, partLabels[row], PALETTE_X + 72, SETTINGS_Y + 3 + row * SETTINGS_ROW, 0xFFE3E9DE, false);
