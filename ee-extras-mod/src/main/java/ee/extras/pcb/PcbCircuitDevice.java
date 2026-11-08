@@ -79,6 +79,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 join(group, part.a, part.b);
                 // ВВ-вторичка изолирована внутри корпуса. Её полюса не объединяются в общий
                 // низковольтный контур; подключённая обычная деталь проверяется по прежнему пределу.
+                if (part.kind == Kind.BRIDGE_RECTIFIER) { join(group,part.a,part.coilA); join(group,part.a,part.coilB); }
                 if (part.kind.controlled()) join(group, part.coilA, part.coilB);
                 if (part.windingInput()) join(group, part.a, part.coilA);
                 if (part.kind == Kind.LATCHING_RELAY) { join(group, part.coilA, part.alternate); join(group, part.coilB, part.alternate); }
@@ -104,6 +105,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
     }
 
     private final PcbOnboardTransformer onboardPower;
+    private PcbBridgeRectifier[] bridges = new PcbBridgeRectifier[MAX_PARTS];
     private PcbStepUpTransformer[] stepUps = new PcbStepUpTransformer[MAX_PARTS];
     private Circuit collectedCircuit;
     private CircuitBuilder collectedBuilder;
@@ -148,7 +150,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
 
     public enum Kind {
         TRACE, RESISTOR, RELAY, BUTTON, SWITCH, LAMP, REDSTONE_IN, REDSTONE_OUT,
-        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP, LATCHING_RELAY, THREE_POSITION_SWITCH, COMPARATOR, D_FLIP_FLOP, COUNTER, REGISTER, DECODER, ONBOARD_TRANSFORMER, STEP_UP_TRANSFORMER;
+        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP, LATCHING_RELAY, THREE_POSITION_SWITCH, COMPARATOR, D_FLIP_FLOP, COUNTER, REGISTER, DECODER, ONBOARD_TRANSFORMER, STEP_UP_TRANSFORMER, BRIDGE_RECTIFIER;
 
         boolean supply() { return this == ONBOARD_TRANSFORMER; }
 
@@ -200,6 +202,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                     && (!poweredLogic() || node(coilA) && node(coilB) && node(logicOutput()))
                     && (kind != Kind.LATCHING_RELAY || node(coilA) && node(coilB) && node(alternate) && coilA != alternate && coilB != alternate)
                     && (kind != Kind.POTENTIOMETER || node(coilA) && coilA != a && coilA != b)
+                    && (kind != Kind.BRIDGE_RECTIFIER || node(coilA) && node(coilB))
                     && (kind != Kind.STEP_UP_TRANSFORMER || node(coilA) && node(coilB) && coilA != coilB
                             && coilA != a && coilA != b && coilB != a && coilB != b)
                     && (!kind.controlled() || node(coilA) && node(coilB) && coilA != coilB);
@@ -243,6 +246,8 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
 
     private void resetStepUps(List<Part> parts) {
         stepUps = new PcbStepUpTransformer[MAX_PARTS];
+        bridges = new PcbBridgeRectifier[MAX_PARTS];
+        for (int i=0;i<parts.size();i++) if (parts.get(i).kind == Kind.BRIDGE_RECTIFIER) bridges[i] = new PcbBridgeRectifier(pos,MAX_NODES + MAX_PARTS * 3 + i * 4);
         for (int i=0;i<parts.size();i++) if (parts.get(i).kind == Kind.STEP_UP_TRANSFORMER) stepUps[i] = new PcbStepUpTransformer(pos,i);
     }
 
@@ -320,6 +325,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             Part part = parts.get(i);
             if (part.kind.supply()) { onboardPower.preTick(collector, part); continue; }
             if (part.kind == Kind.STEP_UP_TRANSFORMER) { stepUps[i].preTick(collector,part); continue; }
+            if (part.kind == Kind.BRIDGE_RECTIFIER) { bridges[i].preTick(collector,part); continue; }
             int branch = MAX_NODES + i;
             double sense = senseResistance(part);
             int returnNode = part.kind == Kind.POTENTIOMETER ? part.coilA : part.b;
@@ -430,6 +436,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             }
         }
         double maxCurrent = 0;
+        boolean invalidBridge = false;
         long nextFuses = blownFuses;
         for (int i = 0; i < current.parts.size(); i++) {
             Part part = current.parts.get(i);
@@ -448,6 +455,14 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 maxInsulationVoltage = Math.max(maxInsulationVoltage,stepUps[i].output());
                 maxCurrent = Math.max(maxCurrent,stepUps[i].current());
                 deviceSD.setDirty();
+                continue;
+            }
+            if (part.kind == Kind.BRIDGE_RECTIFIER) {
+                var measurement=bridges[i].measure(results,part);
+                invalidBridge |= !Double.isFinite(measurement.volts()) || !Double.isFinite(measurement.watts()) || !Double.isFinite(measurement.amps());
+                watts += measurement.watts();
+                maxVoltage=Math.max(maxVoltage,measurement.volts());
+                maxCurrent=Math.max(maxCurrent,measurement.amps());
                 continue;
             }
             double squared = results.getVoltageAtSqr(pos, part.a, part.b);
@@ -529,7 +544,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         double nextOverload = Math.max(0, overload + load - 1);
         if (nextOverload != overload || current.hasCapacitor) deviceSD.setDirty();
         overload = nextOverload;
-        if (maxVoltage > rating.volts + 1e-6 || maxInsulationVoltage > 480 + 1e-6 || overload >= OVERLOAD_TICKS) {
+        if (invalidBridge || maxVoltage > rating.volts + 1e-6 || maxInsulationVoltage > 480 + 1e-6 || overload >= OVERLOAD_TICKS) {
             burnt = true;
             deviceSD.setDirty();
             level.setBlockAndUpdate(pos, state.setValue(PcbCircuitBlock.BURNT, true)
@@ -806,6 +821,9 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             var saved = new CompoundTag(); stepUps[i].write(saved); highVoltage.put(Integer.toString(i),saved);
         }
         tag.put("StepUpPower",highVoltage);
+        var bridgeMeasurements=new CompoundTag();
+        for(int i=0;i<circuit.parts.size();i++) if(bridges[i]!=null) {var saved=new CompoundTag();bridges[i].write(saved);bridgeMeasurements.put(Integer.toString(i),saved);}
+        tag.put("BridgeMeasurements",bridgeMeasurements);
         tag.putInt("CircuitVersion", PcbTopology.VERSION);
         tag.putInt("Terminals", circuit.terminals);
         tag.putLongArray("TimerDue", timerDue);

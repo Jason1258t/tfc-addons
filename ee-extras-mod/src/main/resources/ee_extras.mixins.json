@@ -9,8 +9,17 @@
     "DiskRecipeMixin",
     "UpgradeManagerMixin",
     "ServerComputerPowerMixin",
-    "PocketComputerPowerMixin"
+    "PocketComputerPowerMixin",
+    "PcbBridgeConvergenceMixin"
   ],
-  "client": ["WireVisualMixin", "WireRendererCapMixin", "BundledWirePreviewMixin", "WireRaycastMixin", "PcbContactOutlineMixin"],
-  "injectors": { "defaultRequire": 0 }
+  "client": [
+    "WireVisualMixin",
+    "WireRendererCapMixin",
+    "BundledWirePreviewMixin",
+    "WireRaycastMixin",
+    "PcbContactOutlineMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
 }

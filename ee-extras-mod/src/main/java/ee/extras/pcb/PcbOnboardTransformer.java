@@ -61,6 +61,15 @@ final class PcbOnboardTransformer {
             int count = Math.min(first.length, Math.min(second.length, sense.length));
             for (int n = 0; n < count; n++) inputWatts += (first[n]-second[n]) * (first[n]-sense[n]) / WINDING_OHMS;
             if (count != 0) inputWatts /= count;
+            double[] outputA=results.getVoltages(new InWorldNode(part.a(),pos)),outputB=results.getVoltages(new InWorldNode(part.b(),pos));
+            double[] returnEnd=results.getVoltages(new InWorldNode(OUTPUT_LIMIT,pos)),returnSense=results.getVoltages(new InWorldNode(SECONDARY_SENSE,pos));
+            int outputs=Math.min(Math.min(outputA.length,outputB.length),Math.min(returnEnd.length,returnSense.length));
+            double outputWatts=0;
+            for(int n=0;n<outputs;n++)outputWatts+=(outputA[n]-outputB[n])*(returnEnd[n]-returnSense[n])/WINDING_OHMS;
+            if(outputs>0)outputWatts/=outputs;
+            // В реактивной цепи EE сохраняет регуляризующий резистор, который может убрать для чисто активной нагрузки.
+            // Считаем фактическое тепло по активной разности портов, не теряя потери обмоток и балласта.
+            lossWatts=Math.max(lossWatts,inputWatts-outputWatts);
         }
         // Резистор контроля входа также берёт энергию из сети и греет корпус.
         double sensingLoss = Double.isFinite(inputRms) ? inputRms*inputRms/1e8 : 0;

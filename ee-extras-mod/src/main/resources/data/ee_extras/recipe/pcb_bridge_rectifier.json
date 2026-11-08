@@ -1,0 +1,21 @@
+{
+  "type": "create:mechanical_crafting",
+  "pattern": [
+    " D ",
+    "DCD",
+    " D "
+  ],
+  "key": {
+    "D": {
+      "item": "ee_extras:silicon_diode"
+    },
+    "C": {
+      "item": "ee_extras:connector"
+    }
+  },
+  "result": {
+    "id": "ee_extras:pcb_bridge_rectifier",
+    "count": 1
+  },
+  "accept_mirrored": true
+}

@@ -12,8 +12,9 @@ final class PcbModules {
     }
     record Module(Kind kind, String name, String model, int width, int height, int level, int sections) {
         Module(Kind kind, String name, String model, int width, int height, int level) { this(kind, name, model, width, height, level, 1); }
-        int pins() { return PcbLogic.chip(kind) ? PcbLogic.pins(kind) : kind == Kind.CLOCK || kind == Kind.STEP_UP_TRANSFORMER ? 4 : sections > 1 ? 2 * sections : kind == Kind.RELAY || kind == Kind.LATCHING_RELAY || kind == Kind.COMPARATOR ? 5 : kind == Kind.POTENTIOMETER || kind == Kind.SWITCH || kind == Kind.THREE_POSITION_SWITCH || kind == Kind.TRANSISTOR || kind == Kind.MECHANICAL_TIMER ? 3 : kind.controlled() ? 4 : 2; }
+        int pins() { return PcbLogic.chip(kind) ? PcbLogic.pins(kind) : kind == Kind.CLOCK || kind == Kind.STEP_UP_TRANSFORMER || kind == Kind.BRIDGE_RECTIFIER ? 4 : sections > 1 ? 2 * sections : kind == Kind.RELAY || kind == Kind.LATCHING_RELAY || kind == Kind.COMPARATOR ? 5 : kind == Kind.POTENTIOMETER || kind == Kind.SWITCH || kind == Kind.THREE_POSITION_SWITCH || kind == Kind.TRANSISTOR || kind == Kind.MECHANICAL_TIMER ? 3 : kind.controlled() ? 4 : 2; }
         String pinName(int pin) {
+            if (kind == Kind.BRIDGE_RECTIFIER) return switch (pin) { case 0 -> "~A"; case 1 -> "~B"; case 2 -> "+"; default -> "−"; };
             if (kind == Kind.STEP_UP_TRANSFORMER) return switch (pin) { case 0 -> "Вход ~ A (до 48 В)"; case 1 -> "Вход ~ B"; case 2 -> "Выход ВВ ~ A"; default -> "Выход ВВ ~ B"; };
             if (kind.supply()) return pin == 0 ? "Выход ~ A" : "Выход ~ B";
             if (PcbLogic.chip(kind)) return PcbLogic.pinName(kind,pin);
@@ -32,6 +33,7 @@ final class PcbModules {
             return pin == 0 ? "A" : "B";
         }
         PinType pinType(int pin) {
+            if (kind == Kind.BRIDGE_RECTIFIER) return pin == 3 ? PinType.GROUND : PinType.POWER;
             if (kind.supply() || kind == Kind.STEP_UP_TRANSFORMER) return PinType.POWER;
             if (PcbLogic.chip(kind)) return pin == pins()-2 ? PinType.POWER : pin == pins()-1 ? PinType.GROUND : PinType.LOGIC;
             if (kind == Kind.COMPARATOR) return pin < 2 ? PinType.ANALOG : pin == 2 ? PinType.LOGIC : pin == 3 ? PinType.POWER : PinType.GROUND;
@@ -46,7 +48,7 @@ final class PcbModules {
                 case BUTTON, SWITCH, THREE_POSITION_SWITCH, REDSTONE_IN, POTENTIOMETER -> "Управление";
                 case LAMP, LED, LED_PANEL, LED_STRIP, REDSTONE_OUT, VOLTMETER, AMMETER -> "Индикация";
                 case RESISTOR, RHEOSTAT, CAPACITOR, FUSE -> "Пассивные";
-                case ONBOARD_TRANSFORMER, STEP_UP_TRANSFORMER -> "Питание";
+                case ONBOARD_TRANSFORMER, STEP_UP_TRANSFORMER, BRIDGE_RECTIFIER -> "Питание";
                 case MECHANICAL_TIMER, CLOCK -> "Время";
                 case COMPARATOR, D_FLIP_FLOP, COUNTER, REGISTER, DECODER -> "Логика";
                 default -> "Коммутация";
@@ -103,7 +105,8 @@ final class PcbModules {
             new Module(Kind.REGISTER, "Регистр 4 бита", "register", 3, 2, 2),
             new Module(Kind.DECODER, "Дешифратор 2→4", "decoder", 2, 3, 2),
             new Module(Kind.ONBOARD_TRANSFORMER, "Бортовой трансформатор", "onboard_transformer", 3, 3, 1),
-            new Module(Kind.STEP_UP_TRANSFORMER, "Повышающий трансформатор ×10", "step_up_transformer", 3, 3, 1)
+            new Module(Kind.STEP_UP_TRANSFORMER, "Повышающий трансформатор ×10", "step_up_transformer", 3, 3, 1),
+            new Module(Kind.BRIDGE_RECTIFIER, "Мостовой выпрямитель", "bridge_rectifier", 3, 3, 2)
     };
 
     private PcbModules() {}
