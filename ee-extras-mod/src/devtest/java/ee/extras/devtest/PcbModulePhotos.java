@@ -15,13 +15,19 @@ import net.minecraft.world.phys.BlockHitResult;
 
 /** Снимки реального редактора и монтажного макета в полном клиенте test1a. */
 final class PcbModulePhotos {
+    private static final boolean CONTACT_ONLY = java.nio.file.Files.exists(java.nio.file.Path.of("pcb-contact-photos"));
     private static BlockPos table, board, stripBoard, lampBoard, lampBattery, latchBoard;
     private PcbModulePhotos() {}
 
     static void tick(Minecraft mc, MinecraftServer server, int tick) {
+        if (CONTACT_ONLY && tick >= 180) tick += 980;
+        if (CONTACT_ONLY && tick >= 1400) {
+            if (tick == 1400) System.out.println("EECLIENT PCB MODULE PHOTOS DONE");
+            return;
+        }
         if (tick % 10 == 0) mc.gui.getChat().clearMessages(false);
         if (tick % 20 == 0) server.execute(() -> { var player=server.getPlayerList().getPlayer(mc.player.getUUID()); if(player!=null) player.removeAllEffects(); });
-        if (tick == 140 || tick >= 510 && tick < 1400) mc.options.hideGui = true;
+        if (tick == 140 || tick >= 510 && tick < 1640) mc.options.hideGui = true;
         if (tick == 60) server.execute(() -> {
             var player = server.getPlayerList().getPlayer(mc.player.getUUID());
             var level = player.serverLevel();
@@ -157,22 +163,137 @@ final class PcbModulePhotos {
             camera(player,latchBoard,.5);
         });
         if (tick == 1190) server.execute(() -> PcbLatchTest.expect(server.getPlayerList().getPlayer(mc.player.getUUID()).createCommandSourceStack(),false,0));
+        if (tick == 1195) server.execute(() -> {
+            var player = server.getPlayerList().getPlayer(mc.player.getUUID());
+            var spool = player.getMainHandItem().copy();
+            spool.set(com.george_vi.electroenergetics.CEEDataComponents.SELECTED_NODE,
+                    new com.george_vi.electroenergetics.foundation.nodes.InWorldNode(4, latchBoard));
+            player.setItemInHand(InteractionHand.MAIN_HAND, spool);
+        });
         if (tick == 1200) photo(mc,"10-latch-off");
         if (tick == 1220) server.execute(() -> PcbLatchTest.drive(server.overworld(),4,0,24));
         if (tick == 1250) server.execute(() -> PcbLatchTest.expect(server.getPlayerList().getPlayer(mc.player.getUUID()).createCommandSourceStack(),true,24));
-        if (tick == 1260) photo(mc,"11-latch-set");
+        if (tick == 1260) {
+            ClientTest.check("толщина обводки контакта платы", net.createmod.catnip.outliner.Outliner.getInstance().edit("electroenergetics_selected_node")
+                    .map(params -> Math.abs(params.getLineWidth()-.003f)<1e-6).orElse(false));
+            photo(mc,"11-latch-set");
+        }
         if (tick == 1280) server.execute(() -> PcbLatchTest.drive(server.overworld(),0,0,0));
         if (tick == 1310) server.execute(() -> PcbLatchTest.expect(server.getPlayerList().getPlayer(mc.player.getUUID()).createCommandSourceStack(),true,0));
         if (tick == 1320) photo(mc,"12-latch-unpowered");
         if (tick == 1340) server.execute(() -> PcbLatchTest.drive(server.overworld(),0,4,24));
         if (tick == 1370) server.execute(() -> PcbLatchTest.expect(server.getPlayerList().getPlayer(mc.player.getUUID()).createCommandSourceStack(),false,0));
+        if (tick == 1375) server.execute(() -> {
+            var player = server.getPlayerList().getPlayer(mc.player.getUUID());
+            var spool = player.getMainHandItem().copy();
+            spool.set(com.george_vi.electroenergetics.CEEDataComponents.SELECTED_NODE,
+                    new com.george_vi.electroenergetics.foundation.nodes.InWorldNode(1, latchBoard.east(4)));
+            player.setItemInHand(InteractionHand.MAIN_HAND, spool);
+        });
         if (tick == 1380) photo(mc,"13-latch-reset");
-        if (tick == 1400) {
+        if (tick == 1390) ClientTest.check("обводка обычного устройства сохранила толщину", net.createmod.catnip.outliner.Outliner.getInstance().edit("electroenergetics_selected_node")
+                .map(params -> params.getLineWidth()>.01f).orElse(false));
+        // Отдельные крупные кадры новых корпусов L2, без проводов поверх маркировки.
+        if (tick == 1400) server.execute(() -> {
+            var player = server.getPlayerList().getPlayer(mc.player.getUUID());
+            calendarHour(server, 12);
+            var editor = (PcbEditorBlockEntity) player.serverLevel().getBlockEntity(table);
+            editor.clear(2);
+            for (int[] module : new int[][]{{22,3,4},{17,9,4},{23,3,9},{24,9,9}})
+                ClientTest.check("корпус L2 " + module[0], editor.setPart(0, module[2]*16+module[1], PcbModulesTest.definition(module[0],0)));
+            var stack = PcbItems.L2_BOARD.toStack();
+            PcbTopology.attach(stack, editor.topology());
+            var pos = table.east(40);
+            DevTest.place(player.serverLevel(), pos, PcbItems.CIRCUIT_BLOCK.get().defaultBlockState().setValue(PcbCircuitBlock.CUSTOM, true));
+            PcbModulesTest.call(PcbCircuitBlockEntity.class, player.serverLevel().getBlockEntity(pos), "setBoard", stack);
+            camera(player, pos, .55);
+        });
+        if (tick == 1500) photo(mc, "14-l2-comparator-clock-flip-counter");
+        if (tick == 1520) server.execute(() -> {
+            var player = server.getPlayerList().getPlayer(mc.player.getUUID());
+            var editor = (PcbEditorBlockEntity) player.serverLevel().getBlockEntity(table);
+            editor.clear(2);
+            for (int[] module : new int[][]{{25,3,6},{26,9,6}})
+                ClientTest.check("корпус L2 " + module[0], editor.setPart(0, module[2]*16+module[1], PcbModulesTest.definition(module[0],0)));
+            int mirrored = PcbModulesTest.call(wiringClass(), null, "mirror", PcbModulesTest.definition(25,0));
+            ClientTest.check("зеркальный регистр", editor.setPart(0, 11*16+3, mirrored));
+            var stack = PcbItems.L2_BOARD.toStack();
+            PcbTopology.attach(stack, editor.topology());
+            var pos = table.east(40);
+            PcbModulesTest.call(PcbCircuitBlockEntity.class, player.serverLevel().getBlockEntity(pos), "setBoard", stack);
+        });
+        if (tick == 1620) photo(mc, "15-l2-register-decoder");
+        if (tick == 1640) {
+            mc.options.hideGui = false;
+            server.execute(() -> {
+                var player = server.getPlayerList().getPlayer(mc.player.getUUID());
+                player.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+                player.getAbilities().flying = true;
+                player.onUpdateAbilities();
+                player.teleportTo(player.serverLevel(), table.getX()+.5, table.getY()+1, table.getZ()+2, 180, 40);
+                ((PcbEditorBlockEntity) server.overworld().getBlockEntity(table)).open(player);
+            });
+        }
+        if (tick == 1680 && mc.screen instanceof PcbEditorScreen screen) {
+            screen.keyPressed(org.lwjgl.glfw.GLFW.GLFW_KEY_T, 0, 0);
+            screen.mouseClicked(screen.cellScreenX(12), screen.cellScreenY(12), 0);
+        }
+        if (tick == 1700) server.execute(() -> ClientTest.check("история: дорожка проведена клиентом", PcbTopology.get(((PcbEditorBlockEntity)server.overworld().getBlockEntity(table)).topology(),0,204)==PcbTopology.TRACE));
+        if (tick == 1720 && mc.screen instanceof PcbEditorScreen screen) nativeClick(mc, screen.width-222, 18);
+        if (tick == 1740) server.execute(() -> ClientTest.check("история: кнопка отмены очистила дорожку", PcbTopology.get(((PcbEditorBlockEntity)server.overworld().getBlockEntity(table)).topology(),0,204)==PcbTopology.EMPTY));
+        if (tick == 1760 && mc.screen instanceof PcbEditorScreen screen) nativeClick(mc, screen.width-169, 18);
+        if (tick == 1780) server.execute(() -> ClientTest.check("история: кнопка повтора вернула дорожку", PcbTopology.get(((PcbEditorBlockEntity)server.overworld().getBlockEntity(table)).topology(),0,204)==PcbTopology.TRACE));
+        if (tick == 1800 && mc.screen instanceof PcbEditorScreen screen) {
+            screen.mouseClicked(screen.width-80, 77, 0);
+            screen.keyPressed(org.lwjgl.glfw.GLFW.GLFW_KEY_T, 0, 0);
+            screen.mouseClicked(screen.cellScreenX(4), screen.cellScreenY(6), 0);
+        }
+        if (tick == 1840) Screenshot.grab(mc.gameDirectory, "pcb-modules-16-other-layers.png", mc.getMainRenderTarget(), c -> {});
+        if (tick == 1860 && mc.screen instanceof PcbEditorScreen screen) screen.keyPressed(org.lwjgl.glfw.GLFW.GLFW_KEY_H, 0, 0);
+        if (tick == 1900) Screenshot.grab(mc.gameDirectory, "pcb-modules-17-active-layer.png", mc.getMainRenderTarget(), c -> {});
+        if (tick == 1940 && mc.screen instanceof PcbEditorScreen screen) {
+            try {
+                for (String name : new String[]{"regionFirst", "regionLast"}) {
+                    var field = PcbEditorScreen.class.getDeclaredField(name); field.setAccessible(true);
+                    field.setInt(screen, name.equals("regionFirst") ? 98 : 135);
+                }
+                PcbModulesTest.call(PcbEditorScreen.class, screen, "copyRegion");
+                var mode = PcbEditorScreen.class.getDeclaredField("regionMode"); mode.setAccessible(true); mode.setInt(screen,2);
+            } catch (ReflectiveOperationException e) { throw new IllegalStateException(e); }
+        }
+        if (tick == 1980 && mc.screen instanceof PcbEditorScreen screen) screen.mouseClicked(screen.cellScreenX(8), screen.cellScreenY(1), 0);
+        if (tick == 2000) server.execute(() -> {
+            var parts = ((PcbEditorBlockEntity)server.overworld().getBlockEntity(table)).topology().getIntArray("ElectricalParts");
+            ClientTest.check("группа: пакет клиента скопировал целый регистр", parts.length>25 && parts[25]!=0 && parts[99]!=0);
+        });
+        if (tick == 2020) Screenshot.grab(mc.gameDirectory, "pcb-modules-18-copy-region.png", mc.getMainRenderTarget(), c -> {});
+        if (tick == 2040 && mc.screen instanceof PcbEditorScreen screen) nativeClick(mc, screen.width-222, 18);
+        if (tick == 2060) server.execute(() -> {
+            var parts = ((PcbEditorBlockEntity)server.overworld().getBlockEntity(table)).topology().getIntArray("ElectricalParts");
+            ClientTest.check("группа: одна отмена убрала копию", parts.length>25 && parts[25]==0 && parts[99]!=0);
+        });
+        if (tick == 2100) {
             mc.options.hideGui = false;
             System.out.println("EECLIENT PCB MODULE PHOTOS DONE");
         }
 
     }
+    private static void nativeClick(Minecraft mc, int x, int y) {
+        try {
+            var robot = new java.awt.Robot();
+            var window = mc.getWindow();
+            robot.mouseMove(window.getX() + (int)Math.round(x * window.getGuiScale()),
+                    window.getY() + (int)Math.round(y * window.getGuiScale()));
+            robot.mousePress(java.awt.event.InputEvent.BUTTON1_DOWN_MASK);
+            robot.mouseRelease(java.awt.event.InputEvent.BUTTON1_DOWN_MASK);
+        } catch (java.awt.AWTException e) { throw new IllegalStateException("Не удалось нажать кнопку через оконный ввод", e); }
+    }
+
+    private static Class<?> wiringClass() {
+        try { return Class.forName("ee.extras.pcb.PcbWiring"); }
+        catch (ClassNotFoundException e) { throw new IllegalStateException(e); }
+    }
+
     private static void calendarHour(MinecraftServer server,int hour) {
         var calendar=net.dries007.tfc.util.calendar.Calendars.SERVER;
         calendar.setCalendarTickRate(0);
@@ -201,6 +322,8 @@ final class PcbModulePhotos {
     }
 
     private static void camera(net.minecraft.server.level.ServerPlayer player, BlockPos pos,double distance) {
+        // При крупном плане ноги камеры оказываются внутри платы; режим наблюдателя убирает коллизию.
+        player.setGameMode(distance < .8 ? net.minecraft.world.level.GameType.SPECTATOR : net.minecraft.world.level.GameType.CREATIVE);
         Vec3 target = Vec3.atLowerCornerOf(pos).add(.5,.08,.5);
         Vec3 eye = target.add(.15*distance,1.2*distance,1.0*distance), delta = target.subtract(eye);
         float yaw = (float)Math.toDegrees(Math.atan2(-delta.x,delta.z));

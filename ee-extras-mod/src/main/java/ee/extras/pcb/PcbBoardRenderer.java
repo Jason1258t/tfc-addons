@@ -96,7 +96,7 @@ final class PcbBoardRenderer implements BlockEntityRenderer<PcbCircuitBlockEntit
                     int ordinal = PcbWiring.componentOrdinal(definitions, index);
                     long sections = !burnt && (module.kind().led() || module.kind() == PcbCircuitDevice.Kind.LAMP)
                             ? board.indicatorSections(ordinal, module.sections()) : 0;
-                    PcbPartModels.render(definitions[index], x, z, burnt, sections, board.hasCap(cell), board.controlActive(ordinal), board.controlPosition(ordinal), poses, vertices, light, overlay);
+                    PcbPartModels.render(definitions[index], x, z, burnt, sections, board.hasCap(cell), board.controlActive(ordinal), board.controlPosition(ordinal), poses, PcbWiring.mirrored(definitions[index]) ? buffers.getBuffer(RenderType.entityCutoutNoCull(TextureAtlas.LOCATION_BLOCKS)) : vertices, light, overlay);
                     PcbPartModels.glow(definitions[index], x, z, sections, poses, buffers, board.getBlockState(), overlay);
                     break;
                 }

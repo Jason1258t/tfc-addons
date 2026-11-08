@@ -33,7 +33,7 @@ public final class ClientTest {
             java.nio.file.Path.of("pcb-upgrade-photos"));
     private static final boolean PCB_MOUNT_PHOTOS = java.nio.file.Files.exists(
             java.nio.file.Path.of("pcb-mount-photos"));
-    private static final boolean PCB_MODULE_PHOTOS = java.nio.file.Files.exists(java.nio.file.Path.of("pcb-module-photos"));
+    private static final boolean PCB_MODULE_PHOTOS = java.nio.file.Files.exists(java.nio.file.Path.of("pcb-module-photos")) || java.nio.file.Files.exists(java.nio.file.Path.of("pcb-contact-photos"));
     private static boolean started;
     private static int tick, fails;
     /** Перед игроком: его кликаем настоящим клиентом */

@@ -32,8 +32,10 @@ final class PcbWiring {
     static int resistance(int definition) { return ((definition - 1) >>> 10) & 15; }
     static int threshold(int definition) { return ((definition - 1) >>> 14) & 7; }
     static boolean normallyClosed(int definition) { return ((definition - 1) & (1 << 17)) != 0; }
+    static boolean mirrored(int definition) { return ((definition - 1) & (1 << 18)) != 0; }
+    static int mirror(int definition) { return 1 + ((definition - 1) ^ (1 << 18)); }
     static boolean valid(int definition) {
-        return definition > 0 && definition <= 1 << 18 && type(definition) < KINDS.length
+        return definition > 0 && definition <= 1 << 19 && type(definition) < KINDS.length
                 && resistance(definition) < OHMS.length;
     }
 

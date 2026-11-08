@@ -102,6 +102,21 @@ public final class PcbCircuitBlock extends SimpleElectricalDeviceBlock<PcbCircui
         return (int) Math.clamp(Math.round(value * 100), 0, 100);
     }
 
+    static net.minecraft.world.phys.AABB contactBounds(int cell, Direction face) {
+        Vec3 first = mountedPoint(new Vec3(cell % 16 / 16.0, 1.0/16, cell / 16 / 16.0), face);
+        Vec3 last = mountedPoint(new Vec3((cell % 16 + 1) / 16.0, 2.0/16, (cell / 16 + 1) / 16.0), face);
+        return new net.minecraft.world.phys.AABB(first, last);
+    }
+
+    @Override
+    public float getNodeSize(Level level, BlockPos pos, BlockState state, int node) {
+        if (state.getValue(CUSTOM) && level.getBlockEntity(pos) instanceof PcbCircuitBlockEntity board) {
+            int[] contacts = board.positionedContacts();
+            if (contacts != null && node >= 0 && node < contacts.length) return .75f/16;
+        }
+        return .25f;
+    }
+
     static VoxelShape mountedShape(VoxelShape local, Direction face) {
         VoxelShape result = Shapes.empty();
         for (var box : local.toAabbs()) {

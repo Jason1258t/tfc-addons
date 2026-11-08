@@ -25,6 +25,15 @@ public class PcbEditorMenu extends AbstractContainerMenu {
     public static final int OHMS = 1009;
     public static final int VOLTS = 1010;
     public static final int CONTACT = 1011;
+    public static final int UNDO = 1012;
+    public static final int REDO = 1013;
+    public static final int MIRROR = 1014;
+    private static final int HISTORY_LIMIT = 64;
+    private final java.util.ArrayDeque<net.minecraft.nbt.CompoundTag> undo = new java.util.ArrayDeque<>();
+    private final java.util.ArrayDeque<net.minecraft.nbt.CompoundTag> redo = new java.util.ArrayDeque<>();
+    private net.minecraft.nbt.CompoundTag observedTopology;
+    private net.minecraft.nbt.CompoundTag clipboard;
+    private int clipboardFirst, clipboardLast;
 
     public static final int SELECT_TOOL = 1020;
     static final int SELECT_PART = 1040;
@@ -45,6 +54,7 @@ public class PcbEditorMenu extends AbstractContainerMenu {
     private final DataSlot level = DataSlot.standalone();
     private final DataSlot status = DataSlot.standalone();
     private final DataSlot part = DataSlot.standalone();
+    private final DataSlot mirrored = DataSlot.standalone();
     private final DataSlot rotation = DataSlot.standalone();
     private final DataSlot resistance = DataSlot.standalone();
     private final DataSlot threshold = DataSlot.standalone();
@@ -55,7 +65,7 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             "Выводы должны быть на краю нижнего слоя", "Нужно компонентов: не менее 2",
             "Нужно компонентов: не менее 4", "Нужно компонентов: не менее 8",
             "Нужно не менее двух выводов на краю платы", "Пустой проект", "Есть обрыв или неподключённый вывод",
-            PcbWiring.ERROR, PcbBoardItem.EDITOR_ERROR, PcbAssembly.MISSING, PcbAssembly.RECOVERED, PcbAssembly.NO_RECOVERY, PcbFootprint.ERROR, PcbTopology.UNSUPPORTED, "Компоненты устанавливаются на слое 1", PcbParameters.ERROR
+            PcbWiring.ERROR, PcbBoardItem.EDITOR_ERROR, PcbAssembly.MISSING, PcbAssembly.RECOVERED, PcbAssembly.NO_RECOVERY, PcbFootprint.ERROR, PcbTopology.UNSUPPORTED, "Компоненты устанавливаются на слое 1", PcbParameters.ERROR, PcbRegion.ERROR
     };
 
     /** Клиентская фабрика MenuType. */
@@ -90,6 +100,7 @@ public class PcbEditorMenu extends AbstractContainerMenu {
         addDataSlot(status);
         addDataSlot(part);
         addDataSlot(rotation);
+        addDataSlot(mirrored);
         addDataSlot(resistance);
         addDataSlot(threshold);
         addDataSlot(contact);
@@ -118,7 +129,8 @@ public class PcbEditorMenu extends AbstractContainerMenu {
     boolean available(int type) { return PcbWiring.minimumLevel(type) <= level(); }
 
     int selectedDefinition() {
-        return PcbWiring.component(part(), rotation(), resistance(), threshold(), normallyClosed());
+        int definition = PcbWiring.component(part(), rotation(), resistance(), threshold(), normallyClosed());
+        return mirrored.get() != 0 ? PcbWiring.mirror(definition) : definition;
     }
     long instanceId() { return selected() >= 0 && editor != null ? PcbModuleIds.get(editor.topology(), layer() * PcbTopology.CELLS + selected()) : 0; }
 
@@ -138,6 +150,14 @@ public class PcbEditorMenu extends AbstractContainerMenu {
         return parameters;
     }
     boolean applyParameters(PcbEditorPackets.Parameters packet) {
+        if (editor == null) return false;
+        var before = beginEdit();
+        boolean applied = applyParametersInternal(packet);
+        finishEdit(before);
+        return applied;
+    }
+
+    private boolean applyParametersInternal(PcbEditorPackets.Parameters packet) {
         if (editor == null || packet.container() != containerId || packet.anchor() != selected()
                 || packet.definition() != selectedDefinition() || packet.instance() != instanceId() || editor.topology().getInt("Version") != PcbTopology.VERSION) return false;
         var parameters = new net.minecraft.nbt.CompoundTag();
@@ -185,6 +205,73 @@ public class PcbEditorMenu extends AbstractContainerMenu {
     @Override
     public boolean clickMenuButton(Player player, int id) {
         if (editor == null) return false;
+        var before = beginEdit();
+        if (id == UNDO || id == REDO) {
+            var from = id == UNDO ? undo : redo;
+            var to = id == UNDO ? redo : undo;
+            if (from.isEmpty()) return false;
+            to.addLast(before);
+            editor.restoreTopology(from.removeLast());
+            observedTopology = editor.topology().copy();
+            selected.set(-1);
+            moving.set(-1);
+            level.set(PcbTopology.level(editor.topology()));
+            layer.set(Math.min(layer(), level() - 1));
+            if (!available(part())) part.set(0);
+            draftNominal = draftThreshold = Double.NaN;
+            status.set(0);
+            return true;
+        }
+        boolean applied = applyClick(player, id);
+        finishEdit(before);
+        return applied;
+    }
+
+    boolean applyRegion(PcbEditorPackets.Region packet) {
+        if (editor == null || packet.container() != containerId || packet.action() < 0 || packet.action() > 2) return false;
+        if (packet.action() == 0) {
+            if (!PcbRegion.selection(editor.topology(), packet.first(), packet.last())) {
+                clipboard = null;
+                status.set(statusCode(PcbRegion.ERROR));
+                return false;
+            }
+            clipboard = editor.topology().copy();
+            clipboardFirst = packet.first();
+            clipboardLast = packet.last();
+            return true;
+        }
+        if (clipboard == null) return false;
+        var before = beginEdit();
+        var result = PcbRegion.apply(editor.topology(), clipboard, clipboardFirst, clipboardLast, packet.target(), packet.action() == 1);
+        if (result == null) { status.set(statusCode(PcbRegion.ERROR)); return false; }
+        editor.replaceTopology(result);
+        selected.set(-1);
+        moving.set(-1);
+        status.set(0);
+        finishEdit(before);
+        return true;
+    }
+
+    private net.minecraft.nbt.CompoundTag beginEdit() {
+        // Другой игрок или загрузка мира изменили стол: чужую работу не откатываем.
+        if (observedTopology != null && !observedTopology.equals(editor.topology())) {
+            undo.clear();
+            redo.clear();
+        }
+        return editor.topology().copy();
+    }
+
+    private void finishEdit(net.minecraft.nbt.CompoundTag before) {
+        if (!before.equals(editor.topology())) {
+            if (undo.size() == HISTORY_LIMIT) undo.removeFirst();
+            undo.addLast(before);
+            redo.clear();
+        }
+        observedTopology = editor.topology().copy();
+    }
+
+    private boolean applyClick(Player player, int id) {
+        if (editor == null) return false;
         if (editor.topology().getInt("Version") != PcbTopology.VERSION && id != CLEAR && id != LOAD) {
             status.set(statusCode(PcbTopology.UNSUPPORTED));
             return true;
@@ -226,6 +313,7 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             int definition = editor.topology().getIntArray(PcbWiring.KEY)[owner];
             part.set(PcbWiring.type(definition));
             rotation.set(PcbWiring.rotation(definition));
+            mirrored.set(PcbWiring.mirrored(definition) ? 1 : 0);
             resistance.set(PcbWiring.resistance(definition));
             threshold.set(PcbWiring.threshold(definition));
             contact.set(PcbWiring.normallyClosed(definition) ? 1 : 0);
@@ -287,6 +375,7 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             }
             case CONTACT -> contact.set(1 - contact.get());
             case ROTATE -> rotation.set((rotation.get() + 1) % 4);
+            case MIRROR -> mirrored.set(1 - mirrored.get());
             case OHMS -> {
                 draftNominal = Double.NaN;
                 if (!PcbModules.ALL[part()].resistanceSetting()) return false;
@@ -336,9 +425,10 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             }
             default -> { return false; }
         }
-        if (selected() >= 0 && (id == ROTATE || id == OHMS || id == VOLTS || id == CONTACT)
+        if (selected() >= 0 && (id == ROTATE || id == MIRROR || id == OHMS || id == VOLTS || id == CONTACT)
                 && !editor.updatePart(layer(), selected(), selectedDefinition())) {
             rotation.set(PcbWiring.rotation(previousDefinition));
+            mirrored.set(PcbWiring.mirrored(previousDefinition) ? 1 : 0);
             resistance.set(PcbWiring.resistance(previousDefinition));
             threshold.set(PcbWiring.threshold(previousDefinition));
             contact.set(PcbWiring.normallyClosed(previousDefinition) ? 1 : 0);

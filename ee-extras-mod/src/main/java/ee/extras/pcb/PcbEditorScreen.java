@@ -25,6 +25,28 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
     private java.util.List<PcbDiagnostics.Issue> diagnostics = java.util.List.of();
     private int bomScroll;
     private boolean panning;
+    private boolean showOtherLayers = true;
+    private int regionFirst = -1, regionLast = -1;
+    private boolean selectingRegion, hasClipboard;
+    private int regionMode;
+    private int templateFirst = -1, templateLast = -1;
+
+    private void regionPacket(int action, int target) {
+        net.neoforged.neoforge.network.PacketDistributor.sendToServer(new PcbEditorPackets.Region(menu.containerId, action, regionFirst, regionLast, target));
+    }
+
+    private void copyRegion() {
+        regionPacket(0, 0);
+        hasClipboard = true;
+        templateFirst = regionFirst;
+        templateLast = regionLast;
+    }
+
+    private boolean insideRegion(int cell) {
+        return regionFirst >= 0 && regionLast >= 0
+                && cell % 16 >= Math.min(regionFirst % 16, regionLast % 16) && cell % 16 <= Math.max(regionFirst % 16, regionLast % 16)
+                && cell / 16 >= Math.min(regionFirst / 16, regionLast / 16) && cell / 16 <= Math.max(regionFirst / 16, regionLast / 16);
+    }
     private net.minecraft.client.gui.components.EditBox catalogSearch;
     private String catalogSection = "Все";
     private int catalogScroll;
@@ -60,7 +82,7 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
             "Соединить дорожки на разных слоях", "Добавить контакт на краю первого слоя",
             "Очистить ячейку текущего слоя", "Поставить деталь на монтажной стороне (слой 1)",
             "Вырезать ячейку платы или вернуть материал",
-            "Выбрать модуль и указать новое место; ПКМ — выбрать и настроить",
+            "Модуль: клик и новое место; группа: Shift+рамка, клик внутри и новое место; Ctrl+C/V — копия",
             "Нажать на границу ячеек: разорвать соединение или восстановить его"
     };
     private int TOOL_X = 164;
@@ -240,7 +262,21 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
             if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) { catalogSearch.setFocused(false); setFocused(null); return true; }
             catalogSearch.keyPressed(key, scan, modifiers); return true;
         }
+        if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE && (regionMode != 0 || regionFirst >= 0)) {
+            regionMode = 0; regionFirst = regionLast = -1; selectingRegion = false; return true;
+        }
+        if (hasControlDown() && key == org.lwjgl.glfw.GLFW.GLFW_KEY_C && regionFirst >= 0) {
+            copyRegion(); return true;
+        }
+        if (hasControlDown() && key == org.lwjgl.glfw.GLFW.GLFW_KEY_V && hasClipboard) {
+            regionMode = 2; return true;
+        }
+        if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_H) { showOtherLayers = !showOtherLayers; return true; }
         if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_F7) { click(PcbEditorMenu.CHECK); return true; }
+        if (hasControlDown() && (key == org.lwjgl.glfw.GLFW.GLFW_KEY_Z || key == org.lwjgl.glfw.GLFW.GLFW_KEY_Y)) {
+            click(key == org.lwjgl.glfw.GLFW.GLFW_KEY_Y || hasShiftDown() ? PcbEditorMenu.REDO : PcbEditorMenu.UNDO);
+            return true;
+        }
         if (hasControlDown() || hasAltDown()) return super.keyPressed(key, scan, modifiers);
         if (key >= 49 && key <= 53 && key - 49 < recent.size()) { choosePart(recent.get(key - 49)); return true; }
         int tool = switch (key) {
@@ -252,6 +288,7 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
             default -> -1;
         };
         if (tool >= 0) { click(PcbEditorMenu.SELECT_TOOL + tool); return true; }
+        if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_F) { click(PcbEditorMenu.MIRROR); return true; }
         if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_R) { click(PcbEditorMenu.ROTATE); return true; }
         if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_TAB) {
             click(PcbEditorMenu.SELECT_TOOL + 2);
@@ -326,6 +363,10 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
         }
         double localX = mouseX - leftPos;
         double localY = mouseY - topPos;
+        if (button == 0 && localY >= 14 && localY < 25 && localX >= TOOL_X - 106 && localX < TOOL_X - 4) {
+            click(localX < TOOL_X - 55 ? PcbEditorMenu.UNDO : PcbEditorMenu.REDO);
+            return true;
+        }
         if (sidePalette) {
             if (catalogSearch.isMouseOver(mouseX, mouseY)) {
                 catalogSearch.mouseClicked(mouseX, mouseY, button); setFocused(catalogSearch); return true;
@@ -376,6 +417,19 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
         int x = (int) Math.floor((localX - GRID_X) / CELL);
         int y = (int) Math.floor((localY - GRID_Y) / CELL);
         if (x >= 0 && y >= 0 && x < PcbTopology.SIZE && y < PcbTopology.SIZE) {
+            int cell = y * 16 + x;
+            if (button == 0 && regionMode != 0) {
+                regionPacket(regionMode, cell);
+                regionMode = 0;
+                regionFirst = regionLast = -1;
+                return true;
+            }
+            if (button == 0 && menu.tool() == PcbEditorMenu.MOVE_TOOL && hasShiftDown()) {
+                regionFirst = regionLast = cell; selectingRegion = true; return true;
+            }
+            if (button == 0 && menu.tool() == PcbEditorMenu.MOVE_TOOL && insideRegion(cell)) {
+                copyRegion(); regionMode = 1; return true;
+            }
             if (button == 0 && menu.tool() == PcbEditorMenu.EDGE_TOOL) {
                 double sx = localX - GRID_X - x * CELL, sy = localY - GRID_Y - y * CELL;
                 int direction = Math.min(sx, CELL - sx) <= Math.min(sy, CELL - sy) ? (sx < CELL / 2.0 ? 0 : 1) : (sy < CELL / 2.0 ? 2 : 3);
@@ -394,6 +448,12 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dx, double dy) {
         if (bomOpen || diagnosticsOpen) return true;
         if (catalogOpen) return super.mouseDragged(mouseX, mouseY, button, dx, dy);
+        if (selectingRegion && button == 0) {
+            int x = Math.clamp((int) Math.floor((mouseX - leftPos - GRID_X) / CELL), 0, 15);
+            int y = Math.clamp((int) Math.floor((mouseY - topPos - GRID_Y) / CELL), 0, 15);
+            regionLast = y * 16 + x;
+            return true;
+        }
         if (button == 2 && panning) { GRID_X += (int) dx; GRID_Y += (int) dy; return true; }
         if (button != 0 || lastPaint < 0 || menu.tool() != 0 && menu.tool() != 4)
             return super.mouseDragged(mouseX, mouseY, button, dx, dy);
@@ -410,6 +470,7 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         lastPaint = -1;
+        if (selectingRegion && button == 0) { selectingRegion = false; return true; }
         panning = false;
         return super.mouseReleased(mouseX, mouseY, button);
     }
@@ -534,7 +595,7 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
         int[] definitions = topology.getIntArray(PcbWiring.KEY);
         int index = PcbFootprint.owner(definitions, menu.layer(), cell);
         if (index < 0) {
-            int start = menu.layer() * PcbTopology.CELLS;
+                    int start = menu.layer() * PcbTopology.CELLS;
             for (int anchor = start; anchor < Math.min(start + PcbTopology.CELLS, definitions.length); anchor++) {
                 int definition = definitions[anchor];
                 if (!PcbFootprint.valid(definition)) continue;
@@ -595,6 +656,18 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
                 int sx = leftPos + GRID_X + x * CELL;
                 int sy = topPos + GRID_Y + y * CELL;
                 graphics.fill(sx, sy, sx + CELL - 1, sy + CELL - 1, color);
+                if (showOtherLayers && !PcbTopology.cut(topology, cell)) {
+                    for (int other = 0; other < menu.level(); other++) {
+                        if (other == menu.layer() || !PcbWiring.conductor(PcbTopology.get(topology, other, cell))) continue;
+                        int ghost = new int[]{0x667CC6A1, 0x6669AEDB, 0x66CF9DE8}[other];
+                        int cx = sx + CELL / 2, cy = sy + CELL / 2;
+                        graphics.fill(cx - 1, cy - 1, cx + 2, cy + 2, ghost);
+                        if (x > 0 && PcbBoardRenderer.joins(topology, definitions, other, cell, cell - 1)) graphics.fill(sx, cy - 1, cx, cy + 2, ghost);
+                        if (x < 15 && PcbBoardRenderer.joins(topology, definitions, other, cell, cell + 1)) graphics.fill(cx, cy - 1, sx + CELL, cy + 2, ghost);
+                        if (y > 0 && PcbBoardRenderer.joins(topology, definitions, other, cell, cell - 16)) graphics.fill(cx - 1, sy, cx + 2, cy, ghost);
+                        if (y < 15 && PcbBoardRenderer.joins(topology, definitions, other, cell, cell + 16)) graphics.fill(cx - 1, cy, cx + 2, sy + CELL, ghost);
+                    }
+                }
                 if (PcbWiring.conductor(value)) {
                     int ink = value == PcbTopology.VIA ? 0xFF69D4DB : value == PcbTopology.TERMINAL ? 0xFF79D878 : 0xFFD17B45;
                     if (highlighted[menu.layer() * PcbTopology.CELLS + cell]) ink = 0xFFFFE59A;
@@ -609,6 +682,15 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
                 if (PcbTopology.edgeCut(topology, menu.layer(), cell, 1)) graphics.fill(sx + CELL - 1, sy + CELL / 2 - 2, sx + CELL + 1, sy + CELL / 2 + 2, 0xFFE57C72);
                 if (PcbTopology.edgeCut(topology, menu.layer(), cell, 3)) graphics.fill(sx + CELL / 2 - 2, sy + CELL - 1, sx + CELL / 2 + 2, sy + CELL + 1, 0xFFE57C72);
 
+            }
+        }
+        if (showOtherLayers && menu.layer() != 0) {
+            for (int anchor = 0; anchor < Math.min(PcbTopology.CELLS, definitions.length); anchor++) {
+                if (!PcbFootprint.valid(definitions[anchor])) continue;
+                int x = leftPos + GRID_X + anchor % 16 * CELL, y = topPos + GRID_Y + anchor / 16 * CELL;
+                int w = PcbFootprint.width(definitions[anchor]) * CELL, h = PcbFootprint.height(definitions[anchor]) * CELL;
+                graphics.fill(x, y, x + w, y + h, 0x224FC89A);
+                graphics.renderOutline(x, y, w, h, 0x667CC6A1);
             }
         }
         int start = menu.layer() * PcbTopology.CELLS;
@@ -651,6 +733,24 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
             graphics.renderOutline(sx, sy, CELL, CELL, 0xFFFF7566);
             graphics.drawString(font, "!", sx + 1, sy + 1, 0xFFFFB294, false);
             graphics.pose().popPose();
+        }
+        int firstRegion = regionMode == 2 ? templateFirst : regionFirst;
+        int lastRegion = regionMode == 2 ? templateLast : regionLast;
+        if (firstRegion >= 0 && lastRegion >= 0) {
+            int x0 = Math.min(firstRegion % 16, lastRegion % 16), y0 = Math.min(firstRegion / 16, lastRegion / 16);
+            int w = Math.abs(firstRegion % 16 - lastRegion % 16) + 1, h = Math.abs(firstRegion / 16 - lastRegion / 16) + 1;
+            int sx = leftPos + GRID_X + x0 * CELL, sy = topPos + GRID_Y + y0 * CELL;
+            if (regionFirst >= 0) {
+                graphics.fill(sx, sy, sx + w * CELL, sy + h * CELL, 0x334EA6DF);
+                graphics.renderOutline(sx, sy, w * CELL, h * CELL, PcbRegion.selection(topology, regionFirst, regionLast) ? 0xFF8DD6F0 : 0xFFFF7566);
+            }
+            if (regionMode != 0 && lastHoverCell >= 0) {
+                sx = leftPos + GRID_X + lastHoverCell % 16 * CELL;
+                sy = topPos + GRID_Y + lastHoverCell / 16 * CELL;
+                boolean fits = lastHoverCell % 16 + w <= 16 && lastHoverCell / 16 + h <= 16;
+                graphics.fill(sx, sy, sx + w * CELL, sy + h * CELL, fits ? 0x334EA6DF : 0x33F07566);
+                graphics.renderOutline(sx, sy, w * CELL, h * CELL, fits ? 0xFF8DD6F0 : 0xFFFF7566);
+            }
         }
         graphics.disableScissor();
         if (sidePalette) renderSidePalette(graphics);
@@ -874,7 +974,11 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawString(font, title, 12, 8, 0xFFE7ECE8, false);
+        graphics.drawString(font, font.plainSubstrByWidth(title.getString(), Math.max(20, TOOL_X - 122 - canvasLeft)), canvasLeft, 16, 0xFFE7ECE8, false);
+        graphics.fill(TOOL_X - 106, 14, TOOL_X - 57, 25, 0xFF3A5148);
+        graphics.fill(TOOL_X - 55, 14, TOOL_X - 4, 25, 0xFF3A5148);
+        graphics.drawCenteredString(font, "Отмена", TOOL_X - 82, 16, 0xFFE7ECE8);
+        graphics.drawCenteredString(font, "Повтор", TOOL_X - 29, 16, 0xFFE7ECE8);
         graphics.drawString(font, "Инструменты", TOOL_X, 16, 0xFFD5DDD8, false);
         for (int tool = 0; tool < TOOLS.length; tool++) {
             int x = TOOL_X + tool % 3 * TOOL_WIDTH + TOOL_WIDTH / 2;
@@ -912,7 +1016,7 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
         boolean supply = input.getItem() instanceof PcbSupplyItem;
         double limit = supply ? PcbSupplyBlock.VOLTS[PcbSupplyItem.setting(input)] : PcbWiring.VOLTS[menu.threshold()];
         String[] arrows = {"→", "↓", "←", "↑"};
-        String orientation = arrows[menu.rotation()];
+        String orientation = arrows[menu.rotation()] + (PcbWiring.mirrored(menu.selectedDefinition()) ? " · F" : "");
         if (kind == PcbCircuitDevice.Kind.RELAY) orientation += " · НО/НЗ";
         String[] partLabels = {"Поворот " + orientation,
                 kind == PcbCircuitDevice.Kind.CAPACITOR ? (int) value + " мФ" : (int) value + " Ом",
@@ -937,9 +1041,10 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
             graphics.drawCenteredString(font, partLabels[row], PALETTE_X + 45, SETTINGS_Y + 3 + row * SETTINGS_ROW, 0xFFFFFFFF);
         }
         if (TOOL_X > 260) {
+            graphics.drawString(font, "Ctrl+Z: отмена · Ctrl+Y: повтор", 184, height - 23, 0xFF9FB5AD, false);
             graphics.drawString(font, "Ведомость M", 184, height - 68, 0xFFE0E8E1, false);
             graphics.drawString(font, "Деталей: " + bill().values().stream().mapToInt(Integer::intValue).sum() + "/64", 184, height - 53, 0xFF9FB5AD, false);
-            graphics.drawString(font, "Масштаб " + Math.round(CELL / 9.0 * 100) + "% · Home", 184, height - 38, 0xFF9FB5AD, false);
+            graphics.drawString(font, "Масштаб " + Math.round(CELL / 9.0 * 100) + "% · Home · Слои H", 184, height - 38, 0xFF9FB5AD, false);
         }
         int color = menu.status() == 1 ? 0xFF79D878 : menu.status() >= 4 ? 0xFFE57C72 : 0xFFB6C0BA;
         String status = menu.status() == 0 ? "Проект не проверен" : menu.statusText();

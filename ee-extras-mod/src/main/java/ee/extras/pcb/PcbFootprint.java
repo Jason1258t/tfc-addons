@@ -67,10 +67,15 @@ final class PcbFootprint {
     static int pinCell(int anchor, int definition, int pin) {
         int w = baseWidth(definition);
         int h = baseHeight(definition);
-        if (PcbModules.get(definition).sections() == 1 && PcbModules.get(definition).pins() > 5)
-            return ringCell(anchor,w,h,PcbWiring.rotation(definition),pin,PcbModules.get(definition).pins());
-        int x = PcbModules.get(definition).sections() > 1 ? (pin % 2 == 0 ? -1 : w) : switch (pin) { case 0 -> -1; case 1, 4 -> w; default -> (w - 1) / 2; };
-        int y = PcbModules.get(definition).sections() > 1 ? pin / 2 : switch (pin) { case 2 -> -1; case 3 -> h; case 4 -> h - 1; default -> (h - 1) / 2; };
+        int x, y;
+        if (PcbModules.get(definition).sections() == 1 && PcbModules.get(definition).pins() > 5) {
+            int[] point = ringPoint(w, h, pin, PcbModules.get(definition).pins());
+            x = point[0]; y = point[1];
+        } else {
+            x = PcbModules.get(definition).sections() > 1 ? (pin % 2 == 0 ? -1 : w) : switch (pin) { case 0 -> -1; case 1, 4 -> w; default -> (w - 1) / 2; };
+            y = PcbModules.get(definition).sections() > 1 ? pin / 2 : switch (pin) { case 2 -> -1; case 3 -> h; case 4 -> h - 1; default -> (h - 1) / 2; };
+        }
+        if (PcbWiring.mirrored(definition)) x = w - 1 - x;
         for (int r = 0; r < PcbWiring.rotation(definition); r++) {
             int nextX = h - 1 - y;
             y = x;
@@ -89,12 +94,8 @@ final class PcbFootprint {
     static int ringCell(int anchor,int w,int h,int rotation,int pin,int count) {
         int capacity=2*w+2*h+4;
         if (w<1 || h<1 || count<1 || count>capacity || pin<0 || pin>=count) return -1;
-        int slot=pin*capacity/count;
-        int x,y;
-        if (slot<w+2) { x=slot-1; y=-1; }
-        else if ((slot-=w+2)<h+1) { x=w; y=slot; }
-        else if ((slot-=h+1)<w+1) { x=w-1-slot; y=h; }
-        else { slot-=w+1; x=-1; y=h-1-slot; }
+        int[] point=ringPoint(w,h,pin,count);
+        int x=point[0],y=point[1];
         for (int r=0;r<rotation;r++) {
             int nextX=h-1-y; y=x; x=nextX;
             int nextWidth=h; h=w; w=nextWidth;
@@ -103,7 +104,26 @@ final class PcbFootprint {
         return x<0 || y<0 || x>=PcbTopology.SIZE || y>=PcbTopology.SIZE ? -1 : y*PcbTopology.SIZE+x;
     }
 
-    static void isolatePins(CompoundTag tag, int layer, int anchor, int definition) {
+    private static int[] ringPoint(int w, int h, int pin, int count) {
+        int slot=pin*(2*w+2*h+4)/count;
+        int x,y;
+        if (slot<w+2) { x=slot-1; y=-1; }
+        else if ((slot-=w+2)<h+1) { x=w; y=slot; }
+        else if ((slot-=h+1)<w+1) { x=w-1-slot; y=h; }
+        else { slot-=w+1; x=-1; y=h-1-slot; }
+        return new int[]{x,y};
+    }
+
+    static void rebuildPinCuts(CompoundTag tag) {
+        byte[] edges = new byte[PcbTopology.CELLS * PcbTopology.MAX_LAYERS];
+        int[] definitions = tag.getIntArray(PcbWiring.KEY);
+        for (int index = 0; index < definitions.length; index++) {
+            if (valid(definitions[index])) isolatePins(edges, index / PcbTopology.CELLS, index % PcbTopology.CELLS, definitions[index]);
+        }
+        tag.putByteArray(PcbTopology.PIN_EDGES, edges);
+    }
+
+    private static void isolatePins(byte[] edges, int layer, int anchor, int definition) {
         int count = PcbModules.get(definition).pins();
         for (int a = 0; a < count; a++) {
             int first = pinCell(anchor, definition, a);
@@ -112,8 +132,10 @@ final class PcbFootprint {
                 if (PcbModules.get(definition).sections() > 1 && a / 2 == b / 2) continue;
                 int second = pinCell(anchor, definition, b);
                 for (int direction = 0; direction < 4; direction++) {
-                    if (PcbTopology.neighbor(first, direction) == second)
-                        PcbTopology.setEdgeCut(tag, layer, first, direction, true);
+                    if (PcbTopology.neighbor(first, direction) == second) {
+                        edges[layer * PcbTopology.CELLS + first] |= (byte) (1 << direction);
+                        edges[layer * PcbTopology.CELLS + second] |= (byte) (1 << (direction ^ 1));
+                    }
                 }
             }
         }

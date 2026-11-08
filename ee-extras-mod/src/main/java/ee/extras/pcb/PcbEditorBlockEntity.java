@@ -193,6 +193,19 @@ public class PcbEditorBlockEntity extends BlockEntity implements MenuProvider, C
                 ? PcbAssembly.RECOVERED : PcbAssembly.NO_RECOVERY;
     }
 
+    void replaceTopology(CompoundTag snapshot) {
+        topology = snapshot.copy();
+        sync();
+    }
+
+    void restoreTopology(CompoundTag snapshot) {
+        topology = snapshot.copy();
+        // Старый пакет настроек не должен примениться к восстановленному экземпляру.
+        topology.remove(PcbModuleIds.KEY);
+        PcbModuleIds.normalize(new CompoundTag(), topology);
+        sync();
+    }
+
     private void sync() {
         setChanged();
         if (level != null && !level.isClientSide) {

@@ -27,6 +27,7 @@ final class PcbSequentialTest {
             int selected=type;
             root.then(Commands.literal(new String[]{"flip","counter","register","decoder"}[type-23]).executes(c->build(c.getSource(),selected)));
         }
+        root.then(Commands.literal("mirrored-register").executes(c -> build(c.getSource(),25,true)));
         root.then(Commands.literal("resume").executes(c->{
             var saved=new CompoundTag();device(c.getSource().getLevel(),BOARD).write(saved);
             var part=saved.getList("Circuit",net.minecraft.nbt.Tag.TAG_COMPOUND).getCompound(0);
@@ -48,11 +49,16 @@ final class PcbSequentialTest {
     private static BlockPos probe(int i) { return BOARD.offset(-4,0,i*2); }
     private static PcbCircuitDevice device(ServerLevel level,BlockPos pos) { return DevicesSavedData.load(level).getDevice(pos,PcbCircuitDevice.class); }
     private static void check(boolean ok,String message) { if(!ok) throw new IllegalStateException("Память L2: "+message); }
-    private static int build(CommandSourceStack source,int type) {
+    private static int build(CommandSourceStack source,int type) { return build(source,type,false); }
+    private static int build(CommandSourceStack source,int type,boolean mirrored) {
         var level=source.getLevel();
         for(int i=0;i<5;i++) { DevTest.place(level,input(i),Blocks.AIR.defaultBlockState()); if(i<4) DevTest.place(level,probe(i),Blocks.AIR.defaultBlockState()); }
         DevTest.place(level,BOARD,Blocks.AIR.defaultBlockState()); DevTest.place(level,SUPPLY,Blocks.AIR.defaultBlockState());
         int definition=PcbModulesTest.definition(type,0);
+        if (mirrored) {
+            try { definition=PcbModulesTest.call(Class.forName("ee.extras.pcb.PcbWiring"),null,"mirror",definition); }
+            catch(ClassNotFoundException e) { throw new IllegalStateException(e); }
+        }
         pins=PcbModulesTest.modulePins(definition);
         inputs=type==23?3:type==25?5:2; outputs=type==23?2:4;
         var topology=PcbTopology.create(2);

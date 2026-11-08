@@ -171,8 +171,11 @@ public final class PcbModulesTest {
             }
         }
         for (int type = 0; type < PcbWiring.KINDS.length; type++) {
-            for (int rotation = 0; rotation < 4; rotation++) {
+            for (int rotation = 0; rotation < 4; rotation++) for (int mirrored = 0; mirrored < 2; mirrored++) {
                 int definition = PcbWiring.component(type, rotation, 3, 0, false);
+                if (mirrored != 0) definition = call(PcbWiring.TYPE, null, "mirror", definition);
+                int twice = call(PcbWiring.TYPE, null, "mirror", (int) call(PcbWiring.TYPE, null, "mirror", definition));
+                check(twice == definition, "двойное отражение сохраняет определение");
                 var tag = PcbTopology.create(PcbWiring.minimumLevel(type));
                 int anchor = 5 * 16 + 5;
                 check(PcbFootprint.canPlace(tag, 0, anchor, definition, -1), "свободное место");
@@ -183,6 +186,13 @@ public final class PcbModulesTest {
                 for (int pin = 0; pin < modulePins(definition); pin++) {
                     int cell = PcbWiring.pinCell(anchor, definition, pin);
                     check(cell >= 0 && pins.add(cell) && !PcbFootprint.contains(anchor, definition, cell), "независимый вывод снаружи корпуса");
+                    if (mirrored != 0) {
+                        int original = PcbWiring.pinCell(anchor, (int) call(PcbWiring.TYPE, null, "mirror", definition), pin);
+                        int px = original % 16 - 5, py = original / 16 - 5;
+                        int expected = (rotation & 1) == 0 ? (5 + py) * 16 + 5 + PcbFootprint.width(definition) - 1 - px
+                                : (5 + PcbFootprint.height(definition) - 1 - py) * 16 + 5 + px;
+                        check(cell == expected, "отражённый вывод сохраняет имя и меняет координату");
+                    }
                 }
                 int far = anchor + (PcbFootprint.height(definition) - 1) * 16 + PcbFootprint.width(definition) - 1;
                 check(PcbFootprint.owner(tag, 0, far) == anchor, "выбор на дальнем краю");
@@ -197,6 +207,20 @@ public final class PcbModulesTest {
                 check(PcbFootprint.validate(PcbTopology.normalize(tag, 1)), "геометрия сохраняется после нормализации");
                 checks++;
             }
+        }
+        var pinCuts = PcbTopology.create(2);
+        PcbTopology.set(pinCuts, 0, 85, PcbTopology.COMPONENT);
+        call(PcbTopology.class, null, "setPart", pinCuts, 0, 85, definition(25,0));
+        call(PcbTopology.class, null, "setEdgeCut", pinCuts, 0, 0, 1, true);
+        check(java.util.stream.IntStream.range(0, pinCuts.getByteArray("PinCuts").length).anyMatch(i -> pinCuts.getByteArray("PinCuts")[i] != 0), "плотный корпус изолирует соседние выводы");
+        PcbTopology.set(pinCuts, 0, 85, PcbTopology.EMPTY);
+        check(java.util.stream.IntStream.range(0, pinCuts.getByteArray("PinCuts").length).allMatch(i -> pinCuts.getByteArray("PinCuts")[i] == 0), "удаление убирает автоматические разрывы");
+        check((boolean) call(PcbTopology.class, null, "edgeCut", pinCuts, 0, 0, 1), "ручной разрыв сохраняется отдельно");
+        for (var face : net.minecraft.core.Direction.values()) for (int cell : new int[]{0,15,240,255}) {
+            net.minecraft.world.phys.AABB bounds = call(PcbCircuitBlock.class, null, "contactBounds", cell, face);
+            double[] dimensions = {bounds.getXsize(), bounds.getYsize(), bounds.getZsize()};
+            java.util.Arrays.sort(dimensions);
+            check(Math.abs(dimensions[0]-.75/16)<1e-9 && Math.abs(dimensions[1]-.75/16)<1e-9 && Math.abs(dimensions[2]-1.0/16)<1e-9, "обводка совпадает с площадкой на " + face);
         }
         ServerLevel level = source.getLevel();
         BlockPos pos = new BlockPos(20, -60, 20);
@@ -213,6 +237,8 @@ public final class PcbModulesTest {
         check(((editor.topology().getIntArray(PcbWiring.KEY)[68] - 1) >>> 10 & 15) == 1, "настройка меняет установленный модуль");
         menu.clickMenuButton(player, PcbEditorMenu.ROTATE);
         check(PcbFootprint.width(editor.topology().getIntArray(PcbWiring.KEY)[68]) == 2, "поворот установленного модуля");
+        menu.clickMenuButton(player, PcbEditorMenu.MIRROR);
+        check((boolean) call(PcbWiring.TYPE, null, "mirrored", editor.topology().getIntArray(PcbWiring.KEY)[68]), "F отражает установленный корпус");
         menu.clickMenuButton(player, PcbEditorMenu.SELECT_TOOL + 7);
         menu.clickMenuButton(player, 5 * 16 + 5);
         menu.clickMenuButton(player, 8 * 16 + 8);
@@ -221,6 +247,35 @@ public final class PcbModulesTest {
         menu.clickMenuButton(player, PcbEditorMenu.SELECT_TOOL + 4);
         menu.clickMenuButton(player, 9 * 16 + 9);
         check(!PcbWiring.active(editor.topology()), "ластик удаляет весь модуль");
+        check(menu.clickMenuButton(player, PcbEditorMenu.UNDO), "отмена удаления");
+        check(PcbFootprint.owner(editor.topology(), 0, 153) == 136, "отмена восстанавливает весь корпус");
+        long restoredId = editor.topology().getCompound("ModuleIds").getLong("136");
+        check(menu.clickMenuButton(player, PcbEditorMenu.UNDO), "отмена переноса");
+        check(PcbFootprint.owner(editor.topology(), 0, 85) == 68, "отмена возвращает исходное место");
+        check(menu.clickMenuButton(player, PcbEditorMenu.REDO), "повтор переноса");
+        check(PcbFootprint.owner(editor.topology(), 0, 153) == 136, "повтор возвращает новое место");
+        check(editor.topology().getCompound("ModuleIds").getLong("136") != restoredId, "история обновляет идентичность для защиты от старых пакетов");
+        menu.clickMenuButton(player, PcbEditorMenu.SELECT_TOOL);
+        menu.clickMenuButton(player, 200);
+        check(!menu.clickMenuButton(player, PcbEditorMenu.REDO), "новая правка сбрасывает повтор");
+        editor.setCell(0, 201, PcbTopology.TRACE);
+        check(!menu.clickMenuButton(player, PcbEditorMenu.UNDO), "внешняя правка защищена от отмены");
+        menu.clickMenuButton(player, 202);
+        menu.clickMenuButton(player, 202);
+        check(menu.clickMenuButton(player, PcbEditorMenu.UNDO), "неизменившееся действие не засоряет историю");
+        check(PcbTopology.get(editor.topology(), 0, 202) == PcbTopology.EMPTY, "отмена реальной правки после повтора клика");
+        menu.clickMenuButton(player, PcbEditorMenu.CLEAR);
+        check(menu.clickMenuButton(player, PcbEditorMenu.UNDO), "очистка отменяется");
+        check(PcbTopology.get(editor.topology(), 0, 201) == PcbTopology.TRACE, "очистка восстанавливает все слои проекта");
+        menu.clickMenuButton(player, PcbEditorMenu.LEVEL);
+        check(menu.clickMenuButton(player, PcbEditorMenu.UNDO) && menu.level() == 1, "отмена уровня синхронизирует меню");
+        menu.clickMenuButton(player, PcbEditorMenu.CLEAR);
+        for (int cell = 0; cell < 70; cell++) menu.clickMenuButton(player, cell);
+        for (int step = 0; step < 64; step++) check(menu.clickMenuButton(player, PcbEditorMenu.UNDO), "ограниченная история " + step);
+        check(!menu.clickMenuButton(player, PcbEditorMenu.UNDO), "история ограничена 64 шагами");
+        source.sendSuccess(() -> Component.literal("История: отмена/повтор/удаление/перенос/очистка/уровень, защита от чужих правок и старых пакетов, лимит64 — пройдены"), false);
+        PcbRegionTest.run(menu, editor, player);
+        source.sendSuccess(() -> Component.literal("Участок платы: копия/перекрывающийся перенос/слои/контур/номинал/отражение/идентичность/разрывы/отмена — пройдены"), false);
         // Замкнутая трассировка: вывод — кнопка 2×2 — лампа 2×2 — вывод.
         editor.clear(1);
         menu = new PcbEditorMenu(92, player.getInventory(), ContainerLevelAccess.create(level, pos), editor);
@@ -267,8 +322,9 @@ public final class PcbModulesTest {
             net.minecraft.world.phys.shapes.VoxelShape shape = call(PcbCircuitBlockEntity.class, board, "shape");
             check(shape.toAabbs().stream().anyMatch(box -> box.contains(mounted)), "форма кнопки на грани " + face);
         }
-        for (int rotation = 0; rotation < 4; rotation++) {
+        for (int rotation = 0; rotation < 4; rotation++) for (int mirrored = 0; mirrored < 2; mirrored++) {
             int sliderDefinition = PcbWiring.component(15, rotation, 5, 0, false);
+            if (mirrored != 0) sliderDefinition = call(PcbWiring.TYPE, null, "mirror", sliderDefinition);
             for (var face : net.minecraft.core.Direction.values()) {
                 for (int percent : new int[]{0, 25, 50, 75, 100}) {
                     double x = 0;
@@ -285,7 +341,7 @@ public final class PcbModulesTest {
                 }
             }
         }
-        source.sendSuccess(() -> Component.literal("Платы: " + (PcbWiring.KINDS.length * 4) + " вариантов корпуса и поворота, настройка/перенос/удаление через меню, компиляция, намеренный обрыв, слои, старый формат, шесть граней, 120 положений ползунка и 11 выводов на корпусе регистра3×2 — успешно"), false);
+        source.sendSuccess(() -> Component.literal("Платы: " + (PcbWiring.KINDS.length * 8) + " вариантов корпуса и поворота, настройка/перенос/удаление через меню, компиляция, намеренный обрыв, слои, старый формат, шесть граней, 240 положений ползунка и 11 выводов на корпусе регистра3×2 — успешно"), false);
         return checks;
     }
 }

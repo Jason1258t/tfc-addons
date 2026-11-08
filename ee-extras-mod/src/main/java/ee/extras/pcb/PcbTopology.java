@@ -10,7 +10,7 @@ public final class PcbTopology {
     public static final int SIZE = 16;
     public static final int CELLS = SIZE * SIZE;
     public static final int MAX_LAYERS = 3;
-    public static final int VERSION = 8;
+    public static final int VERSION = 9;
     static final String UNSUPPORTED = "Старый формат проекта: очистите редактор и соберите схему заново";
 
     public static final int EMPTY = 0;
@@ -20,6 +20,7 @@ public final class PcbTopology {
     public static final int TERMINAL = 4;
 
     static final String EDGES = "TraceCuts";
+    static final String PIN_EDGES = "PinCuts";
 
     static int neighbor(int cell, int direction) {
         int x = cell % SIZE, y = cell / SIZE;
@@ -34,8 +35,10 @@ public final class PcbTopology {
 
     static boolean edgeCut(CompoundTag tag, int layer, int cell, int direction) {
         byte[] edges = tag.getByteArray(EDGES);
+        byte[] pins = tag.getByteArray(PIN_EDGES);
         int index = layer * CELLS + cell;
-        return index >= 0 && index < edges.length && (edges[index] & (1 << direction)) != 0;
+        return index >= 0 && index < edges.length && (edges[index] & (1 << direction)) != 0
+                || index >= 0 && index < pins.length && (pins[index] & (1 << direction)) != 0;
     }
 
     static boolean connected(CompoundTag tag, int layer, int first, int second) {
@@ -101,6 +104,7 @@ public final class PcbTopology {
             }
             if (!parameters.isEmpty()) result.put(PcbParameters.KEY, parameters);
         }
+        PcbFootprint.rebuildPinCuts(result);
         PcbModuleIds.normalize(source, result);
         return result;
     }
@@ -158,7 +162,7 @@ public final class PcbTopology {
         }
         if (PcbWiring.valid(definition)) PcbModuleIds.ensure(tag, index);
         tag.putIntArray(PcbWiring.KEY, parts);
-        if (definition > 0 && PcbWiring.valid(definition)) PcbFootprint.isolatePins(tag, layer, cell, definition);
+        PcbFootprint.rebuildPinCuts(tag);
     }
 
     public static void setLevel(CompoundTag tag, int level) {
@@ -191,6 +195,7 @@ public final class PcbTopology {
         else target.remove("Cut");
         if (source.contains(PcbWiring.KEY)) target.putIntArray(PcbWiring.KEY, source.getIntArray(PcbWiring.KEY).clone());
         else target.remove(PcbWiring.KEY);
+        PcbFootprint.rebuildPinCuts(target);
     }
 
     public static void attach(ItemStack stack, CompoundTag topology) {

@@ -59,7 +59,7 @@ final class PcbPartModels {
         poses.translate((x + PcbFootprint.width(definition) / 2f) / 16, 1f / 16,
                 (z + PcbFootprint.height(definition) / 2f) / 16);
         poses.mulPose(Axis.YP.rotationDegrees(-90 * PcbWiring.rotation(definition)));
-        poses.scale(PcbFootprint.baseWidth(definition), 1, PcbFootprint.baseHeight(definition));
+        poses.scale(PcbWiring.mirrored(definition) ? -PcbFootprint.baseWidth(definition) : PcbFootprint.baseWidth(definition), 1, PcbFootprint.baseHeight(definition));
         poses.translate(-0.5, 0, -0.5);
         float tint = burnt ? 0.35f : 1f;
         minecraft.getBlockRenderer().getModelRenderer().renderModel(poses.last(), vertices, null, model,
@@ -124,7 +124,7 @@ final class PcbPartModels {
             poses.translate((x + PcbFootprint.width(definition) / 2f) / 16, 1f / 16,
                     (z + PcbFootprint.height(definition) / 2f) / 16);
             poses.mulPose(Axis.YP.rotationDegrees(-90 * PcbWiring.rotation(definition)));
-            poses.scale(module.width(), 1, module.height());
+            poses.scale(PcbWiring.mirrored(definition) ? -module.width() : module.width(), 1, module.height());
             poses.translate(-0.5, 0, -0.5);
             var glow = Minecraft.getInstance().getModelManager().getModel(id(module.kind() == PcbCircuitDevice.Kind.LAMP ? "lamp_glow" : module.sections() > 1 ? "light_segment_glow" : "light_glow"));
             var vertices = buffers.getBuffer(com.simibubi.create.foundation.render.RenderTypes.additive());

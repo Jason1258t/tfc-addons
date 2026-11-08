@@ -20,9 +20,23 @@ public final class PcbEditorPackets {
         @Override public Type<Parameters> type() { return TYPE; }
     }
 
+    public record Region(int container, int action, int first, int last, int target) implements CustomPacketPayload {
+        private static final Type<Region> TYPE = new Type<>(EeExtras.rl("pcb_region"));
+        private static final StreamCodec<ByteBuf, Region> CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, Region::container, ByteBufCodecs.VAR_INT, Region::action,
+                ByteBufCodecs.VAR_INT, Region::first, ByteBufCodecs.VAR_INT, Region::last,
+                ByteBufCodecs.VAR_INT, Region::target, Region::new);
+        @Override public Type<Region> type() { return TYPE; }
+    }
+
     public static void register(IEventBus bus) { bus.addListener(PcbEditorPackets::registerPayload); }
 
     private static void registerPayload(RegisterPayloadHandlersEvent event) {
+        event.registrar("1").playToServer(Region.TYPE, Region.CODEC, (packet, context) -> {
+            var player = context.player();
+            if (player.containerMenu instanceof PcbEditorMenu menu && menu.containerId == packet.container() && menu.stillValid(player))
+                menu.applyRegion(packet);
+        });
         event.registrar("1").playToServer(Parameters.TYPE, Parameters.CODEC, (packet, context) -> {
             var player = context.player();
             if (player.containerMenu instanceof PcbEditorMenu menu && menu.containerId == packet.container() && menu.stillValid(player))
