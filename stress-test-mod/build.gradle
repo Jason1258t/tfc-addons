@@ -1,0 +1,22 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.148'
+}
+
+version = mod_version
+group = 'stress.test'
+base { archivesName = 'stress-test' }
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+// Мод только для стенда (client-stand / pack_client mods=[…]): на сайт и в сборку не идёт, addon.json нет
+neoForge {
+    version = project.neo_version
+}
+
+dependencies {
+    // Create, Electro Energetics, EE Extras, IE и TFC — только для компиляции (libs.sh)
+    compileOnly fileTree(dir: 'libs', include: '*.jar')
+}
+
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }

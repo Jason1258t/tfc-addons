@@ -1,0 +1,20 @@
+# Как у хоста 06.11: станция и загон на базе держатся загруженными (forceload), игрок улетает на 500 новых чанков
+# и висит там 5 минут.
+# settle: 840
+wait 30
+mark без нагрузки
+wait 60
+cmd stress plant
+cmd stress pigs 50
+cmd forceload add ~-32 ~-20 ~32 ~16
+wait 60
+cmd stress report
+mark база загружена
+wait 120
+mark пролёт от базы
+cmd spark profiler start --timeout 600
+fly 500 1.0 220
+mark АФК вдали, база загружена
+wait 300
+cmd stress report
+end

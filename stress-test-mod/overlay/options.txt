@@ -1,0 +1,12 @@
+lang:ru_ru
+onboardAccessibility:false
+tutorialStep:none
+pauseOnLostFocus:false
+narrator:0
+renderDistance:12
+simulationDistance:12
+graphicsMode:0
+maxFps:30
+renderClouds:"false"
+entityShadows:false
+particles:2

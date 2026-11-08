@@ -1,0 +1,14 @@
+# Паровая электростанция с нагрузкой (котёл, генератор с трёхфазным узлом, двигатели, 15 потребителей, IE, освещение
+# на двухжильном кабеле), игрок стоит рядом 10 минут.
+# settle: 840
+wait 30
+mark без станции
+wait 60
+cmd stress plant
+wait 60
+cmd stress report
+mark станция, 10 минут
+cmd spark profiler start --timeout 600
+wait 600
+cmd stress report
+end

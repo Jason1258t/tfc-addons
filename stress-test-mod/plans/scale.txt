@@ -1,0 +1,18 @@
+# Масштаб: 4 станции рядом (EE-симуляция и Create вчетверо), 5 минут; потом загон на 50 свиней TFC, ещё 5 минут.
+# settle: 840
+wait 30
+mark без станций
+wait 60
+cmd stress plant 4
+wait 60
+cmd stress report
+mark 4 станции
+cmd spark profiler start --timeout 300
+wait 300
+cmd stress pigs 50
+wait 20
+mark 4 станции + 50 свиней
+cmd spark profiler start --timeout 300
+wait 300
+cmd stress report
+end

@@ -1,0 +1,17 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+license = "MIT"
+
+# Только для стенда: стресс-сценарии и замер тиков (tools/stress-test-mod/README.md). Игрокам не ставится.
+[[mods]]
+modId = "stress_test"
+version = "1.0.0"
+displayName = "TFC Studio: Stress Test"
+description = "Стенд: сценарии нагрузки (пролёт, электростанция EE, загон животных) и замер тиков сервера."
+
+[[dependencies.stress_test]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.244,)"
+ordering = "NONE"
+side = "BOTH"
