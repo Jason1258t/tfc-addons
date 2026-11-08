@@ -3,6 +3,6 @@
   "minVersion": "0.8",
   "package": "rw.hostfix.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": ["TFCRealWorldConfigMixin"],
+  "mixins": ["ColdSweatModifierInitMixin", "TFCRealWorldConfigMixin"],
   "injectors": { "defaultRequire": 1 }
 }

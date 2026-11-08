@@ -16,15 +16,17 @@ neoForge {
         server {
             server()
             programArgument '--nogui'
+            // JVM_ARGS из test-server.sh — например -Drw_host_fix.coldsweat.disabled=true
+            (System.getenv('JVM_ARGS') ?: '').split(' ').findAll { it }.each { jvmArgument it }
         }
     }
 }
 
 dependencies {
-    // TFC Real World и аддон — только для компиляции проверочного мода; на сервер их кладёт test-server.sh
+    // TFC Real World, Cold Sweat и аддон — только для компиляции проверочного мода; на сервер их кладёт test-server.sh
     // Jar сборки — кеш снимка (npm run pack:fetch) или TFC_MODS_DIR
     def packMods = System.getenv('TFC_MODS_DIR') ?: "${System.getenv('TFC_PACK_CACHE') ?: System.getProperty('user.home') + '/.cache/tfc-plans/pack'}/mods"
-    compileOnly fileTree(dir: packMods, include: 'TFC-Real-World-NeoForge-*.jar')
+    compileOnly fileTree(dir: packMods, includes: ['TFC-Real-World-NeoForge-*.jar', 'ColdSweat-*.jar'])
 }
 
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }

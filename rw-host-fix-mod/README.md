@@ -1,6 +1,7 @@
 # TFC Real World: Host Fix (`rw_host_fix`)
 
-Миксин-аддон для TFC Real World 4.1.4 + TFC Eratosthenes 4.0.0. Две правки.
+Миксин-аддон для «мира хоста» (одиночный мир, открытый для сети): TFC Real World 4.1.4 + TFC Eratosthenes 4.0.0,
+Cold Sweat 2.4.2. Три правки.
 
 ## 1. Хост меняет измерение — карта «ломается» для всех
 
@@ -40,15 +41,38 @@
 
 Ограничение: точку портала по ту сторону Minecraft ищет (и грузит чанки) до этого события — отменить это нельзя.
 
+## 3. Cold Sweat роняет сервер хоста при входе в мир (1.1.0, dev-задача #314)
+
+**Что было.** Стресс-прогон на клиентском стенде 08.11.2026: встроенный сервер упал через 3 с после входа игрока —
+`ConcurrentModificationException` в `TempModifierRegistry.getHolder` из тика температуры игрока. Гонка случайная:
+три прогона из четырёх прошли.
+
+**Почему (по байткоду Cold Sweat 2.4.2).** Реестр модификаторов температуры `TempModifierRegistry.TEMP_MODIFIERS` —
+статический `HashBiMap`. `TempModifierInit.buildModifierRegistries` очищает его (`flush`) и заполняет заново событием
+`TempModifierRegisterEvent`. Вызывают её сервер (`ServerAboutToStartEvent`) и клиент при входе в мир
+(`ClientJoinSetup.onJoin`). У хоста клиент и встроенный сервер в одной программе: клиентский поток очищал карту, пока
+серверный её обходил. Кроме падения, в это время сервер видел пустой реестр. На выделенном сервере и у гостей
+не бывает. В ченджлогах Cold Sweat 2.4.3–2.4.5 исправления нет.
+
+**Исправление.** `mixin/ColdSweatModifierInitMixin`: пока в программе работает сервер, вызов
+`buildModifierRegistries` не из его потока пропускается — реестр уже собран сервером тем же событием (с теми же
+подписчиками, включая KubeJS). У гостя и на выделенном сервере ничего не меняется. Без Cold Sweat миксин не
+применяется (предупреждение Mixin «target not found», загрузка идёт дальше). Отключить:
+`-Drw_host_fix.coldsweat.disabled=true`.
+
 ## Сборка и проверка
 
-- `./build.sh` — jar без Gradle: компиляция против Minecraft+NeoForge из среды `../ee-rectifier-mod`
+- `./build.sh` — jar без Gradle: компиляция против Minecraft+NeoForge из среды `../ee-extras-mod`
   и TFC Real World из jar сборки (кеш снимка, `npm run pack:fetch`).
 - `./test-server.sh` — сервер разработки (`devserver/`, NeoForge 21.1.251, как у хоста) с TFC, Patchouli,
-  TFC Real World и аддоном; проверочный мод — команда `/rwtest`:
+  TFC Real World, Cold Sweat (`NO_COLDSWEAT=1` — без него) и аддоном; `JVM_ARGS="-D…"` — параметры Java; проверочный мод — команда `/rwtest`:
   `mixin` (применился ли миксин, какой размер карты видит сервер), `clear` (стирание настроек при работающем сервере), `portal <x> <z>` и `command <x> <z>`
-  (переход тестового игрока без клиента из ада).
+  (переход тестового игрока без клиента из ада), `coldsweat` (перестройка реестра Cold Sweat из потока сервера идёт,
+  из другого потока пропускается; гонка: 300 перестроек в другом потоке против обхода реестра потоком сервера —
+  1.1.0: с исправлением 0 ошибок, с `-Drw_host_fix.coldsweat.disabled=true` — 2209 ConcurrentModificationException).
 
 Что проверено и что нет — на странице аддона на сайте (`/addons/rw_host_fix`).
 
 Новая версия TFC Real World (зависимость `[4.1.4,4.2)`): сначала проверить, не исправил ли автор `onLevelUnload` сам.
+Новая версия Cold Sweat (необязательная зависимость `[2.4.2,2.5)`): проверить `ClientJoinSetup.onJoin` и
+`TempModifierRegistry`.

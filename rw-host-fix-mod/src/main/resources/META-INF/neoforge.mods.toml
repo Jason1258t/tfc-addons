@@ -4,9 +4,9 @@ license = "MIT"
 
 [[mods]]
 modId = "rw_host_fix"
-version = "1.0.0"
+version = "1.1.0"
 displayName = "TFC Real World: Host Fix"
-description = "В «мире хоста» TFC Real World не стирает настройки карты при смене измерения. Выход из ада за край карты — к её краю."
+description = "В «мире хоста» TFC Real World не стирает настройки карты при смене измерения. Выход из ада за край карты — к её краю. Cold Sweat не роняет сервер хоста при входе в мир."
 
 [[mixins]]
 config = "rw_host_fix.mixins.json"
@@ -23,5 +23,13 @@ side = "BOTH"
 modId = "tfc_real_world"
 type = "required"
 versionRange = "[4.1.4,4.2)"
+ordering = "AFTER"
+side = "BOTH"
+
+# Гонка реестра модификаторов проверена по байткоду Cold Sweat 2.4.2 (в 2.4.3–2.4.5 по ченджлогам не исправлена); новая версия — сверить
+[[dependencies.rw_host_fix]]
+modId = "cold_sweat"
+type = "optional"
+versionRange = "[2.4.2,2.5)"
 ordering = "AFTER"
 side = "BOTH"
