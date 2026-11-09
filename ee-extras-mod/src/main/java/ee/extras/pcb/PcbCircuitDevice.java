@@ -80,6 +80,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 // ВВ-вторичка изолирована внутри корпуса. Её полюса не объединяются в общий
                 // низковольтный контур; подключённая обычная деталь проверяется по прежнему пределу.
                 if (part.kind == Kind.BRIDGE_RECTIFIER || part.kind == Kind.VOLTAGE_REGULATOR) { join(group,part.a,part.coilA); join(group,part.a,part.coilB); }
+                if(part.kind.sensor()) join(group,part.a,part.coilA);
                 if (part.kind.controlled()) join(group, part.coilA, part.coilB);
                 if (part.windingInput()) join(group, part.a, part.coilA);
                 if (part.kind == Kind.LATCHING_RELAY) { join(group, part.coilA, part.alternate); join(group, part.coilB, part.alternate); }
@@ -105,6 +106,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
     }
 
     private final PcbOnboardTransformer onboardPower;
+    private PcbSensor[] sensors = new PcbSensor[MAX_PARTS];
     private PcbVoltageRegulator[] regulators = new PcbVoltageRegulator[MAX_PARTS];
     private PcbBridgeRectifier[] bridges = new PcbBridgeRectifier[MAX_PARTS];
     private PcbStepUpTransformer[] stepUps = new PcbStepUpTransformer[MAX_PARTS];
@@ -151,7 +153,9 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
 
     public enum Kind {
         TRACE, RESISTOR, RELAY, BUTTON, SWITCH, LAMP, REDSTONE_IN, REDSTONE_OUT,
-        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP, LATCHING_RELAY, THREE_POSITION_SWITCH, COMPARATOR, D_FLIP_FLOP, COUNTER, REGISTER, DECODER, ONBOARD_TRANSFORMER, STEP_UP_TRANSFORMER, BRIDGE_RECTIFIER, VOLTAGE_REGULATOR;
+        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP, LATCHING_RELAY, THREE_POSITION_SWITCH, COMPARATOR, D_FLIP_FLOP, COUNTER, REGISTER, DECODER, ONBOARD_TRANSFORMER, STEP_UP_TRANSFORMER, BRIDGE_RECTIFIER, VOLTAGE_REGULATOR, TEMPERATURE_SENSOR, LIGHT_SENSOR;
+
+        boolean sensor() { return this == TEMPERATURE_SENSOR || this == LIGHT_SENSOR; }
 
         boolean supply() { return this == ONBOARD_TRANSFORMER; }
 
@@ -202,6 +206,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                     && (alternate == -1 || (kind == Kind.RELAY || kind == Kind.LATCHING_RELAY || kind == Kind.COMPARATOR) && node(alternate))
                     && (!poweredLogic() || node(coilA) && node(coilB) && node(logicOutput()))
                     && (kind != Kind.LATCHING_RELAY || node(coilA) && node(coilB) && node(alternate) && coilA != alternate && coilB != alternate)
+                    && (!kind.sensor() || node(coilA))
                     && (kind != Kind.POTENTIOMETER || node(coilA) && coilA != a && coilA != b)
                     && (kind != Kind.BRIDGE_RECTIFIER && kind != Kind.VOLTAGE_REGULATOR || node(coilA) && node(coilB))
                     && (kind != Kind.STEP_UP_TRANSFORMER || node(coilA) && node(coilB) && coilA != coilB
@@ -248,6 +253,8 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
     private void resetStepUps(List<Part> parts) {
         stepUps = new PcbStepUpTransformer[MAX_PARTS];
         bridges = new PcbBridgeRectifier[MAX_PARTS];
+        sensors = new PcbSensor[MAX_PARTS];
+        for(int i=0;i<parts.size();i++) if(parts.get(i).kind.sensor()) sensors[i]=new PcbSensor(level,pos,i);
         regulators = new PcbVoltageRegulator[MAX_PARTS];
         for (int i=0;i<parts.size();i++) if(parts.get(i).kind == Kind.VOLTAGE_REGULATOR) regulators[i]=new PcbVoltageRegulator(pos,i);
         for (int i=0;i<parts.size();i++) if (parts.get(i).kind == Kind.BRIDGE_RECTIFIER) bridges[i] = new PcbBridgeRectifier(pos,MAX_NODES + MAX_PARTS * 3 + i * 4);
@@ -270,6 +277,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         for (int i = 0; i < circuit.parts.size(); i++) {
             Kind kind = circuit.parts.get(i).kind;
             if (kind == Kind.TRACE || ordinal-- != 0) continue;
+            if (kind.sensor()) return sensors[i].status();
             if (kind == Kind.VOLTAGE_REGULATOR) return regulators[i].status();
             if (kind == Kind.STEP_UP_TRANSFORMER) return stepUps[i].status();
             if (kind.supply()) return onboardPower.status(circuit.parts.get(i).threshold);
@@ -329,6 +337,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             Part part = parts.get(i);
             if (part.kind.supply()) { onboardPower.preTick(collector, part); continue; }
             if (part.kind == Kind.STEP_UP_TRANSFORMER) { stepUps[i].preTick(collector,part); continue; }
+            if (part.kind.sensor()) { sensors[i].preTick(collector,part); continue; }
             if (part.kind == Kind.VOLTAGE_REGULATOR) { regulators[i].preTick(collector,part); continue; }
             if (part.kind == Kind.BRIDGE_RECTIFIER) { bridges[i].preTick(collector,part); continue; }
             int branch = MAX_NODES + i;
@@ -349,8 +358,10 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                     builder.resistor(part.pins[inputs+output],chipRail(part,i,output),logicResistance(i));
             }
             if (part.poweredLogic()) {
-                builder.resistor(part.coilA,part.b,OPEN);
-                if (part.kind == Kind.COMPARATOR) builder.resistor(part.coilB,part.b,OPEN);
+                // Прямое ребро вход—земля затирает нижнюю ветвь внешнего потенциометра.
+                int inputNode=14000+2*i;
+                builder.node(inputNode).resistor(part.coilA,inputNode,OPEN/2).resistor(inputNode,part.b,OPEN/2);
+                if (part.kind == Kind.COMPARATOR) builder.node(inputNode+1).resistor(part.coilB,inputNode+1,OPEN/2).resistor(inputNode+1,part.b,OPEN/2);
                 builder.resistor(part.logicOutput(),logicRail(part,i),logicResistance(i));
             }
             if (part.windingInput()) builder.resistor(part.coilA, part.a, part.ohms);
@@ -461,6 +472,9 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 maxCurrent = Math.max(maxCurrent,stepUps[i].current());
                 deviceSD.setDirty();
                 continue;
+            }
+            if (part.kind.sensor()) {
+                var m=sensors[i].measure(results,part); watts+=m.watts(); maxVoltage=Math.max(maxVoltage,m.volts()); maxCurrent=Math.max(maxCurrent,m.amps()); deviceSD.setDirty(); continue;
             }
             if (part.kind == Kind.BRIDGE_RECTIFIER || part.kind == Kind.VOLTAGE_REGULATOR) {
                 var measurement=part.kind == Kind.BRIDGE_RECTIFIER ? bridges[i].measure(results,part) : regulators[i].measure(results,part);
@@ -834,6 +848,9 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         var regulatorPower=new CompoundTag();
         for(int i=0;i<circuit.parts.size();i++) if(regulators[i]!=null){var saved=new CompoundTag();regulators[i].write(saved);regulatorPower.put(Integer.toString(i),saved);}
         tag.put("RegulatorPower",regulatorPower);
+        var sensorData=new CompoundTag();
+        for(int i=0;i<circuit.parts.size();i++) if(sensors[i]!=null){var saved=new CompoundTag();sensors[i].write(saved);sensorData.put(Integer.toString(i),saved);}
+        tag.put("Sensors",sensorData);
         tag.putInt("CircuitVersion", PcbTopology.VERSION);
         tag.putInt("Terminals", circuit.terminals);
         tag.putLongArray("TimerDue", timerDue);

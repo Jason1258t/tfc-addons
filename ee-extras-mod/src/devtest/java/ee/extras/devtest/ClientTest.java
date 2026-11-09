@@ -29,6 +29,8 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
 /** Настоящий клиент (test-client.sh): прожектор IE превращается кликом катушкой, состояние и блок-сущность доходят до клиента, снимки вида */
 @EventBusSubscriber(modid = "ee_extras_devtest", value = Dist.CLIENT)
 public final class ClientTest {
+    private static final boolean PCB_SENSOR_EDITOR_PHOTOS = java.nio.file.Files.exists(java.nio.file.Path.of("pcb-sensor-editor-photos"));
+    private static final boolean PCB_SENSOR_PHOTOS = java.nio.file.Files.exists(java.nio.file.Path.of("pcb-sensor-photos"));
     private static final boolean PCB_REGULATOR_PHOTOS = java.nio.file.Files.exists(java.nio.file.Path.of("pcb-regulator-photos"));
     private static final boolean PCB_BRIDGE_PHOTOS = java.nio.file.Files.exists(java.nio.file.Path.of("pcb-bridge-photos"));
     private static final boolean PCB_STEPUP_PHOTOS = java.nio.file.Files.exists(java.nio.file.Path.of("pcb-stepup-photos"));
@@ -66,6 +68,8 @@ public final class ClientTest {
         tick++;
         var server = mc.getSingleplayerServer();
         try {
+            if (PCB_SENSOR_EDITOR_PHOTOS) { PcbSensorEditorPhotos.tick(mc,server); return; }
+            if (PCB_SENSOR_PHOTOS) { PcbSensorPhotos.tick(mc,server,tick); return; }
             if (PCB_REGULATOR_PHOTOS) { PcbRegulatorPhotos.tick(mc,server,tick); return; }
             if (PCB_BRIDGE_PHOTOS) { PcbBridgePhotos.tick(mc,server,tick); return; }
             if (PCB_STEPUP_PHOTOS) { PcbStepUpPhotos.tick(mc,server,tick); return; }

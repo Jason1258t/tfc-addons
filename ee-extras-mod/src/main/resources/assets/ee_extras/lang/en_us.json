@@ -377,5 +377,7 @@
   "item.ee_extras.pcb_onboard_transformer": "Onboard Step-down Transformer",
   "item.ee_extras.pcb_step_up_transformer": "PCB Step-Up Transformer ×10",
   "item.ee_extras.pcb_bridge_rectifier": "PCB Bridge Rectifier",
-  "item.ee_extras.pcb_voltage_regulator": "5 V voltage regulator"
+  "item.ee_extras.pcb_voltage_regulator": "5 V voltage regulator",
+  "item.ee_extras.pcb_temperature_sensor": "Temperature Sensor",
+  "item.ee_extras.pcb_light_sensor": "Light Sensor"
 }

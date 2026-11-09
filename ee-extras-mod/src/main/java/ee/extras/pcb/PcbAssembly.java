@@ -48,6 +48,8 @@ case DECODER -> PcbItems.DECODER.get();
             case FUSE -> CEEBlocks.FUSE.asItem();
             case VOLTMETER -> CEEBlocks.VOLTMETER.asItem();
             case AMMETER -> CEEBlocks.AMMETER.asItem();
+            case TEMPERATURE_SENSOR -> PcbItems.TEMPERATURE_SENSOR.get();
+            case LIGHT_SENSOR -> PcbItems.LIGHT_SENSOR.get();
             case VOLTAGE_REGULATOR -> PcbItems.VOLTAGE_REGULATOR.get();
             case BRIDGE_RECTIFIER -> PcbItems.BRIDGE_RECTIFIER.get();
             case STEP_UP_TRANSFORMER -> PcbItems.STEP_UP_TRANSFORMER.get();

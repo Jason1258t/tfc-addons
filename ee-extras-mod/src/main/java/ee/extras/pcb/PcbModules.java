@@ -12,8 +12,9 @@ final class PcbModules {
     }
     record Module(Kind kind, String name, String model, int width, int height, int level, int sections) {
         Module(Kind kind, String name, String model, int width, int height, int level) { this(kind, name, model, width, height, level, 1); }
-        int pins() { return PcbLogic.chip(kind) ? PcbLogic.pins(kind) : kind == Kind.CLOCK || kind == Kind.STEP_UP_TRANSFORMER || kind == Kind.BRIDGE_RECTIFIER || kind == Kind.VOLTAGE_REGULATOR ? 4 : sections > 1 ? 2 * sections : kind == Kind.RELAY || kind == Kind.LATCHING_RELAY || kind == Kind.COMPARATOR ? 5 : kind == Kind.POTENTIOMETER || kind == Kind.SWITCH || kind == Kind.THREE_POSITION_SWITCH || kind == Kind.TRANSISTOR || kind == Kind.MECHANICAL_TIMER ? 3 : kind.controlled() ? 4 : 2; }
+        int pins() { return kind.sensor() ? 3 : PcbLogic.chip(kind) ? PcbLogic.pins(kind) : kind == Kind.CLOCK || kind == Kind.STEP_UP_TRANSFORMER || kind == Kind.BRIDGE_RECTIFIER || kind == Kind.VOLTAGE_REGULATOR ? 4 : sections > 1 ? 2 * sections : kind == Kind.RELAY || kind == Kind.LATCHING_RELAY || kind == Kind.COMPARATOR ? 5 : kind == Kind.POTENTIOMETER || kind == Kind.SWITCH || kind == Kind.THREE_POSITION_SWITCH || kind == Kind.TRANSISTOR || kind == Kind.MECHANICAL_TIMER ? 3 : kind.controlled() ? 4 : 2; }
         String pinName(int pin) {
+            if(kind.sensor()) return pin==0 ? "Выход 0,5–4,5 В при 5 В" : pin==1 ? "Питание + (3–6 В DC)" : "Земля";
             if (kind == Kind.VOLTAGE_REGULATOR) return switch(pin) {case 0 -> "Вход + (8–12 В DC)";case 1 -> "Вход −";case 2 -> "Выход + (5 В, до 15 мА)";default -> "Выход − (общая земля)";};
             if (kind == Kind.BRIDGE_RECTIFIER) return switch (pin) { case 0 -> "~A"; case 1 -> "~B"; case 2 -> "+"; default -> "−"; };
             if (kind == Kind.STEP_UP_TRANSFORMER) return switch (pin) { case 0 -> "Вход ~ A (до 48 В)"; case 1 -> "Вход ~ B"; case 2 -> "Выход ВВ ~ A"; default -> "Выход ВВ ~ B"; };
@@ -34,6 +35,7 @@ final class PcbModules {
             return pin == 0 ? "A" : "B";
         }
         PinType pinType(int pin) {
+            if(kind.sensor()) return pin==0 ? PinType.ANALOG : pin==1 ? PinType.POWER : PinType.GROUND;
             if (kind == Kind.VOLTAGE_REGULATOR) return pin == 1 || pin == 3 ? PinType.GROUND : PinType.POWER;
             if (kind == Kind.BRIDGE_RECTIFIER) return pin == 3 ? PinType.GROUND : PinType.POWER;
             if (kind.supply() || kind == Kind.STEP_UP_TRANSFORMER) return PinType.POWER;
@@ -52,6 +54,7 @@ final class PcbModules {
                 case RESISTOR, RHEOSTAT, CAPACITOR, FUSE -> "Пассивные";
                 case ONBOARD_TRANSFORMER, STEP_UP_TRANSFORMER, BRIDGE_RECTIFIER, VOLTAGE_REGULATOR -> "Питание";
                 case MECHANICAL_TIMER, CLOCK -> "Время";
+                case TEMPERATURE_SENSOR, LIGHT_SENSOR -> "Датчики";
                 case COMPARATOR, D_FLIP_FLOP, COUNTER, REGISTER, DECODER -> "Логика";
                 default -> "Коммутация";
             };
@@ -75,7 +78,7 @@ final class PcbModules {
         }
         boolean timed() { return kind == Kind.MECHANICAL_TIMER || kind == Kind.CLOCK; }
         boolean adjustable() { return kind == Kind.RHEOSTAT || kind == Kind.POTENTIOMETER || kind == Kind.THREE_POSITION_SWITCH; }
-        boolean input() { return kind.supply() || kind == Kind.STEP_UP_TRANSFORMER || kind == Kind.BUTTON || kind == Kind.SWITCH || adjustable() || timed(); }
+        boolean input() { return kind.sensor() || kind.supply() || kind == Kind.STEP_UP_TRANSFORMER || kind == Kind.BUTTON || kind == Kind.SWITCH || adjustable() || timed(); }
     }
 
     static final Module[] ALL = {
@@ -109,7 +112,9 @@ final class PcbModules {
             new Module(Kind.ONBOARD_TRANSFORMER, "Бортовой трансформатор", "onboard_transformer", 3, 3, 1),
             new Module(Kind.STEP_UP_TRANSFORMER, "Повышающий трансформатор ×10", "step_up_transformer", 3, 3, 1),
             new Module(Kind.BRIDGE_RECTIFIER, "Мостовой выпрямитель", "bridge_rectifier", 3, 3, 2),
-            new Module(Kind.VOLTAGE_REGULATOR, "Стабилизатор 5 В", "voltage_regulator", 3, 3, 2)
+            new Module(Kind.VOLTAGE_REGULATOR, "Стабилизатор 5 В", "voltage_regulator", 3, 3, 2),
+            new Module(Kind.TEMPERATURE_SENSOR, "Термодатчик", "temperature_sensor", 2, 2, 2),
+            new Module(Kind.LIGHT_SENSOR, "Датчик освещения", "light_sensor", 2, 2, 2)
     };
 
     private PcbModules() {}

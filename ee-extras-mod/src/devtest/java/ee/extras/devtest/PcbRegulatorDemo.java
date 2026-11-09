@@ -34,15 +34,16 @@ final class PcbRegulatorDemo {
         }
         String error=PcbTopology.validate(t);PcbBridgeTest.check(error==null,"демонстрационный проект: "+error);return t;
     }
-    private static void add(CompoundTag t,int[] nets,boolean[] blocked,List<List<Integer>> endpoints,int anchor,int type,int[] pinNets,double nominal,double threshold) {
+    static void add(CompoundTag t,int[] nets,boolean[] blocked,List<List<Integer>> endpoints,int anchor,int type,int[] pinNets,double nominal,double threshold) {
         int def=PcbModulesTest.definition(type,0);PcbTopology.set(t,0,anchor,PcbTopology.COMPONENT);PcbModulesTest.call(PcbTopology.class,null,"setPart",t,0,anchor,def);
-        int width=type==30||type==27||type==29||type==25?3:type==3?2:1,height=type==30||type==27||type==29||type==3?3:type==25?2:1;
+        Object module;try{module=PcbModulesTest.call(Class.forName("ee.extras.pcb.PcbModules"),null,"get",def);}catch(Exception e){throw new IllegalStateException(e);}
+        int width=PcbModulesTest.call(module.getClass(),module,"width"),height=PcbModulesTest.call(module.getClass(),module,"height");
         for(int y=0;y<height;y++)for(int x=0;x<width;x++){int cell=anchor+y*16+x;PcbBridgeTest.check(nets[cell]<0,"корпус пересёк вывод");blocked[cell]=true;}
         for(int pin=0;pin<pinNets.length;pin++) {int cell=PcbModulesTest.call(PcbBridgeTest.wiring(),null,"pinCell",anchor,def,pin);int net=pinNets[pin];PcbBridgeTest.check(!blocked[cell]&&(nets[cell]<0||nets[cell]==net),"пересечение выводов "+cell);nets[cell]=nets[cell+256]=net;endpoints.get(net).add(cell);}
         var parameters=new CompoundTag();if(nominal>0)parameters.putDouble("Nominal",nominal);if(threshold>0)parameters.putDouble("Threshold",threshold);
         try{PcbModulesTest.call(Class.forName("ee.extras.pcb.PcbParameters"),null,"put",t,anchor,parameters);}catch(Exception e){throw new IllegalStateException(e);}
     }
-    private static void route(int[] nets,boolean[] blocked,int start,int end,int net) {
+    static void route(int[] nets,boolean[] blocked,int start,int end,int net) {
         int[] previous=new int[512];Arrays.fill(previous,-1);var queue=new ArrayDeque<Integer>();queue.add(start);previous[start]=start;
         while(!queue.isEmpty()&&previous[end]<0) {int at=queue.remove();int cell=at%256,layer=at/256;int[] next={cell%16>0?at-1:-1,cell%16<15?at+1:-1,cell>=16?at-16:-1,cell<240?at+16:-1,at^256};
             for(int n:next)if(n>=0&&previous[n]<0&&!blocked[n]&&(nets[n]<0||nets[n]==net)) {previous[n]=at;queue.add(n);}}

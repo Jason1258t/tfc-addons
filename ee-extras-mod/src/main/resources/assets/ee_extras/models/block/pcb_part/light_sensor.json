@@ -1,0 +1,132 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "base": "ee_extras:block/pcb_part/module_housing",
+    "metal": "ee_extras:block/pcb_part/module_metal",
+    "contact": "ee_extras:block/pcb_part/module_contact",
+    "lens": "ee_extras:block/pcb_part/module_red",
+    "particle": "#base"
+  },
+  "elements": [
+    {
+      "from": [7.53, 0, 7.53],
+      "to": [8.47, 0.12, 8.47],
+      "faces": {
+        "up": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        },
+        "down": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        },
+        "north": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        },
+        "south": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        },
+        "east": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        },
+        "west": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        }
+      }
+    },
+    {
+      "from": [7.65, 0.12, 7.65],
+      "to": [8.35, 0.4, 8.35],
+      "faces": {
+        "up": {
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
+        },
+        "down": {
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
+        },
+        "north": {
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
+        },
+        "south": {
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
+        },
+        "east": {
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
+        },
+        "west": {
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
+        }
+      }
+    },
+    {
+      "from": [7.73, 0.4, 7.73],
+      "to": [8.27, 0.52, 8.27],
+      "faces": {
+        "up": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        },
+        "down": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        },
+        "north": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        },
+        "south": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        },
+        "east": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        },
+        "west": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        }
+      }
+    },
+    {
+      "from": [7.79, 0.52, 7.79],
+      "to": [8.21, 0.55, 8.21],
+      "faces": {
+        "up": {
+          "texture": "#contact",
+          "uv": [0, 0, 16, 16]
+        },
+        "down": {
+          "texture": "#contact",
+          "uv": [0, 0, 16, 16]
+        },
+        "north": {
+          "texture": "#contact",
+          "uv": [0, 0, 16, 16]
+        },
+        "south": {
+          "texture": "#contact",
+          "uv": [0, 0, 16, 16]
+        },
+        "east": {
+          "texture": "#contact",
+          "uv": [0, 0, 16, 16]
+        },
+        "west": {
+          "texture": "#contact",
+          "uv": [0, 0, 16, 16]
+        }
+      }
+    }
+  ]
+}

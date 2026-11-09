@@ -21,7 +21,7 @@ final class PcbBridgeTest {
     @net.neoforged.bus.api.SubscribeEvent
     public static void results(com.george_vi.electroenergetics.events.FinishElectricSimulationEvent event){RESULTS.put(event.level,event.results);}
     static BlockPos BOARD=new BlockPos(32,-60,32), BATTERY=BOARD.east(4);
-    static void check(boolean ok,String message) {if(!ok) {System.err.println("PCB ASSERT FAIL: "+message);throw new IllegalStateException("Мост L2: "+message);}}
+    static void check(boolean ok,String message) {if(!ok) {com.mojang.logging.LogUtils.getLogger().error("PCB ASSERT FAIL: {}",message);throw new IllegalStateException("Мост L2: "+message);}}
     static Class<?> wiring() {try{return Class.forName("ee.extras.pcb.PcbWiring");}catch(Exception e){throw new IllegalStateException(e);}}
     static PcbCircuitDevice device(CommandSourceStack s) {return DevicesSavedData.load(s.getLevel()).getDevice(BOARD,PcbCircuitDevice.class);}
     static CompoundTag snapshot(CommandSourceStack s) {var t=new CompoundTag();device(s).write(t);return t;}
