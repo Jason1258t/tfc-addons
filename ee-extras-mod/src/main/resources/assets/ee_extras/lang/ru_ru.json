@@ -380,5 +380,6 @@
   "item.ee_extras.pcb_voltage_regulator": "Стабилизатор 5 В",
   "item.ee_extras.pcb_temperature_sensor": "Термодатчик",
   "item.ee_extras.pcb_light_sensor": "Датчик освещения",
-  "item.ee_extras.pcb_rotation_sensor": "Датчик вращения Create"
+  "item.ee_extras.pcb_rotation_sensor": "Датчик вращения Create",
+  "item.ee_extras.pcb_optocoupler": "Оптопара"
 }

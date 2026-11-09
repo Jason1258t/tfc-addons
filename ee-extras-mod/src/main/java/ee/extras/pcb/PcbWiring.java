@@ -137,6 +137,7 @@ final class PcbWiring {
                     alternate = kind == Kind.COMPARATOR ? pins[2] : -1;
                     ohms = 10000;
                 }
+                if (kind == Kind.OPTOCOUPLER) { alternate=pins[4]; ohms=1000; }
                 if (kind.sensor()) { a=pins[1]; b=pins[2]; inputA=pins[0]; ohms=10000; }
                 if (PcbLogic.chip(kind)) { a=pins[module.pins()-2]; b=pins[module.pins()-1]; ohms=10000; }
                 Part part = new Part(kind, a, b, ohms, inputA, inputB,

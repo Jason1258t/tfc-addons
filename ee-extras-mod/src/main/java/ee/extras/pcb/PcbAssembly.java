@@ -49,6 +49,7 @@ case DECODER -> PcbItems.DECODER.get();
             case VOLTMETER -> CEEBlocks.VOLTMETER.asItem();
             case AMMETER -> CEEBlocks.AMMETER.asItem();
             case TEMPERATURE_SENSOR -> PcbItems.TEMPERATURE_SENSOR.get();
+            case OPTOCOUPLER -> PcbItems.OPTOCOUPLER.get();
             case ROTATION_SENSOR -> PcbItems.ROTATION_SENSOR.get();
             case LIGHT_SENSOR -> PcbItems.LIGHT_SENSOR.get();
             case VOLTAGE_REGULATOR -> PcbItems.VOLTAGE_REGULATOR.get();

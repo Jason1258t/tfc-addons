@@ -1,0 +1,27 @@
+{
+  "type": "create:mechanical_crafting",
+  "pattern": [
+    " D ",
+    "RCR",
+    " L "
+  ],
+  "key": {
+    "D": {
+      "item": "ee_extras:silicon_diode"
+    },
+    "R": {
+      "item": "ee_extras:resistor"
+    },
+    "C": {
+      "item": "ee_extras:connector"
+    },
+    "L": {
+      "item": "ee_extras:pcb_led"
+    }
+  },
+  "result": {
+    "id": "ee_extras:pcb_optocoupler",
+    "count": 1
+  },
+  "accept_mirrored": true
+}
