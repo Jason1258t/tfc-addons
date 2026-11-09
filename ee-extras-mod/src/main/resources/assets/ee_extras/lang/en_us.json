@@ -379,5 +379,6 @@
   "item.ee_extras.pcb_bridge_rectifier": "PCB Bridge Rectifier",
   "item.ee_extras.pcb_voltage_regulator": "5 V voltage regulator",
   "item.ee_extras.pcb_temperature_sensor": "Temperature Sensor",
-  "item.ee_extras.pcb_light_sensor": "Light Sensor"
+  "item.ee_extras.pcb_light_sensor": "Light Sensor",
+  "item.ee_extras.pcb_rotation_sensor": "Create Rotation Sensor"
 }

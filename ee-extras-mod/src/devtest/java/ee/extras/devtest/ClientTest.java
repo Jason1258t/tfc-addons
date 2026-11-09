@@ -30,6 +30,7 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
 @EventBusSubscriber(modid = "ee_extras_devtest", value = Dist.CLIENT)
 public final class ClientTest {
     private static final boolean PCB_SENSOR_EDITOR_PHOTOS = java.nio.file.Files.exists(java.nio.file.Path.of("pcb-sensor-editor-photos"));
+    private static final boolean PCB_ROTATION_PHOTOS = java.nio.file.Files.exists(java.nio.file.Path.of("pcb-rotation-photos"));
     private static final boolean PCB_SENSOR_PHOTOS = java.nio.file.Files.exists(java.nio.file.Path.of("pcb-sensor-photos"));
     private static final boolean PCB_REGULATOR_PHOTOS = java.nio.file.Files.exists(java.nio.file.Path.of("pcb-regulator-photos"));
     private static final boolean PCB_BRIDGE_PHOTOS = java.nio.file.Files.exists(java.nio.file.Path.of("pcb-bridge-photos"));
@@ -68,6 +69,7 @@ public final class ClientTest {
         tick++;
         var server = mc.getSingleplayerServer();
         try {
+            if (PCB_ROTATION_PHOTOS) { PcbRotationPhotos.tick(mc,server); return; }
             if (PCB_SENSOR_EDITOR_PHOTOS) { PcbSensorEditorPhotos.tick(mc,server); return; }
             if (PCB_SENSOR_PHOTOS) { PcbSensorPhotos.tick(mc,server,tick); return; }
             if (PCB_REGULATOR_PHOTOS) { PcbRegulatorPhotos.tick(mc,server,tick); return; }

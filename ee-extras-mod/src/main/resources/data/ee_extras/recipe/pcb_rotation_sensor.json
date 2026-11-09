@@ -1,0 +1,23 @@
+{
+  "type": "create:mechanical_crafting",
+  "pattern": [" R ", "SCS", " D "],
+  "key": {
+    "R": {
+      "item": "ee_extras:resistor"
+    },
+    "S": {
+      "item": "ee_extras:silicon_diode"
+    },
+    "C": {
+      "item": "ee_extras:connector"
+    },
+    "D": {
+      "item": "create:speedometer"
+    }
+  },
+  "result": {
+    "id": "ee_extras:pcb_rotation_sensor",
+    "count": 1
+  },
+  "accept_mirrored": true
+}

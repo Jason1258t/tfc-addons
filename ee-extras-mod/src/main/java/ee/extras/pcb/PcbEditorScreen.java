@@ -541,7 +541,7 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
             tips.add(Component.literal(entry.name() + " · " + entry.width() + "×" + entry.height() + " · " + (menu.available(sidePart) ? "L" : "с L") + entry.level()));
             for (int pin = 0; pin < entry.pins(); pin++) tips.add(Component.literal(entry.pinLabel(pin)));
             if(entry.kind().sensor()) {
-                tips.add(Component.literal(entry.kind()==PcbCircuitDevice.Kind.TEMPERATURE_SENSOR ? "−40…160 °C · блок за платой, иначе воздух TFC" : "Свет 0…15 перед платой · небо с учётом времени суток"));
+                tips.add(Component.literal(entry.kind()==PcbCircuitDevice.Kind.ROTATION_SENSOR ? "−256…+256 об/мин · механизм Create за платой · остановка 2,5 В" : entry.kind()==PcbCircuitDevice.Kind.TEMPERATURE_SENSOR ? "−40…160 °C · блок за платой, иначе воздух TFC" : "Свет 0…15 перед платой · небо с учётом времени суток"));
                 tips.add(Component.literal("3–6 В DC · 0,5–4,5 В при 5 В без нагрузки · 0,5 мА"));
                 tips.add(Component.literal("Выход: 100 Ом + делитель 10 кОм · подключайте к компаратору"));
             }

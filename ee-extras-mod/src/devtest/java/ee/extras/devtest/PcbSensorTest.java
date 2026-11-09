@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.Blocks;
 /** Реальные показания мира и независимые электрические измерения датчиков. */
 final class PcbSensorTest {
     static final int SENSOR=165,COMPARATOR=170,LAMP=218,SLIDER=129;
-    static boolean thermal=true;
+    static boolean thermal=true, rotation;
     static double load=1e9;
     static void register(CommandDispatcher<CommandSourceStack> d){var r=Commands.literal("pcbsensor").requires(s->s.hasPermission(2));
         r.then(Commands.literal("temperature").executes(c->build(c.getSource(),true,true)));
@@ -25,7 +25,7 @@ final class PcbSensorTest {
         r.then(Commands.literal("isolated-temperature").executes(c->build(c.getSource(),true,false)));
         r.then(Commands.literal("isolated-light").executes(c->build(c.getSource(),false,false)));
         r.then(Commands.literal("expect-supply").then(Commands.argument("value",DoubleArgumentType.doubleArg(0,200)).executes(c->{var m=measurement(c.getSource());PcbBridgeTest.check(Math.abs(m.getDouble("Supply")-DoubleArgumentType.getDouble(c,"value"))<.03,"подтверждено фактическое питание "+m);return 1;})));
-        r.then(Commands.literal("expect-reading").then(Commands.argument("value",DoubleArgumentType.doubleArg(-100,1600)).executes(c->{var m=measurement(c.getSource());PcbBridgeTest.check(Math.abs(m.getDouble("Reading")-DoubleArgumentType.getDouble(c,"value"))<3,"проверка измеряемой среды "+m);return 1;})));
+        r.then(Commands.literal("expect-reading").then(Commands.argument("value",DoubleArgumentType.doubleArg(-512,1600)).executes(c->{var m=measurement(c.getSource());PcbBridgeTest.check(Math.abs(m.getDouble("Reading")-DoubleArgumentType.getDouble(c,"value"))<3,"проверка измеряемой среды "+m);return 1;})));
         r.then(Commands.literal("expect-output").then(Commands.argument("value",DoubleArgumentType.doubleArg(0,100)).executes(c->{var m=measurement(c.getSource());PcbBridgeTest.check(Math.abs(m.getDouble("Output")-DoubleArgumentType.getDouble(c,"value"))<.05,"контроль выхода "+m);return 1;})));
         r.then(Commands.literal("report").executes(c->report(c.getSource(),true)));
         r.then(Commands.literal("off-check").executes(c->{var m=measurement(c.getSource());PcbBridgeTest.check(!m.getBoolean("Powered")&&Math.abs(m.getDouble("Output"))<.01,"обесточенный выход "+m);return report(c.getSource(),false);}));
@@ -47,7 +47,7 @@ final class PcbSensorTest {
         r.then(Commands.literal("select-temperature").executes(c->{PcbBridgeTest.BOARD=new BlockPos(32,-60,32);PcbBridgeTest.BATTERY=PcbBridgeTest.BOARD.east(8);return 1;}));
         r.then(Commands.literal("resume").executes(c->{PcbBridgeTest.BATTERY=PcbBridgeTest.BOARD.east(8);return report(c.getSource(),true);}));
         r.then(Commands.literal("load").then(Commands.argument("ohms",DoubleArgumentType.doubleArg(.01,1e9)).executes(c->{var s=c.getSource();load=DoubleArgumentType.getDouble(c,"ohms");return isolatedLoad(s,load);} )));
-        r.then(Commands.literal("geometry").executes(c->{for(int type:new int[]{31,32})for(int rot=0;rot<4;rot++)for(boolean mirror:new boolean[]{false,true}){var t=PcbTopology.create(2);int def=PcbModulesTest.definition(type,rot);if(mirror)def=PcbModulesTest.call(PcbBridgeTest.wiring(),null,"mirror",def);PcbTopology.set(t,0,85,PcbTopology.COMPONENT);PcbModulesTest.call(PcbTopology.class,null,"setPart",t,0,85,def);for(int pin=0;pin<3;pin++){int cell=PcbModulesTest.call(PcbBridgeTest.wiring(),null,"pinCell",85,def,pin);PcbTopology.set(t,0,cell,PcbTopology.TRACE);}
+        r.then(Commands.literal("geometry").executes(c->{for(int type:new int[]{31,32,33})for(int rot=0;rot<4;rot++)for(boolean mirror:new boolean[]{false,true}){var t=PcbTopology.create(2);int def=PcbModulesTest.definition(type,rot);if(mirror)def=PcbModulesTest.call(PcbBridgeTest.wiring(),null,"mirror",def);PcbTopology.set(t,0,85,PcbTopology.COMPONENT);PcbModulesTest.call(PcbTopology.class,null,"setPart",t,0,85,def);for(int pin=0;pin<3;pin++){int cell=PcbModulesTest.call(PcbBridgeTest.wiring(),null,"pinCell",85,def,pin);PcbTopology.set(t,0,cell,PcbTopology.TRACE);}
         List<PcbCircuitDevice.Part> parts=PcbModulesTest.call(PcbBridgeTest.wiring(),null,"compile",t);PcbBridgeTest.check(parts!=null&&parts.size()==1,"геометрия датчика");}return 1;}));
         d.register(r);
     }
@@ -63,7 +63,7 @@ final class PcbSensorTest {
         PcbRegulatorDemo.add(t,nets,blocked,endpoints,23,29,new int[]{0,1,2,3},0,0);
         PcbRegulatorDemo.add(t,nets,blocked,endpoints,84,7,new int[]{2,3},100,0);
         PcbRegulatorDemo.add(t,nets,blocked,endpoints,89,30,new int[]{2,3,9,3},0,0);
-        PcbRegulatorDemo.add(t,nets,blocked,endpoints,SENSOR,temperature?31:32,new int[]{10,9,3},0,0);
+        PcbRegulatorDemo.add(t,nets,blocked,endpoints,SENSOR,rotation?33:temperature?31:32,new int[]{10,9,3},0,0);
         PcbRegulatorDemo.add(t,nets,blocked,endpoints,COMPARATOR,22,new int[]{10,11,12,9,3},0,0);
         PcbRegulatorDemo.add(t,nets,blocked,endpoints,SLIDER,15,new int[]{9,3,11},10000,0);
         PcbRegulatorDemo.add(t,nets,blocked,endpoints,LAMP,4,new int[]{12,3},1000,2);
@@ -73,17 +73,17 @@ final class PcbSensorTest {
         String error=PcbTopology.validate(t);PcbBridgeTest.check(error==null,"проект датчика "+error);return t;
     }
     static int build(CommandSourceStack s,boolean temperature,boolean demo){
-        PcbBridgeTest.check(s.getServer().getRecipeManager().byKey(net.minecraft.resources.ResourceLocation.parse("ee_extras:pcb_"+(temperature?"temperature_sensor":"light_sensor"))).isPresent(),"рецепт датчика загружен");thermal=temperature;load=1e9;var l=s.getLevel();var board=PcbBridgeTest.BOARD;PcbBridgeTest.BATTERY=board.east(demo?8:4);DevTest.place(l,board,Blocks.AIR.defaultBlockState());DevTest.place(l,PcbBridgeTest.BATTERY,Blocks.AIR.defaultBlockState());
-        CompoundTag t;if(demo)t=topology(temperature);else{t=PcbTopology.create(2);PcbTopology.set(t,0,85,PcbTopology.COMPONENT);PcbModulesTest.call(PcbTopology.class,null,"setPart",t,0,85,PcbModulesTest.definition(temperature?31:32,0));expose(t,temperature?31:32);}
+        PcbBridgeTest.check(s.getServer().getRecipeManager().byKey(net.minecraft.resources.ResourceLocation.parse("ee_extras:pcb_"+(rotation?"rotation_sensor":temperature?"temperature_sensor":"light_sensor"))).isPresent(),"рецепт датчика загружен");thermal=temperature;load=1e9;var l=s.getLevel();var board=PcbBridgeTest.BOARD;PcbBridgeTest.BATTERY=board.east(demo?8:4);DevTest.place(l,board,Blocks.AIR.defaultBlockState());DevTest.place(l,PcbBridgeTest.BATTERY,Blocks.AIR.defaultBlockState());
+        CompoundTag t;if(demo)t=topology(temperature);else{t=PcbTopology.create(2);PcbTopology.set(t,0,85,PcbTopology.COMPONENT);PcbModulesTest.call(PcbTopology.class,null,"setPart",t,0,85,PcbModulesTest.definition(rotation?33:temperature?31:32,0));expose(t,rotation?33:temperature?31:32);}
         DevTest.place(l,board,PcbItems.CIRCUIT_BLOCK.get().defaultBlockState().setValue(PcbCircuitBlock.CUSTOM,true));var stack=PcbItems.L2_BOARD.toStack();PcbTopology.attach(stack,t);PcbModulesTest.call(PcbCircuitBlockEntity.class,l.getBlockEntity(board),"setBoard",stack);List<PcbCircuitDevice.Part> parts=PcbModulesTest.call(PcbBridgeTest.wiring(),null,"compile",t);
         PcbBridgeTest.check(parts!=null&&parts.stream().filter(p->p.kind()!=PcbCircuitDevice.Kind.TRACE).count()==(demo?8:1),"только видимые модули");PcbModulesTest.call(PcbCircuitDevice.class,PcbBridgeTest.device(s),"setCircuit",parts,PcbCircuitDevice.Rating.L2,demo?0:4);
         DevTest.place(l,PcbBridgeTest.BATTERY,CEEBlocks.CREATIVE_BATTERY.getDefaultState().setValue(CreativeBatteryBlock.AC,demo));
         if(demo){var input=board.east(5);DevTest.place(l,input,Extras.eeTermination());var end=Extras.end(l,input);DevTest.wire(l,PcbBridgeTest.BATTERY,0,input,end.conductor(1).id());DevTest.wire(l,PcbBridgeTest.BATTERY,1,input,end.conductor(2).id());PcbBridgeTest.check(CableLaying.connect(l,CableKind.DUPLEX,end,CableEnd.of(l,board,l.getBlockState(board))),"настоящий ввод");}
         else{var p=parts.get(0);DevTest.wire(l,PcbBridgeTest.BATTERY,1,board,p.a());DevTest.wire(l,PcbBridgeTest.BATTERY,0,board,p.b());isolatedLoad(s,load);}
         if(demo){int owner=PcbModulesTest.call(PcbCircuitBlockEntity.class,l.getBlockEntity(board),"controlAt",SENSOR);PcbBridgeTest.check(owner==SENSOR,"корпус датчика доступен для чтения ПКМ");}
-        PcbBridgeTest.power(s,demo?300:5,demo);if(temperature)heat(s,20);else light(s,false);return 1;
+        PcbBridgeTest.power(s,demo?300:5,demo);if(rotation)PcbRotationTest.speed(s,128);else if(temperature)heat(s,20);else light(s,false);return 1;
     }
-    static int isolatedLoad(CommandSourceStack s,double ohms){PcbBridgeTest.check(!demo(s),"нагрузка только для изолированного измерения");var t=PcbTopology.create(2);PcbTopology.set(t,0,85,PcbTopology.COMPONENT);PcbModulesTest.call(PcbTopology.class,null,"setPart",t,0,85,PcbModulesTest.definition(thermal?31:32,0));expose(t,thermal?31:32);List<PcbCircuitDevice.Part> compiled=PcbModulesTest.call(PcbBridgeTest.wiring(),null,"compile",t);var parts=new ArrayList<>(compiled);var p=compiled.get(0);parts.add(new PcbCircuitDevice.Part(PcbCircuitDevice.Kind.RESISTOR,p.coilA(),p.b(),ohms,0,0,1));PcbModulesTest.call(PcbCircuitDevice.class,PcbBridgeTest.device(s),"setCircuit",parts,PcbCircuitDevice.Rating.L2,0);load=ohms;return 1;}
+    static int isolatedLoad(CommandSourceStack s,double ohms){PcbBridgeTest.check(!demo(s),"нагрузка только для изолированного измерения");var t=PcbTopology.create(2);PcbTopology.set(t,0,85,PcbTopology.COMPONENT);PcbModulesTest.call(PcbTopology.class,null,"setPart",t,0,85,PcbModulesTest.definition(rotation?33:thermal?31:32,0));expose(t,rotation?33:thermal?31:32);List<PcbCircuitDevice.Part> compiled=PcbModulesTest.call(PcbBridgeTest.wiring(),null,"compile",t);var parts=new ArrayList<>(compiled);var p=compiled.get(0);parts.add(new PcbCircuitDevice.Part(PcbCircuitDevice.Kind.RESISTOR,p.coilA(),p.b(),ohms,0,0,1));PcbModulesTest.call(PcbCircuitDevice.class,PcbBridgeTest.device(s),"setCircuit",parts,PcbCircuitDevice.Rating.L2,0);load=ohms;return 1;}
     static void expose(CompoundTag t,int type){int def=PcbModulesTest.definition(type,0);for(int pin=0;pin<3;pin++){
         int cell=PcbModulesTest.call(PcbBridgeTest.wiring(),null,"pinCell",85,def,pin),dx=cell%16<5?-1:cell%16>6?1:0,dy=cell/16<5?-1:cell/16>6?1:0;
         while(true){PcbTopology.set(t,0,cell,PcbTopology.TRACE);int x=cell%16,y=cell/16;if(x==0||x==15||y==0||y==15){PcbTopology.set(t,0,cell,PcbTopology.TERMINAL);break;}cell+=dx+16*dy;}

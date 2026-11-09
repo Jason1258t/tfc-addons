@@ -54,7 +54,7 @@ final class PcbModules {
                 case RESISTOR, RHEOSTAT, CAPACITOR, FUSE -> "Пассивные";
                 case ONBOARD_TRANSFORMER, STEP_UP_TRANSFORMER, BRIDGE_RECTIFIER, VOLTAGE_REGULATOR -> "Питание";
                 case MECHANICAL_TIMER, CLOCK -> "Время";
-                case TEMPERATURE_SENSOR, LIGHT_SENSOR -> "Датчики";
+                case TEMPERATURE_SENSOR, LIGHT_SENSOR, ROTATION_SENSOR -> "Датчики";
                 case COMPARATOR, D_FLIP_FLOP, COUNTER, REGISTER, DECODER -> "Логика";
                 default -> "Коммутация";
             };
@@ -114,7 +114,8 @@ final class PcbModules {
             new Module(Kind.BRIDGE_RECTIFIER, "Мостовой выпрямитель", "bridge_rectifier", 3, 3, 2),
             new Module(Kind.VOLTAGE_REGULATOR, "Стабилизатор 5 В", "voltage_regulator", 3, 3, 2),
             new Module(Kind.TEMPERATURE_SENSOR, "Термодатчик", "temperature_sensor", 2, 2, 2),
-            new Module(Kind.LIGHT_SENSOR, "Датчик освещения", "light_sensor", 2, 2, 2)
+            new Module(Kind.LIGHT_SENSOR, "Датчик освещения", "light_sensor", 2, 2, 2),
+            new Module(Kind.ROTATION_SENSOR, "Датчик вращения Create", "rotation_sensor", 2, 2, 2)
     };
 
     private PcbModules() {}

@@ -1,0 +1,144 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "base": "ee_extras:block/pcb_part/module_housing",
+    "metal": "ee_extras:block/pcb_part/module_metal",
+    "contact": "ee_extras:block/pcb_part/module_contact",
+    "lens": "create:block/andesite_casing",
+    "particle": "#base"
+  },
+  "elements": [
+    {
+      "from": [2.360000000000003, 1, 2.360000000000003],
+      "to": [13.640000000000008, 2.2, 13.640000000000008],
+      "faces": {
+        "up": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        },
+        "down": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        },
+        "north": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        },
+        "south": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        },
+        "east": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        },
+        "west": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        }
+      }
+    },
+    {
+      "from": [3.8000000000000043, 2.2, 3.8000000000000043],
+      "to": [12.199999999999996, 5.0, 12.199999999999996],
+      "faces": {
+        "up": {
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
+        },
+        "down": {
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
+        },
+        "north": {
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
+        },
+        "south": {
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
+        },
+        "east": {
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
+        },
+        "west": {
+          "texture": "#metal",
+          "uv": [0, 0, 16, 16]
+        }
+      }
+    },
+    {
+      "from": [4.760000000000005, 5.0, 4.760000000000005],
+      "to": [11.239999999999995, 6.2, 11.239999999999995],
+      "faces": {
+        "up": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        },
+        "down": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        },
+        "north": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        },
+        "south": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        },
+        "east": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        },
+        "west": {
+          "texture": "#base",
+          "uv": [0, 0, 16, 16]
+        }
+      }
+    },
+    {
+      "from": [6.320000000000004, 6.2, 4.760000000000005],
+      "to": [9.680000000000007, 7.5, 11.239999999999995],
+      "faces": {
+        "up": {
+          "texture": "#lens",
+          "uv": [0, 0, 16, 16]
+        },
+        "down": {
+          "texture": "#contact",
+          "uv": [0, 0, 16, 16]
+        },
+        "north": {
+          "texture": "#contact",
+          "uv": [0, 0, 16, 16]
+        },
+        "south": {
+          "texture": "#contact",
+          "uv": [0, 0, 16, 16]
+        },
+        "east": {
+          "texture": "#contact",
+          "uv": [0, 0, 16, 16]
+        },
+        "west": {
+          "texture": "#contact",
+          "uv": [0, 0, 16, 16]
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [30, 225, 0],
+      "scale": [0.8, 0.8, 0.8]
+    },
+    "ground": {
+      "scale": [0.4, 0.4, 0.4]
+    },
+    "fixed": {
+      "scale": [0.7, 0.7, 0.7]
+    }
+  }
+}

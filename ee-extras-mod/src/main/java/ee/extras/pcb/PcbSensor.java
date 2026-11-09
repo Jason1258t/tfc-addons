@@ -14,7 +14,7 @@ final class PcbSensor {
     private final Level level;
     private final BlockPos pos;
     private final int base;
-    private boolean powered, temperature, readingValid;
+    private boolean powered, temperature, rotation, readingValid;
     private double reading, fraction, upper=OPEN, lower=DIVIDER, output, supply, watts, amps, inputWatts, outputWatts, supplyRms, outputRms;
     private String source="нет данных";
     PcbSensor(Level level,BlockPos pos,int index){this.level=level;this.pos=pos;this.base=13000+3*index;}
@@ -22,7 +22,14 @@ final class PcbSensor {
         readingValid=true;
         temperature=p.kind()==PcbCircuitDevice.Kind.TEMPERATURE_SENSOR;
         var face=level.getBlockState(pos).getValue(PcbCircuitBlock.FACING);
-        if(temperature){
+        rotation=p.kind()==PcbCircuitDevice.Kind.ROTATION_SENSOR;
+        if(rotation){
+            BlockPos target=pos.relative(face.getOpposite());
+            if(level.isLoaded(target) && level.getBlockEntity(target) instanceof com.simibubi.create.content.kinetics.base.KineticBlockEntity kinetic){
+                reading=kinetic.getSpeed();source="механизм Create за платой";
+            }else{reading=0;readingValid=false;source="нет механизма Create";}
+            fraction=.5+.4*Math.clamp(reading/256,-1,1);
+        }else if(temperature){
             if(ModList.get().isLoaded("tfc")) {
                 BlockPos target=pos.relative(face.getOpposite());
                 var heat=level.isLoaded(target)?Tfc.heat(level,target,face):null;
@@ -66,7 +73,7 @@ final class PcbSensor {
     void write(CompoundTag t){t.putDouble("SupplyRms",supplyRms);t.putDouble("OutputRms",outputRms);t.putDouble("InputWatts",inputWatts);t.putDouble("OutputWatts",outputWatts);t.putDouble("Reading",reading);t.putDouble("Fraction",fraction);t.putDouble("Supply",supply);t.putDouble("Output",output);t.putDouble("Watts",watts);t.putDouble("Amps",amps);t.putBoolean("Powered",powered);t.putString("Source",source);t.putDouble("OutputResistance",DRIVER+upper*lower/(upper+lower));}
     String status(){
         String target=source.equals("воздух TFC")?"воздух":source.equals("блок за платой")?"блок":"нет данных";
-        String label=temperature?String.format(java.util.Locale.ROOT,"Темп. %.1f°C (%s)",reading,target):"Свет "+Math.round(reading)+"/15";
+        String label=rotation?String.format(java.util.Locale.ROOT,"Вращение %+.1f об/мин (%s)",reading,source):temperature?String.format(java.util.Locale.ROOT,"Темп. %.1f°C (%s)",reading,target):"Свет "+Math.round(reading)+"/15";
         return String.format(java.util.Locale.ROOT,"%s · А %.3f В · П %.3f В%s",label,output,supply,powered?"":" · отключён");
     }
     /** Класс загружается только при установленном TFC. */
