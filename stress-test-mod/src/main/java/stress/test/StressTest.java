@@ -52,13 +52,15 @@ import org.slf4j.LoggerFactory;
  *   fly <чанков> <блоков/тик> [y] — лететь игроком на восток, пока не загрузится столько новых чанков
  *   cmd <команда>           — команда от имени игрока (уровень 4), без игрока — от сервера
  *   end                     — закрыть отрезок, «[STRESS] DONE»
- * Команды: /stress plant [копий], /stress report, /stress pigs <n>, /stress fly <чанков> <скорость>, /stress mark <имя>.
+ * Команды: /stress plant [копий], /stress report, /stress pigs <n>, /stress fly <чанков> <скорость>, /stress mark <имя>,
+ * /stress heap <метка> — живой объём кучи и паузы сборщика (Memory).
  */
 @Mod("stress_test")
 public class StressTest {
     static final Logger LOG = LoggerFactory.getLogger("STRESS");
 
     public StressTest() {
+        Memory.init();
         NeoForge.EVENT_BUS.addListener(StressTest::commands);
         NeoForge.EVENT_BUS.addListener(StressTest::started);
         NeoForge.EVENT_BUS.addListener(StressTest::login);
@@ -88,6 +90,11 @@ public class StressTest {
 
         static void post(MinecraftServer server) {
             float ms = (System.nanoTime() - tickStart) / 1e6f;
+            // тик с замером памяти (полная сборка по команде) в статистику не идёт
+            if (Memory.skipTick) {
+                Memory.skipTick = false;
+                return;
+            }
             if (segN < CAP) seg[segN++] = ms;
             if (winN < CAP) win[winN++] = ms;
             long now = System.currentTimeMillis();
@@ -303,6 +310,12 @@ public class StressTest {
                         .then(Commands.argument("copies", IntegerArgumentType.integer(1, 16))
                                 .executes(c -> Plant.build(c.getSource(), IntegerArgumentType.getInteger(c, "copies")))))
                 .then(Commands.literal("report").executes(c -> Plant.report(c.getSource())))
+                .then(Commands.literal("heap").then(Commands.argument("label", StringArgumentType.greedyString())
+                        .executes(c -> {
+                            String r = Memory.heap(StringArgumentType.getString(c, "label"));
+                            c.getSource().sendSuccess(() -> Component.literal(r), false);
+                            return 1;
+                        })))
                 .then(Commands.literal("pigs").then(Commands.argument("n", IntegerArgumentType.integer(1, 1000))
                         .executes(c -> pigs(c.getSource(), IntegerArgumentType.getInteger(c, "n")))))
                 .then(Commands.literal("mark").then(Commands.argument("name", StringArgumentType.greedyString())
