@@ -7,6 +7,35 @@ from zipfile import ZipFile
 import png
 
 root = Path(__file__).resolve().parents[1]
+
+
+def fill_strips(pixels):
+    """Дорисовывает пустые клетки листа RECTANGLE: Create не рисует крышку бака шириной в один блок.
+
+    Клетка (x, y) = x + 4·y: x — соседи слева/справа (0 нет, 1 справа, 2 оба, 3 слева),
+    y — сверху/снизу (0 снизу, 1 оба, 2 сверху, 3 нет). Полоса без соседей по одной оси
+    собирается из половинок крайних клеток рамки 3×3.
+    """
+    size = len(pixels) // 4
+
+    def tile(x, y):
+        return [row[x * size:(x + 1) * size] for row in pixels[y * size:(y + 1) * size]]
+
+    def put(x, y, part):
+        for j, row in enumerate(part):
+            pixels[y * size + j][x * size:(x + 1) * size] = row
+
+    def empty(x, y):
+        return all(a == 0 for row in tile(x, y) for (_, _, _, a) in row)
+
+    half = size // 2
+    for y in range(3):
+        if empty(0, y):
+            put(0, y, [l[:half] + r[half:] for l, r in zip(tile(1, y), tile(3, y))])
+    for x in range(1, 4):
+        if empty(x, 3):
+            put(x, 3, tile(x, 0)[:half] + tile(x, 2)[half:])
+
 assets = root / 'src/main/resources/assets/better_fluids'
 with ZipFile(root / 'libs/create-1.21.1-6.0.10.jar') as create, TemporaryDirectory() as temp:
     for name in create.namelist():
@@ -37,4 +66,6 @@ with ZipFile(root / 'libs/create-1.21.1-6.0.10.jar') as create, TemporaryDirecto
                     if r > g + 8 and r > b + 8:
                         value = (2 * r + 5 * g + b) // 8
                         row[x] = (value * 9 // 10, value, min(255, value + 12), a)
+            if path.endswith('_connected.png'):
+                fill_strips(pixels)
             png.write(target, pixels)

@@ -22,6 +22,10 @@ configurations {
 neoForge {
     version = neo_version
     runs {
+        client {
+            client()
+            sourceSet = sourceSets.devtest
+        }
         server {
             server()
             programArgument '--nogui'
@@ -41,3 +45,9 @@ dependencies {
 }
 
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+
+// Jar стенда (не релиз): классы devtest для полной сборки на клиентском стенде.
+tasks.register('devtestJar', Jar) {
+    archiveClassifier = 'devtest'
+    from sourceSets.devtest.output
+}
