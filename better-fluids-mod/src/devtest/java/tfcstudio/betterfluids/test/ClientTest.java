@@ -73,6 +73,14 @@ public final class ClientTest {
             }
             if (step == 260) {
                 shot(mc, "bf-below.png");
+                look(mc, 1, 1, 10.5, 180, 10);
+            }
+            if (step == 360) {
+                shot(mc, "bf-wall.png");
+                look(mc, 12.5, 2, 4, 145, 30);
+            }
+            if (step == 460) {
+                shot(mc, "bf-corner.png");
                 System.out.println("BFCLIENT готово");
                 if (!pack) {
                     mc.stop();
@@ -103,6 +111,10 @@ public final class ClientTest {
         for (int i = 0; i < 3; i++) {
             level.setBlockAndUpdate(base.offset(3 + i, 0, 6), tank.defaultBlockState());
             level.setBlockAndUpdate(base.offset(7, 0, 3 + i), tank.defaultBlockState());
+        }
+        // Г-образный слой: внутренний угол стенки.
+        for (BlockPos pos : new BlockPos[] {base.offset(9, 0, 0), base.offset(10, 0, 0), base.offset(9, 0, 1)}) {
+            level.setBlockAndUpdate(pos, tank.defaultBlockState());
         }
     }
 

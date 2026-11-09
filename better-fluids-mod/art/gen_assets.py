@@ -69,3 +69,9 @@ with ZipFile(root / 'libs/create-1.21.1-6.0.10.jar') as create, TemporaryDirecto
             if path.endswith('_connected.png'):
                 fill_strips(pixels)
             png.write(target, pixels)
+
+# Широкое окно: рамка окна Create по краям, середина растянута — стекло собирается в полосу любой ширины.
+window = png.read(assets / 'textures/block/fluid_tank_window.png')
+columns = [0, 1] + [3] * 12 + [6, 7]
+rows = [0, 1] + [5] * 11 + [13, 14, 15]
+png.write(assets / 'textures/block/fluid_tank_window_wide.png', [[window[y][x] for x in columns] for y in rows])

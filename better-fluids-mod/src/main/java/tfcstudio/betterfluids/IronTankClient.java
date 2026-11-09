@@ -27,7 +27,7 @@ final class IronTankClient {
         event.getModels().replaceAll((id, model) ->
             id.id().equals(ResourceLocation.fromNamespaceAndPath(BetterFluids.ID, "iron_tank"))
                 && !id.variant().equals("inventory")
-                ? TankModelInvoker.create(model, SIDE, TOP, INNER)
+                ? TankModelInvoker.create(new WindowTankModel(model), SIDE, TOP, INNER)
                 : model);
     }
 
