@@ -1,0 +1,24 @@
+{
+  "type": "create:mechanical_crafting",
+  "pattern": [
+    " R ",
+    "DCD",
+    " R "
+  ],
+  "key": {
+    "R": {
+      "item": "ee_extras:resistor"
+    },
+    "D": {
+      "item": "ee_extras:silicon_diode"
+    },
+    "C": {
+      "item": "ee_extras:connector"
+    }
+  },
+  "result": {
+    "id": "ee_extras:pcb_voltage_regulator",
+    "count": 1
+  },
+  "accept_mirrored": true
+}

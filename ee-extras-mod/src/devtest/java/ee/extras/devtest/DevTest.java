@@ -72,6 +72,7 @@ public class DevTest {
         PcbOnboardTest.register(d);
         PcbStepUpTest.register(d);
         PcbBridgeTest.register(d);
+        PcbRegulatorTest.register(d);
         Wire.register(d);
         ElectronicsTest.register(d);
         SolarTest.register(d);

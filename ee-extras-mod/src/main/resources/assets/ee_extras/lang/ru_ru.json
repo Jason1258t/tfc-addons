@@ -376,5 +376,6 @@
   "item.ee_extras.pcb_decoder": "Дешифратор для платы",
   "item.ee_extras.pcb_onboard_transformer": "Бортовой понижающий трансформатор",
   "item.ee_extras.pcb_step_up_transformer": "Повышающий трансформатор платы ×10",
-  "item.ee_extras.pcb_bridge_rectifier": "Мостовой выпрямитель платы"
+  "item.ee_extras.pcb_bridge_rectifier": "Мостовой выпрямитель платы",
+  "item.ee_extras.pcb_voltage_regulator": "Стабилизатор 5 В"
 }

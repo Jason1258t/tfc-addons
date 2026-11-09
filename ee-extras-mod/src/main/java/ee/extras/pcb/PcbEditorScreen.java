@@ -540,6 +540,7 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
             var tips = new java.util.ArrayList<Component>();
             tips.add(Component.literal(entry.name() + " · " + entry.width() + "×" + entry.height() + " · " + (menu.available(sidePart) ? "L" : "с L") + entry.level()));
             for (int pin = 0; pin < entry.pins(); pin++) tips.add(Component.literal(entry.pinLabel(pin)));
+            if(entry.kind()==PcbCircuitDevice.Kind.VOLTAGE_REGULATOR) tips.add(Component.literal("Шунт 5 В · балласт 150 Ом · защита 90°C/60°C"));
             graphics.renderTooltip(font, tips, Optional.empty(), mouseX, mouseY); return;
         }
         var inputModule = PcbModules.ALL[menu.part()];

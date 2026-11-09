@@ -8,6 +8,7 @@ import com.george_vi.electroenergetics.simulation.util.CholeskySolver;
 import com.george_vi.electroenergetics.simulation.util.DataPacker;
 import com.george_vi.electroenergetics.simulation.util.LUSolver;
 import ee.extras.pcb.PcbBridgeDiode;
+import ee.extras.pcb.PcbRegulatorShunt;
 import ee.extras.pcb.PcbBridgeDiode.Entry;
 import java.util.*;
 import org.spongepowered.asm.mixin.*;
@@ -37,14 +38,17 @@ public abstract class PcbBridgeConvergenceMixin {
         var network=(Network)(Object)this;eeExtras$iterating=true;
         try {
             boolean converged=false;int used=0;double residual=0;
-            for(int iteration=0;iteration<64;iteration++) {
+            int limit=eeExtras$diodes.stream().anyMatch(e->e.diode() instanceof PcbRegulatorShunt)?256:64;
+            for(int iteration=0;iteration<limit;iteration++) {
                 used=iteration+1;double error=0;
                 for(var entry:eeExtras$diodes) {
                     int a=DataPacker.unpackFirstI(entry.nodes()),b=DataPacker.unpackSecondI(entry.nodes());
-                    double actual=Math.clamp(voltages[b*count+microTick]-voltages[a*count+microTick],-.8,.8);
-                    double previous=Math.clamp(entry.diode().lastVoltage,-.8,.8),delta=actual-previous;
+                    boolean shunt=entry.diode() instanceof PcbRegulatorShunt;
+                    double lo=shunt?-512:-.8,hi=shunt?512:.8,step=shunt?1:.1;
+                    double actual=Math.clamp(voltages[b*count+microTick]-voltages[a*count+microTick],lo,hi);
+                    double previous=Math.clamp(entry.diode().lastVoltage,lo,hi),delta=actual-previous;
                     error=Math.max(error,Math.abs(delta));
-                    entry.diode().lastVoltage=previous+Math.clamp(delta*.5,-.1,.1);
+                    entry.diode().lastVoltage=previous+Math.clamp(delta*.5,-step,step);
                     entry.diode().tick(voltages,microTick,count,a,b);
                 }
                 residual=error;
