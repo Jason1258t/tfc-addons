@@ -48,6 +48,11 @@ public final class TankTest {
                 ctx.getSource().sendSuccess(() -> Component.literal("OK: " + report), false);
                 return 1;
             }))
+            .then(Commands.literal("tankfarm").executes(ctx -> {
+                String report = StorageTank.buildAll(ctx.getSource().getLevel());
+                ctx.getSource().sendSuccess(() -> Component.literal("OK: " + report), false);
+                return 1;
+            }))
             .then(Commands.literal("cladding").executes(ctx -> {
                 cladding(ctx.getSource().getLevel());
                 ctx.getSource().sendSuccess(() -> Component.literal("OK: обшивка ставится, слиток на камнерезе даёт оба листа"), false);

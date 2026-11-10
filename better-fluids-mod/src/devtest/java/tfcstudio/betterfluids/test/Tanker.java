@@ -45,7 +45,7 @@ final class Tanker {
         return String.join("; ", out);
     }
 
-    private static Block block(String id) {
+    static Block block(String id) {
         return BuiltInRegistries.BLOCK.get(ResourceLocation.parse(id));
     }
 
@@ -55,11 +55,11 @@ final class Tanker {
         return (j - c) * (j - c) + (k - c) * (k - c) <= r * r;
     }
 
-    private static boolean inside(int d, int j, int k) {
+    static boolean inside(int d, int j, int k) {
         return j >= 0 && k >= 0 && j < d && k < d && disc(d, j, k);
     }
 
-    private static boolean interior(int d, int j, int k) {
+    static boolean interior(int d, int j, int k) {
         return inside(d, j, k) && inside(d, j + 1, k) && inside(d, j - 1, k) && inside(d, j, k + 1) && inside(d, j, k - 1);
     }
 
@@ -233,11 +233,11 @@ final class Tanker {
         TankTest.check(block("copycats:copycat_slope") == Blocks.AIR || checked > 0, name + ": скосов нет");
     }
 
-    private static boolean contains(net.minecraft.world.phys.shapes.VoxelShape shape, double x, double y, double z) {
+    static boolean contains(net.minecraft.world.phys.shapes.VoxelShape shape, double x, double y, double z) {
         return shape.toAabbs().stream().anyMatch(box -> box.contains(x, y, z));
     }
 
-    private static void clear(ServerLevel level, BlockPos at, int len, int height, int width) {
+    static void clear(ServerLevel level, BlockPos at, int len, int height, int width) {
         for (int x = -1; x <= len; x++) {
             for (int y = 0; y < height; y++) {
                 for (int z = -1; z <= width; z++) {
