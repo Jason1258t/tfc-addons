@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "tag": "c:ingots/aluminum"
+  },
+  "result": {
+    "id": "better_fluids:aluminum_cladding",
+    "count": 1
+  }
+}

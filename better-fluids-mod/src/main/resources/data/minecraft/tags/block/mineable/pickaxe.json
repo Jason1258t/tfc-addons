@@ -4,6 +4,10 @@
     "better_fluids:iron_tank_plate",
     "better_fluids:iron_tank_quarter",
     "better_fluids:iron_tank_bevel",
-    "better_fluids:fluid_tap"
+    "better_fluids:fluid_tap",
+    "better_fluids:white_cladding",
+    "better_fluids:white_cladding_framed",
+    "better_fluids:aluminum_cladding",
+    "better_fluids:aluminum_cladding_framed"
   ]
 }

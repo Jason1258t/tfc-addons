@@ -3,5 +3,9 @@
   "block.better_fluids.iron_tank_plate": "Iron Tank Slab",
   "block.better_fluids.iron_tank_quarter": "Iron Tank Quarter Section",
   "block.better_fluids.iron_tank_bevel": "Beveled Iron Tank Section",
-  "block.better_fluids.fluid_tap": "Fluid Tap"
+  "block.better_fluids.fluid_tap": "Fluid Tap",
+  "block.better_fluids.white_cladding": "White Sheet Cladding",
+  "block.better_fluids.white_cladding_framed": "Framed White Sheet Cladding",
+  "block.better_fluids.aluminum_cladding": "Aluminum Sheet Cladding",
+  "block.better_fluids.aluminum_cladding_framed": "Framed Aluminum Sheet Cladding"
 }

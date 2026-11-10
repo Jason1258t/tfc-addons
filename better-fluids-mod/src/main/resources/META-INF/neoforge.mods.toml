@@ -4,7 +4,7 @@ license = "MIT"
 
 [[mods]]
 modId = "better_fluids"
-version = "1.4.0"
+version = "1.5.0"
 displayName = "Better Fluids"
 authors = "TFC Studio"
 description = "Железный резервуар произвольной формы на 14 вёдер за секцию."

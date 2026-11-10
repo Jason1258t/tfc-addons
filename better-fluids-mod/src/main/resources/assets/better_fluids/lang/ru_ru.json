@@ -3,5 +3,9 @@
   "block.better_fluids.iron_tank_plate": "Полублок железного резервуара",
   "block.better_fluids.iron_tank_quarter": "Четвертная секция железного резервуара",
   "block.better_fluids.iron_tank_bevel": "Железная секция резервуара со скосами",
-  "block.better_fluids.fluid_tap": "Жидкостный интерфейс"
+  "block.better_fluids.fluid_tap": "Жидкостный интерфейс",
+  "block.better_fluids.white_cladding": "Белая листовая обшивка",
+  "block.better_fluids.white_cladding_framed": "Белая обшивка с рамкой",
+  "block.better_fluids.aluminum_cladding": "Алюминиевая листовая обшивка",
+  "block.better_fluids.aluminum_cladding_framed": "Алюминиевая обшивка с рамкой"
 }

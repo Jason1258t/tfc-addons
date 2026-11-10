@@ -43,6 +43,16 @@ public final class TankTest {
     private void commands(RegisterCommandsEvent event) {
         event.getDispatcher().register(Commands.literal("betterfluidstest")
             .requires(source -> source.hasPermission(2))
+            .then(Commands.literal("tankers").executes(ctx -> {
+                String report = Tanker.buildAll(ctx.getSource().getLevel());
+                ctx.getSource().sendSuccess(() -> Component.literal("OK: " + report), false);
+                return 1;
+            }))
+            .then(Commands.literal("cladding").executes(ctx -> {
+                cladding(ctx.getSource().getLevel());
+                ctx.getSource().sendSuccess(() -> Component.literal("OK: обшивка ставится, слиток на камнерезе даёт оба листа"), false);
+                return 1;
+            }))
             .then(Commands.literal("tap").executes(ctx -> {
                 tap(ctx.getSource().getLevel());
                 ctx.getSource().sendSuccess(() -> Component.literal("OK: интерфейс наполняет ведро и канистру, снимается без бака"), false);
@@ -251,7 +261,31 @@ public final class TankTest {
         check(handler.getFluidInTank(0).getAmount() == amount, "Количество жидкости в " + pos);
     }
 
-    private static void check(boolean condition, String message) {
+    private static void cladding(ServerLevel level) {
+        var recipes = level.getRecipeManager();
+        String[][] cases = {{"minecraft:iron_ingot", "white"}, {"tfc:metal/ingot/wrought_iron", "white"},
+            {"immersiveengineering:ingot_aluminum", "aluminum"}};
+        for (String[] c : cases) {
+            var item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(c[0]));
+            if (item == Items.AIR) continue; // TFC/IE нет на стенде — пропуск
+            var input = new net.minecraft.world.item.crafting.SingleRecipeInput(new ItemStack(item));
+            var outputs = recipes.getRecipesFor(net.minecraft.world.item.crafting.RecipeType.STONECUTTING, input, level).stream()
+                .map(r -> BuiltInRegistries.ITEM.getKey(r.value().getResultItem(level.registryAccess()).getItem()).toString()).toList();
+            for (String kind : new String[]{"", "_framed"}) {
+                String id = "better_fluids:" + c[1] + "_cladding" + kind;
+                check(outputs.contains(id), c[0] + " на камнерезе не даёт " + id + ": " + outputs);
+            }
+        }
+        BlockPos pos = new BlockPos(0, -60, 20);
+        for (String name : new String[]{"white_cladding", "white_cladding_framed", "aluminum_cladding", "aluminum_cladding_framed"}) {
+            var block = BuiltInRegistries.BLOCK.get(ResourceLocation.fromNamespaceAndPath("better_fluids", name));
+            level.setBlockAndUpdate(pos, block.defaultBlockState());
+            check(level.getBlockState(pos).is(block) && level.getBlockState(pos).isSolidRender(level, pos), name + " не сплошной блок");
+            pos = pos.east();
+        }
+    }
+
+    static void check(boolean condition, String message) {
         if (!condition) {
             throw new IllegalStateException(message);
         }

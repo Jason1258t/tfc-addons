@@ -7,12 +7,14 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 @Mod(BetterFluids.ID)
@@ -54,6 +56,12 @@ public final class BetterFluids {
         ITEMS.register("iron_tank_plate", () -> new IronTankItem(PLATE.get(), new Item.Properties()));
         ITEMS.register("iron_tank_quarter", () -> new IronTankItem(QUARTER.get(), new Item.Properties()));
         ITEMS.register("iron_tank_bevel", () -> new IronTankItem(BEVEL.get(), new Item.Properties()));
+        // Листовая обшивка для корпусов баков: слиток на камнерезе, как промышленное железо Create
+        for (String name : List.of("white_cladding", "white_cladding_framed", "aluminum_cladding", "aluminum_cladding_framed")) {
+            ITEMS.registerSimpleBlockItem(name, BLOCKS.register(name, () -> new Block(BlockBehaviour.Properties.of()
+                .mapColor(name.startsWith("white") ? MapColor.SNOW : MapColor.METAL).strength(5.0f, 6.0f)
+                .sound(SoundType.METAL).requiresCorrectToolForDrops())));
+        }
         BLOCKS.register(bus);
         ITEMS.register(bus);
         ENTITIES.register(bus);

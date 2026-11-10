@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "better_fluids:block/aluminum_cladding"
+  }
+}

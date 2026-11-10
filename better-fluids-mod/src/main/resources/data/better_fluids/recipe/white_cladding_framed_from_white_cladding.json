@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "better_fluids:white_cladding"
+  },
+  "result": {
+    "id": "better_fluids:white_cladding_framed",
+    "count": 1
+  }
+}

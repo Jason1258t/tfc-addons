@@ -8,6 +8,9 @@ cp libs/create-1.21.1-*.jar run/mods/
 if [ "${WITH_IE:-0}" = 1 ]; then
   cp "${MODS:-${TFC_MODS_DIR:-${TFC_PACK_CACHE:-$HOME/.cache/tfc-plans/pack}/mods}}"/ImmersiveEngineering-*.jar run/mods/
 fi
+if [ "${WITH_COPYCATS:-0}" = 1 ]; then
+  cp "${MODS:-${TFC_MODS_DIR:-${TFC_PACK_CACHE:-$HOME/.cache/tfc-plans/pack}/mods}}"/copycats-*.jar run/mods/
+fi
 echo eula=true > run/eula.txt
 cat > run/server.properties <<'PROPERTIES'
 level-type=minecraft:flat
