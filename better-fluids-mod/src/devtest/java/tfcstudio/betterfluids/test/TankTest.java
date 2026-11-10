@@ -53,6 +53,27 @@ public final class TankTest {
                 ctx.getSource().sendSuccess(() -> Component.literal("OK: " + report), false);
                 return 1;
             }))
+            .then(Commands.literal("tab").executes(ctx -> {
+                var level = ctx.getSource().getLevel();
+                net.minecraft.world.item.CreativeModeTabs.tryRebuildTabContents(level.enabledFeatures(), true, level.registryAccess());
+                var tab = com.simibubi.create.AllCreativeModeTabs.BASE_CREATIVE_TAB.get();
+                var missing = new java.util.ArrayList<String>();
+                for (String id : java.util.List.of("iron_tank", "iron_tank_plate", "iron_tank_quarter", "iron_tank_bevel",
+                    "fluid_tap", "white_cladding", "aluminum_cladding_framed")) {
+                    var item = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("better_fluids", id));
+                    if (tab.getDisplayItems().stream().noneMatch(stack -> stack.is(item))) {
+                        missing.add(id);
+                    }
+                }
+                check(missing.isEmpty(), "нет во вкладке Create: " + missing);
+                ctx.getSource().sendSuccess(() -> Component.literal("OK: баки, интерфейс и обшивка во вкладке Create"), false);
+                return 1;
+            }))
+            .then(Commands.literal("creativeprint").executes(ctx -> {
+                String report = Tanker.creativePrint(ctx.getSource().getLevel());
+                ctx.getSource().sendSuccess(() -> Component.literal("OK: " + report), false);
+                return 1;
+            }))
             .then(Commands.literal("printcheck").executes(ctx -> {
                 String report = Tanker.printCheck(ctx.getSource().getLevel());
                 ctx.getSource().sendSuccess(() -> Component.literal("OK: " + report), false);

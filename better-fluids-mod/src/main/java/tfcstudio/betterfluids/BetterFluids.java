@@ -1,5 +1,6 @@
 package tfcstudio.betterfluids;
 
+import com.simibubi.create.AllCreativeModeTabs;
 import com.simibubi.create.content.fluids.tank.FluidTankBlock;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.Item;
@@ -12,6 +13,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
@@ -66,6 +68,12 @@ public final class BetterFluids {
         ITEMS.register(bus);
         ENTITIES.register(bus);
         bus.addListener(this::registerCapabilities);
+        // Во вкладку Create «Основное», в конец: иначе предметов нет в креативе
+        bus.addListener((BuildCreativeModeTabContentsEvent event) -> {
+            if (event.getTabKey().equals(AllCreativeModeTabs.BASE_CREATIVE_TAB.getKey())) {
+                ITEMS.getEntries().forEach(item -> event.accept(item.get()));
+            }
+        });
     }
 
     private void registerCapabilities(RegisterCapabilitiesEvent event) {

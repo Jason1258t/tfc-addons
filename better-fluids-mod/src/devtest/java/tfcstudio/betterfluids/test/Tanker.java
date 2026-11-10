@@ -167,6 +167,43 @@ final class Tanker {
         return "напечатано, сверка — printcheck";
     }
 
+    /**
+     * Печать в креативе инструментом схематики (кнопка «Печать»): малый танкер сохраняется в папку загруженных
+     * схематик Create, затем ставится пакетом SchematicPlacePacket от игрока-креативщика без прав оператора.
+     * Место — то же, что у print; сверка — printcheck.
+     */
+    static String creativePrint(ServerLevel level) {
+        int d = SIZES[0][0];
+        int len = SIZES[0][1];
+        int height = d + 2;
+        BlockPos to = ORIGIN.offset(len + 30, 0, 0);
+        clear(level, to, len, height, d);
+        Round.drops(level, to, len);
+        var template = new StructureTemplate();
+        template.fillFromWorld(level, ORIGIN, new Vec3i(len, height, d), true, Blocks.AIR);
+        var dir = com.simibubi.create.foundation.utility.CreatePaths.UPLOADED_SCHEMATICS_DIR.resolve("BetterFluidsTest");
+        try {
+            java.nio.file.Files.createDirectories(dir);
+            NbtIo.writeCompressed(template.save(new CompoundTag()), dir.resolve("tanker.nbt"));
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+        var stack = com.simibubi.create.content.schematics.SchematicItem.create(level, "tanker.nbt", "BetterFluidsTest");
+        stack.set(com.simibubi.create.AllDataComponents.SCHEMATIC_DEPLOYED, true);
+        stack.set(com.simibubi.create.AllDataComponents.SCHEMATIC_ANCHOR, to);
+        var player = net.neoforged.neoforge.common.util.FakePlayerFactory.get(level,
+            new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "BetterFluidsTest"));
+        player.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+        new com.simibubi.create.content.schematics.packet.SchematicPlacePacket(stack).handle(player);
+        int tanks = 0;
+        for (BlockPos pos : BlockPos.betweenClosed(to, to.offset(len - 1, height - 1, d - 1))) {
+            if (level.getBlockState(pos).is(block("better_fluids:iron_tank"))) {
+                tanks++;
+            }
+        }
+        return "напечатано, баков " + tanks + ", сверка — printcheck";
+    }
+
     /** Сверка напечатанного print с исходником (после паузы — тики прошли) */
     static String printCheck(ServerLevel level) {
         BlockPos from = ORIGIN;
