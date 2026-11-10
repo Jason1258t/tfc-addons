@@ -35,6 +35,16 @@ public final class PcbContactOutline {
         var state = mc.level.getBlockState(node.sourcePos());
         if (!(state.getBlock() instanceof PcbCircuitBlock) || !state.getValue(PcbCircuitBlock.CUSTOM)
                 || !(mc.level.getBlockEntity(node.sourcePos()) instanceof PcbCircuitBlockEntity board)) { reset(key, false); return; }
+        if (PcbConnector.contains(node.id())) {
+            var point=((PcbCircuitBlock)state.getBlock()).getNodePosition(mc.level,node.sourcePos(),state,node.id());
+            if(point==null) { reset(key,false); return; }
+            var bounds=new net.minecraft.world.phys.AABB(point,point).inflate(.017).move(node.sourcePos());
+            Outliner.getInstance().edit(key).ifPresent(parameters -> {
+                originalWidths.putIfAbsent(key,parameters.getLineWidth());
+                Outliner.getInstance().showAABB(key,bounds,3).lineWidth(.003f);
+            });
+            return;
+        }
         int[] contacts = board.positionedContacts();
         if (contacts == null || node.id() < 0 || node.id() >= contacts.length) { reset(key, false); return; }
         var bounds = PcbCircuitBlock.contactBounds(contacts[node.id()], state.getValue(PcbCircuitBlock.FACING))

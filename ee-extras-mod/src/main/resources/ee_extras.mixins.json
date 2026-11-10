@@ -10,7 +10,8 @@
     "UpgradeManagerMixin",
     "ServerComputerPowerMixin",
     "PocketComputerPowerMixin",
-    "PcbBridgeConvergenceMixin"
+    "PcbBridgeConvergenceMixin",
+    "WireNodeHintMixin"
   ],
   "client": [
     "WireVisualMixin",

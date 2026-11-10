@@ -12,8 +12,9 @@ final class PcbModules {
     }
     record Module(Kind kind, String name, String model, int width, int height, int level, int sections) {
         Module(Kind kind, String name, String model, int width, int height, int level) { this(kind, name, model, width, height, level, 1); }
-        int pins() { return kind.sensor() ? 3 : PcbLogic.chip(kind) ? PcbLogic.pins(kind) : kind == Kind.CLOCK || kind == Kind.STEP_UP_TRANSFORMER || kind == Kind.BRIDGE_RECTIFIER || kind == Kind.VOLTAGE_REGULATOR ? 4 : sections > 1 ? 2 * sections : kind == Kind.RELAY || kind == Kind.LATCHING_RELAY || kind == Kind.COMPARATOR || kind == Kind.OPTOCOUPLER ? 5 : kind == Kind.POTENTIOMETER || kind == Kind.SWITCH || kind == Kind.THREE_POSITION_SWITCH || kind == Kind.TRANSISTOR || kind == Kind.MECHANICAL_TIMER ? 3 : kind.controlled() ? 4 : 2; }
+        int pins() { return kind == Kind.CONNECTOR_8 ? 9 : kind.sensor() ? 3 : PcbLogic.chip(kind) ? PcbLogic.pins(kind) : kind == Kind.CLOCK || kind == Kind.STEP_UP_TRANSFORMER || kind == Kind.BRIDGE_RECTIFIER || kind == Kind.VOLTAGE_REGULATOR ? 4 : sections > 1 ? 2 * sections : kind == Kind.RELAY || kind == Kind.LATCHING_RELAY || kind == Kind.COMPARATOR || kind == Kind.OPTOCOUPLER ? 5 : kind == Kind.POTENTIOMETER || kind == Kind.SWITCH || kind == Kind.THREE_POSITION_SWITCH || kind == Kind.TRANSISTOR || kind == Kind.MECHANICAL_TIMER ? 3 : kind.controlled() ? 4 : 2; }
         String pinName(int pin) {
+            if (kind == Kind.CONNECTOR_8) return pin == 8 ? "Общий провод (до 80 мА)" : "Линия " + (pin+1) + " (0–6 В, до 10 мА)";
             if(kind == Kind.OPTOCOUPLER) return switch(pin) {case 0 -> "Вход + (2–10 мА)";case 1 -> "Вход − (отдельная земля)";case 2 -> "Питание выхода + (3–6 В DC)";case 3 -> "Земля выхода";default -> "Выход (до 5 мА)";};
             if(kind.sensor()) return pin==0 ? "Выход 0,5–4,5 В при 5 В" : pin==1 ? "Питание + (3–6 В DC)" : "Земля";
             if (kind == Kind.VOLTAGE_REGULATOR) return switch(pin) {case 0 -> "Вход + (8–12 В DC)";case 1 -> "Вход −";case 2 -> "Выход + (5 В, до 15 мА)";default -> "Выход − (общая земля)";};
@@ -36,6 +37,7 @@ final class PcbModules {
             return pin == 0 ? "A" : "B";
         }
         PinType pinType(int pin) {
+            if (kind == Kind.CONNECTOR_8) return pin == 8 ? PinType.GROUND : PinType.CONTACT;
             if(kind == Kind.OPTOCOUPLER) return pin<2 ? PinType.CONTACT : pin==2 ? PinType.POWER : pin==3 ? PinType.GROUND : PinType.LOGIC;
             if(kind.sensor()) return pin==0 ? PinType.ANALOG : pin==1 ? PinType.POWER : PinType.GROUND;
             if (kind == Kind.VOLTAGE_REGULATOR) return pin == 1 || pin == 3 ? PinType.GROUND : PinType.POWER;
@@ -118,7 +120,8 @@ final class PcbModules {
             new Module(Kind.TEMPERATURE_SENSOR, "Термодатчик", "temperature_sensor", 2, 2, 2),
             new Module(Kind.LIGHT_SENSOR, "Датчик освещения", "light_sensor", 2, 2, 2),
             new Module(Kind.ROTATION_SENSOR, "Датчик вращения Create", "rotation_sensor", 2, 2, 2),
-            new Module(Kind.OPTOCOUPLER, "Оптопара", "optocoupler", 3, 3, 2)
+            new Module(Kind.OPTOCOUPLER, "Оптопара", "optocoupler", 3, 3, 2),
+            new Module(Kind.CONNECTOR_8, "Разъём 8 линий + общий", "connector_8", 2, 9, 2)
     };
 
     private PcbModules() {}

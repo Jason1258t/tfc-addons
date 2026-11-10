@@ -111,6 +111,7 @@ public final class PcbCircuitBlock extends SimpleElectricalDeviceBlock<PcbCircui
     @Override
     public float getNodeSize(Level level, BlockPos pos, BlockState state, int node) {
         if (state.getValue(CUSTOM) && level.getBlockEntity(pos) instanceof PcbCircuitBlockEntity board) {
+            if (PcbConnector.contains(node)) return .6f/16;
             int[] contacts = board.positionedContacts();
             if (contacts != null && node >= 0 && node < contacts.length) return .75f/16;
         }
@@ -152,6 +153,7 @@ public final class PcbCircuitBlock extends SimpleElectricalDeviceBlock<PcbCircui
                             2.0 / 16, (cell / PcbTopology.SIZE + 0.5) / PcbTopology.SIZE), state.getValue(FACING)));
                 }
                 PcbPowerInlet.addNodes(board, state, nodes);
+                PcbConnector.addNodes(board,state,nodes);
                 return nodes;
             }
         }
@@ -162,7 +164,7 @@ public final class PcbCircuitBlock extends SimpleElectricalDeviceBlock<PcbCircui
 
     @Override
     public boolean isNodeAccessible(Level level, BlockPos pos, BlockState state, int node) {
-        return node < PcbPowerInlet.BASE;
+        return getNodePositions(level,pos,state).containsKey(node) && (node < PcbPowerInlet.BASE || PcbConnector.contains(node));
     }
 
     @Override
@@ -172,6 +174,7 @@ public final class PcbCircuitBlock extends SimpleElectricalDeviceBlock<PcbCircui
 
     @Override
     public MutableComponent getNodeLabel(Level level, BlockPos pos, BlockState state, int node) {
+        if (PcbConnector.contains(node)) return Component.literal("Разъём 8 линий · " + (PcbConnector.pin(node)==8 ? "Общий" : "Линия " + (PcbConnector.pin(node)+1)));
         if (node >= PcbPowerInlet.BASE) return Component.literal(node == PcbPowerInlet.BASE ? "Ввод бортового трансформатора" : "Первичная жила " + (node-PcbPowerInlet.BASE));
         return Component.translatable("ee_extras.pcb.terminal", node + 1);
     }

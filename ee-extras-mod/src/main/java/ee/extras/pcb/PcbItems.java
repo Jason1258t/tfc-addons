@@ -157,6 +157,7 @@ public static final DeferredItem<Item> DECODER = item("pcb_decoder", 16);
     public static final DeferredItem<Item> RHEOSTAT = item("pcb_rheostat", 16);
     public static final DeferredItem<Item> POTENTIOMETER = item("pcb_potentiometer", 16);
     public static final DeferredItem<Item> TEMPERATURE_SENSOR = item("pcb_temperature_sensor",16);
+    public static final DeferredItem<Item> CONNECTOR_8 = item("pcb_connector_8",16);
     public static final DeferredItem<Item> OPTOCOUPLER = item("pcb_optocoupler",16);
     public static final DeferredItem<Item> ROTATION_SENSOR = item("pcb_rotation_sensor",16);
     public static final DeferredItem<Item> LIGHT_SENSOR = item("pcb_light_sensor",16);
@@ -178,7 +179,7 @@ public static final DeferredItem<Item> DECODER = item("pcb_decoder", 16);
             POCKET_INPUT, DISPLAY_DRIVER, ADVANCED_DISPLAY_DRIVER, DISPLAY_CRT, DISPLAY_ADVANCED, POCKET_DISPLAY, POCKET_COLOR_DISPLAY, ANTENNA,
             NETWORK_PORT, COMPUTER_CASE, ADVANCED_COMPUTER_CASE, POCKET_CASE, PERIPHERAL_CASE, SMALL_MOTOR,
             PRECISION_ACTUATOR, STORAGE_BAY, ROBOT_CHASSIS, DISK_TRANSPORT, PRINT_MECHANISM, NETWORK_TRANSCEIVER,
-            ENDER_TRANSCEIVER, SPEAKER_DRIVER, AUDIO_AMPLIFIER, TEMPERATURE_SENSOR, LIGHT_SENSOR, ROTATION_SENSOR, OPTOCOUPLER, VOLTAGE_REGULATOR, BRIDGE_RECTIFIER, STEP_UP_TRANSFORMER, ONBOARD_TRANSFORMER, POWER_SUPPLY, BATTERY_MODULE, MAGNETIC_DISK_MEDIUM);
+            ENDER_TRANSCEIVER, SPEAKER_DRIVER, AUDIO_AMPLIFIER, TEMPERATURE_SENSOR, LIGHT_SENSOR, ROTATION_SENSOR, OPTOCOUPLER, CONNECTOR_8, VOLTAGE_REGULATOR, BRIDGE_RECTIFIER, STEP_UP_TRANSFORMER, ONBOARD_TRANSFORMER, POWER_SUPPLY, BATTERY_MODULE, MAGNETIC_DISK_MEDIUM);
 
     public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<PcbCircuitDevice>> CIRCUIT_DEVICE =
             EeExtras.DEVICES.register("pcb_circuit", () -> new SimulatedDeviceType<>(

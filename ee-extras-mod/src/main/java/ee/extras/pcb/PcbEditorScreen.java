@@ -540,6 +540,11 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
             var tips = new java.util.ArrayList<Component>();
             tips.add(Component.literal(entry.name() + " · " + entry.width() + "×" + entry.height() + " · " + (menu.available(sidePart) ? "L" : "с L") + entry.level()));
             for (int pin = 0; pin < entry.pins(); pin++) tips.add(Component.literal(entry.pinLabel(pin)));
+            if(entry.kind()==PcbCircuitDevice.Kind.CONNECTOR_8) {
+                tips.add(Component.literal("Девять отдельных проводов катушкой: 1→1 … 8→8, общий→общий"));
+                tips.add(Component.literal("Пассивный разъём · 0–6 В · 10 мА/линию · общий 80 мА"));
+                tips.add(Component.literal("Питание плат отдельно; отключение общего не гарантирует отсутствие обходных токов"));
+            }
             if(entry.kind()==PcbCircuitDevice.Kind.OPTOCOUPLER) {
                 tips.add(Component.literal("Вход: диод + 1 кОм · ВКЛ ≥2 мА / ВЫКЛ ≤1 мА · до 10 мА"));
                 tips.add(Component.literal("Раздельное питание выхода 3–6 В DC · нагрузка до 5 мА"));

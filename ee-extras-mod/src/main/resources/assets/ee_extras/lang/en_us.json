@@ -381,5 +381,6 @@
   "item.ee_extras.pcb_temperature_sensor": "Temperature Sensor",
   "item.ee_extras.pcb_light_sensor": "Light Sensor",
   "item.ee_extras.pcb_rotation_sensor": "Create Rotation Sensor",
-  "item.ee_extras.pcb_optocoupler": "Optocoupler"
+  "item.ee_extras.pcb_optocoupler": "Optocoupler",
+  "item.ee_extras.pcb_connector_8": "8-line connector + common"
 }

@@ -1,0 +1,22 @@
+{
+  "type": "create:mechanical_crafting",
+  "pattern": [
+    "CCC",
+    "CCC",
+    "CCC",
+    " I "
+  ],
+  "key": {
+    "C": {
+      "item": "ee_extras:connector"
+    },
+    "I": {
+      "item": "immersiveengineering:insulating_glass"
+    }
+  },
+  "result": {
+    "id": "ee_extras:pcb_connector_8",
+    "count": 1
+  },
+  "accept_mirrored": true
+}

@@ -76,7 +76,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             int[] group = new int[MAX_NODES];
             for (int i = 0; i < group.length; i++) group[i] = i;
             for (Part part : parts) {
-                join(group, part.a, part.b);
+                if (part.kind != Kind.CONNECTOR_8) join(group, part.a, part.b);
                 // ВВ-вторичка изолирована внутри корпуса. Её полюса не объединяются в общий
                 // низковольтный контур; подключённая обычная деталь проверяется по прежнему пределу.
                 if (part.kind == Kind.BRIDGE_RECTIFIER || part.kind == Kind.VOLTAGE_REGULATOR) { join(group,part.a,part.coilA); join(group,part.a,part.coilB); }
@@ -155,7 +155,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
 
     public enum Kind {
         TRACE, RESISTOR, RELAY, BUTTON, SWITCH, LAMP, REDSTONE_IN, REDSTONE_OUT,
-        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP, LATCHING_RELAY, THREE_POSITION_SWITCH, COMPARATOR, D_FLIP_FLOP, COUNTER, REGISTER, DECODER, ONBOARD_TRANSFORMER, STEP_UP_TRANSFORMER, BRIDGE_RECTIFIER, VOLTAGE_REGULATOR, TEMPERATURE_SENSOR, LIGHT_SENSOR, ROTATION_SENSOR, OPTOCOUPLER;
+        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP, LATCHING_RELAY, THREE_POSITION_SWITCH, COMPARATOR, D_FLIP_FLOP, COUNTER, REGISTER, DECODER, ONBOARD_TRANSFORMER, STEP_UP_TRANSFORMER, BRIDGE_RECTIFIER, VOLTAGE_REGULATOR, TEMPERATURE_SENSOR, LIGHT_SENSOR, ROTATION_SENSOR, OPTOCOUPLER, CONNECTOR_8;
 
         boolean sensor() { return this == TEMPERATURE_SENSOR || this == LIGHT_SENSOR || this == ROTATION_SENSOR; }
 
@@ -197,8 +197,9 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             return kind != null
                     && (moduleIndex == -1 && moduleType == -1 || moduleIndex >= 0 && moduleIndex < PcbTopology.CELLS * PcbTopology.MAX_LAYERS
                             && moduleType >= 0 && moduleType < PcbModules.ALL.length && PcbModules.ALL[moduleType].kind() == kind)
-                    && node(a) && node(b) && a != b
+                    && node(a) && node(b) && (a != b || kind == Kind.CONNECTOR_8)
                     && (!PcbLogic.chip(kind) || pins.length == PcbLogic.pins(kind) && java.util.Arrays.stream(pins).allMatch(Part::node) && a == pins[pins.length-2] && b == pins[pins.length-1])
+                    && (kind != Kind.CONNECTOR_8 || pins.length == 9 && java.util.Arrays.stream(pins).allMatch(Part::node) && moduleIndex >= 0 && moduleIndex < PcbTopology.CELLS && a == pins[0] && b == pins[8])
                     && Double.isFinite(ohms) && ohms >= CONTACT && ohms <= OPEN
                     && (!kind.supply() || threshold >= 1 && threshold <= 48)
                     && Double.isFinite(threshold) && threshold > 0 && threshold <= (kind == Kind.MECHANICAL_TIMER || kind == Kind.CLOCK ? 12000 : 10000)
@@ -341,6 +342,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         List<Part> parts = current.parts;
         for (int i = 0; i < parts.size(); i++) {
             Part part = parts.get(i);
+            if (part.kind == Kind.CONNECTOR_8) { PcbConnector.preTick(collector,part,pos); continue; }
             if (part.kind.supply()) { onboardPower.preTick(collector, part); continue; }
             if (part.kind == Kind.STEP_UP_TRANSFORMER) { stepUps[i].preTick(collector,part); continue; }
             if (part.kind == Kind.OPTOCOUPLER) { optos[i].preTick(collector,part); continue; }
@@ -491,6 +493,13 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 watts += measurement.watts();
                 maxVoltage=Math.max(maxVoltage,measurement.volts());
                 maxCurrent=Math.max(maxCurrent,measurement.amps());
+                continue;
+            }
+            if (part.kind == Kind.CONNECTOR_8) {
+                var m=PcbConnector.measure(results,part,pos);
+                invalidBridge |= !Double.isFinite(m[0]) || !Double.isFinite(m[1]) || !Double.isFinite(m[2]);
+                watts+=m[0]; maxVoltage=Math.max(maxVoltage,m[1]*rating.volts/6);
+                maxCurrent=Math.max(maxCurrent,m[2]*rating.amps);
                 continue;
             }
             double squared = results.getVoltageAtSqr(pos, part.a, part.b);

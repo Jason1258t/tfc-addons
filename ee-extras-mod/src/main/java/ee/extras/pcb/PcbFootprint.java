@@ -72,7 +72,9 @@ final class PcbFootprint {
         int w = baseWidth(definition);
         int h = baseHeight(definition);
         int x, y;
-        if (PcbModules.get(definition).kind() == PcbCircuitDevice.Kind.OPTOCOUPLER) {
+        if (PcbModules.get(definition).kind() == PcbCircuitDevice.Kind.CONNECTOR_8) {
+            x=-1; y=pin;
+        } else if (PcbModules.get(definition).kind() == PcbCircuitDevice.Kind.OPTOCOUPLER) {
             x=pin<2?-1:w; y=switch(pin){case 0,2 -> 0;case 1,3 -> 2;default -> 1;};
         } else if (PcbModules.get(definition).sections() == 1 && PcbModules.get(definition).pins() > 5) {
             int[] point = ringPoint(w, h, pin, PcbModules.get(definition).pins());
