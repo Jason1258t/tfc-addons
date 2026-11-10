@@ -246,7 +246,9 @@ public final class IronTankEntity extends FluidTankBlockEntity {
         if (level == null || level.isClientSide || legacy || !level.getBlockState(worldPosition).is(BetterFluids.TANK.get())) {
             return;
         }
-        BlockState state = getBlockState();
+        // Состояние из мира, а не кэш блок-сущности: при установке с вложенным setBlock (пушка Create) кэш
+        // остаётся со свойствами из схемы, и сравнение с ним пропускало нужное обновление
+        BlockState state = level.getBlockState(worldPosition);
         BlockState updated = state.setValue(IronTankBlock.TOP, !shellConnected(level, worldPosition, Direction.UP))
             .setValue(IronTankBlock.BOTTOM, !shellConnected(level, worldPosition, Direction.DOWN))
             .setValue(IronTankBlock.SHAPE, window ? IronTankBlock.Shape.WINDOW : IronTankBlock.Shape.PLAIN);

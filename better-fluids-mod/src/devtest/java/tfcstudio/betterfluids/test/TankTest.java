@@ -48,6 +48,30 @@ public final class TankTest {
                 ctx.getSource().sendSuccess(() -> Component.literal("OK: " + report), false);
                 return 1;
             }))
+            .then(Commands.literal("print").executes(ctx -> {
+                String report = Tanker.print(ctx.getSource().getLevel());
+                ctx.getSource().sendSuccess(() -> Component.literal("OK: " + report), false);
+                return 1;
+            }))
+            .then(Commands.literal("printcheck").executes(ctx -> {
+                String report = Tanker.printCheck(ctx.getSource().getLevel());
+                ctx.getSource().sendSuccess(() -> Component.literal("OK: " + report), false);
+                return 1;
+            }))
+            .then(Commands.literal("drops").executes(ctx -> {
+                // Через несколько тиков после tankers/tankfarm: на их площадке ничего не должно выпасть
+                var level = ctx.getSource().getLevel();
+                var items = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+                    new net.minecraft.world.phys.AABB(-10, 70, 30, 120, 140, 240));
+                var where = new java.util.TreeSet<String>();
+                for (var item : items) {
+                    where.add(item.blockPosition().toShortString() + " " + BuiltInRegistries.ITEM.getKey(item.getItem().getItem()));
+                    if (where.size() > 6) break;
+                }
+                check(items.isEmpty(), "выпало " + items.size() + " " + where);
+                ctx.getSource().sendSuccess(() -> Component.literal("OK: ничего не выпало"), false);
+                return 1;
+            }))
             .then(Commands.literal("tankfarm").executes(ctx -> {
                 String report = StorageTank.buildAll(ctx.getSource().getLevel());
                 ctx.getSource().sendSuccess(() -> Component.literal("OK: " + report), false);
