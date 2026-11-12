@@ -61,7 +61,7 @@ public final class ElectrolyzerScreen extends IEContainerScreen<ElectrolyzerMenu
         ElectrolyzerStatus status = menu.status();
         graphics.drawString(font, menu.statusText(), 8, 69, color(status), true);
         String power = String.format(Locale.ROOT, "%.0f В · %.1f А", menu.voltage(), menu.current());
-        graphics.drawString(font, power, imageWidth - 8 - font.width(power), 69, 0xC8C8C8, true);
+        graphics.drawString(font, power, 8, 79, 0xC8C8C8, true);
         Component membrane = Component.translatable("gui.destroy_extras.electrolyzer.membrane", menu.membraneLeft());
         graphics.drawString(font, membrane, 81 - font.width(membrane) / 2, 55, 0xC8C8C8, true);
     }

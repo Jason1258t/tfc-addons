@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Фон окна электролизёра 176×176 (на холсте 256×256) в стиле окон машин IE: серая панель машины, коричневая панель
+"""Фон окна электролизёра 176×186 (на холсте 256×256) в стиле окон машин IE: серая панель машины, коричневая панель
 инвентаря, утопленные окна баков, слот мембраны и шкала прогресса. Координаты — те же, что в ElectrolyzerScreen/Menu."""
 import pathlib
 import random
@@ -8,8 +8,8 @@ import sys
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
 import png  # noqa: E402
 
-W, H = 176, 176
-SPLIT = 80  # граница панели машины и панели инвентаря
+W, H = 176, 186
+SPLIT = 90  # граница панели машины и панели инвентаря
 rnd = random.Random(7)
 px = [[(0, 0, 0, 0)] * 256 for _ in range(256)]
 
@@ -71,15 +71,15 @@ for x0 in (27, 47, 109):
     put(x0 + 3, 39, (0x9a, 0x9a, 0x9a))
     put(x0 + 3, 41, (0x9a, 0x9a, 0x9a))
 
-# Слоты инвентаря игрока: 3 ряда с y=94 и хотбар с y=152 (как в ElectrolyzerMenu)
+# Слоты инвентаря игрока: 3 ряда с y=104 и хотбар с y=162 (как в ElectrolyzerMenu)
 def slot(x, y):
     recess(x, y, 16, 16, (0x0e, 0x08, 0x05), dark=(0x0a, 0x05, 0x03), light=(0x45, 0x26, 0x19))
 
 
 for row in range(3):
     for col in range(9):
-        slot(8 + col * 18, 94 + row * 18)
+        slot(8 + col * 18, 104 + row * 18)
 for col in range(9):
-    slot(8 + col * 18, 152)
+    slot(8 + col * 18, 162)
 
 png.write(sys.argv[1], px)

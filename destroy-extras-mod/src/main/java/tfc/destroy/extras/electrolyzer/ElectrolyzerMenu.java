@@ -23,7 +23,7 @@ import tfc.destroy.extras.DestroyExtras;
  */
 public final class ElectrolyzerMenu extends IEContainerMenu {
     public static final int WIDTH = 176;
-    public static final int HEIGHT = 176;
+    public static final int HEIGHT = 186;
     public static final int MEMBRANE_X = 73;
     public static final int MEMBRANE_Y = 21;
 
@@ -75,9 +75,9 @@ public final class ElectrolyzerMenu extends IEContainerMenu {
         });
         ownSlotCount = 1;
         for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 9; col++) addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 94 + row * 18));
+            for (int col = 0; col < 9; col++) addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 104 + row * 18));
         }
-        for (int col = 0; col < 9; col++) addSlot(new Slot(inventory, col, 8 + col * 18, 152));
+        for (int col = 0; col < 9; col++) addSlot(new Slot(inventory, col, 8 + col * 18, 162));
 
         for (FluidTank tank : new FluidTank[] {input, mixture, cathodeGas, anodeGas, catholyte}) {
             addGenericData(GenericContainerData.fluid(tank));

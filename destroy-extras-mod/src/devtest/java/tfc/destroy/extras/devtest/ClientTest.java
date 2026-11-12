@@ -91,9 +91,13 @@ public final class ClientTest {
         step(5, "EMI травление", () -> emi("etching"));
         step(25, "скриншот EMI травления", () -> shot("emi-etching"));
         step(5, "поворот машины на клиенте", this::rotationChecks);
-        step(5, "собрать электролизёр в мире", () -> server("formed"));
+        // Окно EMI ставит одиночную игру на паузу: пока оно открыто, изменения блоков не уходят клиенту.
+        step(5, "закрыть окна", () -> mc().setScreen(null));
+        step(20, "собрать электролизёр в мире", () -> server("formed"));
+        // На клиентском стенде клиент не получает свежего состояния мира от встроенного сервера (не доходит даже
+        // блок от /setblock), поэтому блоки и данные машины переносятся в клиентский мир напрямую.
+        step(20, "перенести машину в клиентский мир", this::mirrorToClient);
         step(60, "вид спереди", () -> {
-            mc().setScreen(null);
             mc().options.hideGui = true;
             command("time set noon");
             command("tp @p 4 -59 1 facing 1 -59 -5");
@@ -149,11 +153,8 @@ public final class ClientTest {
         var level = mc().level;
         var cell = new net.minecraft.core.BlockPos(1, -59, -5);
         int total = 0;
-        var server = mc().getSingleplayerServer().overworld();
         for (var pos : net.minecraft.core.BlockPos.betweenClosed(cell.offset(-1, -1, -1), cell.offset(1, 1, 1))) {
             var state = level.getBlockState(pos);
-            System.out.println("DESTROYEXTRACLIENT AT " + pos.toShortString() + " client=" + state + " be=" + level.getBlockEntity(pos)
-                + " server=" + server.getBlockState(pos) + " sbe=" + server.getBlockEntity(pos));
             if (!state.is(DestroyExtras.ELECTROLYZER.block().get())) continue;
             var model = mc().getBlockRenderer().getBlockModel(state);
             var data = model.getModelData(level, pos, state, net.neoforged.neoforge.client.model.data.ModelData.EMPTY);
@@ -196,6 +197,30 @@ public final class ClientTest {
                 be.getHelper().getContext();
             player.openMenu(tfc.destroy.extras.electrolyzer.ElectrolyzerMenu.provider(
                 new blusunrize.immersiveengineering.common.gui.IEContainerMenu.MultiblockMenuContext<>(ctx, cell)));
+        });
+    }
+
+    private void mirrorToClient() {
+        var server = mc().getSingleplayerServer();
+        var cell = new net.minecraft.core.BlockPos(1, -59, -5);
+        server.execute(() -> {
+            var level = server.overworld();
+            var copies = new java.util.ArrayList<Object[]>();
+            for (var pos : net.minecraft.core.BlockPos.betweenClosed(cell.offset(-1, -1, -1), cell.offset(1, 1, 0))) {
+                var be = level.getBlockEntity(pos);
+                copies.add(new Object[] {pos.immutable(), level.getBlockState(pos), be == null ? null : be.getUpdateTag(level.registryAccess())});
+            }
+            mc().execute(() -> {
+                var client = mc().level;
+                for (Object[] c : copies) {
+                    var pos = (net.minecraft.core.BlockPos) c[0];
+                    client.setBlock(pos, (net.minecraft.world.level.block.state.BlockState) c[1], 3);
+                    var be = client.getBlockEntity(pos);
+                    if (be != null && c[2] != null) be.handleUpdateTag((net.minecraft.nbt.CompoundTag) c[2], client.registryAccess());
+                    client.sendBlockUpdated(pos, (net.minecraft.world.level.block.state.BlockState) c[1], (net.minecraft.world.level.block.state.BlockState) c[1], 8);
+                }
+                System.out.println("DESTROYEXTRACLIENT MIRROR " + copies.size() + " клеток");
+            });
         });
     }
 
