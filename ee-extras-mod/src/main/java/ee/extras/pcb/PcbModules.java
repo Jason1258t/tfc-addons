@@ -82,7 +82,7 @@ final class PcbModules {
         }
         boolean timed() { return kind == Kind.MECHANICAL_TIMER || kind == Kind.CLOCK; }
         boolean adjustable() { return kind == Kind.RHEOSTAT || kind == Kind.POTENTIOMETER || kind == Kind.THREE_POSITION_SWITCH; }
-        boolean input() { return kind == Kind.OPTOCOUPLER || kind.sensor() || kind.supply() || kind == Kind.STEP_UP_TRANSFORMER || kind == Kind.BUTTON || kind == Kind.SWITCH || adjustable() || timed(); }
+        boolean input() { return kind == Kind.OPTOCOUPLER || kind.sensor() || kind.supply() || kind == Kind.STEP_UP_TRANSFORMER || kind == Kind.VOLTAGE_REGULATOR || kind == Kind.BUTTON || kind == Kind.SWITCH || adjustable() || timed(); }
     }
 
     static final Module[] ALL = {
