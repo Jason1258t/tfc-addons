@@ -59,3 +59,13 @@ tasks.register('devtestJar', Jar) {
     archiveClassifier = 'devtest'
     from sourceSets.devtest.output
 }
+
+// Проверка проектов плат без игры: штатные validate/compile, карта, цепи выводов, проверенные NBT в build/pcb-check.
+// ./gradlew pcbCheck — все демонстрации; -Ppcb=connector — по части имени; -Ppcb=путь.nbt|.snbt — свой проект.
+tasks.register('pcbCheck', JavaExec) {
+    dependsOn tasks.named('devtestClasses')
+    classpath = sourceSets.devtest.runtimeClasspath + fileTree(dir: 'libs', include: '*.jar')
+    mainClass = 'ee.extras.devtest.PcbCheck'
+    def project = providers.gradleProperty('pcb').map { file(it).exists() ? file(it).absolutePath : it }
+    argumentProviders.add({ [layout.buildDirectory.dir('pcb-check').get().asFile.path] + (project.getOrNull() ?: []) } as CommandLineArgumentProvider)
+}

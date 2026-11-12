@@ -217,6 +217,10 @@ ID устройств и микросхем, Lua/API, старые мировы�
 ./libs.sh          # Create и EE из jar сборки (кеш снимка, npm run pack:fetch) для компиляции (один раз и при обновлении сборки)
 ./release.sh       # ресурсы → сборка → проверка клемм → jar и иконки (icons/) сюда; на сайт — сборкой сайта
 ./test-server.sh   # сервер разработки: выпрямители (минута-две)
+# Проекты плат без игры, до стенда (dev #327): штатные validate/compile, карта слоёв, цепи всех выводов, пояснения.
+# Без -Ppcb — все демонстрации; -Ppcb=connector — по части имени; -Ppcb=файл.nbt|.snbt — свой проект (NBT блока/предмета тоже).
+# Отчёты и принятые NBT/SNBT — build/pcb-check; код выхода 1 при ошибке. Нужен JDK 21, как у test-server.sh.
+JAVA_HOME=~/.gradle/local-tools/jdk21/Contents/Home ./gradlew -q pcbCheck
 ./test-server.sh 'forceload add 112 0 150 60' 'rectest heat 3' 'sleep 1' 'rectest heatv 300' 'sleep 30' 'rectest preport'
 ./test-server.sh 'forceload add 112 0 150 60' 'rectest grid 8' 'sleep 1' 'rectest dc 85' 'sleep 6' 'rectest pwatch 8' 'sleep 1' 'rectest preport'
 IE=1 ./test-server.sh 'forceload add 0 0 64 80' 'rectest bidi' 'rectest bidipower 120 100' 'sleep 5' 'rectest bidireport'
