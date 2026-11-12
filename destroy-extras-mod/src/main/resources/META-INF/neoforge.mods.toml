@@ -4,7 +4,7 @@ license = "MIT"
 
 [[mods]]
 modId = "destroy_extras"
-version = "0.7.1"
+version = "0.8.0"
 displayName = "Destroy Extras"
 authors = "TFC Studio"
 description = "Недостающие химические машины и процессы для Destroy."
@@ -55,6 +55,13 @@ side = "BOTH"
 modId = "electroenergetics"
 type = "required"
 versionRange = "[1.21.1-1.1.2,1.21.1-1.2.0)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.destroy_extras]]
+modId = "immersiveengineering"
+type = "required"
+versionRange = "[12.4.2-194,)"
 ordering = "AFTER"
 side = "BOTH"
 

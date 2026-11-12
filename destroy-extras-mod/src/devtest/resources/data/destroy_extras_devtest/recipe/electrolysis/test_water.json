@@ -1,0 +1,36 @@
+{
+  "type": "destroy_extras:electrolysis",
+  "ingredients": [
+    {
+      "type": "neoforge:single",
+      "fluid": "minecraft:water",
+      "amount": 1000
+    }
+  ],
+  "translation_key": "fluid.minecraft.water",
+  "outputs": ["cathode_gas", "anode_gas"],
+  "membrane": false,
+  "results": [
+    {
+      "amount": 500,
+      "id": "destroy:mixture",
+      "components": {
+        "destroy:mixture": {
+          "TranslationKey": "destroy_extras.fluid.hydrogen",
+          "Contents": [{ "Molecule": "destroy:hydrogen", "Concentration": 1.0 }]
+        }
+      }
+    },
+    {
+      "amount": 250,
+      "id": "destroy:mixture",
+      "components": {
+        "destroy:mixture": {
+          "TranslationKey": "destroy_extras.fluid.chlorine",
+          "Contents": [{ "Molecule": "destroy:chlorine", "Concentration": 1.0 }]
+        }
+      }
+    }
+  ],
+  "processing_time": 40
+}

@@ -12,6 +12,12 @@
   "salt_concentration": 1.0,
   "water_concentration": 10.0,
   "translation_key": "destroy_extras.fluid.salt_water",
+  "outputs": [
+    "cathode_gas",
+    "anode_gas",
+    "catholyte"
+  ],
+  "membrane": true,
   "results": [
     {
       "amount": 250,

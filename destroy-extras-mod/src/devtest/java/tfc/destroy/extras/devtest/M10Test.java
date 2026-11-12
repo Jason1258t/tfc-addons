@@ -34,12 +34,10 @@ import petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid;
 import petrolpark.mc.destroy.core.chemistry.vat.VatControllerBlock;
 import petrolpark.mc.destroy.core.chemistry.vat.VatControllerBlockEntity;
 import tfc.destroy.extras.DestroyExtras;
-import tfc.destroy.extras.electrolyzer.MembraneElectrolyzerBlockEntity;
 import tfc.destroy.extras.etching.EtchingBathBlockEntity;
 
 /** Маршрут игрока без подстановок: порты электролизёра → стенка чана (медь + стекло, свет неба) → вода, железо → ванна. */
 final class M10Test {
-    private static final BlockPos PROCESS = new BlockPos(40, -60, 10);
     private static final BlockPos VAT = new BlockPos(20, -55, 25);
     private static final BlockPos CENTER = VAT.north(2);
     private static final BlockPos INPUT_WALL = CENTER.east(2);
@@ -61,7 +59,6 @@ final class M10Test {
             .then(Commands.literal("m10iron").then(Commands.argument("n", IntegerArgumentType.integer(1, 64))
                 .executes(c -> iron(c, IntegerArgumentType.getInteger(c, "n")))))
             .then(Commands.literal("m10etch").executes(M10Test::etch))
-            .then(Commands.literal("m10migrate").executes(M10Test::migrate))
             .then(Commands.literal("m10status").executes(M10Test::status))
             .then(Commands.literal("m10assert").executes(M10Test::assertBoard)));
     }
@@ -90,10 +87,14 @@ final class M10Test {
     private static int gas(CommandContext<CommandSourceStack> c) {
         reset();
         ServerLevel l = c.getSource().getLevel();
-        FluidStack h2 = l.getCapability(Capabilities.FluidHandler.BLOCK, PROCESS, Direction.NORTH).drain(250, IFluidHandler.FluidAction.EXECUTE);
-        FluidStack cl2 = l.getCapability(Capabilities.FluidHandler.BLOCK, PROCESS, Direction.DOWN).drain(250, IFluidHandler.FluidAction.EXECUTE);
-        check(c, h2.getAmount() == 250 && DestroyFluids.isMixture(h2), "водород забран с севера как обычная смесь");
-        check(c, cl2.getAmount() == 250 && DestroyFluids.isMixture(cl2), "хлор забран снизу как обычная смесь");
+        BlockPos cell = DestroyExtrasTest.PROCESS;
+        Direction side = DestroyExtrasTest.SIDE;
+        FluidStack h2 = l.getCapability(Capabilities.FluidHandler.BLOCK, ElectrolyzerRig.world(cell, side, 0, 2, 1), Direction.UP)
+            .drain(250, IFluidHandler.FluidAction.EXECUTE);
+        FluidStack cl2 = l.getCapability(Capabilities.FluidHandler.BLOCK, ElectrolyzerRig.world(cell, side, 2, 2, 1), Direction.UP)
+            .drain(250, IFluidHandler.FluidAction.EXECUTE);
+        check(c, h2.getAmount() == 250 && DestroyFluids.isMixture(h2), "водород забран из порта катодного газа как обычная смесь");
+        check(c, cl2.getAmount() == 250 && DestroyFluids.isMixture(cl2), "хлор забран из порта анодного газа как обычная смесь");
         IFluidHandler wall = l.getCapability(Capabilities.FluidHandler.BLOCK, INPUT_WALL, Direction.EAST);
         check(c, wall != null && wall.fill(h2, IFluidHandler.FluidAction.EXECUTE) == 250, "стенка чана приняла водород");
         pendingChlorine = cl2;
@@ -150,23 +151,6 @@ final class M10Test {
         EtchingBathBlockEntity bath = (EtchingBathBlockEntity) c.getSource().getLevel().getBlockEntity(BATH);
         check(c, bath.items.getStackInSlot(2).is(PcbItems.L1_BOARD.get()), "получена плата L1");
         check(c, bath.spent.getFluidAmount() == 250, "отработанный раствор 250 мБ на северном выходе");
-        return report(c);
-    }
-
-    /** Газ, сохранённый версией 0.2.0 как destroy:gas, после загрузки блока становится обычной смесью. */
-    private static int migrate(CommandContext<CommandSourceStack> c) {
-        reset();
-        ServerLevel l = c.getSource().getLevel();
-        MembraneElectrolyzerBlockEntity process = (MembraneElectrolyzerBlockEntity) l.getBlockEntity(PROCESS);
-        FluidStack oldGas = new FluidStack(BuiltInRegistries.FLUID.getHolderOrThrow(net.minecraft.resources.ResourceKey.create(
-            net.minecraft.core.registries.Registries.FLUID, ResourceLocation.parse("destroy:gas"))), 250,
-            MixtureFluid.of(250, new LegacyMixture().addMolecule(DestroyMolecules.CHLORINE, 1.0F)).getComponentsPatch());
-        process.chlorine.setFluid(oldGas);
-        process.loadCustomOnly(process.saveCustomOnly(l.registryAccess()), l.registryAccess());
-        check(c, DestroyFluids.isMixture(process.chlorine.getFluid()) && process.chlorine.getFluidAmount() == 250,
-            "старый газ в баке стал обычной смесью");
-        check(c, concentration(process.chlorine.getFluid(), DestroyMolecules.CHLORINE) > 0.5F, "состав газа сохранён");
-        process.chlorine.setFluid(FluidStack.EMPTY);
         return report(c);
     }
 

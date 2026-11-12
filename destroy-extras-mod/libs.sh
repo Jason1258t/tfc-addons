@@ -16,6 +16,7 @@ mkdir -p client-libs
 FILES=(
   "$MODS/create-1.21.1-6.0.10.jar"
   "$MODS/electroenergetics-1.21.1-1.1.2.jar"
+  "$MODS/ImmersiveEngineering-1.21.1-12.4.2-194.jar"
   "$MODS/TerraFirmaCraft-NeoForge-1.21.1-4.2.9.jar"
   "$MODS/Patchouli-1.21.1-93-NEOFORGE.jar"
   "$DESTROY_JAR"

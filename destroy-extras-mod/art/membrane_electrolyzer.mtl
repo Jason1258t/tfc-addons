@@ -1,0 +1,3 @@
+newmtl membrane_electrolyzer
+Kd 1.0 1.0 1.0
+map_Kd destroy_extras:block/multiblock/membrane_electrolyzer

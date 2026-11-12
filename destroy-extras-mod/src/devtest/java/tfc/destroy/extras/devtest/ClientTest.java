@@ -157,12 +157,16 @@ public final class ClientTest {
         }
         check("модели севера и востока различаются (поворот виден)",
             models.get(Direction.NORTH) != models.get(Direction.EAST));
-        BlockState rotated = block.getRotatedBlockState(block.defaultBlockState(), Direction.UP);
-        check("ключ поворачивает машину с севера на восток", rotated.getValue(MembraneElectrolyzerBlock.FACING) == Direction.EAST);
+        var formed = DestroyExtras.ELECTROLYZER.block().get();
+        for (Direction facing : List.of(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST)) {
+            BakedModel model = renderer.getBlockModel(formed.defaultBlockState()
+                .setValue(blusunrize.immersiveengineering.api.IEProperties.FACING_HORIZONTAL, facing));
+            check("модель собранного электролизёра загружена для " + facing, model != null && model != missing);
+        }
         List<Component> tooltip = new ItemStack(DestroyExtras.ELECTROLYZER_ITEM.get()).getTooltipLines(
             Item.TooltipContext.of(mc().level), mc().player, TooltipFlag.NORMAL);
-        check("подсказка описывает выходы относительно передней грани", tooltip.stream()
-            .anyMatch(line -> line.getString().contains("передней грани")));
+        check("подсказка ячейки говорит про молот IE", tooltip.stream()
+            .anyMatch(line -> line.getString().contains("молота IE")));
     }
 
     private void step(int delay, String name, Runnable action) {

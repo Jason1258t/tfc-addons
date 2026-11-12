@@ -1,0 +1,39 @@
+newmtl casing
+map_Kd create:block/copper_casing
+
+newmtl steel
+map_Kd immersiveengineering:block/metal/sheetmetal_steel
+
+newmtl tank
+map_Kd create:block/fluid_tank
+
+newmtl tank_top
+map_Kd create:block/fluid_tank_top
+
+newmtl cell
+map_Kd destroy_extras:block/membrane_electrolyzer_front
+
+newmtl cathode
+map_Kd minecraft:block/light_blue_concrete
+
+newmtl anode
+map_Kd minecraft:block/lime_concrete
+
+newmtl catholyte
+map_Kd minecraft:block/purple_concrete
+
+newmtl inlet
+map_Kd minecraft:block/blue_concrete
+
+newmtl insulator
+map_Kd minecraft:block/white_concrete
+
+newmtl contact
+map_Kd minecraft:block/copper_block
+
+newmtl plus
+map_Kd minecraft:block/red_concrete
+
+newmtl minus
+map_Kd minecraft:block/black_concrete
+

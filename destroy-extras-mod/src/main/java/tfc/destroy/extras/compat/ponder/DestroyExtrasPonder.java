@@ -7,8 +7,11 @@ import net.createmod.ponder.api.scene.SceneBuilder;
 import net.createmod.ponder.api.scene.SceneBuildingUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.resources.ResourceLocation;
 import tfc.destroy.extras.DestroyExtras;
+import tfc.destroy.extras.electrolyzer.MembraneElectrolyzerBlock;
 
 /** Обучение промышленной сборке; регистрируется Ponder только на клиенте. */
 public final class DestroyExtrasPonder implements PonderPlugin {
@@ -24,35 +27,38 @@ public final class DestroyExtrasPonder implements PonderPlugin {
     }
 
     private static void electrolyzer(SceneBuilder scene, SceneBuildingUtil util) {
-        scene.title("industrial_electrolyzer", "Industrial membrane electrolyzer");
+        scene.title("industrial_electrolyzer", "Membrane electrolyzer");
         scene.configureBasePlate(0, 0, 3);
-        BlockPos controller = new BlockPos(1, 1, 0);
-        for (int x = -1; x <= 1; x++) {
+        // Шаблон мультиблока: x 0 — слева от игрока, z 1 — передний ряд (в сцене игрок смотрит с юга, +z).
+        BlockPos origin = new BlockPos(0, 1, 0);
+        for (int x = 0; x <= 2; x++) {
             for (int y = 0; y <= 2; y++) {
                 for (int z = 0; z <= 1; z++) {
-                    BlockPos pos = controller.offset(x, y, z);
-                    if ((y == 0 && z == 0) || (x == 1 && y == 1 && z == 1)) continue;
-                    if (x == 0 && y == 0 && z == 0) {
-                        scene.world().setBlock(pos, DestroyExtras.ELECTROLYZER_BLOCK.get().defaultBlockState(), false);
-                    } else if (x != 0) {
-                        scene.world().setBlock(pos, AllBlocks.FLUID_TANK.getDefaultState(), false);
-                    } else if (y == 1 && z == 1) {
-                        scene.world().setBlock(pos, AllBlocks.MECHANICAL_PUMP.getDefaultState(), false);
+                    BlockPos pos = origin.offset(x, y, z + 1);
+                    BlockState state;
+                    if (x == 1) {
+                        state = y == 1 && z == 1
+                            ? DestroyExtras.ELECTROLYZER_BLOCK.get().defaultBlockState().setValue(MembraneElectrolyzerBlock.FACING, Direction.SOUTH)
+                            : AllBlocks.COPPER_CASING.getDefaultState();
+                    } else if (y == 2) {
+                        state = AllBlocks.FLUID_PIPE.getDefaultState();
+                    } else if (x == 2 && y == 0 && z == 0) {
+                        state = BuiltInRegistries.BLOCK.get(ResourceLocation.fromNamespaceAndPath("electroenergetics", "electric_pump")).defaultBlockState();
                     } else {
-                        scene.world().setBlock(pos, AllBlocks.COPPER_CASING.getDefaultState(), false);
+                        state = AllBlocks.FLUID_TANK.getDefaultState();
                     }
+                    scene.world().setBlock(pos, state, false);
                 }
             }
         }
-        scene.world().setBlock(controller.offset(1, 1, 1), AllBlocks.COGWHEEL.getDefaultState()
-            .setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.AXIS, Direction.Axis.Z), false);
+        BlockPos cell = origin.offset(1, 1, 2);
         scene.world().showSection(util.select().everywhere(), Direction.UP);
         scene.idle(20);
-        scene.overlay().showText(70).text("Two Create tank compartments separate the fluid circuits")
-            .pointAt(util.vector().blockSurface(controller, Direction.WEST));
-        scene.idle(80);
-        scene.overlay().showText(90).text("Supply EE power and at least 16 RPM to the mechanical pump")
-            .pointAt(util.vector().blockSurface(controller, Direction.NORTH));
+        scene.overlay().showText(90).text("Create tanks and pipes on the sides, copper casing in the middle, an EE electric pump at the back")
+            .pointAt(util.vector().blockSurface(cell, Direction.SOUTH));
+        scene.idle(100);
+        scene.overlay().showText(90).text("Hit the membrane cell with the Engineer's Hammer; power goes to the two roof terminals")
+            .pointAt(util.vector().blockSurface(origin.offset(1, 2, 1), Direction.UP));
         scene.idle(100);
     }
 }

@@ -48,3 +48,9 @@ dependencies {
 }
 
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+
+// Jar стенда (не релиз): классы devtest для полной сборки на стенде test1a.
+tasks.register('devtestJar', Jar) {
+    archiveClassifier = 'devtest'
+    from sourceSets.devtest.output
+}

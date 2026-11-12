@@ -22,9 +22,13 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import blusunrize.immersiveengineering.api.multiblocks.MultiblockHandler;
+import blusunrize.immersiveengineering.api.multiblocks.blocks.MultiblockRegistration;
+import tfc.destroy.extras.electrolyzer.ElectrolyzerLogic;
+import tfc.destroy.extras.electrolyzer.ElectrolyzerMultiblock;
 import tfc.destroy.extras.electrolyzer.ElectrolyzerStructure;
+import tfc.destroy.extras.electrolyzer.ExtrasMultiblockBuilder;
 import tfc.destroy.extras.electrolyzer.MembraneElectrolyzerBlock;
-import tfc.destroy.extras.electrolyzer.MembraneElectrolyzerBlockEntity;
 import tfc.destroy.extras.etching.EtchingBathBlock;
 import tfc.destroy.extras.dust.MetalDusts;
 import tfc.destroy.extras.etching.EtchingBathBlockEntity;
@@ -37,14 +41,14 @@ import tfc.destroy.extras.recipe.ExtrasRecipeTypes;
 public final class DestroyExtras {
     public static final String MOD_ID = "destroy_extras";
 
-    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
-    private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
         DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MOD_ID);
 
     public static final DeferredBlock<MembraneElectrolyzerBlock> ELECTROLYZER_BLOCK = BLOCKS.register(
         "membrane_electrolyzer", () -> new MembraneElectrolyzerBlock(BlockBehaviour.Properties.of()
-            .strength(3.0f).requiresCorrectToolForDrops().noOcclusion()));
+            .strength(3.0f).requiresCorrectToolForDrops()));
     public static final DeferredItem<BlockItem> ELECTROLYZER_ITEM = ITEMS.register("membrane_electrolyzer",
         () -> new BlockItem(ELECTROLYZER_BLOCK.get(), new Item.Properties()) {
             @Override
@@ -57,10 +61,10 @@ public final class DestroyExtras {
             }
         });
     public static final DeferredItem<Item> MEMBRANE_ITEM = ITEMS.register("membrane",
-        () -> new Item(new Item.Properties().durability(MembraneElectrolyzerBlockEntity.MEMBRANE_OPERATIONS)));
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MembraneElectrolyzerBlockEntity>> ELECTROLYZER_BE =
-        BLOCK_ENTITIES.register("membrane_electrolyzer", () -> BlockEntityType.Builder
-            .of(MembraneElectrolyzerBlockEntity::new, ELECTROLYZER_BLOCK.get()).build(null));
+        () -> new Item(new Item.Properties().durability(ElectrolyzerLogic.MEMBRANE_OPERATIONS)));
+    /** Собранный электролизёр: блок, блок-сущности и регистрация мультиблока IE (порядок полей важен — регистры выше). */
+    public static final MultiblockRegistration<ElectrolyzerLogic.State> ELECTROLYZER = ElectrolyzerLogic.REGISTRATION;
+    public static ElectrolyzerMultiblock ELECTROLYZER_MULTIBLOCK;
     public static final DeferredBlock<EtchingBathBlock> ETCHING_BATH_BLOCK = BLOCKS.register("etching_bath",
         () -> new EtchingBathBlock(BlockBehaviour.Properties.of().strength(3.0f).requiresCorrectToolForDrops().noOcclusion()));
     public static final DeferredItem<BlockItem> ETCHING_BATH_ITEM = ITEMS.register("etching_bath",
@@ -99,6 +103,9 @@ public final class DestroyExtras {
         BLOCK_ENTITIES.register(modBus);
         ExtrasRecipeTypes.register(modBus);
         MetalDusts.register(modBus);
+        ELECTROLYZER_MULTIBLOCK = new ElectrolyzerMultiblock();
+        MultiblockHandler.registerMultiblock(ELECTROLYZER_MULTIBLOCK);
+        ExtrasMultiblockBuilder.registerOnModBus(modBus);
         modBus.addListener(DestroyExtras::capabilities);
         modBus.addListener(DestroyExtras::creativeTab);
     }
@@ -108,16 +115,6 @@ public final class DestroyExtras {
     }
 
     private static void capabilities(RegisterCapabilitiesEvent event) {
-        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ELECTROLYZER_BE.get(), (be, side) -> {
-            Direction facing = be.getBlockState().getValue(MembraneElectrolyzerBlock.FACING);
-            Direction local = ElectrolyzerStructure.toLocal(facing, side);
-            if (local == Direction.NORTH) return be.hydrogen;
-            // Южную грань закрывает корпус 3×3×2, труба к хлору подходит снизу.
-            if (local == Direction.DOWN || local == Direction.SOUTH) return be.chlorine;
-            if (local == Direction.EAST) return be.sodiumHydroxide;
-            return be.input;
-        });
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ELECTROLYZER_BE.get(), (be, side) -> be.membrane);
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ETCHING_BATH_BE.get(), (be, side) -> {
             Direction facing = be.getBlockState().getValue(EtchingBathBlock.FACING);
             Direction local = ElectrolyzerStructure.toLocal(facing, side);

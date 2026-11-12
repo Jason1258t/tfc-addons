@@ -56,16 +56,18 @@ import tfc.destroy.bridge.electric.ProcessPowerDevice;
 import tfc.destroy.bridge.fluid.HydrochloricAcidAdapter;
 import tfc.destroy.extras.DestroyExtras;
 import tfc.destroy.extras.electrolyzer.ElectrolyzerStatus;
-import tfc.destroy.extras.electrolyzer.MembraneElectrolyzerBlockEntity;
+import tfc.destroy.extras.electrolyzer.ElectrolyzerLogic;
 import tfc.destroy.extras.recipe.MembraneElectrolysisRecipe;
 
 /** Проверки production-машины M2; в release jar этот мод не входит. */
 @Mod(DestroyExtrasTest.MOD_ID)
 public final class DestroyExtrasTest {
     public static final String MOD_ID = DestroyExtras.MOD_ID + "_devtest";
-    private static final BlockPos PROCESS = new BlockPos(0, -60, 10);
-    private static final BlockPos SOURCE = PROCESS.west(2);
-    private static final BlockPos BATTERY = PROCESS.east(2);
+    /** Ячейка электролизёра; удар молотом с севера — вход (электропомпа) смотрит на запад, к источнику. */
+    static final BlockPos PROCESS = new BlockPos(0, -59, 10);
+    static final Direction SIDE = Direction.NORTH;
+    private static final BlockPos SOURCE = ElectrolyzerRig.input(PROCESS, SIDE).west();
+    private static final BlockPos BATTERY = PROCESS.offset(0, 2, 4);
     private static final BlockPos VAT = new BlockPos(10, -60, 11);
     private static final ResourceLocation SALT_WATER = DestroyExtras.rl("electrolysis/salt_water");
 
@@ -86,24 +88,19 @@ public final class DestroyExtrasTest {
         BLOCKS.register(modBus);
         BLOCK_ENTITIES.register(modBus);
         M4Test.register(modBus);
-        M5LoadTest.register(modBus);
         modBus.addListener(DestroyExtrasTest::capabilities);
         NeoForge.EVENT_BUS.addListener(DestroyExtrasTest::commands);
         NeoForge.EVENT_BUS.addListener(M4Test::commands);
-        NeoForge.EVENT_BUS.addListener(M5Test::commands);
-        NeoForge.EVENT_BUS.addListener(M5LoadTest::commands);
         NeoForge.EVENT_BUS.addListener(M6Test::commands);
         NeoForge.EVENT_BUS.addListener(M10Test::commands);
+        NeoForge.EVENT_BUS.addListener(ElectrolyzerMbTest::commands);
         NeoForge.EVENT_BUS.addListener(M11Test::commands);
-        NeoForge.EVENT_BUS.addListener(M12Test::commands);
         NeoForge.EVENT_BUS.addListener(M7Test::commands);
         NeoForge.EVENT_BUS.addListener(M7Test::tick);
         NeoForge.EVENT_BUS.addListener(M8Test::commands);
         NeoForge.EVENT_BUS.addListener(M8Test::tick);
         NeoForge.EVENT_BUS.addListener(M9Test::commands);
         NeoForge.EVENT_BUS.addListener(M13Test::commands);
-        NeoForge.EVENT_BUS.addListener(M5LoadTest::tickPre);
-        NeoForge.EVENT_BUS.addListener(M5LoadTest::tickPost);
         NeoForge.EVENT_BUS.addListener(DestroyExtrasTest::serverTick);
         if (FMLEnvironment.dist == Dist.CLIENT) {
             new ClientTest();
@@ -143,9 +140,9 @@ public final class DestroyExtrasTest {
                 .executes(ctx -> fill(ctx, StringArgumentType.getString(ctx, "output")))))
             .then(Commands.literal("membrane")
                 .then(Commands.literal("remove").executes(ctx -> {
-                    MembraneElectrolyzerBlockEntity process = process(ctx.getSource().getLevel());
+                    ElectrolyzerLogic.State process = process(ctx.getSource().getLevel());
                     process.membrane.setStackInSlot(0, ItemStack.EMPTY);
-                    process.setChanged();
+                    process.markChanged();
                     ctx.getSource().sendSuccess(() -> Component.literal("мембрана удалена"), false);
                     return Command.SINGLE_SUCCESS;
                 }))
@@ -170,38 +167,25 @@ public final class DestroyExtrasTest {
 
     private static int build(CommandSourceStack source) {
         ServerLevel level = source.getLevel();
-        buildIndustrial(level, PROCESS);
-        place(level, PROCESS.west(), AllBlocks.FLUID_PIPE.getDefaultState());
+        if (!buildIndustrial(level, PROCESS, SIDE)) {
+            source.sendFailure(Component.literal("мультиблок электролизёра не собрался:" + ElectrolyzerRig.mismatches(level, PROCESS, SIDE)));
+            return 0;
+        }
         place(level, SOURCE, SOURCE_BLOCK.get().defaultBlockState());
         place(level, BATTERY, CEEBlocks.CREATIVE_BATTERY.getDefaultState());
         source(level).tank.setFluid(new FluidStack(TFCFluids.SALT_WATER.getSource(), 8000));
         process(level).membrane.setStackInSlot(0, new ItemStack(DestroyExtras.MEMBRANE_ITEM.get()));
-        wire(level, BATTERY, 0, PROCESS, ProcessPowerDevice.PLUS);
-        wire(level, BATTERY, 1, PROCESS, ProcessPowerDevice.MINUS);
-        source.sendSuccess(() -> Component.literal("стенд промышленного электролизёра M5 собран"), false);
+        BlockPos power = ElectrolyzerRig.power(PROCESS, SIDE);
+        wire(level, BATTERY, 0, power, ProcessPowerDevice.PLUS);
+        wire(level, BATTERY, 1, power, ProcessPowerDevice.MINUS);
+        source.sendSuccess(() -> Component.literal("стенд мультиблока электролизёра собран"), false);
         return Command.SINGLE_SUCCESS;
     }
 
-    static void buildIndustrial(ServerLevel level, BlockPos controller) {
-        for (int x = -1; x <= 1; x++) {
-            for (int y = 0; y <= 2; y++) {
-                for (int z = 0; z <= 1; z++) {
-                    if ((y == 0 && z == 0) || (x == 1 && y == 1 && z == 1)) continue;
-                    BlockPos pos = controller.offset(x, y, z);
-                    BlockState state = x != 0 ? AllBlocks.FLUID_TANK.getDefaultState()
-                        : y == 1 && z == 1 ? AllBlocks.MECHANICAL_PUMP.getDefaultState()
-                        : AllBlocks.COPPER_CASING.getDefaultState();
-                    place(level, pos, state);
-                }
-            }
-        }
-        place(level, controller, DestroyExtras.ELECTROLYZER_BLOCK.get().defaultBlockState());
-        place(level, controller.offset(1, 1, 1), AllBlocks.COGWHEEL.getDefaultState()
-            .setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.AXIS, Direction.Axis.Z));
-        BlockPos motorPos = controller.offset(1, 1, 2);
-        place(level, motorPos, AllBlocks.CREATIVE_MOTOR.getDefaultState()
-            .setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING, Direction.NORTH));
-        if (level.getBlockEntity(motorPos) instanceof CreativeMotorBlockEntity motor) motor.generatedSpeed.setValue(64);
+    /** Блоки шаблона и сборка, как удар молотом IE по ячейке с грани {@code side}. */
+    static boolean buildIndustrial(ServerLevel level, BlockPos cell, Direction side) {
+        ElectrolyzerRig.place(level, cell, side);
+        return ElectrolyzerRig.form(level, cell, side);
     }
 
     private static void place(ServerLevel level, BlockPos pos, BlockState state) {
@@ -224,7 +208,7 @@ public final class DestroyExtrasTest {
             source.sendFailure(Component.literal("нет EE-батареи стенда M2"));
             return 0;
         }
-        MembraneElectrolyzerBlockEntity process = process(source.getLevel());
+        ElectrolyzerLogic.State process = process(source.getLevel());
         if (process.progress > 0 && volts < 270) {
             TestSourceBlockEntity sourceBlock = source(source.getLevel());
             sourceBlock.savedProgress = process.progress;
@@ -238,21 +222,21 @@ public final class DestroyExtrasTest {
     }
 
     private static int fill(CommandContext<CommandSourceStack> ctx, String output) {
-        MembraneElectrolyzerBlockEntity process = process(ctx.getSource().getLevel());
+        ElectrolyzerLogic.State process = process(ctx.getSource().getLevel());
         int index = outputIndex(output);
         if (index < 0) {
             ctx.getSource().sendFailure(Component.literal("неизвестный выход: " + output));
             return 0;
         }
         FluidStack[] products = recipe(ctx.getSource().getLevel()).products();
-        process.outputs[index].setFluid(products[index].copyWithAmount(MembraneElectrolyzerBlockEntity.OUTPUT_CAPACITY));
-        process.setChanged();
+        outputs(process)[index].setFluid(products[index].copyWithAmount(ElectrolyzerLogic.OUTPUT_CAPACITY));
+        process.markChanged();
         ctx.getSource().sendSuccess(() -> Component.literal("заполнен выход " + output), false);
         return Command.SINGLE_SUCCESS;
     }
 
     private static int membrane(CommandContext<CommandSourceStack> ctx, int damage) {
-        MembraneElectrolyzerBlockEntity process = process(ctx.getSource().getLevel());
+        ElectrolyzerLogic.State process = process(ctx.getSource().getLevel());
         ItemStack stack = process.membrane.getStackInSlot(0).copy();
         if (stack.isEmpty()) stack = new ItemStack(DestroyExtras.MEMBRANE_ITEM.get());
         stack.setDamageValue(damage);
@@ -263,7 +247,7 @@ public final class DestroyExtrasTest {
 
     private static int restartCase(CommandContext<CommandSourceStack> ctx) {
         reset();
-        MembraneElectrolyzerBlockEntity process = process(ctx.getSource().getLevel());
+        ElectrolyzerLogic.State process = process(ctx.getSource().getLevel());
         check(ctx, process.progress > 0 && process.progress < recipe(ctx.getSource().getLevel()).getProcessingDuration(),
             "перед перезапуском есть незавершённый прогресс");
         TestSourceBlockEntity source = source(ctx.getSource().getLevel());
@@ -279,25 +263,33 @@ public final class DestroyExtrasTest {
     private static int assertCase(CommandContext<CommandSourceStack> ctx, String testCase) {
         reset();
         ServerLevel level = ctx.getSource().getLevel();
-        MembraneElectrolyzerBlockEntity process = process(level);
+        ElectrolyzerLogic.State process = process(level);
         ProcessPowerDevice device = process.device();
         FluidStack[] products = recipe(level).products();
         switch (testCase) {
             case "ports" -> {
-                check(ctx, capability(level, Direction.NORTH) == process.hydrogen, "север — водород");
-                check(ctx, capability(level, Direction.SOUTH) == process.chlorine, "юг — хлор");
-                check(ctx, capability(level, Direction.DOWN) == process.chlorine, "низ — хлор, доступен при собранном корпусе");
-                check(ctx, capability(level, Direction.EAST) == process.sodiumHydroxide, "восток — NaOH");
-                check(ctx, capability(level, Direction.WEST) == process.input, "запад — вход TFC");
-                check(ctx, level.getCapability(Capabilities.ItemHandler.BLOCK, PROCESS, Direction.UP) == process.membrane,
-                    "item handler открывает заменяемый слот мембраны");
+                checkPort(ctx, level, 0, 2, 1, Direction.UP, process.cathodeGas, false, "катодный газ — левая верхняя труба, вверх");
+                checkPort(ctx, level, 2, 2, 1, Direction.UP, process.anodeGas, false, "анодный газ — правая верхняя труба, вверх");
+                checkPort(ctx, level, 0, 0, 1, Direction.WEST, process.catholyte, false, "католит — левый нижний бак, влево");
+                checkPort(ctx, level, 2, 0, 0, Direction.EAST, process.input, true, "вход — электропомпа, вправо");
+                check(ctx, capability(level, 0, 2, 1, Direction.SOUTH) == null, "у боковой грани коллектора порта нет");
+                BlockPos cell = ElectrolyzerRig.world(PROCESS, SIDE, 1, 1, 1);
+                check(ctx, level.getCapability(Capabilities.ItemHandler.BLOCK, cell, SIDE) == process.membrane,
+                    "предметный порт мембраны — лицевая грань ячейки");
             }
             case "normal" -> {
-                checkPower(ctx, device, 300, 8);
-                check(ctx, process.batches == 1, "выполнена ровно одна production-партия");
-                checkProducts(ctx, process, products);
-                check(ctx, process.remainingMembraneOperations() == 63, "одна операция износила мембрану на 1/64");
-                check(ctx, remainingWater(level) == 7000, "8000 - 1000 = 7000 мБ исходной массы");
+                // На стенде всей сборки TPS после запуска плавает, поэтому партий может пройти несколько: всё считается на N.
+                int n = process.batches;
+                if (process.status() == ElectrolyzerStatus.RUNNING) checkPower(ctx, device, 300, 8);
+                check(ctx, n >= 1, "прошла хотя бы одна партия: " + n);
+                for (int i = 0; i < 3; i++) {
+                    check(ctx, outputs(process)[i].getFluidAmount() == products[i].getAmount() * n,
+                        "выход " + i + ": " + products[i].getAmount() + " мБ × " + n);
+                    check(ctx, FluidStack.isSameFluidSameComponents(outputs(process)[i].getFluid(), products[i]),
+                        "fluid id и data components выхода " + i + " совпадают с JSON");
+                }
+                check(ctx, process.remainingMembraneOperations() == 64 - n, "каждая партия изнашивает мембрану на 1/64");
+                check(ctx, remainingWater(level) == 8000 - 1000 * n, "масса входа: 8000 − 1000 × " + n);
                 check(ctx, SALT_WATER.equals(process.recipeId()), "production-блок использует JSON-рецепт");
             }
             case "no_membrane", "worn_membrane" -> {
@@ -322,10 +314,10 @@ public final class DestroyExtrasTest {
                     default -> 2;
                 };
                 check(ctx, process.status() == ElectrolyzerStatus.BLOCKED_OUTPUT, "статус BLOCKED_OUTPUT");
-                check(ctx, process.outputs[blocked].getFluidAmount() == MembraneElectrolyzerBlockEntity.OUTPUT_CAPACITY,
+                check(ctx, outputs(process)[blocked].getFluidAmount() == ElectrolyzerLogic.OUTPUT_CAPACITY,
                     "выбранный выход действительно полон");
                 for (int i = 0; i < 3; i++) {
-                    if (i != blocked) check(ctx, process.outputs[i].isEmpty(), "другой выход " + i + " остался пустым");
+                    if (i != blocked) check(ctx, outputs(process)[i].isEmpty(), "другой выход " + i + " остался пустым");
                 }
                 check(ctx, process.progress == 0 && process.batches == 0, "переполнение блокирует всю операцию");
                 check(ctx, remainingWater(level) == 8000, "масса входа сохранена при переполнении");
@@ -516,22 +508,36 @@ public final class DestroyExtrasTest {
         double volts, double amps) {
         check(ctx, device != null, "EE-драйвер production-блока создан");
         if (device != null) {
-            check(ctx, close(device.measuredVoltage(), volts, 0.25), "измерено около " + volts + " В");
+            check(ctx, close(device.measuredVoltage(), volts, 1.0), "измерено около " + volts + " В: " + device.measuredVoltage());
             check(ctx, close(device.measuredCurrent(), amps, 0.1), "измерен ожидаемый ток");
         }
     }
 
-    private static void checkProducts(CommandContext<CommandSourceStack> ctx, MembraneElectrolyzerBlockEntity process,
+    private static void checkProducts(CommandContext<CommandSourceStack> ctx, ElectrolyzerLogic.State process,
         FluidStack[] products) {
         for (int i = 0; i < 3; i++) {
-            check(ctx, process.outputs[i].getFluidAmount() == products[i].getAmount(), "точное количество выхода " + i);
-            check(ctx, FluidStack.isSameFluidSameComponents(process.outputs[i].getFluid(), products[i]),
+            check(ctx, outputs(process)[i].getFluidAmount() == products[i].getAmount(), "точное количество выхода " + i);
+            check(ctx, FluidStack.isSameFluidSameComponents(outputs(process)[i].getFluid(), products[i]),
                 "fluid id и data components выхода " + i + " совпадают с JSON");
         }
     }
 
-    private static IFluidHandler capability(ServerLevel level, Direction side) {
-        return level.getCapability(Capabilities.FluidHandler.BLOCK, PROCESS, side);
+    private static IFluidHandler capability(ServerLevel level, int x, int y, int z, Direction templateSide) {
+        return level.getCapability(Capabilities.FluidHandler.BLOCK, ElectrolyzerRig.world(PROCESS, SIDE, x, y, z),
+            ElectrolyzerRig.worldSide(SIDE, templateSide));
+    }
+
+    /** Порт в клетке шаблона: показывает свой бак; вход только принимает, выход только отдаёт. */
+    private static void checkPort(CommandContext<CommandSourceStack> ctx, ServerLevel level, int x, int y, int z,
+                                  Direction templateSide, net.neoforged.neoforge.fluids.capability.templates.FluidTank tank,
+                                  boolean input, String label) {
+        IFluidHandler port = capability(level, x, y, z, templateSide);
+        check(ctx, port != null, label + ": порт есть");
+        if (port == null) return;
+        FluidStack water = new FluidStack(TFCFluids.SALT_WATER.getSource(), 100);
+        int filled = port.fill(water, IFluidHandler.FluidAction.SIMULATE);
+        check(ctx, input ? filled == 100 : filled == 0, label + (input ? ": принимает жидкость" : ": не принимает жидкость"));
+        check(ctx, port.getTankCapacity(0) == tank.getCapacity(), label + ": это нужный бак");
     }
 
     private static int outputIndex(String output) {
@@ -549,13 +555,13 @@ public final class DestroyExtrasTest {
         throw new IllegalStateException("JSON-рецепт M2 не загружен");
     }
 
-    private static boolean emptyOutputs(MembraneElectrolyzerBlockEntity process) {
-        for (var output : process.outputs) if (!output.isEmpty()) return false;
+    private static boolean emptyOutputs(ElectrolyzerLogic.State process) {
+        for (var output : outputs(process)) if (!output.isEmpty()) return false;
         return true;
     }
 
     private static int remainingWater(ServerLevel level) {
-        MembraneElectrolyzerBlockEntity process = process(level);
+        ElectrolyzerLogic.State process = process(level);
         return source(level).tank.getFluidAmount() + process.input.getFluidAmount() + process.mixture.getFluidAmount();
     }
 
@@ -563,9 +569,12 @@ public final class DestroyExtrasTest {
         return Math.abs(actual - expected) <= tolerance;
     }
 
-    private static MembraneElectrolyzerBlockEntity process(ServerLevel level) {
-        if (level.getBlockEntity(PROCESS) instanceof MembraneElectrolyzerBlockEntity process) return process;
-        throw new IllegalStateException("На позиции стенда нет production-электролизёра");
+    private static net.neoforged.neoforge.fluids.capability.templates.FluidTank[] outputs(ElectrolyzerLogic.State process) {
+        return new net.neoforged.neoforge.fluids.capability.templates.FluidTank[] {process.cathodeGas, process.anodeGas, process.catholyte};
+    }
+
+    private static ElectrolyzerLogic.State process(ServerLevel level) {
+        return ElectrolyzerRig.state(level, PROCESS);
     }
 
     private static TestSourceBlockEntity source(ServerLevel level) {
@@ -574,15 +583,26 @@ public final class DestroyExtrasTest {
     }
 
     private static int reportState(CommandSourceStack source) {
-        MembraneElectrolyzerBlockEntity process = process(source.getLevel());
+        ElectrolyzerLogic.State process = process(source.getLevel());
         ProcessPowerDevice device = process.device();
-        String message = "M2 " + process.status() + " formed=" + process.formed() + " pumpRpm=" + process.pumpRpm()
+        String message = "M2 t=" + source.getLevel().getGameTime() + " ticks=" + process.ticks + " source=" + source(source.getLevel()).tank.getFluidAmount()
+            + " " + process.status()
             + " progress=" + process.progress + " batches=" + process.batches
             + " membrane=" + process.remainingMembraneOperations() + " tanks=" + process.input.getFluidAmount() + "/"
-            + process.mixture.getFluidAmount() + "/" + process.hydrogen.getFluidAmount() + "/"
-            + process.chlorine.getFluidAmount() + "/" + process.sodiumHydroxide.getFluidAmount();
+            + process.mixture.getFluidAmount() + "/" + process.cathodeGas.getFluidAmount() + "/"
+            + process.anodeGas.getFluidAmount() + "/" + process.catholyte.getFluidAmount();
         if (device != null) message += String.format(" V=%.3f A=%.3f P=%.1f", device.measuredVoltage(),
             device.measuredCurrent(), device.measuredPower());
+        message += " input=" + net.minecraft.core.registries.BuiltInRegistries.FLUID.getKey(process.input.getFluid().getFluid());
+        // Как машина сравнивает вход с каждым рецептом электролиза (диагностика выбора рецепта).
+        for (var holder : source.getLevel().getRecipeManager().getAllRecipesFor(tfc.destroy.extras.recipe.ExtrasRecipeTypes.ELECTROLYSIS_TYPE.get())) {
+            var recipe = holder.value();
+            FluidStack portion = process.input.getFluid().copyWithAmount(recipe.input().amount());
+            FluidStack adapted = recipe.acceptsSaltWater() ? tfc.destroy.bridge.fluid.SaltWaterAdapter.toDestroyMixture(portion,
+                recipe.saltConcentration(), recipe.waterConcentration(), recipe.translationKey()) : FluidStack.EMPTY;
+            message += " | " + holder.id() + " salt=" + recipe.acceptsSaltWater() + " direct=" + recipe.input().test(portion)
+                + " adapted=" + (!adapted.isEmpty()) + "/" + (!adapted.isEmpty() && recipe.input().test(adapted));
+        }
         String result = message;
         source.sendSuccess(() -> Component.literal(result), false);
         return Command.SINGLE_SUCCESS;

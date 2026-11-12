@@ -8,10 +8,18 @@ public enum ElectrolyzerStatus {
     WAITING_FOR_POWER,
     RUNNING,
     BLOCKED_OUTPUT,
+    NO_RECIPE,
     FAULT;
 
     public String id() {
         return name().toLowerCase(Locale.ROOT);
+    }
+
+    public static ElectrolyzerStatus byId(String id) {
+        for (ElectrolyzerStatus status : values()) {
+            if (status.id().equals(id)) return status;
+        }
+        return IDLE;
     }
 
     public Component text() {
