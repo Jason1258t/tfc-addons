@@ -52,3 +52,10 @@ tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
 
 // Уведомление Apache-2.0 для частей, перенесённых из Create: Power Grid (декоративный провод)
 jar { from(files('NOTICE', 'LICENSE-PowerGrid')) { into 'META-INF' } }
+
+// Полный проверочный мод для стенда: Gradle сначала компилирует все классы, затем упаковывает их.
+tasks.register('devtestJar', Jar) {
+    dependsOn tasks.named('devtestClasses')
+    archiveClassifier = 'devtest'
+    from sourceSets.devtest.output
+}

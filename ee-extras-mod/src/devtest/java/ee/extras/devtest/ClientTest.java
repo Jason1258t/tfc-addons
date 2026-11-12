@@ -45,7 +45,7 @@ public final class ClientTest {
 
     @SubscribeEvent
     public static void screen(ScreenEvent.Init.Post e) {
-        if (PCB_UPGRADE_PHOTOS || PCB_MOUNT_PHOTOS || started || !(e.getScreen() instanceof TitleScreen)) return;
+        if (PCB_UPGRADE_PHOTOS || PCB_MOUNT_PHOTOS || FlywheelWireTest.ON || started || !(e.getScreen() instanceof TitleScreen)) return;
         started = true;
         Minecraft mc = Minecraft.getInstance();
         mc.options.pauseOnLostFocus = false;
@@ -67,6 +67,10 @@ public final class ClientTest {
             }
             if (PCB_MOUNT_PHOTOS) {
                 PcbMountPhotos.tick(mc, server, tick);
+                return;
+            }
+            if (FlywheelWireTest.ON) {
+                FlywheelWireTest.tick(mc, server, tick);
                 return;
             }
             if (System.getenv("CAP") != null) {
