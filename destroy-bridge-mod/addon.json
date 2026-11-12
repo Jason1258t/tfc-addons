@@ -8,6 +8,5 @@
   "side": "both",
   "summary": "Техническая зависимость Destroy Extras: адаптеры TFC/Destroy, атомарные операции и настраиваемые режимы питания EE 240/300/600 В.",
   "needs": "Сервер и все игроки вместе с Destroy Extras 0.5.0, Destroy 0.4.6-eligibbs, Petrolpark 1.5.11 и Electro Energetics 1.1.2+. Самостоятельных блоков и рецептов нет.",
-  "manual": true,
   "blocks": []
 }

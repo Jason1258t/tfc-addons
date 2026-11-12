@@ -6,9 +6,8 @@
   "sha256": "58d4210465dc66ef6daed7838aad442e91f33911f033de9a569dc602bf24c44e",
   "order": 801,
   "side": "both",
-  "manual": true,
   "summary": "Химические машины Destroy: мембранный электролизёр — мультиблок IE с окном, очками Create и рецептами разных реакций; травление плат L1–L3 и металлургический процессор. Выщелачивание и электроэкстракция Cu/Ni/Zn, Bayer и Hall–Héroult, регенерация FeCl₃ и переработка электронного лома. Рецепты загружаются из datapack, питание — 240/300/600 В EE.",
-  "needs": "Сервер и все игроки. NeoForge 21.1.251+, Destroy 0.4.6-eligibbs, Petrolpark 1.5.11, Destroy Bridge 0.2.0, EE Extras 2.9.0+, Create 6.0.10, Electro Energetics 1.1.2+ и Immersive Engineering 12.4.2+. Survival-рецепты также используют TFC.",
+  "needs": "Сервер и все игроки; ставится обычным tfc pull. NeoForge 21.1.251+, Destroy 0.4.6-eligibbs, Petrolpark 1.5.11, Destroy Bridge 0.2.0, EE Extras 2.9.0+, Create 6.0.10, Electro Energetics 1.1.2+ и Immersive Engineering 12.4.2+. Survival-рецепты также используют TFC.",
   "blocks": [
     {
       "id": "destroy_extras:membrane_electrolyzer",
