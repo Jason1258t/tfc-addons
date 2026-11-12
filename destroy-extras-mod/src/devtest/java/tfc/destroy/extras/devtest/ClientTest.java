@@ -149,8 +149,11 @@ public final class ClientTest {
         var level = mc().level;
         var cell = new net.minecraft.core.BlockPos(1, -59, -5);
         int total = 0;
+        var server = mc().getSingleplayerServer().overworld();
         for (var pos : net.minecraft.core.BlockPos.betweenClosed(cell.offset(-1, -1, -1), cell.offset(1, 1, 1))) {
             var state = level.getBlockState(pos);
+            System.out.println("DESTROYEXTRACLIENT AT " + pos.toShortString() + " client=" + state + " be=" + level.getBlockEntity(pos)
+                + " server=" + server.getBlockState(pos) + " sbe=" + server.getBlockEntity(pos));
             if (!state.is(DestroyExtras.ELECTROLYZER.block().get())) continue;
             var model = mc().getBlockRenderer().getBlockModel(state);
             var data = model.getModelData(level, pos, state, net.neoforged.neoforge.client.model.data.ModelData.EMPTY);

@@ -1,18 +1,18 @@
 {
   "id": "destroy_extras",
   "name": "Destroy Extras — химические машины",
-  "version": "0.7.1",
-  "jar": "destroy-extras-0.7.1.jar",
-  "sha256": "87de14d35f93c3a8fb2b73537e16e407baf5612e00cb84596d9b77736a1a5e94",
+  "version": "0.8.0",
+  "jar": "destroy-extras-0.8.0.jar",
+  "sha256": "a64caf4429ce10d5303062f66e89e941e86f3a90eab35330bffedb348684ff04",
   "order": 801,
   "side": "both",
   "manual": true,
-  "summary": "Химические машины Destroy: электролиз солёной воды, травление плат L1–L3 и металлургический процессор. Выщелачивание и электроэкстракция Cu/Ni/Zn, Bayer и Hall–Héroult, регенерация FeCl₃ и переработка электронного лома. Рецепты загружаются из datapack, питание — 240/600 В EE.",
-  "needs": "Сервер и все игроки. NeoForge 21.1.251+, Destroy 0.4.6-eligibbs, Petrolpark 1.5.11, Destroy Bridge 0.2.0, EE Extras 2.9.0+, Create 6.0.10 и Electro Energetics 1.1.2+. Survival-рецепты также используют Immersive Engineering и TFC.",
+  "summary": "Химические машины Destroy: мембранный электролизёр — мультиблок IE с окном, очками Create и рецептами разных реакций; травление плат L1–L3 и металлургический процессор. Выщелачивание и электроэкстракция Cu/Ni/Zn, Bayer и Hall–Héroult, регенерация FeCl₃ и переработка электронного лома. Рецепты загружаются из datapack, питание — 240/300/600 В EE.",
+  "needs": "Сервер и все игроки. NeoForge 21.1.251+, Destroy 0.4.6-eligibbs, Petrolpark 1.5.11, Destroy Bridge 0.2.0, EE Extras 2.9.0+, Create 6.0.10, Electro Energetics 1.1.2+ и Immersive Engineering 12.4.2+. Survival-рецепты также используют TFC.",
   "blocks": [
     {
       "id": "destroy_extras:membrane_electrolyzer",
-      "name": "Мембранный электролизёр",
+      "name": "Мембранная ячейка электролизёра",
       "image": "membrane_electrolyzer.png",
       "recipe": {
         "pattern": [
