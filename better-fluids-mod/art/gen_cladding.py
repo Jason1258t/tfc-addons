@@ -94,14 +94,15 @@ for metal, pal in PALETTES.items():
             'pools': [{'rolls': 1, 'entries': [{'type': 'minecraft:item', 'name': f'better_fluids:{name}'}],
                        'conditions': [{'condition': 'minecraft:survives_explosion'}]}],
         })
-    # Слиток на камнерезе — как промышленное железо Create; гладкий лист и рамка переводятся друг в друга
+    # Слиток на камнерезе даёт 4 блока (обшивка — тонкий лист, дешевле полного блока); гладкий лист и рамка
+    # переводятся друг в друга
     for kind in ('', '_framed'):
         name = f'{metal}_cladding{kind}'
         other = f'{metal}_cladding{"" if kind else "_framed"}'
         write_json(data / f'recipe/{name}_from_ingot.json', {
             'type': 'minecraft:stonecutting',
             'ingredient': {'tag': INGOT[metal]},
-            'result': {'id': f'better_fluids:{name}', 'count': 1},
+            'result': {'id': f'better_fluids:{name}', 'count': 4},
         })
         write_json(data / f'recipe/{name}_from_{other}.json', {
             'type': 'minecraft:stonecutting',
