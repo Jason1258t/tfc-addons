@@ -15,6 +15,7 @@ import net.minecraft.world.phys.Vec3;
 final class PcbRegulatorPhotos {
     private static int phase;
     private static net.minecraft.core.BlockPos table;
+    private static volatile Vec3 hitPoint;
     static void tick(Minecraft mc,MinecraftServer server,int elapsed) {
         if(phase==0&&mc.screen!=null)return;int tick=++phase;
         if(tick%20==0)server.execute(()->player(mc,server).removeAllEffects());
@@ -41,8 +42,8 @@ final class PcbRegulatorPhotos {
         }
         if(tick==1000)server.execute(()->{var p=player(mc,server);PcbRegulatorDemo.build(p.createCommandSourceStack(),true);camera(p,PcbBridgeTest.BOARD,Direction.UP,.9);});
         if(tick==1160)server.execute(()->PcbRegulatorDemo.write(player(mc,server).createCommandSourceStack()));
-        if(tick==1180)server.execute(()->{var p=player(mc,server);p.setGameMode(GameType.CREATIVE);p.getAbilities().flying=true;p.onUpdateAbilities();p.setItemInHand(InteractionHand.MAIN_HAND,ItemStack.EMPTY);var at=regulatorHit(p.serverLevel());p.teleportTo(p.serverLevel(),at.x,at.y+.6,at.z+.8,180,60);});
-        if(tick==1190){setOverlay(mc,null);var hit=regulatorHit(mc.level);mc.gameMode.useItemOn(mc.player,InteractionHand.MAIN_HAND,new net.minecraft.world.phys.BlockHitResult(hit,Direction.UP,PcbBridgeTest.BOARD,false));}
+        if(tick==1180)server.execute(()->{var p=player(mc,server);p.setGameMode(GameType.CREATIVE);p.getAbilities().flying=true;p.onUpdateAbilities();p.setItemInHand(InteractionHand.MAIN_HAND,ItemStack.EMPTY);var at=regulatorHit(p.serverLevel());hitPoint=at;p.teleportTo(p.serverLevel(),at.x,at.y+.6,at.z+.8,180,60);});
+        if(tick==1190){setOverlay(mc,null);var hit=hitPoint;ClientTest.check("точка корпуса стабилизатора посчитана сервером",hit!=null);if(hit!=null)mc.gameMode.useItemOn(mc.player,InteractionHand.MAIN_HAND,new net.minecraft.world.phys.BlockHitResult(hit,Direction.UP,PcbBridgeTest.BOARD,false));}
         if(tick==1196){
             var message=overlay(mc);var matcher=message==null?null:java.util.regex.Pattern.compile("^Стабилизатор 5 В: выход (\\d+\\.\\d+)–(\\d+\\.\\d+) В").matcher(message);
             ClientTest.check("ПКМ по корпусу стабилизатора показал состояние: "+message,matcher!=null&&matcher.find()&&Math.abs(Double.parseDouble(matcher.group(1))-5)<.05&&Math.abs(Double.parseDouble(matcher.group(2))-5)<.05);
