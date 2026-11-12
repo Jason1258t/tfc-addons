@@ -10,8 +10,8 @@ import blusunrize.immersiveengineering.api.multiblocks.blocks.util.CapabilityPos
 import blusunrize.immersiveengineering.api.multiblocks.blocks.util.MultiblockOrientation;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.util.RelativeBlockFace;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.util.ShapeType;
+import blusunrize.immersiveengineering.common.gui.IEContainerMenu.MultiblockMenuContext;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
-import java.util.Locale;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
@@ -65,7 +65,7 @@ public final class ElectrolyzerLogic implements IMultiblockLogic<ElectrolyzerLog
     public static final MultiblockRegistration<State> REGISTRATION = new ExtrasMultiblockBuilder<>(new ElectrolyzerLogic(), "electrolyzer")
         .notMirrored()
         .structure(() -> DestroyExtras.ELECTROLYZER_MULTIBLOCK)
-        .defaultBEs(DestroyExtras.BLOCK_ENTITIES)
+        .defaultBEs(ElectrolyzerBlockEntities.registration())
         .customBlock(DestroyExtras.BLOCKS, DestroyExtras.ITEMS, ElectrolyzerPartBlock::new,
             block -> new net.minecraft.world.item.BlockItem(block, new net.minecraft.world.item.Item.Properties()))
         .build();
@@ -132,16 +132,10 @@ public final class ElectrolyzerLogic implements IMultiblockLogic<ElectrolyzerLog
                 return ItemInteractionResult.SUCCESS;
             }
         }
-        if (!held.isEmpty()) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        player.displayClientMessage(Component.translatable("message.destroy_extras.electrolyzer.report",
-            state.status.text(), state.remainingMembraneOperations(),
-            amount(state.input), amount(state.cathodeGas), amount(state.anodeGas), amount(state.catholyte),
-            String.format(Locale.ROOT, "%.0f", state.voltage)), false);
+        if (!held.isEmpty() && !held.is(DestroyExtras.MEMBRANE_ITEM.get())) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        player.openMenu(ElectrolyzerMenu.provider(new MultiblockMenuContext<>(context,
+            context.getLevel().toAbsolute(posInMultiblock))));
         return ItemInteractionResult.SUCCESS;
-    }
-
-    private static int amount(FluidTank tank) {
-        return tank.getFluidAmount();
     }
 
     @Override
@@ -150,7 +144,12 @@ public final class ElectrolyzerLogic implements IMultiblockLogic<ElectrolyzerLog
         if (!(context.getLevel().getRawLevel() instanceof ServerLevel level)) return;
         ElectrolyzerStatus previous = state.status;
         state.tick(level, context.getLevel().toAbsolute(POWER));
-        if (state.status != previous) context.requestMasterBESync();
+        // Очкам нужны прогресс и баки: при смене состояния сразу, иначе раз в полсекунды, если что-то поменялось.
+        Synced now = state.synced();
+        if (state.status != previous || context.getLevel().shouldTickModulo(10) && !now.equals(state.lastSent)) {
+            state.lastSent = now;
+            context.requestMasterBESync();
+        }
         if (state.dirty) {
             state.dirty = false;
             context.markMasterDirty();
@@ -195,6 +194,12 @@ public final class ElectrolyzerLogic implements IMultiblockLogic<ElectrolyzerLog
         private FluidStack lastScanned = FluidStack.EMPTY;
         ElectrolyzerStatus status = ElectrolyzerStatus.IDLE;
         double voltage;
+        double current;
+        /** Какой выход не принимает партию (при BLOCKED_OUTPUT), иначе null. */
+        MembraneElectrolysisRecipe.Port blocked;
+        /** На клиенте — то, что прислал сервер (writeSyncNBT); на сервере не используется. */
+        private Synced clientSynced = Synced.EMPTY;
+        Synced lastSent;
         public int progress;
         public int batches;
         /** Тиков логики с загрузки (не сохраняется): по нему видно, тикает ли машина. */
@@ -221,6 +226,8 @@ public final class ElectrolyzerLogic implements IMultiblockLogic<ElectrolyzerLog
                 return;
             }
             voltage = device.measuredVoltage();
+            current = device.measuredCurrent();
+            blocked = null;
             selectRecipe(level, level.getRecipeManager());
             if (recipe == null) {
                 device.setActive(false);
@@ -242,6 +249,7 @@ public final class ElectrolyzerLogic implements IMultiblockLogic<ElectrolyzerLog
                 status = ElectrolyzerStatus.FAULT;
             } else if (hasBatch && !ready) {
                 status = ElectrolyzerStatus.BLOCKED_OUTPUT;
+                blocked = blockedPort(value, targets, products);
             } else if (!hasBatch) {
                 status = ElectrolyzerStatus.IDLE;
             } else if (!device.hasWorkingPower()) {
@@ -265,6 +273,14 @@ public final class ElectrolyzerLogic implements IMultiblockLogic<ElectrolyzerLog
             progress = 0;
             batches++;
             status = ElectrolyzerStatus.IDLE;
+        }
+
+        private static MembraneElectrolysisRecipe.Port blockedPort(MembraneElectrolysisRecipe value, FluidTank[] targets,
+                                                                   FluidStack[] products) {
+            for (int i = 0; i < targets.length; i++) {
+                if (targets[i].fill(products[i], IFluidHandler.FluidAction.SIMULATE) < products[i].getAmount()) return value.ports().get(i);
+            }
+            return null;
         }
 
         /** Бак каждого продукта по его порту в рецепте. */
@@ -356,6 +372,28 @@ public final class ElectrolyzerLogic implements IMultiblockLogic<ElectrolyzerLog
             return status;
         }
 
+        public double voltage() {
+            return voltage;
+        }
+
+        public double current() {
+            return current;
+        }
+
+        public RecipeHolder<MembraneElectrolysisRecipe> recipe() {
+            return recipe;
+        }
+
+        private int duration() {
+            return recipe != null ? recipe.value().getProcessingDuration() : 0;
+        }
+
+        /** Сводка для очков: на сервере — живые значения, на клиенте — присланные. */
+        public Synced synced() {
+            if (recipeManager == null && clientSynced != Synced.EMPTY) return clientSynced;
+            return new Synced(status, progress, duration(), remainingMembraneOperations(), (float) voltage, (float) current, blocked);
+        }
+
         public ProcessPowerDevice device() {
             return device;
         }
@@ -396,13 +434,51 @@ public final class ElectrolyzerLogic implements IMultiblockLogic<ElectrolyzerLog
 
         @Override
         public void writeSyncNBT(CompoundTag tag, HolderLookup.Provider registries) {
-            tag.putString("Status", status.id());
+            Synced s = synced();
+            tag.putString("Status", s.status().id());
+            tag.putInt("Progress", s.progress());
+            tag.putInt("Duration", s.duration());
+            tag.putInt("Membrane", s.membrane());
+            tag.putFloat("Voltage", s.voltage());
+            tag.putFloat("Current", s.current());
+            if (s.blocked() != null) tag.putString("Blocked", s.blocked().getSerializedName());
+            tag.put("Input", input.writeToNBT(registries, new CompoundTag()));
+            tag.put("CathodeGas", cathodeGas.writeToNBT(registries, new CompoundTag()));
+            tag.put("AnodeGas", anodeGas.writeToNBT(registries, new CompoundTag()));
+            tag.put("Catholyte", catholyte.writeToNBT(registries, new CompoundTag()));
         }
 
         @Override
         public void readSyncNBT(CompoundTag tag, HolderLookup.Provider registries) {
             status = ElectrolyzerStatus.byId(tag.getString("Status"));
+            MembraneElectrolysisRecipe.Port port = null;
+            for (MembraneElectrolysisRecipe.Port p : MembraneElectrolysisRecipe.Port.values()) {
+                if (p.getSerializedName().equals(tag.getString("Blocked"))) port = p;
+            }
+            clientSynced = new Synced(status, tag.getInt("Progress"), tag.getInt("Duration"), tag.getInt("Membrane"),
+                tag.getFloat("Voltage"), tag.getFloat("Current"), port);
+            input.readFromNBT(registries, tag.getCompound("Input"));
+            cathodeGas.readFromNBT(registries, tag.getCompound("CathodeGas"));
+            anodeGas.readFromNBT(registries, tag.getCompound("AnodeGas"));
+            catholyte.readFromNBT(registries, tag.getCompound("Catholyte"));
         }
+    }
+
+    /** Что показывают очки инженера; на клиент приходит синхронизацией мастер-блока IE. */
+    public record Synced(ElectrolyzerStatus status, int progress, int duration, int membrane, float voltage, float current,
+                         MembraneElectrolysisRecipe.Port blocked) {
+        static final Synced EMPTY = new Synced(ElectrolyzerStatus.IDLE, 0, 0, 0, 0, 0, null);
+
+        /** Подпись состояния; при переполнении — с названием выхода («Выход переполнен: анодный газ»). */
+        public Component text() {
+            return statusText(status, blocked);
+        }
+    }
+
+    public static Component statusText(ElectrolyzerStatus status, MembraneElectrolysisRecipe.Port blocked) {
+        if (status != ElectrolyzerStatus.BLOCKED_OUTPUT || blocked == null) return status.text();
+        return Component.translatable("status.destroy_extras.electrolyzer.blocked_port",
+            Component.translatable("gui.destroy_extras.electrolyzer.port." + blocked.getSerializedName()));
     }
 
     /** Порт одного бака: что разрешено — приём и/или выдача. */

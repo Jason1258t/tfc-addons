@@ -6,6 +6,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -14,6 +16,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.bus.api.IEventBus;
+import org.apache.commons.lang3.mutable.MutableObject;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
@@ -25,6 +28,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import blusunrize.immersiveengineering.api.multiblocks.MultiblockHandler;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.MultiblockRegistration;
 import tfc.destroy.extras.electrolyzer.ElectrolyzerLogic;
+import tfc.destroy.extras.electrolyzer.ElectrolyzerMenu;
 import tfc.destroy.extras.electrolyzer.ElectrolyzerMultiblock;
 import tfc.destroy.extras.electrolyzer.ElectrolyzerStructure;
 import tfc.destroy.extras.electrolyzer.ExtrasMultiblockBuilder;
@@ -65,6 +69,12 @@ public final class DestroyExtras {
     /** Собранный электролизёр: блок, блок-сущности и регистрация мультиблока IE (порядок полей важен — регистры выше). */
     public static final MultiblockRegistration<ElectrolyzerLogic.State> ELECTROLYZER = ElectrolyzerLogic.REGISTRATION;
     public static ElectrolyzerMultiblock ELECTROLYZER_MULTIBLOCK;
+    private static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, MOD_ID);
+    public static final DeferredHolder<MenuType<?>, MenuType<ElectrolyzerMenu>> ELECTROLYZER_MENU = MENUS.register("electrolyzer", () -> {
+        MutableObject<MenuType<ElectrolyzerMenu>> type = new MutableObject<>();
+        type.setValue(new MenuType<>((id, inventory) -> ElectrolyzerMenu.makeClient(type.getValue(), id, inventory), FeatureFlags.VANILLA_SET));
+        return type.getValue();
+    });
     public static final DeferredBlock<EtchingBathBlock> ETCHING_BATH_BLOCK = BLOCKS.register("etching_bath",
         () -> new EtchingBathBlock(BlockBehaviour.Properties.of().strength(3.0f).requiresCorrectToolForDrops().noOcclusion()));
     public static final DeferredItem<BlockItem> ETCHING_BATH_ITEM = ITEMS.register("etching_bath",
@@ -101,6 +111,7 @@ public final class DestroyExtras {
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
         BLOCK_ENTITIES.register(modBus);
+        MENUS.register(modBus);
         ExtrasRecipeTypes.register(modBus);
         MetalDusts.register(modBus);
         ELECTROLYZER_MULTIBLOCK = new ElectrolyzerMultiblock();

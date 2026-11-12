@@ -6,9 +6,9 @@
     "automatic_culling": false,
     "flip_v": true,
     "loader": "neoforge:obj",
-    "model": "destroy_extras:models/block/multiblock/electrolyzer.obj",
+    "model": "destroy_extras:models/block/multiblock/membrane_electrolyzer.obj",
     "textures": {
-      "particle": "create:block/copper_casing"
+      "particle": "destroy_extras:block/multiblock/membrane_electrolyzer"
     }
   },
   "loader": "immersiveengineering:basic_split",
@@ -105,6 +105,6 @@
     ]
   ],
   "textures": {
-    "particle": "create:block/copper_casing"
+    "particle": "destroy_extras:block/multiblock/membrane_electrolyzer"
   }
 }

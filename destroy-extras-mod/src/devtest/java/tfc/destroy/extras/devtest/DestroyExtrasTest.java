@@ -314,6 +314,8 @@ public final class DestroyExtrasTest {
                     default -> 2;
                 };
                 check(ctx, process.status() == ElectrolyzerStatus.BLOCKED_OUTPUT, "статус BLOCKED_OUTPUT");
+                var port = tfc.destroy.extras.recipe.MembraneElectrolysisRecipe.Port.values()[blocked];
+                check(ctx, process.synced().blocked() == port, "очки и окно называют переполненный выход: " + process.synced().blocked());
                 check(ctx, outputs(process)[blocked].getFluidAmount() == ElectrolyzerLogic.OUTPUT_CAPACITY,
                     "выбранный выход действительно полон");
                 for (int i = 0; i < 3; i++) {

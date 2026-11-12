@@ -91,6 +91,35 @@ public final class ClientTest {
         step(5, "EMI травление", () -> emi("etching"));
         step(25, "скриншот EMI травления", () -> shot("emi-etching"));
         step(5, "поворот машины на клиенте", this::rotationChecks);
+        step(5, "собрать электролизёр в мире", () -> server("formed"));
+        step(60, "вид спереди", () -> {
+            mc().setScreen(null);
+            mc().options.hideGui = true;
+            command("time set noon");
+            command("tp @p 4 -59 1 facing 1 -59 -5");
+        });
+        step(40, "скриншот собранной машины спереди", () -> {
+            formedDiagnostics();
+            shot("formed-front");
+        });
+        step(5, "очки инженера", this::goggleChecks);
+        step(5, "вид сзади", () -> command("tp @p -2 -58 -10 facing 1 -59 -5"));
+        step(40, "скриншот собранной машины сзади", () -> {
+            shot("formed-back");
+            mc().options.hideGui = false;
+        });
+        step(5, "окно машины", this::openWindow);
+        step(40, "скриншот окна машины", () -> {
+            check("открыто окно электролизёра", mc().screen instanceof tfc.destroy.extras.client.ElectrolyzerScreen);
+            if (mc().screen instanceof tfc.destroy.extras.client.ElectrolyzerScreen screen) {
+                var menu = screen.getMenu();
+                check("окно получило баки с сервера: вход " + menu.input.getFluidAmount() + ", католит " + menu.catholyte.getFluidAmount(),
+                    menu.input.getFluidAmount() == 4000 && menu.catholyte.getFluidAmount() == 1500);
+                check("окно получило мембрану: " + menu.membraneLeft(), menu.membraneLeft() == 64);
+            }
+            shot("formed-gui");
+            mc().setScreen(null);
+        });
         step(5, "Ponder", () -> mc().setScreen(PonderUI.of(new ItemStack(DestroyExtras.ELECTROLYZER_ITEM.get()))));
         step(180, "скриншот Ponder", () -> {
             check("Ponder открыт для контроллера", mc().screen instanceof PonderUI);
@@ -100,6 +129,76 @@ public final class ClientTest {
             System.out.println("DESTROYEXTRACLIENT " + (failures == 0 ? "PASS" : "FAIL " + failures));
             mc().stop();
         });
+    }
+
+    /** Ячейка (1, -59, -5): машина лицом на юг, к точке обзора; собирается на встроенном сервере, как молотом. */
+    private void server(String what) {
+        var server = mc().getSingleplayerServer();
+        server.execute(() -> {
+            var level = server.overworld();
+            var cell = new net.minecraft.core.BlockPos(1, -59, -5);
+            ElectrolyzerRig.place(level, cell, Direction.SOUTH);
+            check("машина собрана в мире клиента", ElectrolyzerRig.form(level, cell, Direction.SOUTH));
+        });
+    }
+
+    /** Что видит клиент: игрок, блок и блок-сущность в клетках машины, грани модели на клетку. */
+    private void formedDiagnostics() {
+        var player = mc().player;
+        System.out.println("DESTROYEXTRACLIENT POS " + player.position() + " yaw=" + player.getYRot() + " pitch=" + player.getXRot());
+        var level = mc().level;
+        var cell = new net.minecraft.core.BlockPos(1, -59, -5);
+        int total = 0;
+        for (var pos : net.minecraft.core.BlockPos.betweenClosed(cell.offset(-1, -1, -1), cell.offset(1, 1, 1))) {
+            var state = level.getBlockState(pos);
+            if (!state.is(DestroyExtras.ELECTROLYZER.block().get())) continue;
+            var model = mc().getBlockRenderer().getBlockModel(state);
+            var data = model.getModelData(level, pos, state, net.neoforged.neoforge.client.model.data.ModelData.EMPTY);
+            int quads = model.getQuads(state, null, net.minecraft.util.RandomSource.create(), data, null).size();
+            total += quads;
+            System.out.println("DESTROYEXTRACLIENT CELL " + pos.toShortString() + " be=" + level.getBlockEntity(pos) + " quads=" + quads);
+        }
+        check("у собранной машины на клиенте есть грани модели: " + total, total > 0);
+    }
+
+    /** Очки Create: блок-сущности машины отдают строки с названием и состоянием. */
+    private void goggleChecks() {
+        var be = mc().level.getBlockEntity(new net.minecraft.core.BlockPos(1, -59, -5));
+        check("ячейка машины поддерживает очки инженера", be instanceof com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation);
+        var dummy = mc().level.getBlockEntity(new net.minecraft.core.BlockPos(0, -60, -5));
+        check("любой блок машины поддерживает очки инженера", dummy instanceof com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation);
+        if (be instanceof com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation goggles) {
+            List<Component> lines = new java.util.ArrayList<>();
+            boolean shown = goggles.addToGoggleTooltip(lines, true);
+            lines.forEach(line -> System.out.println("DESTROYEXTRACLIENT GOGGLES " + line.getString()));
+            check("очки показывают состояние и баки", shown && lines.stream().anyMatch(l -> l.getString().contains("Состояние"))
+                && lines.stream().anyMatch(l -> l.getString().contains("Вход")));
+        }
+    }
+
+    /** На встроенном сервере: залить баки и вставить мембрану, открыть игроку окно, как щелчком по машине. */
+    private void openWindow() {
+        var server = mc().getSingleplayerServer();
+        server.execute(() -> {
+            var level = server.overworld();
+            var cell = new net.minecraft.core.BlockPos(1, -59, -5);
+            var state = ElectrolyzerRig.state(level, cell);
+            state.input.setFluid(new net.neoforged.neoforge.fluids.FluidStack(net.dries007.tfc.common.fluids.TFCFluids.SALT_WATER.getSource(), 4000));
+            state.catholyte.setFluid(new net.neoforged.neoforge.fluids.FluidStack(net.minecraft.world.level.material.Fluids.WATER, 1500));
+            state.membrane.setStackInSlot(0, new ItemStack(DestroyExtras.MEMBRANE_ITEM.get()));
+            var player = server.getPlayerList().getPlayers().get(0);
+            var be = (blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockBE<?>) level.getBlockEntity(cell);
+            @SuppressWarnings("unchecked")
+            var ctx = (blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockContext<tfc.destroy.extras.electrolyzer.ElectrolyzerLogic.State>)
+                be.getHelper().getContext();
+            player.openMenu(tfc.destroy.extras.electrolyzer.ElectrolyzerMenu.provider(
+                new blusunrize.immersiveengineering.common.gui.IEContainerMenu.MultiblockMenuContext<>(ctx, cell)));
+        });
+    }
+
+    private void command(String command) {
+        var server = mc().getSingleplayerServer();
+        server.execute(() -> server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command));
     }
 
     private Minecraft mc() {
