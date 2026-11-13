@@ -23,6 +23,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
+import tfc.stand.scene.Scene;
 
 /** Клиентская проверка: кадры баков сверху и снизу (screenshots/bf-*.png). */
 @EventBusSubscriber(modid = "better_fluids_devtest", value = Dist.CLIENT)
@@ -34,7 +35,7 @@ public final class ClientTest {
     @SubscribeEvent
     static void screen(ScreenEvent.Init.Post event) {
         // В полной сборке стенд сам входит в мир; плоский мир — только для запуска из исходников.
-        if (started || !(event.getScreen() instanceof TitleScreen) || ModList.get().isLoaded("tfc")) {
+        if (started || !(event.getScreen() instanceof TitleScreen) || ModList.get().isLoaded("tfc") || Scene.requested() != null) {
             return;
         }
         started = true;
@@ -50,7 +51,8 @@ public final class ClientTest {
     @SubscribeEvent
     static void tick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.getSingleplayerServer() == null || tick == 0 && mc.screen != null) {
+        if (mc.player == null || mc.getSingleplayerServer() == null || tick == 0 && mc.screen != null
+            || Scene.requested() != null) {
             return;
         }
         tick++;

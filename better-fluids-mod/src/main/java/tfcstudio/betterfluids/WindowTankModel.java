@@ -35,9 +35,9 @@ import java.util.concurrent.ConcurrentHashMap;
 final class WindowTankModel extends BakedModelWrapperWithData {
     private static final ModelProperty<Integer> GLASS_ENDS = new ModelProperty<>();
     private static final FaceBakery BAKERY = new FaceBakery();
-    private static final ResourceLocation SIDE = ResourceLocation.fromNamespaceAndPath(BetterFluids.ID, "block/fluid_tank");
+    private static final ResourceLocation SIDE = ResourceLocation.fromNamespaceAndPath(BetterFluids.ID, "block/iron_tank");
     private static final ResourceLocation GLASS =
-        ResourceLocation.fromNamespaceAndPath(BetterFluids.ID, "block/fluid_tank_window_wide");
+        ResourceLocation.fromNamespaceAndPath(BetterFluids.ID, "block/iron_tank_window_wide");
 
     // Чанки собираются в нескольких потоках.
     private final Map<Integer, List<BakedQuad>> walls = new ConcurrentHashMap<>();

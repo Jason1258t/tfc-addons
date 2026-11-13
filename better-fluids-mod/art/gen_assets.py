@@ -1,5 +1,6 @@
 """Собирает модели Create 6.0.10 с палитрой воронёного железа."""
 import json
+import re
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from zipfile import ZipFile
@@ -46,7 +47,10 @@ with ZipFile(root / 'libs/create-1.21.1-6.0.10.jar') as create, TemporaryDirecto
             target = assets / path.replace('blockstates/fluid_tank', 'blockstates/iron_tank').replace(
                 'models/item/fluid_tank', 'models/item/iron_tank')
             target.parent.mkdir(parents=True, exist_ok=True)
+            # Текстуры — под своими путями: JourneyMap кэширует цвет по пути без пространства имён,
+            # и одинаковые имена с медным баком Create красили железный бак на карте в медь.
             model = create.read(name).decode().replace('create:block/fluid_tank', 'better_fluids:block/fluid_tank')
+            model = re.sub(r'better_fluids:block/fluid_tank(?=[_"])', 'better_fluids:block/iron_tank', model)
             model = json.loads(model)
             if path.startswith('models/block/'):
                 model = {
@@ -56,7 +60,7 @@ with ZipFile(root / 'libs/create-1.21.1-6.0.10.jar') as create, TemporaryDirecto
                 }
             target.write_text(json.dumps(model, ensure_ascii=False, indent=2) + '\n')
         elif path.startswith('textures/block/fluid_tank'):
-            target = assets / path
+            target = assets / path.replace('textures/block/fluid_tank', 'textures/block/iron_tank')
             target.parent.mkdir(parents=True, exist_ok=True)
             original = Path(temp) / 'original.png'
             original.write_bytes(create.read(name))
@@ -71,7 +75,7 @@ with ZipFile(root / 'libs/create-1.21.1-6.0.10.jar') as create, TemporaryDirecto
             png.write(target, pixels)
 
 # Широкое окно: рамка окна Create по краям, середина растянута — стекло собирается в полосу любой ширины.
-window = png.read(assets / 'textures/block/fluid_tank_window.png')
+window = png.read(assets / 'textures/block/iron_tank_window.png')
 columns = [0, 1] + [3] * 12 + [6, 7]
 rows = [0, 1] + [5] * 11 + [13, 14, 15]
-png.write(assets / 'textures/block/fluid_tank_window_wide.png', [[window[y][x] for x in columns] for y in rows])
+png.write(assets / 'textures/block/iron_tank_window_wide.png', [[window[y][x] for x in columns] for y in rows])

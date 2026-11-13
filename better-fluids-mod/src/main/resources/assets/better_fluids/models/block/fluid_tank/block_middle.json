@@ -1,8 +1,8 @@
 {
   "parent": "create:block/fluid_tank/block_middle",
   "textures": {
-    "1": "better_fluids:block/fluid_tank",
-    "particle": "better_fluids:block/fluid_tank"
+    "1": "better_fluids:block/iron_tank",
+    "particle": "better_fluids:block/iron_tank"
   },
   "render_type": "minecraft:cutout_mipped"
 }

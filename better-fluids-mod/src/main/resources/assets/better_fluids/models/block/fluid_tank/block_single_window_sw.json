@@ -1,11 +1,11 @@
 {
   "parent": "create:block/fluid_tank/block_single_window_sw",
   "textures": {
-    "0": "better_fluids:block/fluid_tank_top",
-    "1": "better_fluids:block/fluid_tank",
-    "4": "better_fluids:block/fluid_tank_inner",
-    "5": "better_fluids:block/fluid_tank_window_single",
-    "particle": "better_fluids:block/fluid_tank"
+    "0": "better_fluids:block/iron_tank_top",
+    "1": "better_fluids:block/iron_tank",
+    "4": "better_fluids:block/iron_tank_inner",
+    "5": "better_fluids:block/iron_tank_window_single",
+    "particle": "better_fluids:block/iron_tank"
   },
   "render_type": "minecraft:cutout_mipped"
 }

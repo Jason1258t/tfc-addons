@@ -1,9 +1,9 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "particle": "better_fluids:block/fluid_tank",
-    "side": "better_fluids:block/fluid_tank",
-    "top": "better_fluids:block/fluid_tank_top"
+    "particle": "better_fluids:block/iron_tank",
+    "side": "better_fluids:block/iron_tank",
+    "top": "better_fluids:block/iron_tank_top"
   },
   "elements": [
     {

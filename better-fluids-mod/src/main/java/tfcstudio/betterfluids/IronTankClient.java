@@ -13,9 +13,9 @@ import tfcstudio.betterfluids.mixin.TankModelInvoker;
 
 @EventBusSubscriber(modid = BetterFluids.ID, value = Dist.CLIENT)
 final class IronTankClient {
-    private static final CTSpriteShiftEntry SIDE = shift(AllSpriteShifts.FLUID_TANK, "fluid_tank");
-    private static final CTSpriteShiftEntry TOP = shift(AllSpriteShifts.FLUID_TANK_TOP, "fluid_tank_top");
-    private static final CTSpriteShiftEntry INNER = shift(AllSpriteShifts.FLUID_TANK_INNER, "fluid_tank_inner");
+    private static final CTSpriteShiftEntry SIDE = shift(AllSpriteShifts.FLUID_TANK, "iron_tank");
+    private static final CTSpriteShiftEntry TOP = shift(AllSpriteShifts.FLUID_TANK_TOP, "iron_tank_top");
+    private static final CTSpriteShiftEntry INNER = shift(AllSpriteShifts.FLUID_TANK_INNER, "iron_tank_inner");
 
     @SubscribeEvent
     static void registerRenderer(EntityRenderersEvent.RegisterRenderers event) {

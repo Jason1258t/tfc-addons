@@ -167,10 +167,11 @@ public final class IronTankEntity extends FluidTankBlockEntity {
             part.controller = null;
             part.width = 1;
             part.height = 1;
-            int amount = Math.min(CAPACITY, fluid.getAmount());
             part.getTankInventory().setCapacity(CAPACITY);
-            part.getTankInventory().setFluid(fluid.copyWithAmount(amount));
-            fluid.shrink(amount);
+            part.getTankInventory().setFluid(FluidStack.EMPTY);
+        }
+        if (!fluid.isEmpty()) {
+            TankNetwork.spread(parts, fluid, Math.min(fluid.getAmount(), parts.size() * CAPACITY));
         }
         for (IronTankEntity part : parts) {
             part.updateNeighborhood();

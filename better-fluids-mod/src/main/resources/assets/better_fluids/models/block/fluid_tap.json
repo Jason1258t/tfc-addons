@@ -2,7 +2,7 @@
   "parent": "minecraft:block/block",
   "textures": {
     "particle": "#metal",
-    "metal": "better_fluids:block/fluid_tank_top",
+    "metal": "better_fluids:block/iron_tank_top",
     "copper": "minecraft:block/copper_block"
   },
   "elements": [

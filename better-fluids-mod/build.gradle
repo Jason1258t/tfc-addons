@@ -11,6 +11,8 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 sourceSets {
     devtest {
+        // Общая заготовка клиентской сцены стенда (tools/stand-scene): в jar стенда — по одному devtest за прогон
+        java.srcDir '../stand-scene/src'
         compileClasspath += sourceSets.main.output
         runtimeClasspath += sourceSets.main.output
     }

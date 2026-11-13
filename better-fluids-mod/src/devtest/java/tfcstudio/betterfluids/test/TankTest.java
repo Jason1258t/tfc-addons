@@ -21,7 +21,9 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
@@ -29,6 +31,8 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
+
+import tfc.stand.scene.Scene;
 
 import java.util.UUID;
 
@@ -38,6 +42,9 @@ public final class TankTest {
 
     public TankTest() {
         NeoForge.EVENT_BUS.addListener(this::commands);
+        if (FMLEnvironment.dist == Dist.CLIENT && Scene.requested("better-fluids")) {
+            new TankScene();
+        }
     }
 
     private void commands(RegisterCommandsEvent event) {
@@ -106,6 +113,11 @@ public final class TankTest {
             .then(Commands.literal("tap").executes(ctx -> {
                 tap(ctx.getSource().getLevel());
                 ctx.getSource().sendSuccess(() -> Component.literal("OK: интерфейс наполняет ведро и канистру, снимается без бака"), false);
+                return 1;
+            }))
+            .then(Commands.literal("levels").executes(ctx -> {
+                levels(ctx.getSource().getLevel());
+                ctx.getSource().sendSuccess(() -> Component.literal("OK: уровень в слое ровный при заливке и сливе, четвертушка наравне с полной"), false);
                 return 1;
             }))
             .then(Commands.literal("build").executes(ctx -> {
@@ -232,6 +244,53 @@ public final class TankTest {
         checkTank(level, pos, 24_500, 24_500);
         block.onWrenched(state, context);
         checkTank(level, pos, 31_500, 31_500);
+    }
+
+    /** Бак 3×2×3 и пара «полная + четвертушка»: в каждом слое все секции заполнены на одну долю. */
+    private static void levels(ServerLevel level) {
+        var tank = BuiltInRegistries.BLOCK.get(ResourceLocation.parse("better_fluids:iron_tank"));
+        var quarter = BuiltInRegistries.BLOCK.get(ResourceLocation.parse("better_fluids:iron_tank_quarter"));
+        var origin = BASE.offset(0, 0, 12);
+        for (BlockPos pos : BlockPos.betweenClosed(origin, origin.offset(6, 1, 2))) {
+            level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+        }
+        for (BlockPos pos : BlockPos.betweenClosed(origin, origin.offset(2, 1, 2))) {
+            level.setBlockAndUpdate(pos, tank.defaultBlockState());
+        }
+        var handler = level.getCapability(Capabilities.FluidHandler.BLOCK, origin.offset(2, 1, 2), Direction.UP);
+        check(handler != null && handler.getTankCapacity(0) == 252_000, "Ёмкость бака 3×2×3");
+        check(handler.fill(new FluidStack(Fluids.WATER, 50_000), FluidAction.EXECUTE) == 50_000, "Первая заливка");
+        checkLayer(level, origin, 50_000 / 9.0, "50 вёдер, низ");
+        checkLayer(level, origin.above(), 0, "50 вёдер, верх");
+        var bottom = level.getCapability(Capabilities.FluidHandler.BLOCK, origin, Direction.DOWN);
+        check(bottom.fill(new FluidStack(Fluids.WATER, 100_000), FluidAction.EXECUTE) == 100_000, "Вторая заливка через нижний угол");
+        checkLayer(level, origin, 14_000, "150 вёдер, низ");
+        checkLayer(level, origin.above(), 24_000 / 9.0, "150 вёдер, верх");
+        check(handler.drain(30_000, FluidAction.EXECUTE).getAmount() == 30_000, "Слив 30 вёдер");
+        checkLayer(level, origin, 120_000 / 9.0, "120 вёдер, низ");
+        checkLayer(level, origin.above(), 0, "120 вёдер, верх");
+        check(handler.getFluidInTank(0).getAmount() == 120_000, "В баке 120 вёдер");
+        check(handler.fill(new FluidStack(Fluids.LAVA, 1_000), FluidAction.EXECUTE) == 0, "Другая жидкость не входит");
+
+        var full = origin.offset(5, 0, 0);
+        level.setBlockAndUpdate(full, tank.defaultBlockState());
+        level.setBlockAndUpdate(full.east(), quarter.defaultBlockState());
+        var pair = level.getCapability(Capabilities.FluidHandler.BLOCK, full.east(), Direction.UP);
+        check(pair != null && pair.getTankCapacity(0) == 17_500, "Ёмкость пары полная + четвертушка");
+        check(pair.fill(new FluidStack(Fluids.WATER, 7_000), FluidAction.EXECUTE) == 7_000, "Заливка пары");
+        check(amount(level, full) == 5_600 && amount(level, full.east()) == 1_400,
+            "Доли пары: " + amount(level, full) + " и " + amount(level, full.east()));
+    }
+
+    private static void checkLayer(ServerLevel level, BlockPos corner, double expected, String what) {
+        for (BlockPos pos : BlockPos.betweenClosed(corner, corner.offset(2, 0, 2))) {
+            int amount = amount(level, pos);
+            check(Math.abs(amount - expected) < 1, what + ": " + pos.toShortString() + " = " + amount + ", ждали " + expected);
+        }
+    }
+
+    private static int amount(ServerLevel level, BlockPos pos) {
+        return ((FluidTankBlockEntity) level.getBlockEntity(pos)).getTankInventory().getFluidAmount();
     }
 
     private static void build(ServerLevel level) {
