@@ -1,61 +1,73 @@
 package ee.extras.devtest;
 
+import com.george_vi.electroenergetics.CEEBlocks;
+import com.george_vi.electroenergetics.CEEItems;
 import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.config.CEEConfigs;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.Screenshot;
-import net.minecraft.client.server.IntegratedServer;
-import net.minecraft.world.level.GameRules;
-import net.minecraft.world.phys.Vec3;
+import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock;
+import dev.engine_room.flywheel.api.backend.BackendManager;
+import dev.engine_room.flywheel.backend.Backends;
+import ee.extras.EeExtras;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import tfc.stand.scene.Scene;
 
 /**
- * Провода EE через Flywheel на клиентском стенде (файл flywheel-wires в папке игры, мир flat): сеть Wire.build и тонкие
- * провода, в лог — backend Flywheel и замер WireDiag, кадр с Flywheel и тот же кадр базовым рендером EE.
+ * Провода EE через Flywheel на клиентском стенде (stand_submit scene=flywheel-wires): батарея, нагреватель и вольтметр,
+ * медные и тонкие провода катушкой, в лог — backend Flywheel и замер WireDiag, кадр с Flywheel и тот же кадр базовым
+ * рендером EE.
  */
 final class FlywheelWireTest {
-    static final boolean ON = java.nio.file.Files.exists(java.nio.file.Path.of("flywheel-wires"));
+    static final boolean ON = Scene.requested("flywheel-wires");
 
-    static void tick(Minecraft mc, IntegratedServer server, int tick) throws Exception {
-        if (tick == 40) server.execute(() -> {
-            var p = server.getPlayerList().getPlayer(mc.player.getUUID());
-            p.teleportTo(p.serverLevel(), 6.5, -55, 190.5, 0f, 35f);
-            p.getAbilities().flying = true;
-            p.onUpdateAbilities();
-            p.serverLevel().setDayTime(6000);
-            server.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+    static void start() {
+        Scene scene = new Scene("flywheel-wires");
+        // Провода — настоящей катушкой от игрока: так EE шлёт их клиенту
+        scene.server("приборы и провода", c -> {
+            var bat = c.at(-4, 0, 2);
+            var heater = c.at(4, 0, 2);
+            var vm = c.at(0, 0, 6);
+            c.set(bat, CEEBlocks.CREATIVE_BATTERY.getDefaultState().setValue(CreativeBatteryBlock.AC, true));
+            c.set(heater, CEEBlocks.RESISTIVE_HEATER.getDefaultState());
+            c.set(vm, CEEBlocks.VOLTMETER.getDefaultState());
+            var p = c.player();
+            boolean copper = DevTest.spoolWire(p, new ItemStack(CEEItems.COPPER_WIRE_SPOOL.get(), 16), bat, 0, heater, 0)
+                    & DevTest.spoolWire(p, new ItemStack(CEEItems.COPPER_WIRE_SPOOL.get(), 16), bat, 1, heater, 1);
+            boolean thin = DevTest.spoolWire(p, EeExtras.THIN_SPOOL.toStack(), heater, 0, vm, 0)
+                    & DevTest.spoolWire(p, EeExtras.THIN_SPOOL.toStack(), heater, 1, vm, 1);
+            p.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+            scene.check("медные провода проложены катушкой", copper);
+            scene.check("тонкие провода проложены катушкой", thin);
         });
-        if (tick == 80) server.execute(() -> {
-            var src = server.getPlayerList().getPlayer(mc.player.getUUID()).createCommandSourceStack();
-            Wire.build(src);
-            Wire.thin(src);
+        scene.until("провода у клиента", 400, () -> WireRenderer.getAllConnections().size() >= 4);
+        scene.gui(false);
+        scene.camera(0, 0.5, 4, 10, 180, 35);
+        scene.client("backend Flywheel и замер", () -> {
+            var backend = BackendManager.currentBackend();
+            String name = backend == Backends.INDIRECT ? "indirect" : backend == Backends.INSTANCING ? "instancing"
+                    : backend == BackendManager.offBackend() ? "off" : String.valueOf(backend);
+            scene.note("backend Flywheel " + name + ", проводов у клиента " + WireRenderer.getAllConnections().size()
+                    + ", GL " + com.mojang.blaze3d.platform.GlUtil.getRenderer());
+            try {
+                var report = ee.extras.WireDiag.class.getDeclaredMethod("report");
+                report.setAccessible(true);
+                report.invoke(null);
+            } catch (ReflectiveOperationException e) {
+                scene.check("замер WireDiag: " + e, false);
+            }
         });
-        if (tick == 90) mc.options.hideGui = true;
-        if (tick == 160) {
-            WireClientTest.look(mc, new Vec3(6.5, -59, 204));
-            var manager = Class.forName("dev.engine_room.flywheel.api.backend.BackendManager");
-            Object backend = manager.getMethod("currentBackend").invoke(null);
-            System.out.println("EECLIENT FLYWHEEL backend=" + backend + " flywheelWires="
-                    + !CEEConfigs.client().disableFlywheelWireRendering.get() + " gl="
-                    + com.mojang.blaze3d.platform.GlUtil.getRenderer());
-            var report = ee.extras.WireDiag.class.getDeclaredMethod("report");
-            report.setAccessible(true);
-            report.invoke(null);
-        }
-        if (tick == 170) Screenshot.grab(mc.gameDirectory, "flywheel-wires-flywheel.png", mc.getMainRenderTarget(), c -> {});
-        if (tick == 175) {
+        scene.shot("flywheel");
+        scene.client("базовый рендер EE", () -> {
             CEEConfigs.client().disableFlywheelWireRendering.set(true);
             WireRenderer.recreateVisuals();
-        }
-        if (tick == 195) Screenshot.grab(mc.gameDirectory, "flywheel-wires-basic.png", mc.getMainRenderTarget(), c -> {});
-        if (tick == 200) {
+        });
+        scene.ticks(20).shot("basic");
+        scene.client("снова Flywheel", () -> {
             CEEConfigs.client().disableFlywheelWireRendering.set(false);
             WireRenderer.recreateVisuals();
-        }
-        if (tick == 220) Screenshot.grab(mc.gameDirectory, "flywheel-wires-flywheel-again.png", mc.getMainRenderTarget(), c -> {});
-        if (tick == 240) {
-            System.out.println("EECLIENT FLYWHEEL ИТОГ");
-            mc.stop();
-        }
+        });
+        scene.ticks(20).shot("flywheel-again");
+        scene.start();
     }
 
     private FlywheelWireTest() {

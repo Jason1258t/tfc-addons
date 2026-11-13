@@ -2,8 +2,6 @@ package tfc.destroy.extras.devtest;
 
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,136 +12,109 @@ import net.createmod.ponder.foundation.ui.PonderUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.LevelSettings;
-import net.minecraft.world.level.WorldDataConfiguration;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.WorldOptions;
-import net.minecraft.world.level.levelgen.presets.WorldPresets;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import tfc.destroy.extras.DestroyExtras;
 import tfc.destroy.extras.compat.ponder.DestroyExtrasPonder;
 import tfc.destroy.extras.electrolyzer.MembraneElectrolyzerBlock;
+import tfc.stand.scene.Scene;
 
-/** Автоматический клиентский прогон JEI, EMI/Jemi и Ponder с настоящими экранами и скриншотами. */
+/**
+ * Автоматический клиентский прогон JEI, EMI/Jemi и Ponder с настоящими экранами и скриншотами, собранная машина на
+ * площадке общей заготовки сцены (tools/stand-scene). На стенде — stand_submit scene=destroy-extras.
+ */
 public final class ClientTest {
-    private final Deque<Step> steps = new ArrayDeque<>();
-    private boolean started;
-    private int wait;
-    private int failures;
-
-    private record Step(int delay, String name, Runnable action) {}
+    private final Scene scene = new Scene("destroy-extras");
+    /** Ячейка машины: середина площадки, на 1 выше пола, машина лицом на юг */
+    private BlockPos cell;
 
     public ClientTest() {
+        String requested = Scene.requested();
+        if (requested != null && !requested.equals("destroy-extras")) return;
         System.out.println("DESTROYEXTRACLIENT INIT");
         // В dev-runtime ServiceLoader не видит service-файл exploded resources; production jar использует его штатно.
         PonderIndex.addPlugin(new DestroyExtrasPonder());
         NeoForge.EVENT_BUS.addListener(this::screen);
-        NeoForge.EVENT_BUS.addListener(this::tick);
-        step(100, "мир", () -> check("клиент и интегрированный мир загружены", mc().player != null));
         // EMI ждёт JEI и переносит категории Destroy заметно дольше, чем открывается мир.
-        step(600, "прогрев JEI и EMI", () -> jei("electrolysis"));
-        step(40, "JEI травление", () -> jei("etching"));
-        step(25, "скриншот JEI травления", () -> {
-            check("JEI/Jemi открыл категорию травления", mc().screen != null
-                && (mc().screen.getClass().getName().startsWith("mezz.jei")
-                    || mc().screen.getClass().getName().equals("dev.emi.emi.screen.RecipeScreen")));
+        scene.ticks(600).client("прогрев JEI и EMI", () -> jei("electrolysis"));
+        scene.ticks(40).client("JEI травление", () -> jei("etching"));
+        scene.ticks(25).client("скриншот JEI травления", () -> {
+            check("JEI/Jemi открыл категорию травления", recipeScreen());
             shot("jei-etching");
         });
-        step(5, "JEI электролиз", () -> jei("electrolysis"));
-        step(25, "скриншот JEI электролиза", () -> {
-            check("JEI/Jemi открыл категорию электролиза", mc().screen != null
-                && (mc().screen.getClass().getName().startsWith("mezz.jei")
-                    || mc().screen.getClass().getName().equals("dev.emi.emi.screen.RecipeScreen")));
+        scene.ticks(5).client("JEI электролиз", () -> jei("electrolysis"));
+        scene.ticks(25).client("скриншот JEI электролиза", () -> {
+            check("JEI/Jemi открыл категорию электролиза", recipeScreen());
             shot("jei-electrolysis");
         });
-        step(5, "JEI центрифуга", () -> {
+        scene.ticks(5).client("JEI центрифуга", () -> {
             jeiDestroy("centrifugation");
             emiDestroy("centrifugation");
         });
-        step(30, "скриншот JEI центрифуги", () -> {
-            check("JEI/Jemi открыл штатную категорию центрифуги", mc().screen != null
-                && (mc().screen.getClass().getName().startsWith("mezz.jei")
-                    || mc().screen.getClass().getName().equals("dev.emi.emi.screen.RecipeScreen")));
+        scene.ticks(30).client("скриншот JEI центрифуги", () -> {
+            check("JEI/Jemi открыл штатную категорию центрифуги", recipeScreen());
             shot("jei-centrifugation");
         });
-        step(5, "EMI центрифуга", () -> {
+        scene.ticks(5).client("EMI центрифуга", () -> {
             emiDestroy("centrifugation");
             EmiApi.getRecipeManager().getCategories().stream()
                 .filter(value -> value.getId().equals(ResourceLocation.fromNamespaceAndPath("destroy", "centrifugation")))
                 .findFirst().ifPresent(value -> check("EMI показывает 3 рецепта центрифуги",
                     EmiApi.getRecipeManager().getRecipes(value).size() == 3));
         });
-        step(30, "скриншот EMI центрифуги", () -> shot("emi-centrifugation"));
-        step(5, "EMI электролиз", () -> emi("electrolysis"));
-        step(30, "скриншот EMI электролиза", () -> shot("emi-electrolysis"));
-        step(5, "EMI травление", () -> emi("etching"));
-        step(25, "скриншот EMI травления", () -> shot("emi-etching"));
-        step(5, "поворот машины на клиенте", this::rotationChecks);
-        // Окно EMI ставит одиночную игру на паузу: пока оно открыто, изменения блоков не уходят клиенту.
-        step(5, "закрыть окна", () -> mc().setScreen(null));
-        step(20, "собрать электролизёр в мире", () -> server("formed"));
-        // На клиентском стенде клиент не получает свежего состояния мира от встроенного сервера (не доходит даже
-        // блок от /setblock), поэтому блоки и данные машины переносятся в клиентский мир напрямую.
-        step(20, "перенести машину в клиентский мир", this::mirrorToClient);
-        step(60, "вид спереди", () -> {
-            mc().options.hideGui = true;
-            command("time set noon");
-            command("tp @p 4 -59 1 facing 1 -59 -5");
+        scene.ticks(30).client("скриншот EMI центрифуги", () -> shot("emi-centrifugation"));
+        scene.ticks(5).client("EMI электролиз", () -> emi("electrolysis"));
+        scene.ticks(30).client("скриншот EMI электролиза", () -> shot("emi-electrolysis"));
+        scene.ticks(5).client("EMI травление", () -> emi("etching"));
+        scene.ticks(25).client("скриншот EMI травления", () -> shot("emi-etching"));
+        scene.ticks(5).client("поворот машины на клиенте", this::rotationChecks);
+        // Окно EMI ставит одиночную игру на паузу: пока оно открыто, сервер не тикает.
+        scene.client("закрыть окна", () -> mc().setScreen(null));
+        scene.server("собрать электролизёр в мире", c -> {
+            cell = c.at(1, 1, -5);
+            ElectrolyzerRig.place(c.level(), cell, Direction.SOUTH);
+            check("машина собрана в мире", ElectrolyzerRig.form(c.level(), cell, Direction.SOUTH));
         });
-        step(40, "скриншот собранной машины спереди", () -> {
-            formedDiagnostics();
-            shot("formed-front");
-        });
-        step(5, "очки инженера", this::goggleChecks);
-        step(5, "вид сзади", () -> command("tp @p -2 -58 -10 facing 1 -59 -5"));
-        step(40, "скриншот собранной машины сзади", () -> {
-            shot("formed-back");
-            mc().options.hideGui = false;
-        });
-        step(5, "окно машины", this::openWindow);
-        step(40, "скриншот окна машины", () -> {
+        scene.until("клетки машины у клиента", 600, () -> mc().level.getBlockState(cell).is(DestroyExtras.ELECTROLYZER.block().get()));
+        scene.gui(false);
+        scene.camera(1, 1, -5, 6, 180, 15);
+        scene.client("что видит клиент", this::formedDiagnostics);
+        scene.shot("formed-front");
+        scene.client("очки инженера", this::goggleChecks);
+        scene.camera(1, 1, -5, 7, -40, 20);
+        scene.shot("formed-back");
+        scene.gui(true);
+        scene.server("окно машины", c -> openWindow(c));
+        scene.ticks(40).client("скриншот окна машины", () -> {
             check("открыто окно электролизёра", mc().screen instanceof tfc.destroy.extras.client.ElectrolyzerScreen);
             if (mc().screen instanceof tfc.destroy.extras.client.ElectrolyzerScreen screen) {
                 var menu = screen.getMenu();
-                check("окно получило баки с сервера: вход " + menu.input.getFluidAmount() + ", католит " + menu.catholyte.getFluidAmount(),
-                    menu.input.getFluidAmount() == 4000 && menu.catholyte.getFluidAmount() == 1500);
+                // Машина тикает: сразу переливает вход в бак смеси, поэтому сверяется сумма
+                int input = menu.input.getFluidAmount() + menu.mixture.getFluidAmount();
+                check("окно получило баки с сервера: вход и смесь " + input + ", католит " + menu.catholyte.getFluidAmount(),
+                    input == 4000 && menu.catholyte.getFluidAmount() == 1500);
                 check("окно получило мембрану: " + menu.membraneLeft(), menu.membraneLeft() == 64);
             }
             shot("formed-gui");
             mc().setScreen(null);
         });
-        step(5, "Ponder", () -> mc().setScreen(PonderUI.of(new ItemStack(DestroyExtras.ELECTROLYZER_ITEM.get()))));
-        step(180, "скриншот Ponder", () -> {
+        scene.ticks(5).client("Ponder", () -> mc().setScreen(PonderUI.of(new ItemStack(DestroyExtras.ELECTROLYZER_ITEM.get()))));
+        scene.ticks(180).client("скриншот Ponder", () -> {
             check("Ponder открыт для контроллера", mc().screen instanceof PonderUI);
             shot("ponder-industrial");
         });
-        step(5, "завершение", () -> {
-            System.out.println("DESTROYEXTRACLIENT " + (failures == 0 ? "PASS" : "FAIL " + failures));
-            mc().stop();
-        });
     }
 
-    /** Ячейка (1, -59, -5): машина лицом на юг, к точке обзора; собирается на встроенном сервере, как молотом. */
-    private void server(String what) {
-        var server = mc().getSingleplayerServer();
-        server.execute(() -> {
-            var level = server.overworld();
-            var cell = new net.minecraft.core.BlockPos(1, -59, -5);
-            ElectrolyzerRig.place(level, cell, Direction.SOUTH);
-            check("машина собрана в мире клиента", ElectrolyzerRig.form(level, cell, Direction.SOUTH));
-        });
+    private boolean recipeScreen() {
+        return mc().screen != null && (mc().screen.getClass().getName().startsWith("mezz.jei")
+            || mc().screen.getClass().getName().equals("dev.emi.emi.screen.RecipeScreen"));
     }
 
     /** Что видит клиент: игрок, блок и блок-сущность в клетках машины, грани модели на клетку. */
@@ -151,7 +122,6 @@ public final class ClientTest {
         var player = mc().player;
         System.out.println("DESTROYEXTRACLIENT POS " + player.position() + " yaw=" + player.getYRot() + " pitch=" + player.getXRot());
         var level = mc().level;
-        var cell = new net.minecraft.core.BlockPos(1, -59, -5);
         int total = 0;
         for (var pos : net.minecraft.core.BlockPos.betweenClosed(cell.offset(-1, -1, -1), cell.offset(1, 1, 1))) {
             var state = level.getBlockState(pos);
@@ -167,9 +137,9 @@ public final class ClientTest {
 
     /** Очки Create: блок-сущности машины отдают строки с названием и состоянием. */
     private void goggleChecks() {
-        var be = mc().level.getBlockEntity(new net.minecraft.core.BlockPos(1, -59, -5));
+        var be = mc().level.getBlockEntity(cell);
         check("ячейка машины поддерживает очки инженера", be instanceof com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation);
-        var dummy = mc().level.getBlockEntity(new net.minecraft.core.BlockPos(0, -60, -5));
+        var dummy = mc().level.getBlockEntity(cell.offset(-1, -1, 0));
         check("любой блок машины поддерживает очки инженера", dummy instanceof com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation);
         if (be instanceof com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation goggles) {
             List<Component> lines = new java.util.ArrayList<>();
@@ -181,52 +151,17 @@ public final class ClientTest {
     }
 
     /** На встроенном сервере: залить баки и вставить мембрану, открыть игроку окно, как щелчком по машине. */
-    private void openWindow() {
-        var server = mc().getSingleplayerServer();
-        server.execute(() -> {
-            var level = server.overworld();
-            var cell = new net.minecraft.core.BlockPos(1, -59, -5);
-            var state = ElectrolyzerRig.state(level, cell);
-            state.input.setFluid(new net.neoforged.neoforge.fluids.FluidStack(net.dries007.tfc.common.fluids.TFCFluids.SALT_WATER.getSource(), 4000));
-            state.catholyte.setFluid(new net.neoforged.neoforge.fluids.FluidStack(net.minecraft.world.level.material.Fluids.WATER, 1500));
-            state.membrane.setStackInSlot(0, new ItemStack(DestroyExtras.MEMBRANE_ITEM.get()));
-            var player = server.getPlayerList().getPlayers().get(0);
-            var be = (blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockBE<?>) level.getBlockEntity(cell);
-            @SuppressWarnings("unchecked")
-            var ctx = (blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockContext<tfc.destroy.extras.electrolyzer.ElectrolyzerLogic.State>)
-                be.getHelper().getContext();
-            player.openMenu(tfc.destroy.extras.electrolyzer.ElectrolyzerMenu.provider(
-                new blusunrize.immersiveengineering.common.gui.IEContainerMenu.MultiblockMenuContext<>(ctx, cell)));
-        });
-    }
-
-    private void mirrorToClient() {
-        var server = mc().getSingleplayerServer();
-        var cell = new net.minecraft.core.BlockPos(1, -59, -5);
-        server.execute(() -> {
-            var level = server.overworld();
-            var copies = new java.util.ArrayList<Object[]>();
-            for (var pos : net.minecraft.core.BlockPos.betweenClosed(cell.offset(-1, -1, -1), cell.offset(1, 1, 0))) {
-                var be = level.getBlockEntity(pos);
-                copies.add(new Object[] {pos.immutable(), level.getBlockState(pos), be == null ? null : be.getUpdateTag(level.registryAccess())});
-            }
-            mc().execute(() -> {
-                var client = mc().level;
-                for (Object[] c : copies) {
-                    var pos = (net.minecraft.core.BlockPos) c[0];
-                    client.setBlock(pos, (net.minecraft.world.level.block.state.BlockState) c[1], 3);
-                    var be = client.getBlockEntity(pos);
-                    if (be != null && c[2] != null) be.handleUpdateTag((net.minecraft.nbt.CompoundTag) c[2], client.registryAccess());
-                    client.sendBlockUpdated(pos, (net.minecraft.world.level.block.state.BlockState) c[1], (net.minecraft.world.level.block.state.BlockState) c[1], 8);
-                }
-                System.out.println("DESTROYEXTRACLIENT MIRROR " + copies.size() + " клеток");
-            });
-        });
-    }
-
-    private void command(String command) {
-        var server = mc().getSingleplayerServer();
-        server.execute(() -> server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command));
+    private void openWindow(Scene.Ctx c) {
+        var state = ElectrolyzerRig.state(c.level(), cell);
+        state.input.setFluid(new net.neoforged.neoforge.fluids.FluidStack(net.dries007.tfc.common.fluids.TFCFluids.SALT_WATER.getSource(), 4000));
+        state.catholyte.setFluid(new net.neoforged.neoforge.fluids.FluidStack(net.minecraft.world.level.material.Fluids.WATER, 1500));
+        state.membrane.setStackInSlot(0, new ItemStack(DestroyExtras.MEMBRANE_ITEM.get()));
+        var be = (blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockBE<?>) c.level().getBlockEntity(cell);
+        @SuppressWarnings("unchecked")
+        var ctx = (blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockContext<tfc.destroy.extras.electrolyzer.ElectrolyzerLogic.State>)
+            be.getHelper().getContext();
+        c.player().openMenu(tfc.destroy.extras.electrolyzer.ElectrolyzerMenu.provider(
+            new blusunrize.immersiveengineering.common.gui.IEContainerMenu.MultiblockMenuContext<>(ctx, cell)));
     }
 
     private Minecraft mc() {
@@ -296,52 +231,21 @@ public final class ClientTest {
             .anyMatch(line -> line.getString().contains("молота IE")));
     }
 
-    private void step(int delay, String name, Runnable action) {
-        steps.add(new Step(delay, name, action));
-    }
-
     private void check(String name, boolean condition) {
-        if (!condition) failures++;
-        System.out.println("DESTROYEXTRACLIENT " + (condition ? "OK " : "FAIL ") + name);
+        scene.check(name, condition);
     }
 
     private void shot(String name) {
-        Screenshot.grab(mc().gameDirectory, "destroyextras-" + name + ".png", mc().getMainRenderTarget(),
-            message -> System.out.println("DESTROYEXTRACLIENT SCREENSHOT " + name + ": " + message.getString()));
+        Screenshot.grab(mc().gameDirectory, "scene-destroy-extras-" + name + ".png", mc().getMainRenderTarget(),
+            message -> System.out.println("SCENE SHOT " + name + ": " + message.getString()));
     }
 
+    /** Мир сцена создаёт сама на главном меню; запуск — после регистрации плагинов клиента. */
     private void screen(ScreenEvent.Init.Post event) {
-        System.out.println("DESTROYEXTRACLIENT SCREEN " + event.getScreen().getClass().getName());
-        if (started) return;
+        if (!(event.getScreen() instanceof net.minecraft.client.gui.screens.TitleScreen) || started) return;
         started = true;
-        Minecraft mc = mc();
-        mc.options.pauseOnLostFocus = false;
-        LevelSettings settings = new LevelSettings("destroyextras-client", GameType.CREATIVE, false,
-            Difficulty.PEACEFUL, true, new GameRules(), WorldDataConfiguration.DEFAULT);
-        mc.createWorldOpenFlows().createFreshLevel("destroyextras-client", settings, new WorldOptions(1, false, false),
-            reg -> reg.registryOrThrow(Registries.WORLD_PRESET).getHolderOrThrow(WorldPresets.FLAT).value()
-                .createWorldDimensions(), event.getScreen());
+        scene.start();
     }
 
-    private void tick(ClientTickEvent.Post event) {
-        if (mc().player == null || mc().getSingleplayerServer() == null || steps.isEmpty()) return;
-        if (wait > 0) {
-            wait--;
-            return;
-        }
-        Step step = steps.peek();
-        if (step.delay > 0) {
-            wait = step.delay;
-            steps.poll();
-            steps.addFirst(new Step(0, step.name, step.action));
-            return;
-        }
-        steps.poll();
-        try {
-            step.action.run();
-        } catch (Exception error) {
-            check(step.name + ": " + error, false);
-            error.printStackTrace();
-        }
-    }
+    private boolean started;
 }

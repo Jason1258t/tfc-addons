@@ -20,8 +20,8 @@ set +e
 ./gradlew runClient --console=plain > run-client/check.log 2>&1
 STATUS=$?
 set -e
-perl -ne 'print if /DESTROYEXTRACLIENT|ERROR|Exception|Caused by|Mod loading has failed/' run-client/check.log > run-client/results.txt
+perl -ne 'print if /DESTROYEXTRACLIENT|SCENE |ERROR|Exception|Caused by|Mod loading has failed/' run-client/check.log > run-client/results.txt
 head -120 run-client/results.txt
-if [ "$STATUS" -ne 0 ] || ! grep -q 'DESTROYEXTRACLIENT PASS' run-client/check.log || grep -q 'DESTROYEXTRACLIENT FAIL' run-client/check.log || grep -q 'Failed to read ponder schematic' run-client/check.log; then
+if [ "$STATUS" -ne 0 ] || ! grep -q 'SCENE END PASS' run-client/check.log || grep -q 'SCENE FAIL' run-client/check.log || grep -q 'Failed to read ponder schematic' run-client/check.log; then
   exit 1
 fi

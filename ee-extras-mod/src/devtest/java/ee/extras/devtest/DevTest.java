@@ -52,7 +52,8 @@ public class DevTest {
         try {
             Class.forName("ee.extras.devtest.PetTest").getDeclaredMethod("register", CommandDispatcher.class).invoke(null, d);
         } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException("PetTest не собран: нужен DESTROY=1 ./libs.sh", e);
+            // Сборка с Destroy, а devtest без него (стенд): без /pettest, но мир грузится
+            System.out.println("EETEST PetTest не собран (нужен DESTROY=1 ./libs.sh), /pettest нет: " + e);
         }
     }
 

@@ -45,8 +45,13 @@ public final class ClientTest {
 
     @SubscribeEvent
     public static void screen(ScreenEvent.Init.Post e) {
-        if (PCB_UPGRADE_PHOTOS || PCB_MOUNT_PHOTOS || FlywheelWireTest.ON || started || !(e.getScreen() instanceof TitleScreen)) return;
+        if (PCB_UPGRADE_PHOTOS || PCB_MOUNT_PHOTOS || started || !(e.getScreen() instanceof TitleScreen)) return;
         started = true;
+        // Сцена на общей заготовке сама создаёт мир и ведёт шаги
+        if (FlywheelWireTest.ON) {
+            FlywheelWireTest.start();
+            return;
+        }
         Minecraft mc = Minecraft.getInstance();
         mc.options.pauseOnLostFocus = false;
         var settings = new LevelSettings("eetest", GameType.CREATIVE, false, Difficulty.PEACEFUL, true, new GameRules(), WorldDataConfiguration.DEFAULT);
@@ -57,7 +62,7 @@ public final class ClientTest {
     @SubscribeEvent
     public static void tick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.getSingleplayerServer() == null) return;
+        if (FlywheelWireTest.ON || mc.player == null || mc.getSingleplayerServer() == null) return;
         tick++;
         var server = mc.getSingleplayerServer();
         try {
@@ -67,10 +72,6 @@ public final class ClientTest {
             }
             if (PCB_MOUNT_PHOTOS) {
                 PcbMountPhotos.tick(mc, server, tick);
-                return;
-            }
-            if (FlywheelWireTest.ON) {
-                FlywheelWireTest.tick(mc, server, tick);
                 return;
             }
             if (System.getenv("CAP") != null) {
