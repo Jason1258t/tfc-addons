@@ -1,9 +1,9 @@
 {
   "id": "destroy_extras",
   "name": "Destroy Extras — химические машины",
-  "version": "0.8.1",
-  "jar": "destroy-extras-0.8.1.jar",
-  "sha256": "58d4210465dc66ef6daed7838aad442e91f33911f033de9a569dc602bf24c44e",
+  "version": "0.8.2",
+  "jar": "destroy-extras-0.8.2.jar",
+  "sha256": "e49c9a9b0e37d019424e050dc94b7c6c3f2b7e73a8f09830eb7a8755f1978d01",
   "order": 801,
   "side": "both",
   "summary": "Химические машины Destroy: мембранный электролизёр — мультиблок IE с окном, очками Create и рецептами разных реакций; травление плат L1–L3 и металлургический процессор. Выщелачивание и электроэкстракция Cu/Ni/Zn, Bayer и Hall–Héroult, регенерация FeCl₃ и переработка электронного лома. Рецепты загружаются из datapack, питание — 240/300/600 В EE.",

@@ -54,6 +54,7 @@ final class ElectrolyzerMbTest {
         event.getDispatcher().register(Commands.literal("destroyextratest")
             .then(Commands.literal("mbform").executes(ElectrolyzerMbTest::form))
             .then(Commands.literal("mbdisassemble").executes(ElectrolyzerMbTest::disassemble))
+            .then(Commands.literal("mbbreak").executes(ElectrolyzerMbTest::breakByPlayer))
             .then(Commands.literal("mbwater").executes(ElectrolyzerMbTest::water))
             .then(Commands.literal("mbwaterassert").executes(ElectrolyzerMbTest::waterAssert))
             .then(Commands.literal("mbsave").executes(ElectrolyzerMbTest::save))
@@ -132,6 +133,34 @@ final class ElectrolyzerMbTest {
         check(ctx, level.getBlockState(ElectrolyzerRig.world(cell, Direction.NORTH, 0, 2, 1)).is(AllBlocks.FLUID_PIPE.get()), "труба вернулась");
         check(ctx, InfrastructureSavedData.load(level).getNodesAt(power).stream()
             .allMatch(node -> InfrastructureSavedData.load(level).getConnections(node).isEmpty()), "провод снят с клемм");
+        return report(ctx);
+    }
+
+    private static final BlockPos BREAK_CELL = new BlockPos(100, -59, 10);
+
+    /** Игрок с киркой ломает бак собранной машины: инструмент правильный, клетка возвращает свой блок, мембрана выпадает. */
+    private static int breakByPlayer(CommandContext<CommandSourceStack> ctx) {
+        reset();
+        ServerLevel level = ctx.getSource().getLevel();
+        ElectrolyzerRig.place(level, BREAK_CELL, Direction.NORTH);
+        check(ctx, ElectrolyzerRig.form(level, BREAK_CELL, Direction.NORTH), "машина собрана");
+        ElectrolyzerRig.state(level, BREAK_CELL).membrane.setStackInSlot(0, new ItemStack(DestroyExtras.MEMBRANE_ITEM.get()));
+        BlockPos tank = ElectrolyzerRig.world(BREAK_CELL, Direction.NORTH, 0, 1, 1);
+        BlockState part = level.getBlockState(tank);
+        var player = net.neoforged.neoforge.common.util.FakePlayerFactory.getMinecraft(level);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(net.minecraft.world.item.Items.IRON_PICKAXE));
+        check(ctx, player.hasCorrectToolForDrops(part), "кирка — правильный инструмент для блока машины");
+        float pickaxe = part.getDestroyProgress(player, level, tank);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+        float hand = part.getDestroyProgress(player, level, tank);
+        check(ctx, pickaxe > hand * 10, String.format(java.util.Locale.ROOT,
+            "киркой ломается быстро: %.3f за тик (рукой %.4f)", pickaxe, hand));
+        level.destroyBlock(tank, true);
+        var drops = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new net.minecraft.world.phys.AABB(BREAK_CELL).inflate(4));
+        check(ctx, drops.stream().anyMatch(e -> e.getItem().is(AllBlocks.FLUID_TANK.asItem())), "сломанная клетка вернула бак: " + drops.size() + " предметов");
+        check(ctx, drops.stream().anyMatch(e -> e.getItem().is(DestroyExtras.MEMBRANE_ITEM.get())), "мембрана выпала");
+        check(ctx, level.getBlockState(BREAK_CELL).is(DestroyExtras.ELECTROLYZER_BLOCK.get()), "остальная машина распалась на исходные блоки");
+        drops.forEach(net.minecraft.world.entity.Entity::discard);
         return report(ctx);
     }
 
