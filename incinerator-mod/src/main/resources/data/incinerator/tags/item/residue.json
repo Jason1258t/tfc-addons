@@ -1,0 +1,7 @@
+{
+  "values": [
+    { "id": "tfc:powder/wood_ash", "required": false },
+    { "id": "tfc:powder/charcoal", "required": false },
+    { "id": "tfc:powder/coke", "required": false }
+  ]
+}

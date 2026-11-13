@@ -1,0 +1,36 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.148'
+}
+
+version = mod_version
+group = 'incinerator'
+base { archivesName = 'incinerator' }
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+// Проверочный мод (только для runServer): команда /inctest — шлюзы, желоба, воронки, выпавшие предметы, редстоун. В jar не попадает.
+sourceSets {
+    devtest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+neoForge {
+    version = project.neo_version
+    mods {
+        incinerator { sourceSet sourceSets.main }
+        incinerator_devtest { sourceSet sourceSets.devtest }
+    }
+    addModdingDependenciesTo(sourceSets.devtest)
+    // Проверочный сервер: ./gradlew runServer. TFC, Create и Create Connected кладёт в run/mods скрипт test-server.sh
+    runs {
+        server {
+            server()
+            programArgument '--nogui'
+            sourceSet = sourceSets.devtest
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }

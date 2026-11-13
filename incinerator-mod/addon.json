@@ -1,0 +1,28 @@
+{
+  "id": "incinerator",
+  "name": "Incinerator — мусоросжигатель",
+  "version": "1.0.0",
+  "jar": "incinerator-1.0.0.jar",
+  "sha256": "49ed940e863502600bee5acffb74e2b9bb635d581fb7fbe048da59f28cd9be5a",
+  "order": 160,
+  "side": "both",
+  "summary": "Мусоросжигатель — блок, который бесконечно уничтожает всё, что в него попадает: брошенные на него предметы, а также всё, что в него вставляют шлюзы, желоба и воронки (Create, Immersive Engineering, ванильные). От каждого сожжённого предмета с шансом 15 % остаётся гарь — зола, порошок древесного или коксового угля, поровну; её забирают шлюзом на выход или воронкой снизу. Редстоун-сигнал выключает выход гари (жечь блок продолжает).",
+  "needs": "Сервер и все игроки (новый блок). NeoForge 21.1.219+. Рецепт — при Create и Create: Connected; гарь — порошки TFC.",
+  "blocks": [
+    {
+      "id": "incinerator:incinerator",
+      "name": "Мусоросжигатель",
+      "image": "incinerator.png",
+      "recipe": {
+        "pattern": ["PFP", "ACA", "PNP"],
+        "key": {
+          "P": { "item": "create:iron_sheet", "tag": "c:plates/iron" },
+          "F": { "item": "create:andesite_funnel" },
+          "A": { "item": "create:andesite_alloy" },
+          "C": { "item": "create_connected:fan_blasting_catalyst" },
+          "N": { "item": "minecraft:netherrack" }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+license = "MIT"
+
+[[mods]]
+modId = "incinerator_devtest"
+version = "1.0.0"
+displayName = "Incinerator devtest"
+description = "Только для сервера разработки: /inctest"
+
+[[dependencies.incinerator_devtest]]
+modId = "incinerator"
+type = "required"
+versionRange = "[1,)"
+ordering = "AFTER"
+side = "BOTH"

@@ -1,0 +1,5 @@
+{
+  "block.incinerator.incinerator": "Incinerator",
+  "block.incinerator.incinerator.tooltip": "Destroys everything dropped on top or inserted by funnels, chutes and hoppers.",
+  "block.incinerator.incinerator.tooltip.more": "15% of burnt items leave residue (ash, charcoal or coke powder) — pull it out with a funnel or a hopper below. A redstone signal turns the residue off."
+}

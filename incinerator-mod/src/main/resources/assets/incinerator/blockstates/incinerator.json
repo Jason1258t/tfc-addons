@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "powered=false": { "model": "incinerator:block/incinerator" },
+    "powered=true": { "model": "incinerator:block/incinerator_off" }
+  }
+}

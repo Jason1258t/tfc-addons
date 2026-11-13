@@ -1,0 +1,17 @@
+{
+  "neoforge:conditions": [
+    { "type": "neoforge:mod_loaded", "modid": "create" },
+    { "type": "neoforge:mod_loaded", "modid": "create_connected" }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["PFP", "ACA", "PNP"],
+  "key": {
+    "P": { "tag": "c:plates/iron" },
+    "F": { "item": "create:andesite_funnel" },
+    "A": { "item": "create:andesite_alloy" },
+    "C": { "item": "create_connected:fan_blasting_catalyst" },
+    "N": { "item": "minecraft:netherrack" }
+  },
+  "result": { "id": "incinerator:incinerator", "count": 1 }
+}

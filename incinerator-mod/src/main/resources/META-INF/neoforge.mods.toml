@@ -1,0 +1,28 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+license = "MIT"
+
+[[mods]]
+modId = "incinerator"
+version = "1.0.0"
+displayName = "Incinerator"
+authors = "TFC Studio"
+description = '''
+Мусоросжигатель (сборка TFC Studio): блок бесконечно уничтожает всё, что в него падает или что в него вставляют шлюзы,
+желоба и воронки. С шансом 15 % от каждого сожжённого предмета остаётся гарь — зола, порошок древесного или коксового
+угля; её можно забрать шлюзом или воронкой. Редстоун-сигнал выключает выход гари.
+'''
+
+[[dependencies.incinerator]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.219,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.incinerator]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1]"
+ordering = "NONE"
+side = "BOTH"
