@@ -1,0 +1,40 @@
+{
+  "chains": {
+    "rectifier-restart": {
+      "note": "выпрямители EE Extras: сборка и замер → рестарт на сохранённом мире → вход клиентом",
+      "steps": [
+        {
+          "name": "build",
+          "kind": "server",
+          "cmd": ["forceload add 0 0 32 32", "rectest build", "rectest power 10", "sleep 15", "rectest report"],
+          "failFast": true,
+          "expect": ["трёхфазный: на выходе [1-9]"],
+          "save": true
+        },
+        {
+          "name": "restart",
+          "kind": "server",
+          "world": "build",
+          "cmd": [
+            "sleep 15",
+            "execute if block 2 -60 13 ee_extras:three_phase_rectifier",
+            "execute if block 2 -60 23 ee_extras:single_phase_rectifier",
+            "execute if block 4 -60 16 electroenergetics:voltmeter",
+            "rectest report"
+          ],
+          "failFast": true,
+          "failOn": ["Test failed"],
+          "expect": ["Test passed[\\s\\S]*Test passed[\\s\\S]*Test passed", "трёхфазный: на выходе [1-9]"],
+          "save": true
+        },
+        {
+          "name": "client",
+          "kind": "client",
+          "world": "restart",
+          "shots": 2,
+          "save": true
+        }
+      ]
+    }
+  }
+}
