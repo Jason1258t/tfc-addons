@@ -53,6 +53,8 @@ public final class ElectrolyzerLogic implements IMultiblockLogic<ElectrolyzerLog
     public static final int MIXTURE_CAPACITY = 2000;
     public static final int OUTPUT_CAPACITY = 4000;
     public static final int MEMBRANE_OPERATIONS = 64;
+    private static final double MIN_OPERATING_VOLTAGE = ProcessPowerDevice.NOMINAL_VOLTAGE * 0.9;
+    private static final double MAX_OPERATING_VOLTAGE = ProcessPowerDevice.NOMINAL_VOLTAGE * 1.1;
 
     /** Клетка с клеммами EE: верх, задний ряд, середина. */
     public static final BlockPos POWER = new BlockPos(1, 2, 0);
@@ -252,7 +254,7 @@ public final class ElectrolyzerLogic implements IMultiblockLogic<ElectrolyzerLog
                 blocked = blockedPort(value, targets, products);
             } else if (!hasBatch) {
                 status = ElectrolyzerStatus.IDLE;
-            } else if (!device.hasWorkingPower()) {
+            } else if (!(voltage >= MIN_OPERATING_VOLTAGE && voltage <= MAX_OPERATING_VOLTAGE)) {
                 status = ElectrolyzerStatus.WAITING_FOR_POWER;
             } else {
                 status = ElectrolyzerStatus.RUNNING;

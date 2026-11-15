@@ -279,10 +279,14 @@ public final class DestroyExtrasTest {
                 check(ctx, level.getCapability(Capabilities.ItemHandler.BLOCK, cell, SIDE) == process.membrane,
                     "предметный порт мембраны — лицевая грань ячейки");
             }
-            case "normal" -> {
+            case "normal", "upper_voltage" -> {
                 // На стенде всей сборки TPS после запуска плавает, поэтому партий может пройти несколько: всё считается на N.
                 int n = process.batches;
-                if (process.status() == ElectrolyzerStatus.RUNNING) checkPower(ctx, device, 300, 8);
+                if (testCase.equals("upper_voltage")) {
+                    checkPower(ctx, device, 328, 328 / ProcessPowerDevice.LOAD_RESISTANCE);
+                } else if (process.status() == ElectrolyzerStatus.RUNNING) {
+                    checkPower(ctx, device, 300, 8);
+                }
                 check(ctx, n >= 1, "прошла хотя бы одна партия: " + n);
                 for (int i = 0; i < 3; i++) {
                     check(ctx, outputs(process)[i].getFluidAmount() == products[i].getAmount() * n,
@@ -293,6 +297,18 @@ public final class DestroyExtrasTest {
                 check(ctx, process.remainingMembraneOperations() == 64 - n, "каждая партия изнашивает мембрану на 1/64");
                 check(ctx, remainingWater(level) == 8000 - 1000 * n, "масса входа: 8000 − 1000 × " + n);
                 check(ctx, SALT_WATER.equals(process.recipeId()), "production-блок использует JSON-рецепт");
+            }
+            case "outside_voltage", "outside_paused" -> {
+                check(ctx, device != null && (device.measuredVoltage() < 270 || device.measuredVoltage() > 330),
+                    "напряжение за пределами 270–330 В: " + process.voltage());
+                check(ctx, process.status() == ElectrolyzerStatus.WAITING_FOR_POWER, "статус " + process.status());
+                check(ctx, process.batches == 0 && emptyOutputs(process), "ни одна партия не завершилась, выходы пусты");
+                TestSourceBlockEntity testSource = source(level);
+                if (testCase.equals("outside_paused")) {
+                    check(ctx, process.progress == testSource.savedProgress, "прогресс стоит: " + process.progress);
+                } else {
+                    testSource.savedProgress = process.progress;
+                }
             }
             case "no_membrane", "worn_membrane" -> {
                 check(ctx, process.status() == ElectrolyzerStatus.FAULT, "отсутствующая или изношенная мембрана даёт FAULT");
