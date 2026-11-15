@@ -90,6 +90,12 @@ public final class ClientTest {
         scene.client("очки инженера", this::goggleChecks);
         scene.camera(1, 1, -5, 7, -40, 20);
         scene.shot("formed-back");
+        scene.camera(1, 1.5, -5, 5, 180, 85);
+        scene.shot("formed-top");
+        scene.camera(1, 1, -5, 6, 90, 14);
+        scene.shot("formed-side-left");
+        scene.camera(1, 1, -5, 6, -90, 14);
+        scene.shot("formed-side-right");
         scene.gui(true);
         scene.server("окно машины", c -> openWindow(c));
         scene.ticks(40).client("скриншот окна машины", () -> {

@@ -1,0 +1,7 @@
+{
+  "scenes": {
+    "destroy-extras": {
+      "shots": ["formed-front", "formed-back", "formed-top", "formed-side-left", "formed-side-right"]
+    }
+  }
+}

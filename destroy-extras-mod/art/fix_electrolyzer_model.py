@@ -12,6 +12,10 @@ ATLAS = ASSETS / "textures/block/multiblock/membrane_electrolyzer.png"
 ORIGINAL = ROOT / "membrane_electrolyzer-original.obj"
 ORIGINAL_ATLAS = ROOT / "membrane_electrolyzer-original.png"
 
+PORT_COLORS = ((91, 220, 238), (244, 196, 48), (183, 104, 220), (64, 139, 230))
+STEEL = (0, 0)
+BORE = (10, 1)
+
 
 def parse_obj(path):
     vertices, uvs, normals, faces = [], [], [], []
@@ -38,31 +42,25 @@ def normal_of(points):
 
 def tile_uv(col, row):
     # OBJ использует flip_v=true: нулевая V — нижняя строка изображения.
-    return (col / 16, 1 - (row + 1) / 16), ((col + 1) / 16, 1 - row / 16)
+    # Полпикселя до края, чтобы не захватить соседнюю плитку атласа.
+    return ((col * 16 + 0.5) / 256, 1 - (row * 16 + 15.5) / 256), (
+        (col * 16 + 15.5) / 256, 1 - (row * 16 + 0.5) / 256)
 
 
 def build_tiles():
     atlas = Image.open(ORIGINAL_ATLAS).convert("RGBA")
     draw = ImageDraw.Draw(atlas)
-    roles = [
-        (0, "cathode", (91, 220, 238), "out"),
-        (1, "anode", (244, 196, 48), "out"),
-        (2, "catholyte", (183, 104, 220), "out"),
-        (3, "input", (64, 139, 230), "in"),
-    ]
-    for col, _, color, direction in roles:
+    # Плитки исходных стрелок используются и на корпусах. Заменяем их
+    # металлом, оставляя цвет только на ободах рабочих портов.
+    for col, source in enumerate((0, 4, 2, 0, 0, 0)):
+        atlas.paste(atlas.crop((source * 16, 0, source * 16 + 16, 16)), (col * 16, 16))
+    for col, color in enumerate(PORT_COLORS, start=6):
+        x = col * 16
+        draw.rectangle((x, 16, x + 15, 31), fill=color)
+    draw.rectangle((BORE[0] * 16, 16, BORE[0] * 16 + 15, 31), fill=(29, 34, 38))
+    for col, sign, color in ((11, "+", (190, 55, 48)), (12, "−", (59, 65, 73))):
         x, y = col * 16, 16
-        draw.rectangle((x, y, x + 15, y + 15), fill=(25, 31, 35, 255))
-        draw.rectangle((x + 1, y + 1, x + 14, y + 14), outline=color, width=2)
-        if direction == "out":
-            arrow = [(7, 12), (9, 12), (9, 8), (12, 8), (8, 3), (4, 8), (7, 8)]
-        else:
-            arrow = [(7, 3), (9, 3), (9, 7), (12, 7), (8, 12), (4, 7), (7, 7)]
-        draw.polygon([(x + px, y + py) for px, py in arrow], fill=color)
-    for col, sign, color in ((4, "+", (190, 55, 48)), (5, "−", (67, 113, 190))):
-        x, y = col * 16, 16
-        draw.rectangle((x, y, x + 15, y + 15), fill=(32, 35, 37, 255))
-        draw.rectangle((x + 1, y + 1, x + 14, y + 14), outline=color, width=2)
+        draw.rectangle((x, y, x + 15, y + 15), fill=color)
         draw.rectangle((x + 4, y + 7, x + 11, y + 8), fill=(240, 240, 230, 255))
         if sign == "+":
             draw.rectangle((x + 7, y + 4, x + 8, y + 11), fill=(240, 240, 230, 255))
@@ -82,60 +80,103 @@ def add_face(vertices, uvs, normals, faces, points, tile):
     faces.append(face)
 
 
+def port_faces(mouth, axis, radial, length, color):
+    """Патрубок от корпуса до границы блока, с заглублённым тёмным каналом."""
+    axis = np.array(axis)
+    radial = np.array(radial)
+    tangent = np.cross(axis, radial)
+
+    def ring(depth, radius):
+        return [
+            tuple(np.array(mouth) - depth * axis
+                  + radius * (math.cos(angle) * radial + math.sin(angle) * tangent))
+            for angle in (math.pi / 8 + i * math.pi / 4 for i in range(8))
+        ]
+
+    def strip(first, second, tile):
+        for i in range(8):
+            j = (i + 1) % 8
+            yield (first[i], first[j], second[j], second[i]), tile
+
+    neck = ring(length, 0.15)
+    shoulder = ring(0.075, 0.15)
+    flange_base = ring(0.075, 0.2375)
+    flange = ring(0.018, 0.2375)
+    rim = ring(0, 0.21875)
+    opening = ring(0, 0.134)
+    recess = ring(0.037, 0.134)
+    yield from strip(neck, shoulder, STEEL)
+    yield from strip(shoulder, flange_base, STEEL)
+    yield from strip(flange_base, flange, STEEL)
+    yield from strip(flange, rim, color)
+    yield from strip(rim, opening, color)
+    yield from strip(opening, recess, BORE)
+    for indices in ((0, 1, 2, 3), (0, 3, 4, 7), (4, 5, 6, 7)):
+        yield [recess[i] for i in indices], BORE
+
+
 def update_geometry():
-    vertices, uvs, normals, faces = parse_obj(ORIGINAL if ORIGINAL.exists() else OBJ)
-    if not ORIGINAL.exists():
-        ORIGINAL.write_text(OBJ.read_text())
-        ORIGINAL_ATLAS.write_bytes(ATLAS.read_bytes())
-
-    # Убираем большие восьмиугольные торцы газовых коллекторов: они похожи на ложные порты.
-    kept = []
-    for face in faces:
+    vertices, uvs, normals, original_faces = parse_obj(ORIGINAL)
+    faces = []
+    for face in original_faces:
         points = [vertices[item[0]] for item in face]
-        is_gas_cap = False
-        for center_x in (-0.5, 1.5):
-            side_cap = all(abs(abs(point[2]) - 0.9) < 1e-6 for point in points) and all(
-                abs(point[0] - center_x) <= 0.325 and abs(point[1] - 1.55) <= 0.325 for point in points)
-            top_cap = all(abs(point[1] - 2.0) < 1e-6 for point in points) and all(
-                abs(point[0] - center_x) <= 0.26 and abs(point[2] - 0.5) <= 0.26 for point in points)
-            is_gas_cap |= side_cap or top_cap
-        is_work_port = all(abs(point[0] - 1.0) < 1e-6 for point in points) and all(
-            abs(point[1] + 0.5) <= 0.26 and abs(point[2] + 0.5) <= 0.26 for point in points)
-        is_work_port |= all(abs(point[0] + 1.0) < 1e-6 for point in points) and all(
-            abs(point[1] + 0.5) <= 0.26 and abs(point[2] - 0.5) <= 0.26 for point in points)
-        if not is_gas_cap and not is_work_port:
-            kept.append(face)
-    faces = kept
+        # Снимаем старые наконечники целиком, включая разорванные участки труб.
+        gas_neck = any(all(abs(x - center_x) < 0.27 and y >= 1.7 and abs(z - 0.5) < 0.27
+                           for x, y, z in points) for center_x in (-0.5, 1.5))
+        catholyte_neck = all(x <= -0.78 and abs(y + 0.5) < 0.27 and abs(z - 0.5) < 0.27
+                             for x, y, z in points)
+        input_neck = all(x >= 1.62 and abs(y + 0.5) < 0.27 and abs(z + 0.5) < 0.27
+                         for x, y, z in points)
+        terminal_cap = all(y == 1.9 for _, y, _ in points)
+        terminal_plate = all(y == 1.635 and 0.23 <= x <= 0.77 and -0.75 <= z <= -0.63
+                             for x, y, z in points)
+        if gas_neck or catholyte_neck or input_neck or terminal_cap or terminal_plate:
+            continue
+        # Торцы горизонтальных коллекторов остаются глухими.
+        collector_end = any(
+            all(abs(abs(z) - 0.9) < 1e-6 and abs(x - center_x) <= 0.325 and abs(y - 1.55) <= 0.325
+                for x, y, z in points) for center_x in (-0.5, 1.5)
+        )
+        if collector_end:
+            # Сохраняем дисковую геометрию торца и подменяем UV металлической плиткой.
+            uvs.append((0.03125, 0.96875))
+            face = [(vi, len(uvs) - 1, ni) for vi, _, ni in face]
+        faces.append(face)
 
-    steel = (0, 0)
-    for center_x in (-0.5, 1.5):
-        for z in (-0.901, 0.901):
-            points = [
-                (center_x - 0.19, 1.36, z),
-                (center_x + 0.19, 1.36, z),
-                (center_x + 0.19, 1.74, z),
-                (center_x - 0.19, 1.74, z),
+    # Доли блока оставляют торцы внутри клетки IE basic_split.
+    ports = (
+        ((-0.5, 1.999, 0.5), (0, 1, 0), (1, 0, 0), 0.18),
+        ((1.5, 1.999, 0.5), (0, 1, 0), (1, 0, 0), 0.18),
+        ((-0.999, -0.5, 0.5), (-1, 0, 0), (0, 1, 0), 0.14),
+        ((1.999, -0.5, -0.5), (1, 0, 0), (0, 1, 0), 0.41),
+    )
+    for col, (mouth, axis, radial, length) in enumerate(ports, start=6):
+        for points, tile in port_faces(mouth, axis, radial, length, (col, 1)):
+            add_face(vertices, uvs, normals, faces, points, tile)
+
+    # Стояки соединяют коллекторы с баками; торцы скрыты внутри корпусов.
+    for x in (-0.5, 1.5):
+        for z in (-0.5, 0.5):
+            footprint = [
+                (x + 0.105 * math.cos(angle), z + 0.105 * math.sin(angle))
+                for angle in (math.pi / 8 + i * math.pi / 4 for i in range(8))
             ]
-            if z < 0:
-                points.reverse()
-            add_face(vertices, uvs, normals, faces, points, steel)
+            for i, (x0, z0) in enumerate(footprint):
+                x1, z1 = footprint[(i + 1) % len(footprint)]
+                add_face(vertices, uvs, normals, faces, [
+                    (x0, 0.92, z0), (x0, 1.29, z0), (x1, 1.29, z1), (x1, 0.92, z1),
+                ], STEEL)
 
-    # Плоские таблички тонкие, но после общего шага ниже имеют обратную сторону.
-    add_face(vertices, uvs, normals, faces,
-             [(-0.81, 2.0, 0.19), (-0.19, 2.0, 0.19), (-0.19, 2.0, 0.81), (-0.81, 2.0, 0.81)], (0, 1))
-    add_face(vertices, uvs, normals, faces,
-             [(1.19, 2.0, 0.19), (1.81, 2.0, 0.19), (1.81, 2.0, 0.81), (1.19, 2.0, 0.81)], (1, 1))
-    add_face(vertices, uvs, normals, faces,
-             [(-1.0, -0.81, 0.81), (-1.0, -0.81, 0.19), (-1.0, -0.19, 0.19), (-1.0, -0.19, 0.81)], (2, 1))
-    add_face(vertices, uvs, normals, faces,
-             [(2.0, -0.81, -0.81), (2.0, -0.81, -0.19), (2.0, -0.19, -0.19), (2.0, -0.19, -0.81)], (3, 1))
-    for center_x, tile in ((0.3, (4, 1)), (0.7, (5, 1))):
-        add_face(vertices, uvs, normals, faces,
-                 [(center_x - 0.09, 1.626, -0.89), (center_x + 0.09, 1.626, -0.89),
-                  (center_x + 0.09, 1.626, -0.71), (center_x - 0.09, 1.626, -0.71)], tile)
+    # Непрозрачный верх контакта совпадает с вершиной подключения провода EE.
+    for center_x, col in ((0.3, 11), (0.7, 12)):
+        for y, radius, tile in ((1.9, 0.04157, (col, 1)), (1.635, 0.06, (col, 1))):
+            z = -0.5 if y == 1.9 else -0.69
+            add_face(vertices, uvs, normals, faces, [
+                (center_x - radius, y, z + radius), (center_x + radius, y, z + radius),
+                (center_x + radius, y, z - radius), (center_x - radius, y, z - radius),
+            ], tile)
 
-    # OBJ-пайплайн отсекает задние грани. Дублируем каждую грань с обратной нормалью:
-    # даже тонкие трубы, контакты, стрелки и пластины видны с обеих сторон.
+    # Оставляем обратные грани для тонких панелей исходной модели.
     for face in list(faces):
         reverse = []
         for vi, ti, ni in reversed(face):
@@ -207,6 +248,7 @@ def render(view, output, size=512):
             tex = w0[..., None] * tri_uv[0] + w1[..., None] * tri_uv[1] + w2[..., None] * tri_uv[2]
             tx = np.clip((tex[..., 0] * 256).astype(int), 0, 255)
             ty = np.clip(((1 - tex[..., 1]) * 256).astype(int), 0, 255)
+            mask &= atlas[ty, tx, 3] > 0.5
             color = atlas[ty, tx, :3] * shade
             target = image[min_y:max_y + 1, min_x:max_x + 1]
             target[mask] = color[mask]
