@@ -20,5 +20,7 @@
   "create_aeronautics_extra.goggles.output": "Output to network:",
   "create_aeronautics_extra.goggles.charging": "Charging from network:",
   "create_aeronautics_extra.unit.watts": " W",
-  "create_aeronautics_extra.unit.volts": " V"
+  "create_aeronautics_extra.unit.volts": " V",
+  "block.create_aeronautics_extra.transport_engine": "Transport Diesel Engine",
+  "create_aeronautics_extra.transport_engine.target_rpm": "Target speed: %s RPM"
 }

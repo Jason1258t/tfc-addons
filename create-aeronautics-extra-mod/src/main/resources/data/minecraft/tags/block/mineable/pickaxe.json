@@ -1,3 +1,6 @@
 {
-  "values": ["create_aeronautics_extra:onboard_computer"]
+  "values": [
+    "create_aeronautics_extra:onboard_computer",
+    "create_aeronautics_extra:transport_engine"
+  ]
 }

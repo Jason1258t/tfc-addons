@@ -71,6 +71,15 @@ public class AeroExtra {
             BLOCK_ENTITIES.register("onboard_computer", () -> BlockEntityType.Builder
                     .of(OnboardComputerBlockEntity::new, ONBOARD_COMPUTER.get()).build(null));
 
+    public static final DeferredBlock<TransportEngineBlock> TRANSPORT_ENGINE = BLOCKS.register("transport_engine",
+            () -> new TransportEngineBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
+                    .strength(3, 6).sound(SoundType.METAL)));
+    public static final DeferredItem<BlockItem> TRANSPORT_ENGINE_ITEM = ITEMS.register("transport_engine",
+            () -> new BlockItem(TRANSPORT_ENGINE.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TransportEngineBlockEntity>> TRANSPORT_ENGINE_BE =
+            BLOCK_ENTITIES.register("transport_engine", () -> BlockEntityType.Builder
+                    .of(TransportEngineBlockEntity::new, TRANSPORT_ENGINE.get()).build(null));
+
     public static final DeferredItem<ModuleItem> GENERATOR_MODULE = ITEMS.register("generator_module",
             () -> new ModuleItem(ModuleItem.Kind.GENERATOR, new Item.Properties().stacksTo(16)));
     public static final DeferredItem<ModuleItem> BATTERY_MODULE = ITEMS.register("battery_module",
@@ -94,6 +103,7 @@ public class AeroExtra {
     private static void addToTab(BuildCreativeModeTabContentsEvent event) {
         if (!event.getTabKey().equals(CEECreativeTab.CREATIVE_TAB.getKey())) return;
         event.accept(ONBOARD_COMPUTER_ITEM.get());
+        event.accept(TRANSPORT_ENGINE_ITEM.get());
         event.accept(GENERATOR_MODULE.get());
         event.accept(BATTERY_MODULE.get());
     }

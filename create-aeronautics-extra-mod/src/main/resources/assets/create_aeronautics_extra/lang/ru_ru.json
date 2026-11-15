@@ -20,5 +20,7 @@
   "create_aeronautics_extra.goggles.output": "Отдача в сеть:",
   "create_aeronautics_extra.goggles.charging": "Заряд от сети:",
   "create_aeronautics_extra.unit.watts": " Вт",
-  "create_aeronautics_extra.unit.volts": " В"
+  "create_aeronautics_extra.unit.volts": " В",
+  "block.create_aeronautics_extra.transport_engine": "Транспортный дизельный двигатель",
+  "create_aeronautics_extra.transport_engine.target_rpm": "Заданные обороты: %s об/мин"
 }
