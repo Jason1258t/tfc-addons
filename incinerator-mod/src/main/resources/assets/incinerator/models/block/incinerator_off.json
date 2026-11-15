@@ -1,6 +1,6 @@
 {
   "parent": "incinerator:block/incinerator",
   "textures": {
-    "grate": "minecraft:block/netherrack"
+    "grate": "incinerator:block/incinerator_grate_off"
   }
 }

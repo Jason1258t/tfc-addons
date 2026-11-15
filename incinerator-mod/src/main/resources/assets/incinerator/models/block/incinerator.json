@@ -1,10 +1,10 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "particle": "create:block/industrial_iron_block",
-    "side": "create:block/industrial_iron_block",
-    "bottom": "create:block/andesite_casing",
-    "grate": "minecraft:block/magma"
+    "particle": "incinerator:block/incinerator_side",
+    "side": "incinerator:block/incinerator_side",
+    "bottom": "incinerator:block/incinerator_bottom",
+    "grate": "incinerator:block/incinerator_grate"
   },
   "elements": [
     {
