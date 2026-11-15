@@ -47,6 +47,7 @@ public class ThinSpoolItem extends BundledWireItem {
         if (player.isShiftKeyDown()) {
             stack.remove(CEEDataComponents.SELECTED_NODE);
             stack.remove(CEEDataComponents.SELECTED_WIRE_TERMINATION);
+            stack.remove(ee.extras.panel.PanelModules.SELECTED_PORT.get());
             return InteractionResult.SUCCESS;
         }
         if (!(state.getBlock() instanceof ElectricalDeviceBlock<?> device) || CableCap.present(level, pos))
@@ -64,6 +65,7 @@ public class ThinSpoolItem extends BundledWireItem {
         if (!(level instanceof ServerLevel server)) return InteractionResult.SUCCESS;
         if (first == null) {
             stack.remove(CEEDataComponents.SELECTED_WIRE_TERMINATION);
+            stack.remove(ee.extras.panel.PanelModules.SELECTED_PORT.get());
             stack.set(CEEDataComponents.SELECTED_NODE, target);
             AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos);
             return InteractionResult.SUCCESS;

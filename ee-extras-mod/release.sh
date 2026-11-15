@@ -31,4 +31,10 @@ ICONS="compact_kinetic_generator three_phase_rectifier single_phase_rectifier he
   pcb_circuit burnt_board pcb_button_cap pcb_switch_cap pcb_supply pcb_supply_dc pcb_led thin_single_wire_spool decorative_single_wire_spool
   abs_sheet abs_keyboard_blank pet_film rgb_phosphor shadow_mask permanent_magnet speaker_cone battery_electrolyte ink_cartridge antenna pocket_color_display"
 (cd ../.. && node scripts/mcp/render.mjs tools/ee-extras-mod $(printf 'ee_extras:%s ' $ICONS) --out tools/ee-extras-mod/icons --size 192)
+# CLI исключает jar каждого пространства имён из assets; здесь нужна модель рубильника из jar EE.
+PANEL_RENDER_DIR=$(mktemp -d)
+trap 'unlink "$PANEL_RENDER_DIR/assets/ee_extras"; rmdir "$PANEL_RENDER_DIR/assets" "$PANEL_RENDER_DIR"' EXIT
+mkdir "$PANEL_RENDER_DIR/assets"
+ln -s "$PWD/src/main/resources/assets/ee_extras" "$PANEL_RENDER_DIR/assets/ee_extras"
+(cd ../.. && node scripts/mcp/render.mjs "$PANEL_RENDER_DIR" ee_extras:panel_duplex_switch --out tools/ee-extras-mod/icons --size 192)
 echo "готово: ee-extras-$VERSION.jar → tools/ee-extras-mod; обновите addon.json и проверьте MCP addon_check"

@@ -11,6 +11,8 @@ import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.simibubi.create.AllSoundEvents;
+import ee.extras.panel.PanelModules;
+import ee.extras.panel.PanelPorts;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.BlockPos;
@@ -38,39 +40,51 @@ import net.minecraft.world.level.block.state.BlockState;
 public final class CableLaying {
     /** Клик катушкой кабеля вида kind; null — блок не конец кабеля (клик обрабатывается как обычно) */
     public static InteractionResult use(Level level, Player player, ItemStack stack, BlockPos pos, CableKind kind) {
+        return use(level, player, stack, pos, kind, null);
+    }
+
+    static InteractionResult use(Level level, Player player, ItemStack stack, BlockPos pos, CableKind kind, CableEnd port) {
         if (player == null) return null;
         if (player.isShiftKeyDown()) {
             if (stack.has(CEEDataComponents.SELECTED_WIRE_TERMINATION)) {
                 stack.remove(CEEDataComponents.SELECTED_WIRE_TERMINATION);
                 if (level.isClientSide) player.displayClientMessage(CEELang.translateDirect("wire_spool.cancelled_connection"), true);
             }
+            stack.remove(PanelModules.SELECTED_PORT.get());
             return InteractionResult.SUCCESS;
         }
         BlockState state = level.getBlockState(pos);
-        CableEnd end = CableEnd.of(level, pos, state);
+        CableEnd end = port != null ? port : CableEnd.of(level, pos, state);
         if (end == null) return CableCap.isTwoContact(level, pos, state) ? deny(level, player, pos, "cap.needed") : null;
         if (!fits(kind, end)) return deny(level, player, pos, kind == CableKind.DUPLEX ? "needs_duplex" : "needs_four_core");
         if (!(level instanceof ServerLevel sl)) return InteractionResult.SUCCESS;
 
         BundledWireTerminationState selected = stack.get(CEEDataComponents.SELECTED_WIRE_TERMINATION);
-        if (selected == null) {
-            stack.set(CEEDataComponents.SELECTED_WIRE_TERMINATION, selection(pos, state));
+        InWorldNode selectedPort = stack.get(PanelModules.SELECTED_PORT.get());
+        if (selected == null && selectedPort == null) {
+            if (port != null) stack.set(PanelModules.SELECTED_PORT.get(), port.cable());
+            else stack.set(CEEDataComponents.SELECTED_WIRE_TERMINATION, selection(pos, state));
             AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos);
             return InteractionResult.SUCCESS;
         }
 
-        CableEnd first = CableEnd.of(level, selected.pos(), level.getBlockState(selected.pos()));
+        CableEnd first = selectedPort != null ? PanelPorts.resolve(level, selectedPort)
+                : CableEnd.of(level, selected.pos(), level.getBlockState(selected.pos()));
         String problem = problem(sl, kind, first, end);
         if (problem == null && stack.getItem() instanceof ThinSpoolItem && insulator(sl, first) && insulator(sl, end)) problem = "thin_needs_device";
         if (problem != null) {
             // Выбранный блок сломан или заменён — выбор сбрасываем; остальное — оставляем, можно кликнуть по другому
-            if (first == null || !fits(kind, first)) stack.remove(CEEDataComponents.SELECTED_WIRE_TERMINATION);
+            if (first == null || !fits(kind, first)) {
+                stack.remove(CEEDataComponents.SELECTED_WIRE_TERMINATION);
+                stack.remove(PanelModules.SELECTED_PORT.get());
+            }
             return deny(level, player, pos, problem);
         }
         if (!connect(sl, kind, first, end, CableWires.sheath(kind, stack))) return deny(level, player, pos, "no_nodes");
 
         AllSoundEvents.WRENCH_REMOVE.playOnServer(level, pos);
         stack.remove(CEEDataComponents.SELECTED_WIRE_TERMINATION);
+        stack.remove(PanelModules.SELECTED_PORT.get());
         if (!player.isCreative()) {
             stack.shrink(1);
             if (!CEEConfigs.server().alternateWirePlacement.get())
@@ -99,7 +113,8 @@ public final class CableLaying {
     /** Ключ языкового файла (ee_extras.cable.*) — почему нельзя проложить, или null */
     static String problem(ServerLevel level, CableKind kind, CableEnd a, CableEnd b) {
         if (a == null || !fits(kind, a)) return "lost_selection";
-        if (a.pos().equals(b.pos())) return "same_block";
+        if (a.pos().equals(b.pos()) && (a.cable().equals(b.cable())
+                || a.cable().equals(a.conductor(1)) || b.cable().equals(b.conductor(1)))) return "same_block";
         // Четырёхжильный кабель между двумя двухпроводными соединителями — жилам 3 и 4 некуда идти
         if (kind == CableKind.FOUR_CORE && a.kind() != CableKind.FOUR_CORE && b.kind() != CableKind.FOUR_CORE)
             return "needs_four_core";
@@ -141,7 +156,7 @@ public final class CableLaying {
             for (InWorldNode n : core) if (!sd.getNodes().contains(n)) return false;
 
         // Между крышками первая жила уже занимает пару контактов 1–1. Оболочке нужна отдельная пара.
-        InWorldNode shellB = a.contacts() != null && b.contacts() != null ? b.conductor(2) : b.cable();
+        InWorldNode shellB = a.cable().equals(a.conductor(1)) && b.cable().equals(b.conductor(1)) ? b.conductor(2) : b.cable();
         if (sd.isConnected(a.cable(), shellB)) return false;
         sd.connect(a.cable(), shellB, sheath);
         for (InWorldNode[] core : cores) sd.connect(core[0], core[1], CableWires.core(kind));

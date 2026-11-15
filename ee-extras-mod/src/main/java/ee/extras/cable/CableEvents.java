@@ -53,6 +53,14 @@ public final class CableEvents {
             e.setCancellationResult(CableCap.put(level, pos, e.getEntity(), stack));
             return;
         }
+        if (stack.getItem() instanceof BundledWireItem && !(stack.getItem() instanceof FourCoreSpoolItem)) {
+            CableEnd port = ee.extras.panel.PanelPorts.hit(level, e.getHitVec());
+            if (port != null && !stack.has(com.george_vi.electroenergetics.CEEDataComponents.SELECTED_NODE)) {
+                e.setCanceled(true);
+                e.setCancellationResult(CableLaying.use(level, e.getEntity(), stack, pos, CableKind.DUPLEX, port));
+                return;
+            }
+        }
         if (stack.getItem() instanceof ThinSpoolItem thin) {
             var result = thin.useLead(new net.minecraft.world.item.context.UseOnContext(e.getEntity(), e.getHand(), e.getHitVec()));
             if (result != null) {

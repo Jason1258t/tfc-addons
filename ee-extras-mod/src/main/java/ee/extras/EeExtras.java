@@ -265,6 +265,7 @@ public class EeExtras {
         PcbItems.register(modBus);
         ee.extras.wire.SurfaceWires.register(modBus, container);
         ee.extras.wire.WireComponents.register(modBus);
+        ee.extras.panel.PanelModules.register(modBus);
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
         DEVICES.register(modBus);
@@ -306,6 +307,7 @@ public class EeExtras {
         if (!event.getTabKey().equals(CEECreativeTab.CREATIVE_TAB.getKey())) return;
         for (Kind<?> k : POWER) event.accept(k.item.get());
         AcBlocks.addToTab(event);
+        event.accept(ee.extras.panel.PanelModules.SWITCH_ITEM.get());
         for (Supplier<? extends Item> item : new Supplier[] {KINETIC_GENERATOR_ITEM, CONVERTER_ITEM, CABLE_CONVERTER_ITEM,
                 FOUR_CORE_TERMINATION_ITEM, PHASE_TAP_ITEM, DUPLEX_INSULATOR_ITEM, FOUR_CORE_INSULATOR_ITEM, FOUR_CORE_SPOOL, THIN_SPOOL, THIN_SINGLE_SPOOL, DECORATIVE_SINGLE_SPOOL, CABLE_CAP})
             event.accept(item.get());

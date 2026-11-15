@@ -1,4 +1,8 @@
 {
+  "ee_extras.cable.panel_connector": "Двухжильный соединитель в щитке",
+  "ee_extras.cable.panel_input": "Вход рубильника",
+  "ee_extras.cable.panel_output": "Выход рубильника",
+  "item.ee_extras.panel_duplex_switch": "Двухполюсный рубильник для щитка",
   "item.ee_extras.pcb_switch_cap": "Накладка переключателя платы",
   "item.ee_extras.pcb_button_cap": "Накладка кнопки платы",
   "ee_extras.pcb.supply.terminal": "Выход %s",

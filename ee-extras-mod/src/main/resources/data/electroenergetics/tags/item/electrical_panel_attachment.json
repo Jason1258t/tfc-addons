@@ -1,0 +1,4 @@
+{
+  "replace": false,
+  "values": ["electroenergetics:duplex_wire_termination", "ee_extras:panel_duplex_switch"]
+}

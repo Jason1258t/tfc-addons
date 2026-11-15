@@ -1,4 +1,8 @@
 {
+  "ee_extras.cable.panel_connector": "Panel Duplex Termination",
+  "ee_extras.cable.panel_input": "Switch Input",
+  "ee_extras.cable.panel_output": "Switch Output",
+  "item.ee_extras.panel_duplex_switch": "Double-Pole Panel Switch",
   "item.ee_extras.pcb_switch_cap": "PCB Switch Cap",
   "item.ee_extras.pcb_button_cap": "PCB Pushbutton Cap",
   "ee_extras.pcb.supply.terminal": "Output %s",

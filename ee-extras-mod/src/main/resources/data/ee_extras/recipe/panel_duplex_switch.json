@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["SS"],
+  "key": {
+    "S": { "item": "electroenergetics:cut_off_switch" }
+  },
+  "result": { "id": "ee_extras:panel_duplex_switch" }
+}

@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "WirePointsRawMixin",
+    "PanelCableNodesMixin",
     "ElectricPumpEfficiencyMixin",
     "DiskRecipeMixin",
     "UpgradeManagerMixin",
