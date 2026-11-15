@@ -362,7 +362,12 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             }
             if (PcbLogic.chip(part.kind)) {
                 int inputs=PcbLogic.inputs(part.kind);
-                for (int input=0;input<inputs;input++) builder.resistor(part.pins[input],part.b,OPEN);
+                // EE хранит одно ребро на пару узлов: каждый вход имеет собственную ветвь.
+                for (int input=0;input<inputs;input++) {
+                    int inputNode=15000+8*i+input;
+                    builder.node(inputNode).resistor(part.pins[input],inputNode,OPEN/2)
+                            .resistor(inputNode,part.b,OPEN/2);
+                }
                 for (int output=0;output<PcbLogic.outputs(part.kind);output++)
                     builder.resistor(part.pins[inputs+output],chipRail(part,i,output),logicResistance(i));
             }
