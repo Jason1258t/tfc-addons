@@ -52,7 +52,7 @@ public final class PanelModules {
         private final boolean twoPorts;
 
         CableModuleType(PanelAttachmentFactory factory, ItemLike item, boolean twoPorts) {
-            super(factory, item, PanelAttachmentMode.HALF);
+            super(factory, item, twoPorts ? PanelAttachmentMode.HALF : PanelAttachmentMode.QUARTER_NONE);
             this.twoPorts = twoPorts;
         }
 
@@ -68,8 +68,11 @@ public final class PanelModules {
             } else if (twoPorts) {
                 nodes = new InWorldNode[]{grid(pos, x - 1, row + 4), grid(pos, x + 1, row + 4), grid(pos, x, row + 4),
                         grid(pos, x - 1, row - 4), grid(pos, x + 1, row - 4), grid(pos, x, row - 4)};
+            } else if (slot.name().startsWith("QUARTER_")) {
+                nodes = new InWorldNode[]{grid(pos, x - 1, row), grid(pos, x + 1, row), grid(pos, x, row + 1)};
             } else {
-                nodes = Arrays.copyOf(contacts, 3);
+                // Половинные вставки из 2.22.0 сохраняют прежние узлы и уже подключённые провода.
+                nodes = Arrays.copyOf(PanelAttachmentMode.HALF.getNodesFor(pos, slot), 3);
                 nodes[2] = grid(pos, x, row);
             }
             return super.createNew(pos, nodes, level, slot, facing, registries);

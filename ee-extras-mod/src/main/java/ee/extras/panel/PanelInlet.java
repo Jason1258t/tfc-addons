@@ -31,7 +31,8 @@ final class PanelInlet extends PanelAttachment {
         pose.pushPose();
         pose.translate(center.x, center.y, center.z);
         pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-panelFacing.toYRot()));
-        pose.scale(0.32F, 0.32F, 0.32F);
+        float scale = slot.name().startsWith("QUARTER_") ? 0.25F : 0.32F;
+        pose.scale(scale, scale, scale);
         Minecraft.getInstance().getItemRenderer().renderStatic(defaultDroppedStack(), ItemDisplayContext.FIXED,
                 light, overlay, pose, buffers, panel.getLevel(), 0);
         pose.popPose();

@@ -172,6 +172,8 @@ public class DevTest {
                 .then(Commands.literal("lanternie").executes(c -> Lantern.ieWired(c.getSource())))
                 .then(Commands.literal("lanterncut").executes(c -> Lantern.cut(c.getSource())))
                 .then(Commands.literal("panel").executes(c -> PanelTest.build(c.getSource())))
+                .then(Commands.literal("panelsingle").executes(c -> PanelTest.buildSinglePole(c.getSource())))
+                .then(Commands.literal("panelsingletoggle").executes(c -> PanelTest.toggleSinglePole(c.getSource())))
                 .then(Commands.literal("paneltoggle").executes(c -> PanelTest.toggle(c.getSource())))
                 .then(Commands.literal("panelon").executes(c -> PanelTest.report(c.getSource(), true)))
                 .then(Commands.literal("paneloff").executes(c -> PanelTest.report(c.getSource(), false)))
