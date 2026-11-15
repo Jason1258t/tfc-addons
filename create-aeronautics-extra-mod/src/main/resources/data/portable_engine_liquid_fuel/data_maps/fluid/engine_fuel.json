@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": {
+    "createdieselgenerators:diesel": {
+      "neoforge:conditions": [{ "type": "neoforge:mod_loaded", "modid": "createdieselgenerators" }],
+      "burn_time": 20000
+    }
+  }
+}
