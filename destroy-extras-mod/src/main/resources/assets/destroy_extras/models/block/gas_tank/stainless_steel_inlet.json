@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "side": "firmalife:block/metal/block/stainless_steel",
+    "end": "firmalife:block/metal/block/stainless_steel",
+    "top": "firmalife:block/metal/block/stainless_steel",
+    "bottom": "firmalife:block/metal/block/stainless_steel",
+    "up": "firmalife:block/metal/block/stainless_steel",
+    "down": "firmalife:block/metal/block/stainless_steel",
+    "front": "minecraft:block/smithing_table_front"
+  }
+}

@@ -109,5 +109,19 @@
   "gui.destroy_extras.electrolyzer.membrane": "Membrane: %s",
   "gui.destroy_extras.electrolyzer.port.cathode_gas": "cathode gas",
   "gui.destroy_extras.electrolyzer.port.anode_gas": "anode gas",
-  "gui.destroy_extras.electrolyzer.port.catholyte": "catholyte"
+  "gui.destroy_extras.electrolyzer.port.catholyte": "catholyte",
+  "block.destroy_extras.gas_tank_controller_compact": "Compact Gas Tank Controller",
+  "block.destroy_extras.gas_tank_compact_steel": "Compact Steel Gas Tank",
+  "block.destroy_extras.gas_tank_compact_stainless_steel": "Compact Stainless Steel Gas Tank",
+  "block.destroy_extras.gas_tank_compact_blue_steel": "Compact Blue Steel Gas Tank",
+  "block.destroy_extras.gas_tank_controller_medium": "Medium Gas Tank Controller",
+  "block.destroy_extras.gas_tank_medium_steel": "Medium Steel Gas Tank",
+  "block.destroy_extras.gas_tank_medium_stainless_steel": "Medium Stainless Steel Gas Tank",
+  "block.destroy_extras.gas_tank_medium_blue_steel": "Medium Blue Steel Gas Tank",
+  "block.destroy_extras.gas_tank_controller_large": "Large Gas Tank Controller",
+  "block.destroy_extras.gas_tank_large_steel": "Large Steel Gas Tank",
+  "block.destroy_extras.gas_tank_large_stainless_steel": "Large Stainless Steel Gas Tank",
+  "block.destroy_extras.gas_tank_large_blue_steel": "Large Blue Steel Gas Tank",
+  "message.destroy_extras.gas_tank": "%s · %s/%s mmol · %s/%s bar (abs.) · %s L",
+  "message.destroy_extras.gas_tank.empty": "Gas tank empty"
 }

@@ -4,6 +4,27 @@
     "destroy_extras:membrane_electrolyzer",
     "destroy_extras:electrolyzer",
     "destroy_extras:etching_bath",
-    "destroy_extras:metallurgical_processor"
+    "destroy_extras:metallurgical_processor",
+    "destroy_extras:gas_tank_controller_compact",
+    "destroy_extras:gas_tank_compact_steel",
+    "destroy_extras:gas_tank_compact_blue_steel",
+    "destroy_extras:gas_tank_controller_medium",
+    "destroy_extras:gas_tank_medium_steel",
+    "destroy_extras:gas_tank_medium_blue_steel",
+    "destroy_extras:gas_tank_controller_large",
+    "destroy_extras:gas_tank_large_steel",
+    "destroy_extras:gas_tank_large_blue_steel",
+    {
+      "id": "destroy_extras:gas_tank_compact_stainless_steel",
+      "required": false
+    },
+    {
+      "id": "destroy_extras:gas_tank_medium_stainless_steel",
+      "required": false
+    },
+    {
+      "id": "destroy_extras:gas_tank_large_stainless_steel",
+      "required": false
+    }
   ]
 }

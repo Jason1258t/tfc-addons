@@ -109,5 +109,19 @@
   "gui.destroy_extras.electrolyzer.membrane": "Мембрана: %s",
   "gui.destroy_extras.electrolyzer.port.cathode_gas": "катодный газ",
   "gui.destroy_extras.electrolyzer.port.anode_gas": "анодный газ",
-  "gui.destroy_extras.electrolyzer.port.catholyte": "католит"
+  "gui.destroy_extras.electrolyzer.port.catholyte": "католит",
+  "block.destroy_extras.gas_tank_controller_compact": "Компактный контроллер газового бака",
+  "block.destroy_extras.gas_tank_compact_steel": "Компактный газовый бак (сталь)",
+  "block.destroy_extras.gas_tank_compact_stainless_steel": "Компактный газовый бак (нержавеющая сталь)",
+  "block.destroy_extras.gas_tank_compact_blue_steel": "Компактный газовый бак (синяя сталь)",
+  "block.destroy_extras.gas_tank_controller_medium": "Средний контроллер газового бака",
+  "block.destroy_extras.gas_tank_medium_steel": "Средний газовый бак (сталь)",
+  "block.destroy_extras.gas_tank_medium_stainless_steel": "Средний газовый бак (нержавеющая сталь)",
+  "block.destroy_extras.gas_tank_medium_blue_steel": "Средний газовый бак (синяя сталь)",
+  "block.destroy_extras.gas_tank_controller_large": "Большой контроллер газового бака",
+  "block.destroy_extras.gas_tank_large_steel": "Большой газовый бак (сталь)",
+  "block.destroy_extras.gas_tank_large_stainless_steel": "Большой газовый бак (нержавеющая сталь)",
+  "block.destroy_extras.gas_tank_large_blue_steel": "Большой газовый бак (синяя сталь)",
+  "message.destroy_extras.gas_tank": "%s · %s/%s ммоль · %s/%s бар (абс.) · %s л",
+  "message.destroy_extras.gas_tank.empty": "Газовый бак пуст"
 }

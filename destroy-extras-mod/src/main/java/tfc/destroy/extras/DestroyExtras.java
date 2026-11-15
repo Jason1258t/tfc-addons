@@ -34,6 +34,7 @@ import tfc.destroy.extras.electrolyzer.ElectrolyzerStructure;
 import tfc.destroy.extras.electrolyzer.ExtrasMultiblockBuilder;
 import tfc.destroy.extras.electrolyzer.MembraneElectrolyzerBlock;
 import tfc.destroy.extras.etching.EtchingBathBlock;
+import tfc.destroy.extras.gas.GasTankMultiblock;
 import tfc.destroy.extras.dust.MetalDusts;
 import tfc.destroy.extras.etching.EtchingBathBlockEntity;
 import tfc.destroy.extras.metallurgy.MetallurgicalProcessorBlock;
@@ -109,6 +110,7 @@ public final class DestroyExtras {
     }
 
     public DestroyExtras(IEventBus modBus) {
+        GasTankMultiblock.register();
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
         BLOCK_ENTITIES.register(modBus);

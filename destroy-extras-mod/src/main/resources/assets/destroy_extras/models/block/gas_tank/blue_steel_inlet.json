@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "side": "tfc:block/metal/block/blue_steel",
+    "end": "tfc:block/metal/block/blue_steel",
+    "top": "tfc:block/metal/block/blue_steel",
+    "bottom": "tfc:block/metal/block/blue_steel",
+    "up": "tfc:block/metal/block/blue_steel",
+    "down": "tfc:block/metal/block/blue_steel",
+    "front": "minecraft:block/smithing_table_front"
+  }
+}
