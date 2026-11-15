@@ -101,6 +101,8 @@ public final class DestroyExtrasTest {
         NeoForge.EVENT_BUS.addListener(M8Test::tick);
         NeoForge.EVENT_BUS.addListener(M9Test::commands);
         NeoForge.EVENT_BUS.addListener(M13Test::commands);
+        NeoForge.EVENT_BUS.addListener(VatHeaterTest::commands);
+
         NeoForge.EVENT_BUS.addListener(DestroyExtrasTest::serverTick);
         if (FMLEnvironment.dist == Dist.CLIENT) {
             new ClientTest();

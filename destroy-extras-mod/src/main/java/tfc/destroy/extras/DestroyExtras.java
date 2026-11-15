@@ -39,6 +39,7 @@ import tfc.destroy.extras.etching.EtchingBathBlockEntity;
 import tfc.destroy.extras.metallurgy.MetallurgicalProcessorBlock;
 import tfc.destroy.extras.metallurgy.MetallurgicalProcessorBlockEntity;
 import tfc.destroy.extras.recipe.ExtrasRecipeTypes;
+import tfc.destroy.extras.heat.VatElectricHeat;
 
 /** Недостающие машины и процессы Destroy; химия и платы здесь не дублируются. */
 @Mod(DestroyExtras.MOD_ID)
@@ -118,6 +119,7 @@ public final class DestroyExtras {
         MultiblockHandler.registerMultiblock(ELECTROLYZER_MULTIBLOCK);
         ExtrasMultiblockBuilder.registerOnModBus(modBus);
         modBus.addListener(DestroyExtras::capabilities);
+        modBus.addListener(VatElectricHeat::register);
         modBus.addListener(DestroyExtras::creativeTab);
     }
 

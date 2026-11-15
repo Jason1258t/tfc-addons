@@ -1,0 +1,8 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "tfc.destroy.extras.heat.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": ["VatSideHeatMixin"],
+  "injectors": { "defaultRequire": 1 }
+}

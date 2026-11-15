@@ -7,6 +7,7 @@ SUPER_ROOT="$(git rev-parse --show-superproject-working-tree)"
 MAIN_ROOT="${SUPER_ROOT%%/.claude/worktrees/*}"
 CANDIDATES="${CANDIDATES:-$MAIN_ROOT/.cache/mcp/candidates}"
 DESTROY_JAR="${DESTROY_JAR:-$CANDIDATES/destroy-1.21.1-0.4.6-eligibbs.jar}"
+IE_EXTRAS_JAR="${IE_EXTRAS_JAR:-$MODS/ie-extras-1.2.0.jar}"
 PETROLPARK_JAR="${PETROLPARK_JAR:-$CANDIDATES/petrolpark-1.21.1-1.5.11.jar}"
 # В снимке пака JEI старше минимально поддерживаемого Petrolpark 1.5.11; на клиентском стенде та же 19.55, что в обновлении сборки.
 JEI_VERSION="19.55.0.431"
@@ -21,6 +22,7 @@ FILES=(
   "$MODS/Patchouli-1.21.1-93-NEOFORGE.jar"
   "$DESTROY_JAR"
   "$PETROLPARK_JAR"
+  "$IE_EXTRAS_JAR"
   "$JEI_JAR"
   "$MODS/emi-1.1.24+1.21.1+neoforge.jar"
 )
