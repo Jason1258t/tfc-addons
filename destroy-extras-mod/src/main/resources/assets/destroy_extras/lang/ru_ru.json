@@ -123,5 +123,7 @@
   "block.destroy_extras.gas_tank_large_stainless_steel": "Большой газовый бак (нержавеющая сталь)",
   "block.destroy_extras.gas_tank_large_blue_steel": "Большой газовый бак (синяя сталь)",
   "message.destroy_extras.gas_tank": "%s · %s/%s ммоль · %s/%s бар (абс.) · %s л",
-  "message.destroy_extras.gas_tank.empty": "Газовый бак пуст"
+  "message.destroy_extras.gas_tank.empty": "Газовый бак пуст",
+  "block.destroy_extras.hydrogen_pipe": "Водородная трубка",
+  "block.destroy_extras.chlorine_pipe": "Хлорная трубка"
 }

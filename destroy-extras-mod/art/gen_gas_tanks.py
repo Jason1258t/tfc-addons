@@ -81,6 +81,56 @@ def block_assets(block_id, variants, item_model):
     dump(ASSETS / f"models/item/{block_id}.json", {"parent": f"destroy_extras:block/{item_model}"})
 
 
+def pipe_assets(tag, lang_ru, lang_en):
+    rotations = {
+        "north": {}, "east": {"y": 90}, "south": {"y": 180}, "west": {"y": 270},
+        "up": {"x": 270}, "down": {"x": 90},
+    }
+
+    def element(start, end, texture):
+        return {"from": start, "to": end, "faces": {
+            side: {"texture": texture} for side in rotations
+        }}
+
+    for gas, color, ru, en in (
+        ("hydrogen", "light_blue", "Водородная трубка", "Hydrogen Pipe"),
+        ("chlorine", "yellow", "Хлорная трубка", "Chlorine Pipe"),
+    ):
+        block_id = f"{gas}_pipe"
+        center = f"destroy_extras:block/gas_pipe/{gas}_center"
+        arm = f"destroy_extras:block/gas_pipe/{gas}_arm"
+        textures = {
+            "particle": "tfc:block/metal/block/steel",
+            "metal": "tfc:block/metal/block/steel",
+            "stripe": f"minecraft:block/{color}_concrete",
+        }
+        hub = element([5.5, 5.5, 5.5], [10.5, 10.5, 10.5], "#stripe")
+        run = element([6.5, 6.5, 0], [9.5, 9.5, 5.5], "#metal")
+        tail = element([6.5, 6.5, 10.5], [9.5, 9.5, 16], "#metal")
+        for suffix, elements in (("center", [hub]), ("arm", [run]), ("item", [run, hub, tail])):
+            dump(ASSETS / f"models/block/gas_pipe/{gas}_{suffix}.json", {
+                "parent": "minecraft:block/block", "textures": textures, "elements": elements,
+            })
+        parts = [{"apply": {"model": center}}]
+        for side, rotation in rotations.items():
+            parts.append({"when": {side: "true"}, "apply": {"model": arm, **rotation}})
+        dump(ASSETS / f"blockstates/{block_id}.json", {"multipart": parts})
+        dump(ASSETS / f"models/item/{block_id}.json", {"parent": f"destroy_extras:block/gas_pipe/{gas}_item"})
+        dump(DATA / f"loot_table/blocks/{block_id}.json", {
+            "type": "minecraft:block",
+            "pools": [{
+                "rolls": 1,
+                "entries": [{"type": "minecraft:item", "name": f"destroy_extras:{block_id}"}],
+                "conditions": [{"condition": "minecraft:survives_explosion"}],
+            }],
+        })
+        key = f"destroy_extras:{block_id}"
+        if key not in tag["values"]:
+            tag["values"].append(key)
+        lang_ru[f"block.destroy_extras.{block_id}"] = ru
+        lang_en[f"block.destroy_extras.{block_id}"] = en
+
+
 def main():
     ru = ASSETS / "lang/ru_ru.json"
     en = ASSETS / "lang/en_us.json"
@@ -154,6 +204,7 @@ def main():
     lang_en["message.destroy_extras.gas_tank"] = "%s · %s/%s mmol · %s/%s bar (abs.) · %s L"
     lang_ru["message.destroy_extras.gas_tank.empty"] = "Газовый бак пуст"
     lang_en["message.destroy_extras.gas_tank.empty"] = "Gas tank empty"
+    pipe_assets(tag, lang_ru, lang_en)
     dump(ru, lang_ru)
     dump(en, lang_en)
     dump(tag_path, tag)

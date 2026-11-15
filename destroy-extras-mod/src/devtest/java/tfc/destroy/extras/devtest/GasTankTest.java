@@ -10,6 +10,8 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import tfc.destroy.extras.gas.GasPipes;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -53,7 +55,76 @@ final class GasTankTest {
                     }
                     source.sendSuccess(() -> Component.literal("DESTROYEXTRATEST PASS: после рестарта в соседних баках 250 и 500 мБ"), false);
                     return 1;
+                }))
+            .then(Commands.literal("gas_lines").requires(source -> source.hasPermission(2))
+                .executes(command -> {
+                    var source = command.getSource();
+                    installLines(source.getLevel());
+                    source.sendSuccess(() -> Component.literal("Две газовые линии собраны"), false);
+                    return 1;
+                }))
+            .then(Commands.literal("gas_lines_assert").requires(source -> source.hasPermission(2))
+                .executes(command -> {
+                    var source = command.getSource();
+                    try {
+                        String result = verifyLines(source.getLevel());
+                        source.sendSuccess(() -> Component.literal("DESTROYEXTRATEST PASS: " + result), false);
+                        return 1;
+                    } catch (IllegalStateException e) {
+                        source.sendFailure(Component.literal("DESTROYEXTRATEST FAIL: " + e.getMessage()));
+                        return 0;
+                    }
                 })));
+    }
+
+    private static BlockPos gasPort(boolean hydrogen) {
+        return ElectrolyzerRig.world(DestroyExtrasTest.PROCESS, DestroyExtrasTest.SIDE, hydrogen ? 0 : 2, 2, 1);
+    }
+
+    private static Direction tankFace(boolean hydrogen) {
+        return hydrogen ? Direction.NORTH : Direction.SOUTH;
+    }
+
+    private static BlockPos tankFor(boolean hydrogen) {
+        return gasPort(hydrogen).above().relative(tankFace(hydrogen).getOpposite(), 5);
+    }
+
+    private static void installLines(ServerLevel level) {
+        for (boolean hydrogen : new boolean[]{true, false}) {
+            Direction face = tankFace(hydrogen);
+            var controller = tankFor(hydrogen);
+            place(level, controller, 0, "compact_steel", face);
+            Block pipe = hydrogen ? GasPipes.HYDROGEN.get() : GasPipes.CHLORINE.get();
+            for (int offset = 1; offset <= 5; offset++) {
+                level.setBlock(controller.relative(face, offset), pipe.defaultBlockState(), Block.UPDATE_ALL);
+            }
+        }
+    }
+
+    private static String verifyLines(ServerLevel level) {
+        var machine = ElectrolyzerRig.state(level, DestroyExtrasTest.PROCESS);
+        int batches = machine.catholyte.getFluidAmount() / 500;
+        check(batches > 0, "электролизёр не закончил ни одной партии");
+        for (boolean hydrogen : new boolean[]{true, false}) {
+            Direction face = tankFace(hydrogen);
+            String species = hydrogen ? "hydrogen" : "chlorine";
+            String foreign = hydrogen ? "chlorine" : "hydrogen";
+            var lineEnd = gasPort(hydrogen).above();
+            var pipe = handler(level, lineEnd, Direction.DOWN);
+            var gas = handler(level, tankFor(hydrogen).above(), face).getFluidInTank(0);
+            check(gas.getAmount() == 250 * batches,
+                "в баке " + species + " неверный запас: " + gas.getAmount());
+            var mixture = gas.get(DestroyDataComponents.MIXTURE).getList("Contents", 10).getCompound(0);
+            check(mixture.getString("Molecule").equals("destroy:" + species) && mixture.getFloat("Gaseous") == 1,
+                "в баке неверный газ или фаза: " + species);
+            check(pipe.fill(gas(foreign, 250), FluidAction.SIMULATE) == 0, "труба приняла чужой газ: " + species);
+            check(pipe.fill(gas(species, 250), FluidAction.SIMULATE) == 250, "линия не проводит свой газ: " + species);
+            var breakPoint = tankFor(hydrogen).relative(face, 2);
+            level.setBlock(breakPoint, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+            check(pipe.fill(gas(species, 250), FluidAction.EXECUTE) == 0, "газ прошёл через разрыв: " + species);
+        }
+        check(machine.cathodeGas.isEmpty() && machine.anodeGas.isEmpty(), "газ остался на выходе электролизёра");
+        return batches + " партий, в отдельных баках по " + 250 * batches + " мБ; чужой газ и разрыв заблокированы";
     }
 
     private static void verify(ServerLevel level) {

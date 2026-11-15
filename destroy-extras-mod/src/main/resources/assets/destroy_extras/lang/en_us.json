@@ -123,5 +123,7 @@
   "block.destroy_extras.gas_tank_large_stainless_steel": "Large Stainless Steel Gas Tank",
   "block.destroy_extras.gas_tank_large_blue_steel": "Large Blue Steel Gas Tank",
   "message.destroy_extras.gas_tank": "%s · %s/%s mmol · %s/%s bar (abs.) · %s L",
-  "message.destroy_extras.gas_tank.empty": "Gas tank empty"
+  "message.destroy_extras.gas_tank.empty": "Gas tank empty",
+  "block.destroy_extras.hydrogen_pipe": "Hydrogen Pipe",
+  "block.destroy_extras.chlorine_pipe": "Chlorine Pipe"
 }

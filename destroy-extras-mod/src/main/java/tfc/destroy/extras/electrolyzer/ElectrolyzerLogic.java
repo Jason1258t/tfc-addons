@@ -39,6 +39,7 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 import tfc.destroy.bridge.electric.ProcessPowerDevice;
 import tfc.destroy.bridge.fluid.AtomicFluidOperation;
 import tfc.destroy.bridge.fluid.SaltWaterAdapter;
+import tfc.destroy.extras.gas.GasPipeBlock;
 import tfc.destroy.extras.DestroyExtras;
 import tfc.destroy.extras.recipe.ExtrasRecipeTypes;
 import tfc.destroy.extras.recipe.MembraneElectrolysisRecipe;
@@ -146,6 +147,14 @@ public final class ElectrolyzerLogic implements IMultiblockLogic<ElectrolyzerLog
         if (!(context.getLevel().getRawLevel() instanceof ServerLevel level)) return;
         ElectrolyzerStatus previous = state.status;
         state.tick(level, context.getLevel().toAbsolute(POWER));
+        if (!state.cathodeGas.isEmpty()) {
+            GasPipeBlock.pushIntoPipe(level, context.getLevel().toAbsolute(CATHODE_GAS_PORT.posInMultiblock()),
+                Direction.UP, state.cathodeGasOut);
+        }
+        if (!state.anodeGas.isEmpty()) {
+            GasPipeBlock.pushIntoPipe(level, context.getLevel().toAbsolute(ANODE_GAS_PORT.posInMultiblock()),
+                Direction.UP, state.anodeGasOut);
+        }
         // Очкам нужны прогресс и баки: при смене состояния сразу, иначе раз в полсекунды, если что-то поменялось.
         Synced now = state.synced();
         if (state.status != previous || context.getLevel().shouldTickModulo(10) && !now.equals(state.lastSent)) {

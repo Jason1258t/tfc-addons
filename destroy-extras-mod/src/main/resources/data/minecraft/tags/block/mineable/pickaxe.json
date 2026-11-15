@@ -25,6 +25,8 @@
     {
       "id": "destroy_extras:gas_tank_large_stainless_steel",
       "required": false
-    }
+    },
+    "destroy_extras:hydrogen_pipe",
+    "destroy_extras:chlorine_pipe"
   ]
 }

@@ -83,7 +83,7 @@ final class GasTankLogic implements IMultiblockLogic<GasTankLogic.State> {
         return ItemInteractionResult.sidedSuccess(isClient);
     }
 
-    private static String gasSpecies(FluidStack stack) {
+    static String gasSpecies(FluidStack stack) {
         if (stack.isEmpty() || !DestroyFluids.isMixture(stack)) return "";
         CompoundTag mixture = stack.get(DestroyDataComponents.MIXTURE);
         if (mixture == null) return "";
