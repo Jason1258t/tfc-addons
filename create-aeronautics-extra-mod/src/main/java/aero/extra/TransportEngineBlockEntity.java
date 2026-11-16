@@ -66,18 +66,27 @@ public final class TransportEngineBlockEntity extends GeneratingKineticBlockEnti
         }
     }
 
+    static boolean acceptsFuel(FluidStack stack) {
+        return !stack.isEmpty() && DIESEL.equals(BuiltInRegistries.FLUID.getKey(stack.getFluid()));
+    }
+
+    static FluidStack dieselStack(int amount) {
+        return amount > 0 ? new FluidStack(BuiltInRegistries.FLUID.get(DIESEL), amount) : FluidStack.EMPTY;
+    }
+
     private int suppliedRpm() {
         if (targetRpm == 0 || level.hasNeighborSignal(worldPosition)) return 0;
         Direction shaft = getBlockState().getValue(TransportEngineBlock.FACING);
         BlockPos inlet = worldPosition.relative(shaft.getOpposite());
         if (!level.hasChunkAt(inlet)) return 0;
+        if (level.getBlockEntity(inlet) instanceof FuelPumpBlockEntity pump && !pump.supplies(this)) return 0;
         IFluidHandler source = level.getCapability(Capabilities.FluidHandler.BLOCK, inlet, shaft);
         if (source == null) return 0;
 
         int demand = Math.abs(targetRpm);
         if (paidRotation < demand) {
             FluidStack available = source.drain(1, FluidAction.SIMULATE);
-            if (available.isEmpty() || !DIESEL.equals(BuiltInRegistries.FLUID.getKey(available.getFluid()))) return 0;
+            if (!acceptsFuel(available)) return 0;
             FluidStack drained = source.drain(available, FluidAction.EXECUTE);
             if (drained.getAmount() != 1 || !FluidStack.isSameFluidSameComponents(available, drained)) return 0;
             paidRotation += ROTATION_PER_MB;

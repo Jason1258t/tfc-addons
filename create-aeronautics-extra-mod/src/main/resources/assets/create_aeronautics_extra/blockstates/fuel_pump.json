@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=up": {
+      "model": "create_aeronautics_extra:block/fuel_pump"
+    },
+    "facing=down": {
+      "model": "create_aeronautics_extra:block/fuel_pump",
+      "x": 180
+    },
+    "facing=north": {
+      "model": "create_aeronautics_extra:block/fuel_pump",
+      "x": 90
+    },
+    "facing=east": {
+      "model": "create_aeronautics_extra:block/fuel_pump",
+      "x": 90,
+      "y": 90
+    },
+    "facing=south": {
+      "model": "create_aeronautics_extra:block/fuel_pump",
+      "x": 90,
+      "y": 180
+    },
+    "facing=west": {
+      "model": "create_aeronautics_extra:block/fuel_pump",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

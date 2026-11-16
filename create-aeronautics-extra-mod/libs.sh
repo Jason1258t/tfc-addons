@@ -10,4 +10,5 @@ for j in "$MODS"/create-1.21.1-*.jar "$MODS"/electroenergetics-*.jar; do
   cp "$j" libs/
   unzip -qq -o -j "$j" 'META-INF/jarjar/*.jar' -d libs/ 2>/dev/null || true
 done
+cp "$MODS"/createdieselgenerators-*.jar libs/
 ls libs

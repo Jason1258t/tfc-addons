@@ -23,6 +23,9 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -80,6 +83,24 @@ public class AeroExtra {
             BLOCK_ENTITIES.register("transport_engine", () -> BlockEntityType.Builder
                     .of(TransportEngineBlockEntity::new, TRANSPORT_ENGINE.get()).build(null));
 
+    public static final DeferredBlock<FuelPumpBlock> FUEL_PUMP = BLOCKS.register("fuel_pump",
+            () -> new FuelPumpBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
+                    .strength(3, 6).sound(SoundType.METAL).noOcclusion()));
+    public static final DeferredItem<BlockItem> FUEL_PUMP_ITEM = ITEMS.register("fuel_pump",
+            () -> new BlockItem(FUEL_PUMP.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FuelPumpBlockEntity>> FUEL_PUMP_BE =
+            BLOCK_ENTITIES.register("fuel_pump", () -> BlockEntityType.Builder
+                    .of(FuelPumpBlockEntity::new, FUEL_PUMP.get()).build(null));
+    static final DeferredHolder<DataComponentType<?>, DataComponentType<FluidStack>> PUMP_FUEL =
+            COMPONENTS.registerComponentType("pump_fuel",
+                    b -> b.persistent(FluidStack.CODEC).networkSynchronized(FluidStack.STREAM_CODEC));
+
+    static final DeferredBlock<FuelPortBlock> FUEL_PORT = BLOCKS.register("fuel_port",
+            () -> new FuelPortBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
+                    .strength(2, 4).sound(SoundType.METAL).noOcclusion()));
+    static final DeferredItem<BlockItem> FUEL_PORT_ITEM = ITEMS.register("fuel_port",
+            () -> new BlockItem(FUEL_PORT.get(), new Item.Properties()));
+
     public static final DeferredItem<ModuleItem> GENERATOR_MODULE = ITEMS.register("generator_module",
             () -> new ModuleItem(ModuleItem.Kind.GENERATOR, new Item.Properties().stacksTo(16)));
     public static final DeferredItem<ModuleItem> BATTERY_MODULE = ITEMS.register("battery_module",
@@ -96,6 +117,8 @@ public class AeroExtra {
         DEVICES.register(modBus);
         BLOCK_ENTITIES.register(modBus);
         modBus.addListener(AeroExtra::addToTab);
+        modBus.addListener((RegisterCapabilitiesEvent event) ->
+                event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, FUEL_PUMP_BE.get(), FuelPumpBlockEntity::engineOutlet));
         if (FMLEnvironment.dist == Dist.CLIENT) OnboardClient.register(modBus);
     }
 
@@ -104,6 +127,8 @@ public class AeroExtra {
         if (!event.getTabKey().equals(CEECreativeTab.CREATIVE_TAB.getKey())) return;
         event.accept(ONBOARD_COMPUTER_ITEM.get());
         event.accept(TRANSPORT_ENGINE_ITEM.get());
+        event.accept(FUEL_PUMP_ITEM.get());
+        event.accept(FUEL_PORT_ITEM.get());
         event.accept(GENERATOR_MODULE.get());
         event.accept(BATTERY_MODULE.get());
     }

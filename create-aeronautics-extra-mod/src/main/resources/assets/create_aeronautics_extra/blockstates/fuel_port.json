@@ -1,0 +1,56 @@
+{
+  "variants": {
+    "facing=up,relay=false": {
+      "model": "create_aeronautics_extra:block/fuel_port"
+    },
+    "facing=up,relay=true": {
+      "model": "create_aeronautics_extra:block/fuel_port_relay"
+    },
+    "facing=down,relay=false": {
+      "model": "create_aeronautics_extra:block/fuel_port",
+      "x": 180
+    },
+    "facing=down,relay=true": {
+      "model": "create_aeronautics_extra:block/fuel_port_relay",
+      "x": 180
+    },
+    "facing=north,relay=false": {
+      "model": "create_aeronautics_extra:block/fuel_port",
+      "x": 90
+    },
+    "facing=north,relay=true": {
+      "model": "create_aeronautics_extra:block/fuel_port_relay",
+      "x": 90
+    },
+    "facing=east,relay=false": {
+      "model": "create_aeronautics_extra:block/fuel_port",
+      "x": 90,
+      "y": 90
+    },
+    "facing=east,relay=true": {
+      "model": "create_aeronautics_extra:block/fuel_port_relay",
+      "x": 90,
+      "y": 90
+    },
+    "facing=south,relay=false": {
+      "model": "create_aeronautics_extra:block/fuel_port",
+      "x": 90,
+      "y": 180
+    },
+    "facing=south,relay=true": {
+      "model": "create_aeronautics_extra:block/fuel_port_relay",
+      "x": 90,
+      "y": 180
+    },
+    "facing=west,relay=false": {
+      "model": "create_aeronautics_extra:block/fuel_port",
+      "x": 90,
+      "y": 270
+    },
+    "facing=west,relay=true": {
+      "model": "create_aeronautics_extra:block/fuel_port_relay",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

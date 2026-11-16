@@ -1,6 +1,8 @@
 {
   "values": [
     "create_aeronautics_extra:onboard_computer",
-    "create_aeronautics_extra:transport_engine"
+    "create_aeronautics_extra:transport_engine",
+    "create_aeronautics_extra:fuel_pump",
+    "create_aeronautics_extra:fuel_port"
   ]
 }

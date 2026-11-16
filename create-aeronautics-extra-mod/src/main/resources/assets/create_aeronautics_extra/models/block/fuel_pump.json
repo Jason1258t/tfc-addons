@@ -1,0 +1,82 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "create:block/brass_casing",
+    "body": "create:block/brass_casing",
+    "ports": "create:block/andesite_casing"
+  },
+  "elements": [
+    {
+      "from": [4, 4, 4],
+      "to": [12, 12, 12],
+      "faces": {
+        "up": {
+          "texture": "#body"
+        },
+        "down": {
+          "texture": "#body"
+        },
+        "north": {
+          "texture": "#body"
+        },
+        "south": {
+          "texture": "#body"
+        },
+        "east": {
+          "texture": "#body"
+        },
+        "west": {
+          "texture": "#body"
+        }
+      }
+    },
+    {
+      "from": [5, 0, 5],
+      "to": [11, 4, 11],
+      "faces": {
+        "up": {
+          "texture": "#ports"
+        },
+        "down": {
+          "texture": "#ports"
+        },
+        "north": {
+          "texture": "#ports"
+        },
+        "south": {
+          "texture": "#ports"
+        },
+        "east": {
+          "texture": "#ports"
+        },
+        "west": {
+          "texture": "#ports"
+        }
+      }
+    },
+    {
+      "from": [5, 12, 5],
+      "to": [11, 16, 11],
+      "faces": {
+        "up": {
+          "texture": "#ports"
+        },
+        "down": {
+          "texture": "#ports"
+        },
+        "north": {
+          "texture": "#ports"
+        },
+        "south": {
+          "texture": "#ports"
+        },
+        "east": {
+          "texture": "#ports"
+        },
+        "west": {
+          "texture": "#ports"
+        }
+      }
+    }
+  ]
+}
