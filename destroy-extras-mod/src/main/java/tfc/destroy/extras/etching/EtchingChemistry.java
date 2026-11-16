@@ -13,6 +13,12 @@ public final class EtchingChemistry {
 
     private EtchingChemistry() {}
 
+    static boolean isPureAcidGas(FluidStack stack) {
+        if (stack.isEmpty()) return false;
+        LegacyMixture acid = mixture(stack);
+        return acid.getContents(false).size() == 1 && acid.getConcentrationOf(DestroyMolecules.HYDROCHLORIC_ACID) > 0;
+    }
+
     public static boolean canEtch(FluidStack input, int amount, float copperMoles) {
         return !input.isEmpty() && input.getAmount() >= amount && amount > 0 && copperMoles > 0
             && moles(input, DestroyMolecules.IRON_III) + 0.0001 >= 2.0 * copperMoles;
