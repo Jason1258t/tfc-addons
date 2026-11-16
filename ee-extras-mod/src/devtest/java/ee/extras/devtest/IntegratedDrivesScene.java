@@ -25,7 +25,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -43,6 +43,7 @@ final class IntegratedDrivesScene {
         var beltMount = new AtomicReference<BlockPos>();
         var destination = new AtomicReference<BlockPos>();
         var delivery = new AtomicReference<>(CompletableFuture.completedFuture(false));
+        Item cargo = BuiltInRegistries.ITEM.get(ResourceLocation.parse("tfc:metal/ingot/copper"));
         scene.server("собрать конвейер и желоб", context -> {
             var level = context.player().serverLevel();
             var shaft = AllBlocks.SHAFT.getDefaultState().setValue(BlockStateProperties.AXIS, Direction.Axis.Z);
@@ -82,29 +83,30 @@ final class IntegratedDrivesScene {
                 }
             }
             var first = context.at(-1, 1, 4);
-            var stack = new ItemStack(Items.EMERALD, 16);
+            var stack = new ItemStack(cargo, 16);
             var remainder = augerSlot(level, first, "insertSlot",
                     new Class<?>[] {ItemStack.class, int.class, boolean.class}, stack, 0, false);
-            scene.check("в исходной секции 16 изумрудов (остаток " + remainder + ")", remainder.isEmpty()
-                    && deliveredEmeralds(level, first) == 16);
+            var loaded = augerSlot(level, first, "getItem", new Class<?>[] {int.class}, 0);
+            scene.check("в исходной секции 16 медных слитков (слот " + loaded + ", остаток " + remainder + ")",
+                    remainder.isEmpty() && loaded.is(cargo) && loaded.getCount() == 16);
             player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         });
-        scene.until("крайняя секция получила 16 изумрудов", 800, () -> {
+        scene.until("крайняя секция получила 16 медных слитков", 300, () -> {
             var result = delivery.get();
             if (!result.isDone()) return false;
             if (result.join()) return true;
             var server = Minecraft.getInstance().getSingleplayerServer();
-            delivery.set(server.submit(() -> deliveredEmeralds(server.overworld(), destination.get()) == 16));
+            delivery.set(server.submit(() -> deliveredCargo(server.overworld(), destination.get(), cargo) == 16));
             return false;
         });
         scene.server("проверить вращение и транспортировку", context -> {
             var level = context.player().serverLevel();
             scene.check("нагруженный конвейер движется при 330 В", speed(level, context.at(1, 1, 0)) == 32);
             scene.check("шнек вращается прямо при 330 В", speed(level, context.at(1, 1, 4)) == 32);
-            int first = deliveredEmeralds(level, context.at(-1, 1, 4));
-            int middle = deliveredEmeralds(level, context.at(0, 1, 4));
-            int last = deliveredEmeralds(level, destination.get());
-            scene.check("шнек доставил изумруды до крайней секции (" + first + " → " + middle + " → " + last + ")",
+            int first = deliveredCargo(level, context.at(-1, 1, 4), cargo);
+            int middle = deliveredCargo(level, context.at(0, 1, 4), cargo);
+            int last = deliveredCargo(level, destination.get(), cargo);
+            scene.check("шнек доставил слитки до крайней секции (" + first + " → " + middle + " → " + last + ")",
                     first == 0 && middle == 0 && last == 16);
         });
         scene.until("клиент получил сторону установки привода конвейера", 400, () ->
@@ -152,9 +154,9 @@ final class IntegratedDrivesScene {
         scene.start();
     }
 
-    private static int deliveredEmeralds(ServerLevel level, BlockPos pos) {
+    private static int deliveredCargo(ServerLevel level, BlockPos pos, Item cargo) {
         var stack = augerSlot(level, pos, "getItem", new Class<?>[] {int.class}, 0);
-        return stack.is(Items.EMERALD) ? stack.getCount() : 0;
+        return stack.is(cargo) ? stack.getCount() : 0;
     }
 
     private static ItemStack augerSlot(ServerLevel level, BlockPos pos, String operation,
