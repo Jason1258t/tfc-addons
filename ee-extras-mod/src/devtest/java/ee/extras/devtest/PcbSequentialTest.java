@@ -85,9 +85,13 @@ final class PcbSequentialTest {
             for(int output=0;output<outputs;output++) parts.add(new PcbCircuitDevice.Part(PcbCircuitDevice.Kind.RESISTOR,inputs+output,pins-1,1000,0,0,5));
             if(type==39){
                 var routing=new PcbDemoRouting(pins);int[] pinNets=new int[pins];for(int pin=0;pin<pins;pin++){pinNets[pin]=pin;routing.terminal(PcbDemoRouting.terminalCell(pin),pin);}
-                routing.part(85,39,pinNets,0,0);
-                for(int output=0;output<4;output++)routing.part(161+output*4,0,new int[]{8+output,13},1000,0);
-                topology=routing.build();parts=new ArrayList<>(PcbModulesTest.<List<PcbCircuitDevice.Part>>call(wiring,null,"compile",topology));
+                routing.part(88, 39, pinNets, 0, 0);
+                int[] loadCells = {200, 204, 168, 172};
+                for (int output = 0; output < loadCells.length; output++)
+                    routing.part(loadCells[output], 0, new int[]{8 + output, 13}, 1000, 0);
+                // Сначала разводим пересекающиеся сети выводов и нагрузок, затем общую землю.
+                topology = routing.build(4, 8, 10, 1, 5, 2, 11, 6, 9, 0, 3, 7, 13, 12);
+                parts = new ArrayList<>(PcbModulesTest.<List<PcbCircuitDevice.Part>>call(wiring, null, "compile", topology));
                 check(parts.size()==5,"NAND и четыре видимые нагрузки, без скрытых перемычек");
             }
             DevTest.place(level,BOARD,PcbItems.CIRCUIT_BLOCK.get().defaultBlockState().setValue(PcbCircuitBlock.CUSTOM,true));

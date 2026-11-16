@@ -21,12 +21,13 @@ final class PcbDemoRouting {
             for(int n:next)if(n>=0&&previous[n]<0&&!blocked[n]&&(nets[n]<0||nets[n]==net)){previous[n]=at;queue.add(n);}}
         if(previous[end]<0)return false;int at=end;while(at!=start){nets[at]=net;at=previous[at];}nets[start]=net;return true;
     }
-    CompoundTag build(){
+    CompoundTag build(Integer... preferredOrder){
         int[] initial=nets.clone();boolean routed=false;int used=0;
         for(int attempt=0;attempt<256&&!routed;attempt++) {
             System.arraycopy(initial,0,nets,0,nets.length);
             var order=new ArrayList<Integer>();for(int net=0;net<endpoints.size();net++)order.add(net);
-            if(attempt==0)order.sort((a,b)->Integer.compare(endpoints.get(b).size(),endpoints.get(a).size()));
+            if (attempt == 0 && preferredOrder.length > 0) order = new ArrayList<>(List.of(preferredOrder));
+            else if(attempt==0)order.sort((a,b)->Integer.compare(endpoints.get(b).size(),endpoints.get(a).size()));
             else Collections.shuffle(order,new Random(301L+attempt));
             routed=true;
             for(int net:order){var points=endpoints.get(net);if(points.isEmpty())continue;
