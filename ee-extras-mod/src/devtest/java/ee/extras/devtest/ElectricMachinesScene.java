@@ -2,6 +2,7 @@ package ee.extras.devtest;
 
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.CEEItems;
+import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.simibubi.create.AllBlocks;
@@ -30,12 +31,12 @@ final class ElectricMachinesScene {
             context.set(context.at(3, 2, 0), EeExtras.FLUID_DISPENSER.get().defaultBlockState()
                     .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH));
             context.set(context.at(3, 1, 0), AllBlocks.FLUID_TANK.getDefaultState());
-            context.set(context.at(-5, 1, -2), CEEBlocks.CREATIVE_BATTERY.getDefaultState());
+            context.set(context.at(-5, 1, 1), CEEBlocks.CREATIVE_BATTERY.getDefaultState());
         });
         scene.ticks(20).server("подключить смеситель и активатор", context -> {
             var player = context.player();
             var level = player.serverLevel();
-            var source = context.at(-5, 1, -2);
+            var source = context.at(-5, 1, 1);
             var supply = DevicesSavedData.load(level).getDevice(source, CreativeBatteryDevice.class);
             scene.check("источник EE зарегистрирован", supply != null);
             if (supply == null) return;
@@ -59,10 +60,11 @@ final class ElectricMachinesScene {
                         && be.getSpeed() == 32 && !be.hasNetwork());
             }
         });
+        scene.until("четыре провода у клиента", 400, () -> WireRenderer.getAllConnections().size() >= 4);
         scene.gui(false);
-        scene.camera(0, 1.4, 0, 10, 15, 17);
+        scene.camera(-0.75, 1.4, 0, 10, 193, 17);
         scene.shot("electric-machines");
-        scene.camera(3, 1.7, 0, 4, 20, 14);
+        scene.camera(3, 1.7, 0, 4, 200, 14);
         scene.shot("fluid-dispenser");
         scene.start();
     }
