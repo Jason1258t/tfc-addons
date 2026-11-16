@@ -24,13 +24,25 @@ final class PcbExtraPhotos {
         if(t%20==0)server.execute(()->player(mc,server).removeAllEffects());
         if(t%10==0)mc.gui.getChat().clearMessages(false);
         if(t==20){mc.options.guiScale().set(2);mc.options.fov().set(35);mc.resizeDisplay();}
-        if(t==40)server.execute(()->{var p=player(mc,server);base=p.blockPosition().atY(300);table=base.west(4);System.out.println("PCB_EXTRA_BASE "+base.toShortString());p.setGameMode(net.minecraft.world.level.GameType.CREATIVE);p.getAbilities().flying=true;p.onUpdateAbilities();p.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,ItemStack.EMPTY);
+        if(t==40)server.execute(()->{var p=player(mc,server);base=p.blockPosition();table=base.west(4);System.out.println("PCB_EXTRA_BASE "+base.toShortString());p.setGameMode(net.minecraft.world.level.GameType.CREATIVE);p.getAbilities().flying=true;p.onUpdateAbilities();p.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,ItemStack.EMPTY);
             for(int i=0;i<3;i++){PcbExtraTest.BOARD=base.south(12*i);PcbExtraTest.build(p.createCommandSourceStack(),36+i);}
             PcbSequentialTest.BOARD=base.south(36);PcbSequentialTest.SUPPLY=PcbSequentialTest.BOARD.east(4);ClientTest.check("физическая плата NAND собрана",PcbSequentialTest.build(p.createCommandSourceStack(),39)==1);
             DevTest.place(p.serverLevel(),table,PcbItems.EDITOR_BLOCK.get().defaultBlockState());var editor=(PcbEditorBlockEntity)p.serverLevel().getBlockEntity(table);var stack=PcbItems.PCB_DESIGN.toStack();PcbTopology.attach(stack,PcbTopology.create(2));editor.setItem(0,stack);editor.loadDesign();
         });
         for(int i=0;i<4;i++){int n=i;if(t==110+i*100){mc.options.hideGui=true;server.execute(()->camera(player(mc,server),base.south(12*n)));}if(t==150+i*100)photo(mc,"world-"+i);}
-        if(t==520){mc.options.hideGui=false;server.execute(()->{var p=player(mc,server);p.teleportTo(p.serverLevel(),table.getX()+.5,table.getY()+1,table.getZ()+2.5,180,20);((PcbEditorBlockEntity)p.serverLevel().getBlockEntity(table)).open(p);});}
+        if (t == 510) {
+            mc.options.hideGui = false;
+            server.execute(() -> {
+                var player = player(mc, server);
+                var standing = table.south(2);
+                DevTest.place(player.serverLevel(), standing.below(), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+                player.teleportTo(player.serverLevel(), standing.getX() + .5, standing.getY(), standing.getZ() + .5, 180, 20);
+            });
+        }
+        if (t == 535) server.execute(() -> {
+            var player = player(mc, server);
+            ((PcbEditorBlockEntity) player.serverLevel().getBlockEntity(table)).open(player);
+        });
         for(int i=0;i<4;i++){int n=i;int start=560+i*130;
             if(t==start){ClientTest.check("редактор каталога",mc.screen instanceof PcbEditorScreen);key(java.awt.event.KeyEvent.VK_K,false);}
             if(t==start+20&&mc.screen instanceof PcbEditorScreen s){ClientTest.check("нативнаяK открыла каталог",(boolean)field(s,"catalogOpen"));((net.minecraft.client.gui.components.EditBox)field(s,"catalogSearch")).setValue(NAMES[n]);java.util.List<Integer> parts=PcbModulesTest.call(PcbEditorScreen.class,s,"filteredParts");ClientTest.check("поиск "+NAMES[n],parts.equals(java.util.List.of(36+n)));}
