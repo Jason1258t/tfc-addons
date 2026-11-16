@@ -67,7 +67,8 @@ public final class BeltMotorItem extends Item {
         if (devices.getDevice(pos) != null) return InteractionResult.FAIL;
         CompoundTag data = new CompoundTag();
         data.putString(BeltMotorDevice.MOUNT_SIDE, side.getSerializedName());
-        devices.addDevice(BeltMotorDevice.TYPE, pos, data);
+        var device = devices.addDevice(BeltMotorDevice.TYPE, pos, data);
+        host.eeExtras$readMotorPower(device, 0);
         host.eeExtras$mountSide(side);
         InfrastructureSavedData.load(server).registerOrUpdateNodes(pos, List.of(0, 1));
         if (!player.isCreative()) context.getItemInHand().shrink(1);

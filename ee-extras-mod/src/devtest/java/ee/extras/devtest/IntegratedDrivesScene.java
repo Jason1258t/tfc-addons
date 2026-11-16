@@ -72,11 +72,7 @@ final class IntegratedDrivesScene {
                 var host = level.getBlockEntity(pos);
                 var electrical = (ElectricalDeviceBlock<?>) state.getBlock();
                 scene.check("до монтажа нет клемм на " + z, electrical.getNodePositions(level, pos, state).isEmpty());
-                var kit = EeExtras.BELT_MOTOR_ITEM.get().getDefaultInstance();
-                player.setItemInHand(InteractionHand.MAIN_HAND, kit);
-                scene.check("привод установлен на " + z,
-                        kit.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit(pos, Direction.SOUTH)))
-                                == InteractionResult.CONSUME);
+                scene.check("привод установлен на " + z, install(player, pos));
                 scene.check("монтаж сохранил блок и блок-сущность на " + z + "",
                         state == level.getBlockState(pos) && host == level.getBlockEntity(pos));
                 for (int pin = 0; pin < 2; pin++) {
@@ -149,9 +145,15 @@ final class IntegratedDrivesScene {
                     host == level.getBlockEntity(pos) && host instanceof BeltMotorHost motor
                             && motor.eeExtras$mountSide() == null
                             && InfrastructureSavedData.load(level).getNodesAt(pos).isEmpty());
+            scene.check("повторный монтаж в том же тике", install(player, pos));
         });
-        scene.ticks(20).server("после демонтажа", context ->
-                scene.check("желоб стоит", speed(context.player().serverLevel(), context.at(1, 1, 4)) == 0));
+        scene.ticks(20).server("после повторного монтажа", context -> {
+            var level = context.player().serverLevel();
+            scene.check("клеммы нового привода сохранились",
+                    level.getBlockEntity(context.at(0, 1, 4)) instanceof BeltMotorHost motor
+                            && motor.eeExtras$mountSide() == Direction.SOUTH);
+            scene.check("без проводов желоб стоит", speed(level, context.at(1, 1, 4)) == 0);
+        });
         scene.start();
     }
 
@@ -160,6 +162,13 @@ final class IntegratedDrivesScene {
         if (output == null) return 0;
         var item = output.saveWithoutMetadata(level.registryAccess()).getCompound("Inventory").getCompound("item");
         return "minecraft:emerald".equals(item.getString("id")) ? item.getInt("count") : 0;
+    }
+
+    private static boolean install(ServerPlayer player, BlockPos pos) {
+        var kit = EeExtras.BELT_MOTOR_ITEM.get().getDefaultInstance();
+        player.setItemInHand(InteractionHand.MAIN_HAND, kit);
+        return kit.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit(pos, Direction.SOUTH)))
+                == InteractionResult.CONSUME;
     }
 
     private static BlockHitResult hit(BlockPos pos, Direction face) {
