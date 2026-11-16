@@ -1,4 +1,9 @@
 {
+  "ee_extras.fluid_dispenser.dose": "Fluid Dose",
+  "ee_extras.fluid_dispenser.amount": "%s mB",
+  "block.ee_extras.fluid_dispenser": "Fluid Dispenser",
+  "block.ee_extras.electric_deployer": "Electric Deployer",
+  "block.ee_extras.electric_mixer": "Electric Mixer",
   "block.ee_extras.electric_press": "Electric Press",
   "item.ee_extras.belt_motor": "Integrated Belt Drive",
   "ee_extras.cable.panel_connector": "Panel Duplex Termination",

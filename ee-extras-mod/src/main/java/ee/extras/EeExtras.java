@@ -10,6 +10,16 @@ import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.george_vi.electroenergetics.simulation.WireType;
+import ee.extras.machine.ElectricDeployerBlock;
+import ee.extras.machine.ElectricDeployerBlockEntity;
+import ee.extras.machine.ElectricDeployerRenderer;
+import ee.extras.machine.ElectricMixerBlock;
+import ee.extras.machine.ElectricMixerBlockEntity;
+import ee.extras.machine.ElectricMixerRenderer;
+import ee.extras.machine.FluidDispenserBlock;
+import ee.extras.machine.FluidDispenserBlockEntity;
+import ee.extras.machine.FluidDispenserRenderer;
+import ee.extras.machine.MotorMachineDevice;
 import ee.extras.machine.ElectricPressBlock;
 import ee.extras.machine.ElectricPressBlockEntity;
 import ee.extras.machine.ElectricPressRenderer;
@@ -112,6 +122,33 @@ public class EeExtras {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ElectricPressBlockEntity>> ELECTRIC_PRESS_BE =
             BLOCK_ENTITIES.register("electric_press", () -> BlockEntityType.Builder
                     .of(ElectricPressBlockEntity::new, ELECTRIC_PRESS.get()).build(null));
+
+    public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<MotorMachineDevice>> ELECTRIC_MIXER_DEVICE =
+            DEVICES.register("electric_mixer", () -> new SimulatedDeviceType<>(rl("electric_mixer"),
+                    (type, level, pos, data) -> new MotorMachineDevice(type, level, pos, data, 160)));
+    public static final DeferredBlock<ElectricMixerBlock> ELECTRIC_MIXER =
+            BLOCKS.register("electric_mixer", () -> new ElectricMixerBlock(metal().noOcclusion().pushReaction(PushReaction.BLOCK)));
+    public static final DeferredItem<BlockItem> ELECTRIC_MIXER_ITEM = ITEMS.registerSimpleBlockItem(ELECTRIC_MIXER);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ElectricMixerBlockEntity>> ELECTRIC_MIXER_BE =
+            BLOCK_ENTITIES.register("electric_mixer", () -> BlockEntityType.Builder
+                    .of(ElectricMixerBlockEntity::new, ELECTRIC_MIXER.get()).build(null));
+
+    public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<MotorMachineDevice>> ELECTRIC_DEPLOYER_DEVICE =
+            DEVICES.register("electric_deployer", () -> new SimulatedDeviceType<>(rl("electric_deployer"),
+                    (type, level, pos, data) -> new MotorMachineDevice(type, level, pos, data, 160)));
+    public static final DeferredBlock<ElectricDeployerBlock> ELECTRIC_DEPLOYER =
+            BLOCKS.register("electric_deployer", () -> new ElectricDeployerBlock(metal().noOcclusion().pushReaction(PushReaction.BLOCK)));
+    public static final DeferredItem<BlockItem> ELECTRIC_DEPLOYER_ITEM = ITEMS.registerSimpleBlockItem(ELECTRIC_DEPLOYER);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ElectricDeployerBlockEntity>> ELECTRIC_DEPLOYER_BE =
+            BLOCK_ENTITIES.register("electric_deployer", () -> BlockEntityType.Builder
+                    .of(ElectricDeployerBlockEntity::new, ELECTRIC_DEPLOYER.get()).build(null));
+
+    public static final DeferredBlock<FluidDispenserBlock> FLUID_DISPENSER =
+            BLOCKS.register("fluid_dispenser", () -> new FluidDispenserBlock(metal().noOcclusion().pushReaction(PushReaction.BLOCK)));
+    public static final DeferredItem<BlockItem> FLUID_DISPENSER_ITEM = ITEMS.registerSimpleBlockItem(FLUID_DISPENSER);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FluidDispenserBlockEntity>> FLUID_DISPENSER_BE =
+            BLOCK_ENTITIES.register("fluid_dispenser", () -> BlockEntityType.Builder
+                    .of(FluidDispenserBlockEntity::new, FLUID_DISPENSER.get()).build(null));
 
     public static final Kind<RectifierDevice> THREE_PHASE = new Kind<>(Layout.THREE_PHASE, Tier.LIGHT, RectifierDevice::new);
     public static final Kind<RectifierDevice> SINGLE_PHASE = new Kind<>(Layout.SINGLE_PHASE, Tier.LIGHT, RectifierDevice::new);
@@ -309,6 +346,9 @@ public class EeExtras {
             LanternConversion.registerTooltip(NeoForge.EVENT_BUS);
             GeneratorClient.register(modBus);
             ElectricPressRenderer.register(modBus);
+            ElectricMixerRenderer.register(modBus);
+            ElectricDeployerRenderer.register(modBus);
+            FluidDispenserRenderer.register(modBus);
             DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> {
                 ee.extras.pcb.PcbClient.register(modBus);
                 return null;
@@ -321,6 +361,8 @@ public class EeExtras {
     /** FE — только через заднюю грань (ту, которой блок стоит на конденсаторе или машине), как у преобразователя EE */
     private static void capabilities(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, CONVERTER_BE.get(), BidiConverterBlockEntity::energy);
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, FLUID_DISPENSER_BE.get(), FluidDispenserBlockEntity::input);
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ELECTRIC_DEPLOYER_BE.get(), (be, side) -> be.automation());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, PcbItems.PCB_MACHINE_BE.get(), (be, side) -> be.items);
     }
 
@@ -330,6 +372,9 @@ public class EeExtras {
         for (Kind<?> k : POWER) event.accept(k.item.get());
         AcBlocks.addToTab(event);
         event.accept(ELECTRIC_PRESS_ITEM.get());
+        event.accept(ELECTRIC_MIXER_ITEM.get());
+        event.accept(ELECTRIC_DEPLOYER_ITEM.get());
+        event.accept(FLUID_DISPENSER_ITEM.get());
         event.accept(ee.extras.panel.PanelModules.SWITCH_ITEM.get());
         for (Supplier<? extends Item> item : new Supplier[] {KINETIC_GENERATOR_ITEM, CONVERTER_ITEM, CABLE_CONVERTER_ITEM,
                 FOUR_CORE_TERMINATION_ITEM, PHASE_TAP_ITEM, DUPLEX_INSULATOR_ITEM, FOUR_CORE_INSULATOR_ITEM, FOUR_CORE_SPOOL, THIN_SPOOL, THIN_SINGLE_SPOOL, DECORATIVE_SINGLE_SPOOL, CABLE_CAP})

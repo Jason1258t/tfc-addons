@@ -1,4 +1,9 @@
 {
+  "ee_extras.fluid_dispenser.dose": "Доза жидкости",
+  "ee_extras.fluid_dispenser.amount": "%s мБ",
+  "block.ee_extras.fluid_dispenser": "Дозатор жидкости",
+  "block.ee_extras.electric_deployer": "Автономный активатор",
+  "block.ee_extras.electric_mixer": "Электрический смеситель",
   "block.ee_extras.electric_press": "Электрический пресс",
   "item.ee_extras.belt_motor": "Встроенный привод ремня",
   "ee_extras.cable.panel_connector": "Двухжильный соединитель в щитке",

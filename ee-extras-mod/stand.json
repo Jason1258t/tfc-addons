@@ -1,5 +1,12 @@
 {
-  "scenes": { "electric-press": { "shots": ["electric-press"] } },
+  "scenes": {
+    "electric-press": {
+      "shots": ["electric-press"]
+    },
+    "electric-machines": {
+      "shots": ["electric-machines", "fluid-dispenser"]
+    }
+  },
   "chains": {
     "rectifier-restart": {
       "note": "выпрямители EE Extras: сборка и замер → рестарт на сохранённом мире → вход клиентом",

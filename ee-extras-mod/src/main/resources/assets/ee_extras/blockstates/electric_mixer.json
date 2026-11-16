@@ -1,0 +1,14 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "ee_extras:block/electric_mixer"
+      }
+    },
+    {
+      "apply": {
+        "model": "ee_extras:block/electric_press_terminals"
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=south": {
+      "model": "ee_extras:block/fluid_dispenser"
+    },
+    "facing=west": {
+      "model": "ee_extras:block/fluid_dispenser",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "ee_extras:block/fluid_dispenser",
+      "y": 180
+    },
+    "facing=east": {
+      "model": "ee_extras:block/fluid_dispenser",
+      "y": 270
+    }
+  }
+}
