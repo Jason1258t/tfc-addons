@@ -122,6 +122,13 @@ public class PcbEditorBlockEntity extends BlockEntity implements MenuProvider, C
         sync();
     }
 
+    boolean renameProject(String name) {
+        if(name.length()>40 || name.codePoints().anyMatch(Character::isISOControl))return false;
+        name=name.strip();
+        if(name.isEmpty())topology.remove("ProjectName");else topology.putString("ProjectName",name);
+        sync();return true;
+    }
+
     public void loadDesign() {
         ItemStack stack = items.getItem(0);
         int fallback = stack.getItem() instanceof PcbDesignItem design

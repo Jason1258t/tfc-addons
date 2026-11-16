@@ -1,0 +1,24 @@
+{
+  "type": "create:mechanical_crafting",
+  "pattern": [
+    "LLL",
+    "LCL",
+    "LLR"
+  ],
+  "key": {
+    "L": {
+      "item": "ee_extras:pcb_led"
+    },
+    "C": {
+      "item": "ee_extras:connector"
+    },
+    "R": {
+      "item": "ee_extras:resistor"
+    }
+  },
+  "result": {
+    "id": "ee_extras:pcb_seven_segment",
+    "count": 1
+  },
+  "accept_mirrored": true
+}

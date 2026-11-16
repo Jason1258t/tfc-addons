@@ -104,6 +104,8 @@ public final class PcbTopology {
             }
             if (!parameters.isEmpty()) result.put(PcbParameters.KEY, parameters);
         }
+        String name=source.getString("ProjectName").strip();
+        if(name.length()<=40 && name.codePoints().noneMatch(Character::isISOControl) && !name.isEmpty()) result.putString("ProjectName",name);
         PcbFootprint.rebuildPinCuts(result);
         PcbModuleIds.normalize(source, result);
         return result;
@@ -201,7 +203,11 @@ public final class PcbTopology {
     public static void attach(ItemStack stack, CompoundTag topology) {
         CompoundTag copy = normalize(topology, level(topology));
         copy.putBoolean("Validated", true);
+        CompoundTag previous=stack.get(PcbItems.PCB_TOPOLOGY.get());
         stack.set(PcbItems.PCB_TOPOLOGY.get(), copy);
+        String name=copy.getString("ProjectName");
+        if(!name.isEmpty()) stack.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME,net.minecraft.network.chat.Component.literal(name));
+        else if(previous!=null&&!previous.getString("ProjectName").isEmpty())stack.remove(net.minecraft.core.component.DataComponents.CUSTOM_NAME);
     }
 
     /** Ошибка — русский текст для журнала/подсказки; null — проект пригоден к производству. */

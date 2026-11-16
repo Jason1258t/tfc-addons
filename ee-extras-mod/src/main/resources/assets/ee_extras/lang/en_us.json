@@ -382,5 +382,9 @@
   "item.ee_extras.pcb_light_sensor": "Light Sensor",
   "item.ee_extras.pcb_rotation_sensor": "Create Rotation Sensor",
   "item.ee_extras.pcb_optocoupler": "Optocoupler",
-  "item.ee_extras.pcb_connector_8": "8-line connector + common"
+  "item.ee_extras.pcb_connector_8": "8-line connector + common",
+  "item.ee_extras.pcb_rotary_knob": "PCB Rotary Knob",
+  "item.ee_extras.pcb_buzzer": "PCB Buzzer",
+  "item.ee_extras.pcb_seven_segment": "PCB Seven-Segment Display",
+  "item.ee_extras.pcb_logic_gates": "PCB Quad NAND Gates"
 }

@@ -1,0 +1,21 @@
+{
+  "type": "create:mechanical_crafting",
+  "pattern": [
+    "B B",
+    " C ",
+    "B B"
+  ],
+  "key": {
+    "B": {
+      "item": "ee_extras:basic_ic"
+    },
+    "C": {
+      "item": "ee_extras:connector"
+    }
+  },
+  "result": {
+    "id": "ee_extras:pcb_logic_gates",
+    "count": 1
+  },
+  "accept_mirrored": true
+}

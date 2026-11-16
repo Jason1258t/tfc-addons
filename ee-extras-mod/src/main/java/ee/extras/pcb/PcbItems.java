@@ -155,6 +155,10 @@ public static final DeferredItem<Item> DECODER = item("pcb_decoder", 16);
     public static final DeferredItem<Item> MECHANICAL_TIMER = item("pcb_mechanical_timer", 16);
     public static final DeferredItem<Item> CLOCK = item("pcb_clock", 16);
     public static final DeferredItem<Item> RHEOSTAT = item("pcb_rheostat", 16);
+    public static final DeferredItem<Item> LOGIC_GATES = item("pcb_logic_gates",16);
+    public static final DeferredItem<Item> SEVEN_SEGMENT = item("pcb_seven_segment", 16);
+    public static final DeferredItem<Item> BUZZER = item("pcb_buzzer", 16);
+    public static final DeferredItem<Item> ROTARY_KNOB = item("pcb_rotary_knob", 16);
     public static final DeferredItem<Item> POTENTIOMETER = item("pcb_potentiometer", 16);
     public static final DeferredItem<Item> TEMPERATURE_SENSOR = item("pcb_temperature_sensor",16);
     public static final DeferredItem<Item> CONNECTOR_8 = item("pcb_connector_8",16);
@@ -171,7 +175,7 @@ public static final DeferredItem<Item> DECODER = item("pcb_decoder", 16);
 
     private static final List<DeferredItem<? extends Item>> ELECTRONICS = List.of(COPPER_FOIL, GLASS_FIBER, GLASS_FABRIC,
             EPOXY_LAMINATE, PHOTORESIST, L2_BOARD_BLANK, L3_BOARD_BLANK, L2_PREPARED_BLANK, L3_PREPARED_BLANK,
-            L2_ETCHED_BOARD, L3_ETCHED_BOARD, L2_BOARD, L3_BOARD, SOLDER_WIRE, ROSIN_FLUX, LED, BUTTON_CAP, SWITCH_CAP, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP, LATCHING_RELAY, SELECTOR, COMPARATOR, D_FLIP_FLOP, COUNTER, REGISTER, DECODER, RESISTOR, CAPACITOR, INDUCTOR,
+            L2_ETCHED_BOARD, L3_ETCHED_BOARD, L2_BOARD, L3_BOARD, SOLDER_WIRE, ROSIN_FLUX, LED, BUTTON_CAP, SWITCH_CAP, RHEOSTAT, POTENTIOMETER, ROTARY_KNOB, BUZZER, SEVEN_SEGMENT, LOGIC_GATES, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP, LATCHING_RELAY, SELECTOR, COMPARATOR, D_FLIP_FLOP, COUNTER, REGISTER, DECODER, RESISTOR, CAPACITOR, INDUCTOR,
             CONNECTOR, SILICON_DIODE, TRANSISTOR, BASIC_IC, ADVANCED_IC, SILICON_WAFER, ABS_SHEET, ABS_KEYBOARD_BLANK,
             PET_FILM, RGB_PHOSPHOR, SHADOW_MASK, PERMANENT_MAGNET, SPEAKER_CONE, BATTERY_ELECTROLYTE, INK_CARTRIDGE,
             CONTROL_BOARD_L1,

@@ -29,9 +29,20 @@ public final class PcbEditorPackets {
         @Override public Type<Region> type() { return TYPE; }
     }
 
+    public record Rename(int container,String name,String previous) implements CustomPacketPayload {
+        private static final Type<Rename> TYPE=new Type<>(EeExtras.rl("pcb_rename"));
+        private static final StreamCodec<ByteBuf,Rename> CODEC=StreamCodec.composite(ByteBufCodecs.VAR_INT,Rename::container,
+                ByteBufCodecs.stringUtf8(40),Rename::name,ByteBufCodecs.stringUtf8(40),Rename::previous,Rename::new);
+        @Override public Type<Rename> type(){return TYPE;}
+    }
+
     public static void register(IEventBus bus) { bus.addListener(PcbEditorPackets::registerPayload); }
 
     private static void registerPayload(RegisterPayloadHandlersEvent event) {
+        event.registrar("1").playToServer(Rename.TYPE,Rename.CODEC,(packet,context)->{
+            var player=context.player();
+            if(player.containerMenu instanceof PcbEditorMenu menu && menu.containerId==packet.container() && menu.stillValid(player))menu.renameProject(packet);
+        });
         event.registrar("1").playToServer(Region.TYPE, Region.CODEC, (packet, context) -> {
             var player = context.player();
             if (player.containerMenu instanceof PcbEditorMenu menu && menu.containerId == packet.container() && menu.stillValid(player))

@@ -98,6 +98,13 @@ public final class PcbCircuitBlock extends SimpleElectricalDeviceBlock<PcbCircui
         int anchor = index % PcbTopology.CELLS;
         double x = (point.x * PcbTopology.SIZE - anchor % PcbTopology.SIZE) / PcbFootprint.width(definition);
         double z = (point.z * PcbTopology.SIZE - anchor / PcbTopology.SIZE) / PcbFootprint.height(definition);
+        if (PcbModules.get(definition).kind() == PcbCircuitDevice.Kind.ROTARY_KNOB) {
+            double dx=x-.5, dz=z-.5;
+            for(int r=0;r<PcbWiring.rotation(definition);r++) { double next=dz; dz=-dx; dx=next; }
+            if(PcbWiring.mirrored(definition))dx=-dx;
+            double angle=Math.toDegrees(Math.atan2(dx,-dz));
+            return (int)Math.clamp(Math.round((angle+135)/270*100),0,100);
+        }
         double value = switch (PcbWiring.rotation(definition)) { case 1 -> 1 - x; case 2 -> 1 - z; case 3 -> x; default -> z; };
         return (int) Math.clamp(Math.round(value * 100), 0, 100);
     }

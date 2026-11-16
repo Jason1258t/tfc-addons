@@ -87,7 +87,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 if (part.kind == Kind.LATCHING_RELAY) { join(group, part.coilA, part.alternate); join(group, part.coilB, part.alternate); }
                 if (PcbLogic.chip(part.kind)) for (int pin : part.pins) join(group,part.a,pin);
                 if (part.poweredLogic()) { join(group,part.a,part.coilA); join(group,part.a,part.logicOutput()); if (part.kind == Kind.COMPARATOR) join(group,part.a,part.coilB); }
-                if (part.kind == Kind.POTENTIOMETER) join(group, part.a, part.coilA);
+                if (part.kind.potentiometer()) join(group, part.a, part.coilA);
                 if (part.changeover()) join(group, part.a, part.alternateNode());
             }
             return group;
@@ -155,13 +155,15 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
 
     public enum Kind {
         TRACE, RESISTOR, RELAY, BUTTON, SWITCH, LAMP, REDSTONE_IN, REDSTONE_OUT,
-        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP, LATCHING_RELAY, THREE_POSITION_SWITCH, COMPARATOR, D_FLIP_FLOP, COUNTER, REGISTER, DECODER, ONBOARD_TRANSFORMER, STEP_UP_TRANSFORMER, BRIDGE_RECTIFIER, VOLTAGE_REGULATOR, TEMPERATURE_SENSOR, LIGHT_SENSOR, ROTATION_SENSOR, OPTOCOUPLER, CONNECTOR_8;
+        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP, LATCHING_RELAY, THREE_POSITION_SWITCH, COMPARATOR, D_FLIP_FLOP, COUNTER, REGISTER, DECODER, ONBOARD_TRANSFORMER, STEP_UP_TRANSFORMER, BRIDGE_RECTIFIER, VOLTAGE_REGULATOR, TEMPERATURE_SENSOR, LIGHT_SENSOR, ROTATION_SENSOR, OPTOCOUPLER, CONNECTOR_8, ROTARY_KNOB, BUZZER, SEVEN_SEGMENT, LOGIC_GATES;
+
+        boolean potentiometer() { return this == POTENTIOMETER || this == ROTARY_KNOB; }
 
         boolean sensor() { return this == TEMPERATURE_SENSOR || this == LIGHT_SENSOR || this == ROTATION_SENSOR; }
 
         boolean supply() { return this == ONBOARD_TRANSFORMER; }
 
-        boolean led() { return this == LED || this == LED_PANEL || this == LED_STRIP; }
+        boolean led() { return this == LED || this == LED_PANEL || this == LED_STRIP || this == SEVEN_SEGMENT; }
 
         boolean controlled() {
             return this == RELAY || this == TRANSISTOR;
@@ -211,7 +213,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                     && (kind != Kind.LATCHING_RELAY || node(coilA) && node(coilB) && node(alternate) && coilA != alternate && coilB != alternate)
                     && (kind != Kind.OPTOCOUPLER || node(coilA) && node(coilB) && node(alternate) && a != coilA && a != coilB && a != alternate && b != coilA && b != coilB && b != alternate)
                     && (!kind.sensor() || node(coilA))
-                    && (kind != Kind.POTENTIOMETER || node(coilA) && coilA != a && coilA != b)
+                    && (!kind.potentiometer() || node(coilA) && coilA != a && coilA != b)
                     && (kind != Kind.BRIDGE_RECTIFIER && kind != Kind.VOLTAGE_REGULATOR || node(coilA) && node(coilB))
                     && (kind != Kind.STEP_UP_TRANSFORMER || node(coilA) && node(coilB) && coilA != coilB
                             && coilA != a && coilA != b && coilB != a && coilB != b)
@@ -315,7 +317,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         for (int i = 0; i < circuit.parts.size(); i++) {
             Kind kind = circuit.parts.get(i).kind;
             if (kind == Kind.TRACE || ordinal-- != 0) continue;
-            if (kind != Kind.RHEOSTAT && kind != Kind.POTENTIOMETER && kind != Kind.THREE_POSITION_SWITCH) return false;
+            if (kind != Kind.RHEOSTAT && !kind.potentiometer() && kind != Kind.THREE_POSITION_SWITCH) return false;
             int[] copy = positions.clone();
             copy[i] = kind == Kind.THREE_POSITION_SWITCH ? selectorPosition(value) : value;
             positions = copy;
@@ -351,7 +353,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             if (part.kind == Kind.BRIDGE_RECTIFIER) { bridges[i].preTick(collector,part); continue; }
             int branch = MAX_NODES + i;
             double sense = senseResistance(part);
-            int returnNode = part.kind == Kind.POTENTIOMETER ? part.coilA : part.b;
+            int returnNode = part.kind.potentiometer() ? part.coilA : part.b;
             builder.node(branch).resistor(branch, returnNode, sense);
             if (current.reactive[i] != null) {
                 boolean diode = part.kind == Kind.DIODE || part.kind.led();
@@ -379,7 +381,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 builder.resistor(part.logicOutput(),logicRail(part,i),logicResistance(i));
             }
             if (part.windingInput()) builder.resistor(part.coilA, part.a, part.ohms);
-            if (part.kind == Kind.POTENTIOMETER) {
+            if (part.kind.potentiometer()) {
                 builder.resistor(part.coilA, part.b, segmentResistance(part, i, true));
             }
             if (part.changeover()) {
@@ -418,7 +420,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         return switch (part.kind) {
             case CAPACITOR -> CAPACITOR_ESR;
             case DIODE -> DIODE_SENSE;
-            case LED, LED_PANEL, LED_STRIP -> indicatorResistance(part.ohms);
+            case LED, LED_PANEL, LED_STRIP, SEVEN_SEGMENT -> indicatorResistance(part.ohms);
             default -> CONTACT / 2;
         };
     }
@@ -429,7 +431,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         long bit = 1L << index;
         return switch (part.kind) {
             case TRACE, AMMETER -> CONTACT;
-            case RHEOSTAT, POTENTIOMETER -> segmentResistance(part, index, false);
+            case RHEOSTAT, POTENTIOMETER, ROTARY_KNOB -> segmentResistance(part, index, false);
             // У индикатора есть встроенный балласт, в том числе на уже установленных платах.
             case LAMP -> indicatorResistance(part.ohms);
             case VOLTMETER, REDSTONE_OUT -> OPEN;
@@ -510,10 +512,10 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             double squared = results.getVoltageAtSqr(pos, part.a, part.b);
             maxVoltage = Math.max(maxVoltage, Math.sqrt(squared));
             double sense = senseResistance(part);
-            int returnNode = part.kind == Kind.POTENTIOMETER ? part.coilA : part.b;
+            int returnNode = part.kind.potentiometer() ? part.coilA : part.b;
             double sensedSquared = results.getVoltageAtSqr(pos, MAX_NODES + i, returnNode);
             double amps = Math.sqrt(sensedSquared) / sense;
-            if (part.kind == Kind.POTENTIOMETER) {
+            if (part.kind.potentiometer()) {
                 double upperSquared = results.getVoltageAtSqr(pos, part.coilA, part.b);
                 double upperOhms = segmentResistance(part, i, true);
                 watts += Math.sqrt(results.getVoltageAtSqr(pos, part.a, part.coilA)) * amps + upperSquared / upperOhms;
@@ -635,7 +637,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                     || part.kind == Kind.SWITCH && (switched != ((switches & (1L << i)) != 0)))
                 controlStates |= 1L << component;
             switch (part.kind) {
-                case D_FLIP_FLOP, COUNTER, REGISTER, DECODER -> {
+                case D_FLIP_FLOP, COUNTER, REGISTER, DECODER, LOGIC_GATES -> {
                     long bit=1L<<i;
                     double supply=signedVoltage(results,part.a,part.b);
                     boolean hasPower=supply>=3 && voltage(results,part.a,part.b)<=6;
@@ -695,7 +697,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                         controlPositions[component]=(int)(100*phase/part.threshold);
                     }
                 }
-                case LED, LED_PANEL, LED_STRIP -> {
+                case LED, LED_PANEL, LED_STRIP, SEVEN_SEGMENT -> {
                     double volts = voltage(results, part.a, part.b);
                     double ballastVoltage = voltage(results, MAX_NODES + i, part.b);
                     if (volts >= part.threshold && ballastVoltage / senseResistance(part) >= 0.001) {
@@ -726,6 +728,14 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                     if (volts >= part.threshold) {
                         lit = true;
                         litIndicators |= 1L << component;
+                    }
+                }
+                case BUZZER -> {
+                    double v=signedVoltage(results,part.a,part.b);
+                    if(v>=2.99 && v<=6.01) {
+                        controlStates |= 1L<<component;
+                        if(now%20==0) level.playSound(null,pos,net.minecraft.sounds.SoundEvents.NOTE_BLOCK_BELL.value(),
+                                net.minecraft.sounds.SoundSource.BLOCKS,.35f,1.4f);
                     }
                 }
                 case REDSTONE_OUT -> {

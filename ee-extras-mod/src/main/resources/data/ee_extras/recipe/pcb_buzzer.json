@@ -1,0 +1,26 @@
+{
+  "type": "create:mechanical_crafting",
+  "pattern": [
+    " R ",
+    "SMC"
+  ],
+  "key": {
+    "R": {
+      "item": "ee_extras:resistor"
+    },
+    "S": {
+      "item": "ee_extras:speaker_cone"
+    },
+    "M": {
+      "item": "ee_extras:permanent_magnet"
+    },
+    "C": {
+      "item": "ee_extras:connector"
+    }
+  },
+  "result": {
+    "id": "ee_extras:pcb_buzzer",
+    "count": 1
+  },
+  "accept_mirrored": true
+}

@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.Blocks;
 
 /** Компилирует реальные площадки корпуса; стендовые перемычки выводят их к источникам и четырём пробникам. */
 final class PcbSequentialTest {
-    private static final BlockPos BOARD=new BlockPos(16,-60,8), SUPPLY=BOARD.east(4);
+    static BlockPos BOARD=new BlockPos(16,-60,8), SUPPLY=BOARD.east(4);
     private static int inputs,outputs,pins;
     private static PcbCircuitDevice.Kind kind;
     static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -27,15 +27,16 @@ final class PcbSequentialTest {
             int selected=type;
             root.then(Commands.literal(new String[]{"flip","counter","register","decoder"}[type-23]).executes(c->build(c.getSource(),selected)));
         }
+        root.then(Commands.literal("gates").executes(c->build(c.getSource(),39)));
         root.then(Commands.literal("mirrored-register").executes(c -> build(c.getSource(),25,true)));
         root.then(Commands.literal("resume").executes(c->{
             var saved=new CompoundTag();device(c.getSource().getLevel(),BOARD).write(saved);
             var part=saved.getList("Circuit",net.minecraft.nbt.Tag.TAG_COMPOUND).getCompound(0);
             kind=PcbCircuitDevice.Kind.valueOf(part.getString("Kind"));pins=part.getIntArray("Pins").length;
-            inputs=kind==PcbCircuitDevice.Kind.D_FLIP_FLOP?3:kind==PcbCircuitDevice.Kind.REGISTER?5:2;
+            inputs=kind==PcbCircuitDevice.Kind.LOGIC_GATES?8:kind==PcbCircuitDevice.Kind.D_FLIP_FLOP?3:kind==PcbCircuitDevice.Kind.REGISTER?5:2;
             outputs=kind==PcbCircuitDevice.Kind.D_FLIP_FLOP?2:4;return 1;
         }));
-        root.then(Commands.literal("inputs").then(Commands.argument("mask",IntegerArgumentType.integer(0,31)).executes(c->{
+        root.then(Commands.literal("inputs").then(Commands.argument("mask",IntegerArgumentType.integer(0,255)).executes(c->{
             int mask=IntegerArgumentType.getInteger(c,"mask");
             for(int i=0;i<inputs;i++) power(c.getSource().getLevel(),input(i),(mask&(1<<i))!=0?5:0); return 1;
         })));
@@ -49,10 +50,10 @@ final class PcbSequentialTest {
     private static BlockPos probe(int i) { return BOARD.offset(-4,0,i*2); }
     private static PcbCircuitDevice device(ServerLevel level,BlockPos pos) { return DevicesSavedData.load(level).getDevice(pos,PcbCircuitDevice.class); }
     private static void check(boolean ok,String message) { if(!ok) throw new IllegalStateException("Память L2: "+message); }
-    private static int build(CommandSourceStack source,int type) { return build(source,type,false); }
+    static int build(CommandSourceStack source,int type) { return build(source,type,false); }
     private static int build(CommandSourceStack source,int type,boolean mirrored) {
         var level=source.getLevel();
-        for(int i=0;i<5;i++) { DevTest.place(level,input(i),Blocks.AIR.defaultBlockState()); if(i<4) DevTest.place(level,probe(i),Blocks.AIR.defaultBlockState()); }
+        for(int i=0;i<8;i++) { DevTest.place(level,input(i),Blocks.AIR.defaultBlockState()); if(i<4) DevTest.place(level,probe(i),Blocks.AIR.defaultBlockState()); }
         DevTest.place(level,BOARD,Blocks.AIR.defaultBlockState()); DevTest.place(level,SUPPLY,Blocks.AIR.defaultBlockState());
         int definition=PcbModulesTest.definition(type,0);
         if (mirrored) {
@@ -60,7 +61,7 @@ final class PcbSequentialTest {
             catch(ClassNotFoundException e) { throw new IllegalStateException(e); }
         }
         pins=PcbModulesTest.modulePins(definition);
-        inputs=type==23?3:type==25?5:2; outputs=type==23?2:4;
+        inputs=type==39?8:type==23?3:type==25?5:2; outputs=type==23?2:4;
         var topology=PcbTopology.create(2);
         for(int i=0;i<pins;i++) {
             PcbTopology.set(topology,0,i,PcbTopology.TERMINAL);
@@ -82,6 +83,13 @@ final class PcbSequentialTest {
             var parts=new ArrayList<>(compiled);
             for(int pin=0;pin<pins;pin++) parts.add(new PcbCircuitDevice.Part(PcbCircuitDevice.Kind.TRACE,pin,part.pins()[pin],.01,0,0,1));
             for(int output=0;output<outputs;output++) parts.add(new PcbCircuitDevice.Part(PcbCircuitDevice.Kind.RESISTOR,inputs+output,pins-1,1000,0,0,5));
+            if(type==39){
+                var routing=new PcbDemoRouting(pins);int[] pinNets=new int[pins];for(int pin=0;pin<pins;pin++){pinNets[pin]=pin;routing.terminal(PcbDemoRouting.terminalCell(pin),pin);}
+                routing.part(85,39,pinNets,0,0);
+                for(int output=0;output<4;output++)routing.part(161+output*4,0,new int[]{8+output,13},1000,0);
+                topology=routing.build();parts=new ArrayList<>(PcbModulesTest.<List<PcbCircuitDevice.Part>>call(wiring,null,"compile",topology));
+                check(parts.size()==5,"NAND и четыре видимые нагрузки, без скрытых перемычек");
+            }
             DevTest.place(level,BOARD,PcbItems.CIRCUIT_BLOCK.get().defaultBlockState().setValue(PcbCircuitBlock.CUSTOM,true));
             var stack=PcbItems.L2_BOARD.toStack(); PcbTopology.attach(stack,topology);
             PcbModulesTest.call(PcbCircuitBlockEntity.class,level.getBlockEntity(BOARD),"setBoard",stack);

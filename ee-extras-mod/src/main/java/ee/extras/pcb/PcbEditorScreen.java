@@ -3,15 +3,20 @@ package ee.extras.pcb;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
+import org.lwjgl.glfw.GLFW;
 
 /** Русский экран редактора: клик по ячейке применяет выбранный инструмент на текущем слое. */
 public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
     private net.minecraft.client.gui.components.EditBox nominalInput;
+    private EditBox projectName;
+    private String previousProjectName = "";
     private net.minecraft.client.gui.components.EditBox thresholdInput;
     private boolean numbersDirty;
     private boolean refreshingNumbers;
@@ -130,6 +135,12 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
         catalogSearch.setResponder(value -> catalogScroll = 0);
         placeSearch();
         addRenderableWidget(catalogSearch);
+        projectName = new EditBox(font, canvasLeft, 12, Math.max(60, TOOL_X - 122 - canvasLeft), 16,
+                Component.literal("Имя проекта (Enter — сохранить)"));
+        projectName.setMaxLength(40);
+        projectName.setHint(Component.literal("Имя проекта…"));
+        refreshProjectName();
+        addRenderableWidget(projectName);
         nominalInput = numberField(SETTINGS_Y + SETTINGS_ROW);
         thresholdInput = numberField(SETTINGS_Y + SETTINGS_ROW * 2);
         numbersAnchor = -2;
@@ -235,6 +246,20 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
 
     @Override
     public boolean keyPressed(int key, int scan, int modifiers) {
+        if (projectName.isFocused()) {
+            if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) {
+                PacketDistributor.sendToServer(new PcbEditorPackets.Rename(
+                        menu.containerId, projectName.getValue(), previousProjectName));
+                setFocused(null);
+                return true;
+            }
+            if (key == GLFW.GLFW_KEY_ESCAPE) {
+                setFocused(null);
+                return true;
+            }
+            projectName.keyPressed(key, scan, modifiers);
+            return true;
+        }
         if (nominalInput.isFocused() || thresholdInput.isFocused()) {
             if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER || key == org.lwjgl.glfw.GLFW.GLFW_KEY_KP_ENTER) { commitNumbers(); return true; }
             if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) { numbersDirty = false; releaseNumbers(); return true; }
@@ -319,6 +344,12 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (projectName.isVisible() && projectName.mouseClicked(mouseX, mouseY, button)) {
+            releaseNumbers();
+            setFocused(projectName);
+            return true;
+        }
+        if (projectName.isFocused()) setFocused(null);
         if (diagnosticsOpen) {
             if (mouseY < 22 && mouseX >= width - 52) { diagnosticsOpen = false; return true; }
             int row = (int) (mouseY - 48) / 28 + diagnosticScroll;
@@ -522,6 +553,8 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         refreshNumbers();
+        projectName.setVisible(!catalogOpen && !bomOpen && !diagnosticsOpen);
+        if (!projectName.isFocused()) refreshProjectName();
         int hoverX = mouseX - leftPos - GRID_X, hoverY = mouseY - topPos - GRID_Y;
         lastHoverCell = insideCanvas(mouseX - leftPos, mouseY - topPos) && hoverX >= 0 && hoverY >= 0 && hoverX < CELL * 16 && hoverY < CELL * 16
                 ? hoverY / CELL * 16 + hoverX / CELL : -1;
@@ -1001,9 +1034,13 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
                 y + (size - PcbFootprint.height(definition) * cellSize) / 2, cellSize);
     }
 
+    private void refreshProjectName() {
+        previousProjectName = menu.editor() == null ? "" : menu.editor().topology().getString("ProjectName");
+        if (!projectName.getValue().equals(previousProjectName)) projectName.setValue(previousProjectName);
+    }
+
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawString(font, font.plainSubstrByWidth(title.getString(), Math.max(20, TOOL_X - 122 - canvasLeft)), canvasLeft, 16, 0xFFE7ECE8, false);
         graphics.fill(TOOL_X - 106, 14, TOOL_X - 57, 25, 0xFF3A5148);
         graphics.fill(TOOL_X - 55, 14, TOOL_X - 4, 25, 0xFF3A5148);
         graphics.drawCenteredString(font, "Отмена", TOOL_X - 82, 16, 0xFFE7ECE8);
@@ -1074,7 +1111,7 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
             graphics.drawCenteredString(font, partLabels[row], PALETTE_X + 45, SETTINGS_Y + 3 + row * SETTINGS_ROW, 0xFFFFFFFF);
         }
         if (TOOL_X > 260) {
-            graphics.drawString(font, "Ctrl+Z: отмена · Ctrl+Y: повтор", 184, height - 23, 0xFF9FB5AD, false);
+            graphics.drawString(font, "Ctrl+Z: отмена · +Shift: повтор", 184, height - 23, 0xFF9FB5AD, false);
             graphics.drawString(font, "Ведомость M", 184, height - 68, 0xFFE0E8E1, false);
             graphics.drawString(font, "Деталей: " + bill().values().stream().mapToInt(Integer::intValue).sum() + "/64", 184, height - 53, 0xFF9FB5AD, false);
             graphics.drawString(font, "Масштаб " + Math.round(CELL / 9.0 * 100) + "% · Home · Слои H", 184, height - 38, 0xFF9FB5AD, false);

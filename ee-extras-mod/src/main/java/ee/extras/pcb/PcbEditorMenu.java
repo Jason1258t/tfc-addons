@@ -149,6 +149,11 @@ public class PcbEditorMenu extends AbstractContainerMenu {
         if (module.thresholdSetting() && Double.isFinite(draftThreshold)) parameters.putDouble("Threshold", draftThreshold);
         return parameters;
     }
+    boolean renameProject(PcbEditorPackets.Rename packet) {
+        if(editor==null || packet.container()!=containerId || !editor.topology().getString("ProjectName").equals(packet.previous()))return false;
+        var before=beginEdit();boolean applied=editor.renameProject(packet.name());finishEdit(before);return applied;
+    }
+
     boolean applyParameters(PcbEditorPackets.Parameters packet) {
         if (editor == null) return false;
         var before = beginEdit();

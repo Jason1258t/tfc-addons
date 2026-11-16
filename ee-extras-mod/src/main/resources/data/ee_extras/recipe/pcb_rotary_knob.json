@@ -1,0 +1,24 @@
+{
+  "type": "create:mechanical_crafting",
+  "pattern": [
+    " C ",
+    "RRC",
+    " I "
+  ],
+  "key": {
+    "C": {
+      "item": "ee_extras:connector"
+    },
+    "R": {
+      "item": "ee_extras:resistor"
+    },
+    "I": {
+      "tag": "c:rods/wrought_iron"
+    }
+  },
+  "result": {
+    "id": "ee_extras:pcb_rotary_knob",
+    "count": 1
+  },
+  "accept_mirrored": true
+}

@@ -382,5 +382,9 @@
   "item.ee_extras.pcb_light_sensor": "Датчик освещения",
   "item.ee_extras.pcb_rotation_sensor": "Датчик вращения Create",
   "item.ee_extras.pcb_optocoupler": "Оптопара",
-  "item.ee_extras.pcb_connector_8": "Разъём 8 линий + общий"
+  "item.ee_extras.pcb_connector_8": "Разъём 8 линий + общий",
+  "item.ee_extras.pcb_rotary_knob": "Поворотная ручка платы",
+  "item.ee_extras.pcb_buzzer": "Зуммер платы",
+  "item.ee_extras.pcb_seven_segment": "Семисегментный индикатор платы",
+  "item.ee_extras.pcb_logic_gates": "Логическая сборка платы: 4 NAND"
 }

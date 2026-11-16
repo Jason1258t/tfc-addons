@@ -115,8 +115,8 @@ final class PcbWiring {
             double limit = PcbParameters.threshold(definition, parameters) * (PcbParameters.amps(module) ? 100 : 1);
             boolean normallyClosed = false;
             for (int section = 0; section < module.sections(); section++) {
-                int first = module.sections() > 1 ? section * 2 : 0;
-                int a = pins[first], b = pins[first + 1];
+                int first = kind == Kind.SEVEN_SEGMENT ? section : module.sections() > 1 ? section * 2 : 0;
+                int a = pins[first], b = pins[kind == Kind.SEVEN_SEGMENT ? 7 : first + 1];
                 int inputA = module.sections() > 1 ? 0 : pins[2];
                 int inputB = module.sections() > 1 ? 0 : switch (kind) {
                     case MECHANICAL_TIMER -> pins[0];
@@ -137,6 +137,7 @@ final class PcbWiring {
                     alternate = kind == Kind.COMPARATOR ? pins[2] : -1;
                     ohms = 10000;
                 }
+                if (kind == Kind.BUZZER) { ohms=1000; limit=3; }
                 if (kind == Kind.CONNECTOR_8) { a=pins[0]; b=pins[8]; ohms=.01; }
                 if (kind == Kind.OPTOCOUPLER) { alternate=pins[4]; ohms=1000; }
                 if (kind.sensor()) { a=pins[1]; b=pins[2]; inputA=pins[0]; ohms=10000; }

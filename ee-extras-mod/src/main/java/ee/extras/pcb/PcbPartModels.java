@@ -21,12 +21,14 @@ final class PcbPartModels {
     static void register(ModelEvent.RegisterAdditional event) {
         for (String name : NAMES) event.register(id(name));
         for (int bit=0;bit<4;bit++) event.register(id("logic_bit_"+bit));
+        for(int segment=0;segment<7;segment++) event.register(id("seven_segment_"+segment));
         event.register(id("selector_left"));
         event.register(id("selector_right"));
         event.register(id("latching_relay_on"));
         event.register(id("comparator_on"));
         event.register(id("slider_handle"));
         event.register(id("timer_hand"));
+        event.register(id("rotary_pointer"));
         event.register(id("led_on"));
         event.register(id("light_glow"));
         event.register(id("lamp_glow"));
@@ -73,11 +75,13 @@ final class PcbPartModels {
             }
         }
         if (module.sections() > 1) {
+            boolean seven=module.kind() == PcbCircuitDevice.Kind.SEVEN_SEGMENT;
             var segment = minecraft.getModelManager().getModel(id("led_strip_segment_on"));
             for (int section = 0; section < module.sections(); section++) {
                 if ((sections & (1L << section)) == 0) continue;
                 poses.pushPose();
-                poses.translate(0, 0, ((section + 0.5f) / module.sections() - 0.5f) * 0.94f / 16);
+                if(seven) segment=minecraft.getModelManager().getModel(id("seven_segment_"+section));
+                else poses.translate(0, 0, ((section + 0.5f) / module.sections() - 0.5f) * 0.94f / 16);
                 minecraft.getBlockRenderer().getModelRenderer().renderModel(poses.last(), vertices, null, segment,
                         1, 1, 1, net.minecraft.client.renderer.LightTexture.FULL_BRIGHT, overlay);
                 poses.popPose();
@@ -88,6 +92,15 @@ final class PcbPartModels {
             var handle = minecraft.getModelManager().getModel(id("slider_handle"));
             minecraft.getBlockRenderer().getModelRenderer().renderModel(poses.last(), vertices, null, handle,
                     tint, tint, tint, light, overlay);
+        }
+        if (module.kind() == PcbCircuitDevice.Kind.ROTARY_KNOB) {
+            poses.pushPose();
+            poses.translate(0.5,0,0.5);
+            poses.mulPose(Axis.YP.rotationDegrees(135-270*position/100f));
+            poses.translate(-0.5,0,-0.5);
+            var pointer=minecraft.getModelManager().getModel(id("rotary_pointer"));
+            minecraft.getBlockRenderer().getModelRenderer().renderModel(poses.last(),vertices,null,pointer,tint,tint,tint,light,overlay);
+            poses.popPose();
         }
         if (PcbModules.get(definition).timed()) {
             poses.translate(0.5, 0, 0.5);
@@ -131,7 +144,8 @@ final class PcbPartModels {
             for (int section = 0; section < module.sections(); section++) {
                 if ((sections & (1L << section)) == 0) continue;
                 poses.pushPose();
-                if (module.sections() > 1) poses.translate(0, 0, ((section + 0.5f) / module.sections() - 0.5f) * 0.94f / 16);
+                if(module.kind() == PcbCircuitDevice.Kind.SEVEN_SEGMENT) glow=Minecraft.getInstance().getModelManager().getModel(id("seven_segment_"+section));
+                else if (module.sections() > 1) poses.translate(0, 0, ((section + 0.5f) / module.sections() - 0.5f) * 0.94f / 16);
                 Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(poses.last(), vertices, null, glow,
                         1, 1, 1, net.minecraft.client.renderer.LightTexture.FULL_BRIGHT, overlay);
                 poses.popPose();

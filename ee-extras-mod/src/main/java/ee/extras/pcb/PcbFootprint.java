@@ -76,7 +76,7 @@ final class PcbFootprint {
             x=-1; y=pin;
         } else if (PcbModules.get(definition).kind() == PcbCircuitDevice.Kind.OPTOCOUPLER) {
             x=pin<2?-1:w; y=switch(pin){case 0,2 -> 0;case 1,3 -> 2;default -> 1;};
-        } else if (PcbModules.get(definition).sections() == 1 && PcbModules.get(definition).pins() > 5) {
+        } else if ((PcbModules.get(definition).sections() == 1 || PcbModules.get(definition).kind() == PcbCircuitDevice.Kind.SEVEN_SEGMENT) && PcbModules.get(definition).pins() > 5) {
             int[] point = ringPoint(w, h, pin, PcbModules.get(definition).pins());
             x = point[0]; y = point[1];
         } else {
@@ -137,7 +137,7 @@ final class PcbFootprint {
             int first = pinCell(anchor, definition, a);
             if (first < 0) continue;
             for (int b = a + 1; b < count; b++) {
-                if (PcbModules.get(definition).sections() > 1 && a / 2 == b / 2) continue;
+                if (PcbModules.get(definition).kind() != PcbCircuitDevice.Kind.SEVEN_SEGMENT && PcbModules.get(definition).sections() > 1 && a / 2 == b / 2) continue;
                 int second = pinCell(anchor, definition, b);
                 for (int direction = 0; direction < 4; direction++) {
                     if (PcbTopology.neighbor(first, direction) == second) {
