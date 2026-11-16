@@ -65,6 +65,7 @@ public class DevTest {
         Wire.register(d);
         ElectronicsTest.register(d);
         SolarTest.register(d);
+        BeltMotorTest.register(d);
         if (net.neoforged.fml.ModList.get().isLoaded("computercraft")) ComputerCraftTest.register(d);
         if (net.neoforged.fml.ModList.get().isLoaded("destroy")) registerPetTest(d);
         if (net.neoforged.fml.ModList.get().isLoaded("tfc")) ThermometerTest.register(d);

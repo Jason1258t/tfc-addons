@@ -268,6 +268,7 @@ public class EeExtras {
         ee.extras.panel.PanelModules.register(modBus);
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
+        DEVICES.register("belt_motor", () -> ee.extras.motor.BeltMotorDevice.TYPE);
         DEVICES.register(modBus);
         BLOCK_ENTITIES.register(modBus);
         WIRES.register(modBus);
