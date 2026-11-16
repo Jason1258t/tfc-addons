@@ -27,6 +27,7 @@
       "required": false
     },
     "destroy_extras:hydrogen_pipe",
-    "destroy_extras:chlorine_pipe"
+    "destroy_extras:chlorine_pipe",
+    "destroy_extras:gas_filling_station"
   ]
 }

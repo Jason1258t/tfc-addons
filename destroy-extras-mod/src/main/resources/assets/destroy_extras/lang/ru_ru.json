@@ -125,5 +125,17 @@
   "message.destroy_extras.gas_tank": "%s · %s/%s ммоль · %s/%s бар (абс.) · %s л",
   "message.destroy_extras.gas_tank.empty": "Газовый бак пуст",
   "block.destroy_extras.hydrogen_pipe": "Водородная трубка",
-  "block.destroy_extras.chlorine_pipe": "Хлорная трубка"
+  "block.destroy_extras.chlorine_pipe": "Хлорная трубка",
+  "block.destroy_extras.gas_filling_station": "Узел заправки газовых баллонов",
+  "item.destroy_extras.gas_cylinder_steel": "Стальной газовый баллон",
+  "item.destroy_extras.gas_cylinder_stainless_steel": "Нержавеющий газовый баллон",
+  "item.destroy_extras.gas_cylinder_blue_steel": "Газовый баллон из синей стали",
+  "message.destroy_extras.gas_station.charge": "Заправка",
+  "message.destroy_extras.gas_station.discharge": "Выдача",
+  "message.destroy_extras.gas_station.no_cylinder": "Баллон не установлен",
+  "message.destroy_extras.gas_station.powered": "Питание в норме",
+  "message.destroy_extras.gas_station.no_power": "Нет рабочего питания",
+  "message.destroy_extras.gas_station.status": "%s · %s · %s",
+  "tooltip.destroy_extras.gas_station.power": "Питание: 300 В, 2 А. Газовый порт сзади.",
+  "tooltip.destroy_extras.gas_station.controls": "ПКМ с баллоном — установить. Пустой рукой — забрать. Shift+ПКМ — сменить режим."
 }

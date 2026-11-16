@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "destroy_extras:block/gas_filling_station"
+    },
+    "facing=east": {
+      "model": "destroy_extras:block/gas_filling_station",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "destroy_extras:block/gas_filling_station",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "destroy_extras:block/gas_filling_station",
+      "y": 270
+    }
+  }
+}

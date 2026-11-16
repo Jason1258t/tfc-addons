@@ -3,5 +3,42 @@
     "destroy-extras": {
       "shots": ["formed-front", "formed-back", "formed-top", "formed-side-left", "formed-side-right"]
     }
+  },
+  "chains": {
+    "gas-cylinders-restart": {
+      "note": "Две линии электролизёра, три класса баллонов с каждым газом, перенос и выдача после рестарта",
+      "steps": [
+        {
+          "name": "charge",
+          "kind": "server",
+          "cmd": [
+            "forceload add -16 -16 16 16",
+            "destroyextratest build",
+            "destroyextratest gas_lines",
+            "destroyextratest power 300",
+            "destroyextratest gas_cylinders_setup",
+            "sleep 45",
+            "destroyextratest gas_lines_assert",
+            "destroyextratest gas_cylinders_move"
+          ],
+          "failFast": true,
+          "failOn": ["DESTROYEXTRATEST FAIL"],
+          "expect": ["в отдельных баках по [0-9]+ мБ", "gas_cylinders_move[\\s\\S]*DESTROYEXTRATEST PASS"],
+          "save": true
+        },
+        {
+          "name": "discharge",
+          "kind": "server",
+          "world": "charge",
+          "cmd": ["destroyextratest gas_cylinders_open", "sleep 35", "destroyextratest gas_cylinders_assert"],
+          "failFast": true,
+          "failOn": ["DESTROYEXTRATEST FAIL"],
+          "expect": [
+            "gas_cylinders_open[\\s\\S]*DESTROYEXTRATEST PASS",
+            "gas_cylinders_assert[\\s\\S]*DESTROYEXTRATEST PASS"
+          ]
+        }
+      ]
+    }
   }
 }

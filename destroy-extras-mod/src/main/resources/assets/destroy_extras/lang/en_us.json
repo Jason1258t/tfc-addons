@@ -125,5 +125,17 @@
   "message.destroy_extras.gas_tank": "%s · %s/%s mmol · %s/%s bar (abs.) · %s L",
   "message.destroy_extras.gas_tank.empty": "Gas tank empty",
   "block.destroy_extras.hydrogen_pipe": "Hydrogen Pipe",
-  "block.destroy_extras.chlorine_pipe": "Chlorine Pipe"
+  "block.destroy_extras.chlorine_pipe": "Chlorine Pipe",
+  "block.destroy_extras.gas_filling_station": "Gas Cylinder Filling Station",
+  "item.destroy_extras.gas_cylinder_steel": "Steel Gas Cylinder",
+  "item.destroy_extras.gas_cylinder_stainless_steel": "Stainless Steel Gas Cylinder",
+  "item.destroy_extras.gas_cylinder_blue_steel": "Blue Steel Gas Cylinder",
+  "message.destroy_extras.gas_station.charge": "Fill",
+  "message.destroy_extras.gas_station.discharge": "Discharge",
+  "message.destroy_extras.gas_station.no_cylinder": "No cylinder installed",
+  "message.destroy_extras.gas_station.powered": "Working power",
+  "message.destroy_extras.gas_station.no_power": "No working power",
+  "message.destroy_extras.gas_station.status": "%s · %s · %s",
+  "tooltip.destroy_extras.gas_station.power": "Power: 300 V, 2 A. Gas port on the back.",
+  "tooltip.destroy_extras.gas_station.controls": "Use a cylinder to insert it. Use an empty hand to take it. Sneak-use to change mode."
 }

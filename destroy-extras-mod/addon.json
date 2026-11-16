@@ -1,13 +1,13 @@
 {
   "id": "destroy_extras",
   "name": "Destroy Extras — химические машины",
-  "version": "0.9.2",
-  "jar": "destroy-extras-0.9.2.jar",
-  "sha256": "e31506e7de87233ee681c64351905ed5e674d29165a5d6b1ead918b521594ce8",
+  "version": "0.10.0",
+  "jar": "destroy-extras-0.10.0.jar",
+  "sha256": "ae2642a44810ef2f3df1e6fe39d14025b7044a09364958dc7df2be19f8a315ea",
   "order": 801,
   "side": "both",
-  "summary": "Химические машины Destroy: мембранный электролизёр — мультиблок IE с окном, очками Create и рецептами разных реакций; травление плат L1–L3 и металлургический процессор. Выщелачивание и электроэкстракция Cu/Ni/Zn, Bayer и Hall–Héroult, регенерация FeCl₃ и переработка электронного лома. Рецепты загружаются из datapack, питание — 240/300/600 В EE.",
-  "needs": "Сервер и все игроки; ставится обычным tfc pull. NeoForge 21.1.251+, Destroy 0.4.6-eligibbs, Petrolpark 1.5.11, Destroy Bridge 0.2.0, EE Extras 2.9.0+, Create 6.0.10, Electro Energetics 1.1.2+ и Immersive Engineering 12.4.2+. Survival-рецепты также используют TFC.",
+  "summary": "Химические машины Destroy: мембранный электролизёр, газовые баки и трубки для водорода и хлора, переносные баллоны и заправочный узел. Травление плат L1–L3 и химическая металлургия.",
+  "needs": "Сервер и все игроки; ставится обычным tfc pull. NeoForge 21.1.251+, Destroy 0.4.6-eligibbs, Petrolpark 1.5.11, Destroy Bridge 0.2.0, EE Extras 2.9.0+, Create 6.0.10, Electro Energetics 1.1.2+ и Immersive Engineering 12.4.2+. Survival-рецепты также используют TFC. Нержавеющие баки и баллоны используют Firmalife.",
   "blocks": [
     {
       "id": "destroy_extras:membrane_electrolyzer",
@@ -134,6 +134,165 @@
       "id": "destroy_extras:stabilized_tailings",
       "name": "Стабилизированные хвосты",
       "image": "stabilized_tailings.png"
+    },
+    {
+      "id": "destroy_extras:gas_tank_controller_compact",
+      "name": "Компактный контроллер газового бака",
+      "image": "gas_tank_controller_compact.png",
+      "recipe": {
+        "pattern": [" S ", "PMP", " S "],
+        "key": {
+          "S": {
+            "item": "immersiveengineering:sheetmetal_steel"
+          },
+          "P": {
+            "item": "immersiveengineering:fluid_pipe"
+          },
+          "M": {
+            "item": "immersiveengineering:component_steel"
+          }
+        }
+      }
+    },
+    {
+      "id": "destroy_extras:gas_tank_controller_medium",
+      "name": "Средний контроллер газового бака",
+      "image": "gas_tank_controller_medium.png",
+      "recipe": {
+        "pattern": ["SSS", "PMP", " S "],
+        "key": {
+          "S": {
+            "item": "immersiveengineering:sheetmetal_steel"
+          },
+          "P": {
+            "item": "immersiveengineering:fluid_pipe"
+          },
+          "M": {
+            "item": "immersiveengineering:component_steel"
+          }
+        }
+      }
+    },
+    {
+      "id": "destroy_extras:gas_tank_controller_large",
+      "name": "Большой контроллер газового бака",
+      "image": "gas_tank_controller_large.png",
+      "recipe": {
+        "pattern": ["SSS", "PMP", "SSS"],
+        "key": {
+          "S": {
+            "item": "immersiveengineering:sheetmetal_steel"
+          },
+          "P": {
+            "item": "immersiveengineering:fluid_pipe"
+          },
+          "M": {
+            "item": "immersiveengineering:component_steel"
+          }
+        }
+      }
+    },
+    {
+      "id": "destroy_extras:hydrogen_pipe",
+      "name": "Водородная трубка",
+      "image": "hydrogen_pipe.png",
+      "recipe": {
+        "pattern": ["PPP", " D "],
+        "key": {
+          "P": {
+            "item": "immersiveengineering:fluid_pipe"
+          },
+          "D": {
+            "item": "minecraft:light_blue_dye"
+          }
+        }
+      }
+    },
+    {
+      "id": "destroy_extras:chlorine_pipe",
+      "name": "Хлорная трубка",
+      "image": "chlorine_pipe.png",
+      "recipe": {
+        "pattern": ["PPP", " D "],
+        "key": {
+          "P": {
+            "item": "immersiveengineering:fluid_pipe"
+          },
+          "D": {
+            "item": "minecraft:yellow_dye"
+          }
+        }
+      }
+    },
+    {
+      "id": "destroy_extras:gas_filling_station",
+      "name": "Узел заправки газовых баллонов",
+      "image": "gas_filling_station.png",
+      "recipe": {
+        "pattern": ["SPS", "CMC", "SSS"],
+        "key": {
+          "S": {
+            "item": "immersiveengineering:sheetmetal_steel"
+          },
+          "P": {
+            "item": "immersiveengineering:fluid_pipe"
+          },
+          "C": {
+            "item": "minecraft:copper_ingot"
+          },
+          "M": {
+            "item": "immersiveengineering:component_steel"
+          }
+        }
+      }
+    },
+    {
+      "id": "destroy_extras:gas_cylinder_steel",
+      "name": "Стальной газовый баллон",
+      "image": "gas_cylinder_steel.png",
+      "recipe": {
+        "pattern": [" P ", "S S", "SSS"],
+        "key": {
+          "P": {
+            "item": "immersiveengineering:fluid_pipe"
+          },
+          "S": {
+            "item": "tfc:metal/sheet/steel"
+          }
+        }
+      }
+    },
+    {
+      "id": "destroy_extras:gas_cylinder_stainless_steel",
+      "name": "Нержавеющий газовый баллон",
+      "image": "gas_cylinder_stainless_steel.png",
+      "recipe": {
+        "pattern": [" P ", "S S", "SSS"],
+        "key": {
+          "P": {
+            "item": "immersiveengineering:fluid_pipe"
+          },
+          "S": {
+            "item": "firmalife:metal/sheet/stainless_steel"
+          }
+        }
+      }
+    },
+    {
+      "id": "destroy_extras:gas_cylinder_blue_steel",
+      "name": "Газовый баллон из синей стали",
+      "image": "gas_cylinder_blue_steel.png",
+      "recipe": {
+        "pattern": [" P ", "S S", "SSS"],
+        "key": {
+          "P": {
+            "item": "immersiveengineering:fluid_pipe"
+          },
+          "S": {
+            "item": "tfc:metal/double_sheet/blue_steel"
+          }
+        }
+      }
     }
   ]
 }

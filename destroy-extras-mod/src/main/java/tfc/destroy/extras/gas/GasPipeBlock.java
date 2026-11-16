@@ -99,15 +99,19 @@ public final class GasPipeBlock extends PipeBlock {
 
     /** Автоматическая выдача только в выделенную газовую линию. */
     public static void pushIntoPipe(Level level, BlockPos sourcePos, Direction toward, IFluidHandler source) {
+        pushIntoPipe(level, sourcePos, toward, source, null);
+    }
+
+    static void pushIntoPipe(Level level, BlockPos sourcePos, Direction toward, IFluidHandler source, BlockPos blockedReceiver) {
         BlockPos pipePos = sourcePos.relative(toward);
         if (!level.hasChunkAt(pipePos) || !(level.getBlockState(pipePos).getBlock() instanceof GasPipeBlock pipe)) return;
         FluidStack gas = source.drain(TRANSFER_LIMIT, FluidAction.SIMULATE);
         if (!pipe.accepts(gas)) return;
-        int moved = pipe.handler(level, pipePos, toward.getOpposite()).fill(gas, FluidAction.EXECUTE);
+        int moved = pipe.transfer(level, pipePos, toward.getOpposite(), gas, FluidAction.EXECUTE, blockedReceiver);
         if (moved > 0) source.drain(gas.copyWithAmount(moved), FluidAction.EXECUTE);
     }
 
-    private int route(Level level, BlockPos inlet, Direction from, FluidStack gas, FluidAction action) {
+    private int route(Level level, BlockPos inlet, Direction from, FluidStack gas, FluidAction action, BlockPos blockedReceiver) {
         BlockPos source = from == null ? null : inlet.relative(from);
         var visited = new HashSet<BlockPos>();
         var queue = new ArrayDeque<BlockPos>();
@@ -118,7 +122,7 @@ public final class GasPipeBlock extends PipeBlock {
             BlockPos pipe = queue.removeFirst();
             for (Direction side : DIRECTIONS) {
                 BlockPos target = pipe.relative(side);
-                if (target.equals(source) || !level.hasChunkAt(target)) continue;
+                if (target.equals(source) || target.equals(blockedReceiver) || !level.hasChunkAt(target)) continue;
                 BlockState targetState = level.getBlockState(target);
                 if (targetState.getBlock() instanceof GasPipeBlock next) {
                     if (next == this && visited.add(target)) {
@@ -139,6 +143,21 @@ public final class GasPipeBlock extends PipeBlock {
             if (delivered > 0) return delivered;
         }
         return 0;
+    }
+
+    private int transfer(Level level, BlockPos pos, Direction from, FluidStack resource, FluidAction action, BlockPos blockedReceiver) {
+        if (level.isClientSide || TRANSFERRING.get() != null || !accepts(resource)
+            || !level.hasChunkAt(pos) || !level.getBlockState(pos).is(GasPipeBlock.this)) return 0;
+        TRANSFERRING.set(true);
+        try {
+            FluidStack gas = resource.copy();
+            var mixture = resource.get(DestroyDataComponents.MIXTURE).copy();
+            mixture.getList("Contents", Tag.TAG_COMPOUND).getCompound(0).putFloat("Gaseous", 1);
+            gas.set(DestroyDataComponents.MIXTURE, mixture);
+            return route(level, pos, from, gas, action, blockedReceiver);
+        } finally {
+            TRANSFERRING.remove();
+        }
     }
 
     private record Receiver(BlockPos pos, Direction side) {}
@@ -163,18 +182,7 @@ public final class GasPipeBlock extends PipeBlock {
 
         @Override
         public int fill(FluidStack resource, FluidAction action) {
-            if (level.isClientSide || TRANSFERRING.get() != null || !accepts(resource)
-                || !level.hasChunkAt(pos) || !level.getBlockState(pos).is(GasPipeBlock.this)) return 0;
-            TRANSFERRING.set(true);
-            try {
-                FluidStack gas = resource.copy();
-                var mixture = resource.get(DestroyDataComponents.MIXTURE).copy();
-                mixture.getList("Contents", Tag.TAG_COMPOUND).getCompound(0).putFloat("Gaseous", 1);
-                gas.set(DestroyDataComponents.MIXTURE, mixture);
-                return route(level, pos, from, gas, action);
-            } finally {
-                TRANSFERRING.remove();
-            }
+            return transfer(level, pos, from, resource, action, null);
         }
     }
 }

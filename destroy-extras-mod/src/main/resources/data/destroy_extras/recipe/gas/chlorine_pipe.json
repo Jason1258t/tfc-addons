@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    " D "
+  ],
+  "key": {
+    "P": {
+      "item": "immersiveengineering:fluid_pipe"
+    },
+    "D": {
+      "item": "minecraft:yellow_dye"
+    }
+  },
+  "result": {
+    "id": "destroy_extras:chlorine_pipe",
+    "count": 3
+  }
+}

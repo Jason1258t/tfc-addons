@@ -30,6 +30,8 @@ final class GasTankTest {
     private GasTankTest() {}
 
     static void commands(RegisterCommandsEvent event) {
+        GasCylinderTest.commands(event,
+            (level, pos, face) -> place(level, pos, 0, "compact_steel", face), GasTankTest::gas);
         event.getDispatcher().register(Commands.literal("destroyextratest")
             .then(Commands.literal("gas_tanks").requires(source -> source.hasPermission(2))
                 .executes(command -> {

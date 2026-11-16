@@ -36,6 +36,7 @@ import tfc.destroy.extras.electrolyzer.MembraneElectrolyzerBlock;
 import tfc.destroy.extras.etching.EtchingBathBlock;
 import tfc.destroy.extras.gas.GasTankMultiblock;
 import tfc.destroy.extras.gas.GasPipes;
+import tfc.destroy.extras.gas.GasFillingStation;
 import tfc.destroy.extras.dust.MetalDusts;
 import tfc.destroy.extras.etching.EtchingBathBlockEntity;
 import tfc.destroy.extras.metallurgy.MetallurgicalProcessorBlock;
@@ -113,6 +114,7 @@ public final class DestroyExtras {
     public DestroyExtras(IEventBus modBus) {
         GasTankMultiblock.register();
         GasPipes.register(modBus);
+        GasFillingStation.register(modBus);
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
         BLOCK_ENTITIES.register(modBus);
@@ -156,6 +158,7 @@ public final class DestroyExtras {
             event.accept(MEMBRANE_ITEM.get());
             event.accept(GasPipes.HYDROGEN_ITEM.get());
             event.accept(GasPipes.CHLORINE_ITEM.get());
+            GasFillingStation.addToTab(event);
             event.accept(ETCHING_BATH_ITEM.get());
             event.accept(METALLURGY_ITEM.get());
             event.accept(ROASTED_TETRAHEDRITE.get());
