@@ -3,7 +3,6 @@ package ee.extras.devtest;
 import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
-import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.simibubi.create.AllBlocks;
@@ -12,8 +11,14 @@ import com.simibubi.create.content.kinetics.belt.BeltBlock;
 import com.simibubi.create.content.kinetics.belt.BeltPart;
 import ee.extras.motor.BeltMotorHost;
 import ee.extras.motor.BeltMotorDevice;
-import java.util.List;
-import net.minecraft.nbt.CompoundTag;
+import ee.extras.EeExtras;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import ee.extras.motor.IntegratedMotor;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -51,8 +56,25 @@ final class BeltMotorTest {
         var level = source.getLevel();
         if (!BeltMotorDevice.supports(level.getBlockState(PULLEY))) return 0;
         DevTest.place(level, BATTERY, CEEBlocks.CREATIVE_BATTERY.getDefaultState());
-        DevicesSavedData.load(level).addDevice(BeltMotorDevice.TYPE, PULLEY, new CompoundTag());
-        InfrastructureSavedData.load(level).registerOrUpdateNodes(PULLEY, List.of(0, 1));
+        var player = FakePlayerFactory.getMinecraft(level);
+        var stack = new ItemStack(EeExtras.BELT_MOTOR_ITEM.get(), 2);
+        player.setItemInHand(InteractionHand.MAIN_HAND, stack);
+        int expected = player.isCreative() ? 2 : 1;
+        var stateBefore = level.getBlockState(PULLEY);
+        var entityBefore = level.getBlockEntity(PULLEY);
+        var top = new BlockHitResult(Vec3.atCenterOf(PULLEY), Direction.UP, PULLEY, false);
+        var side = new BlockHitResult(Vec3.atCenterOf(PULLEY), Direction.NORTH, PULLEY, false);
+        var topResult = stack.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, top));
+        var installed = stack.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, side));
+        var duplicate = stack.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, side));
+        if (topResult != InteractionResult.PASS || installed != InteractionResult.CONSUME
+                || duplicate != InteractionResult.FAIL || stack.getCount() != expected
+                || stateBefore != level.getBlockState(PULLEY) || entityBefore != level.getBlockEntity(PULLEY)) {
+            source.sendFailure(Component.literal("Монтаж не прошёл: " + topResult + ", " + installed
+                    + ", " + duplicate + ", предметов " + stack.getCount()));
+            return 0;
+        }
+        source.sendSuccess(() -> Component.literal("Монтаж сбоку прошёл, состояние и блок-сущность шкива сохранены"), false);
         DevTest.wire(level, BATTERY, 0, PULLEY, 0);
         DevTest.wire(level, BATTERY, 1, PULLEY, 1);
         return voltage(source, 300);

@@ -10,6 +10,8 @@ import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.george_vi.electroenergetics.simulation.WireType;
+import ee.extras.motor.BeltMotorDevice;
+import ee.extras.motor.BeltMotorItem;
 import ee.extras.ac.AcBlocks;
 import ee.extras.cable.CableCapItem;
 import ee.extras.cable.CableEvents;
@@ -87,6 +89,8 @@ public class EeExtras {
 
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MOD_ID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
+    public static final DeferredItem<BeltMotorItem> BELT_MOTOR_ITEM =
+            ITEMS.registerItem("belt_motor", BeltMotorItem::new);
     public static final DeferredRegister<SimulatedDeviceType<?>> DEVICES =
             DeferredRegister.create(CEERegistries.SIMULATED_DEVICE_TYPE, MOD_ID);
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
@@ -268,7 +272,7 @@ public class EeExtras {
         ee.extras.panel.PanelModules.register(modBus);
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
-        DEVICES.register("belt_motor", () -> ee.extras.motor.BeltMotorDevice.TYPE);
+        DEVICES.register("belt_motor", () -> BeltMotorDevice.TYPE);
         DEVICES.register(modBus);
         BLOCK_ENTITIES.register(modBus);
         WIRES.register(modBus);

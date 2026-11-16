@@ -14,18 +14,33 @@ import com.simibubi.create.content.kinetics.belt.BeltPart;
 import com.simibubi.create.content.kinetics.belt.BeltSlope;
 import ee.extras.EeExtras;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 public final class BeltMotorDevice extends SimpleElectricalDevice {
+    static final String MOUNT_SIDE = "MountSide";
     public static final IntegratedMotor MODEL = new IntegratedMotor(256);
     public static final SimulatedDeviceType<BeltMotorDevice> TYPE = new SimulatedDeviceType<>(
             EeExtras.rl("belt_motor"), (type, level, pos, data) -> new BeltMotorDevice(level, pos, data, type));
 
     private final RMSHolder voltage = new RMSHolder(3 * CEEConfigs.server().simulationConfig.microTicks.get());
 
+    private Direction mountSide;
+
     private BeltMotorDevice(Level level, BlockPos pos, DevicesSavedData data, SimulatedDeviceType<?> type) {
         super(level, pos, data, type);
+    }
+
+    @Override
+    public void read(CompoundTag data) {
+        mountSide = Direction.byName(data.getString(MOUNT_SIDE));
+    }
+
+    @Override
+    public void write(CompoundTag data) {
+        if (mountSide != null) data.putString(MOUNT_SIDE, mountSide.getSerializedName());
     }
 
     public static boolean supports(BlockState state) {
