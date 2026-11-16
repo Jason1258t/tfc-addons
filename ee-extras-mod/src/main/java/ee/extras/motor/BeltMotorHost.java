@@ -1,7 +1,12 @@
 package ee.extras.motor;
 
-/** Связь существующей блок-сущности ремня с двигателем на той же позиции. */
+import net.minecraft.core.Direction;
+
+/** Связь штатной блок-сущности с установленным приводом. */
 public interface BeltMotorHost {
+    String MOUNT_SIDE_TAG = "EeExtrasDriveSide";
+    Direction eeExtras$mountSide();
+    void eeExtras$mountSide(Direction side);
     void eeExtras$drive(float rpm, float capacityPerRpm);
     void eeExtras$readMotorPower(BeltMotorDevice device, double rmsVoltage);
     float eeExtras$networkStress();

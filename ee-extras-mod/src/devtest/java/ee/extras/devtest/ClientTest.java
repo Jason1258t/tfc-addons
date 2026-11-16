@@ -48,6 +48,10 @@ public final class ClientTest {
         if (PCB_UPGRADE_PHOTOS || PCB_MOUNT_PHOTOS || started || !(e.getScreen() instanceof TitleScreen)) return;
         started = true;
         // Сцена на общей заготовке сама создаёт мир и ведёт шаги
+        if (IntegratedDrivesScene.ON) {
+            IntegratedDrivesScene.start();
+            return;
+        }
         if (ElectricMachinesScene.ON) {
             ElectricMachinesScene.start();
             return;
@@ -70,7 +74,7 @@ public final class ClientTest {
     @SubscribeEvent
     public static void tick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
-        if (ElectricMachinesScene.ON || ElectricPressScene.ON || FlywheelWireTest.ON || mc.player == null || mc.getSingleplayerServer() == null) return;
+        if (IntegratedDrivesScene.ON || ElectricMachinesScene.ON || ElectricPressScene.ON || FlywheelWireTest.ON || mc.player == null || mc.getSingleplayerServer() == null) return;
         tick++;
         var server = mc.getSingleplayerServer();
         try {

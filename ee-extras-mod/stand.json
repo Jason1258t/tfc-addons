@@ -1,5 +1,8 @@
 {
   "scenes": {
+    "integrated-drives": {
+      "shots": ["belt-drive", "auger-drive"]
+    },
     "electric-press": {
       "shots": ["electric-press"]
     },

@@ -338,8 +338,10 @@ public class EeExtras {
         ee.extras.cable.CableCapSync.register(modBus, NeoForge.EVENT_BUS);
         CableEvents.register(NeoForge.EVENT_BUS);
         NeoForge.EVENT_BUS.addListener(PocketCharge::addTooltip);
+        NeoForge.EVENT_BUS.addListener(BeltMotorItem::useWrench);
         if (FMLEnvironment.dist == Dist.CLIENT) {
             ee.extras.cable.CableCapRender.register(NeoForge.EVENT_BUS);
+            ee.extras.motor.DriveTerminalsRenderer.register(NeoForge.EVENT_BUS);
             CableHud.register(modBus, NeoForge.EVENT_BUS);
             ee.extras.wire.client.WireClient.register(modBus, NeoForge.EVENT_BUS);
             LinesClient.register(modBus, NeoForge.EVENT_BUS);
@@ -371,6 +373,7 @@ public class EeExtras {
         if (!event.getTabKey().equals(CEECreativeTab.CREATIVE_TAB.getKey())) return;
         for (Kind<?> k : POWER) event.accept(k.item.get());
         AcBlocks.addToTab(event);
+        event.accept(BELT_MOTOR_ITEM.get());
         event.accept(ELECTRIC_PRESS_ITEM.get());
         event.accept(ELECTRIC_MIXER_ITEM.get());
         event.accept(ELECTRIC_DEPLOYER_ITEM.get());

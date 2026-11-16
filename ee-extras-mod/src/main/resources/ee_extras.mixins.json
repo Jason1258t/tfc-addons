@@ -8,11 +8,20 @@
     "PanelCableNodesMixin",
     "ElectricPumpEfficiencyMixin",
     "BeltMotorKineticsMixin",
+    "DriveTerminalsMixin",
+    "OptionalElectricalDeviceMixin",
+
     "DiskRecipeMixin",
     "UpgradeManagerMixin",
     "ServerComputerPowerMixin",
     "PocketComputerPowerMixin"
   ],
-  "client": ["WireVisualMixin", "WireRendererCapMixin", "BundledWirePreviewMixin", "WireRaycastMixin"],
+  "client": [
+    "ClientDriveMountsMixin",
+    "WireVisualMixin",
+    "WireRendererCapMixin",
+    "BundledWirePreviewMixin",
+    "WireRaycastMixin"
+  ],
   "injectors": { "defaultRequire": 0 }
 }
