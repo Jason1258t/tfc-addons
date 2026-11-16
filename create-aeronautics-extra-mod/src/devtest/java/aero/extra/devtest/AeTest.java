@@ -34,7 +34,9 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
@@ -61,6 +63,7 @@ public class AeTest {
 
     public AeTest() {
         NeoForge.EVENT_BUS.addListener(AeTest::commands);
+        if (FMLEnvironment.dist == Dist.CLIENT) FuelGallery.startIfRequested();
     }
 
     static int i(CommandContext<CommandSourceStack> c, String n) {

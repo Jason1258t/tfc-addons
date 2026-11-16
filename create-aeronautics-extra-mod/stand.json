@@ -1,0 +1,8 @@
+{
+  "scenes": {
+    "aero-fuel-gallery": {
+      "note": "Dev #282: модели двигателя, насоса и обоих режимов топливного порта",
+      "shots": ["01-all-blocks", "02-pump-and-engine", "03-tank-port-and-mount"]
+    }
+  }
+}

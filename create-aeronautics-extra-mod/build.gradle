@@ -12,6 +12,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 // Проверочный мод (только для runServer): команда /aetest — бортовой компьютер от творческого мотора, нагрузка, показания. В jar не попадает.
 sourceSets {
     devtest {
+        java.srcDir '../stand-scene/src'
         compileClasspath += sourceSets.main.output
         runtimeClasspath += sourceSets.main.output
     }
@@ -43,3 +44,8 @@ dependencies {
 }
 
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+
+tasks.register('devtestJar', Jar) {
+    archiveClassifier = 'devtest'
+    from sourceSets.devtest.output
+}
