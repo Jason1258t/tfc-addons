@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "destroy_extras:chlorine_pipe"
+          "name": "destroy_extras:gas_pipe"
         }
       ],
       "conditions": [

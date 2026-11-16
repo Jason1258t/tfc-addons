@@ -37,7 +37,7 @@ final class GasTankLogic implements IMultiblockLogic<GasTankLogic.State>, IServe
     // При концентрации 1 моль/л один мБ смеси содержит один миллимоль.
     private static final double PASCAL_LITERS_PER_MILLIMOLE = 8.3145 * 293;
     private static final int PASCALS_PER_BAR = 100_000;
-    private static final List<String> SUPPORTED_GASES = List.of("destroy:hydrogen", "destroy:chlorine");
+    private static final List<String> SUPPORTED_GASES = List.of("destroy:hydrogen", "destroy:chlorine", "destroy:nitrogen", "destroy:oxygen");
     private static final RelativeBlockFace FRONT = RelativeBlockFace.from(
         new MultiblockOrientation(Direction.NORTH, false), Direction.SOUTH);
 
@@ -92,7 +92,7 @@ final class GasTankLogic implements IMultiblockLogic<GasTankLogic.State>, IServe
             FluidStack gas = context.getState().tank.getFluid();
             player.displayClientMessage(Component.translatable("message.destroy_extras.gas_tank",
                 gas.isEmpty() ? Component.translatable("message.destroy_extras.gas_tank.empty") : gas.getHoverName(),
-                gas.getAmount(), capacity, pressure(gas.getAmount(), size.liters), material.limitBar, size.liters), true);
+                quantity(gas), capacity, pressure(gas, size.liters), material.limitBar, size.liters), true);
         }
         return ItemInteractionResult.sidedSuccess(isClient);
     }
@@ -101,23 +101,17 @@ final class GasTankLogic implements IMultiblockLogic<GasTankLogic.State>, IServe
         return (int) Math.floor(limitBar * (double) PASCALS_PER_BAR * liters / PASCAL_LITERS_PER_MILLIMOLE);
     }
 
-    static String pressure(int amount, int liters) {
-        double bar = amount * PASCAL_LITERS_PER_MILLIMOLE / liters / PASCALS_PER_BAR;
+    static String pressure(FluidStack gas, int liters) {
+        double bar = millimoles(gas) * PASCAL_LITERS_PER_MILLIMOLE / liters / PASCALS_PER_BAR;
         return String.format(Locale.ROOT, "%.2f", bar);
     }
 
-    static FluidStack canonicalGas(FluidStack resource) {
-        String species = gasSpecies(resource);
-        if (species.isEmpty()) return FluidStack.EMPTY;
-        return gasStack(species, resource.getAmount());
-    }
-
-    static FluidStack gasStack(String species, int amount) {
+    static FluidStack gasStack(String species, int amount, float concentration) {
         FluidStack canonical = new FluidStack(DestroyFluids.MIXTURE.get().getSource(), amount);
         CompoundTag mixture = new CompoundTag();
         CompoundTag component = new CompoundTag();
         component.putString("Molecule", species);
-        component.putFloat("Concentration", 1.0f);
+        component.putFloat("Concentration", concentration);
         component.putFloat("Gaseous", 1.0f);
         var contents = new net.minecraft.nbt.ListTag();
         contents.add(component);
@@ -128,6 +122,10 @@ final class GasTankLogic implements IMultiblockLogic<GasTankLogic.State>, IServe
         return canonical;
     }
 
+    static boolean supports(String species) {
+        return SUPPORTED_GASES.contains(species);
+    }
+
     static String gasSpecies(FluidStack stack) {
         if (stack.isEmpty() || !DestroyFluids.isMixture(stack)) return "";
         CompoundTag mixture = stack.get(DestroyDataComponents.MIXTURE);
@@ -136,9 +134,39 @@ final class GasTankLogic implements IMultiblockLogic<GasTankLogic.State>, IServe
         if (contents.size() != 1) return "";
         CompoundTag component = contents.getCompound(0);
         String species = component.getString("Molecule");
-        if (!SUPPORTED_GASES.contains(species) || component.getFloat("Concentration") != 1.0f) return "";
+        float concentration = component.getFloat("Concentration");
+        if (!supports(species) || !Float.isFinite(concentration) || concentration <= 0) return "";
         // Старые партии электролизёра выдавались без явного фазового признака.
         return !component.contains("Gaseous") || component.getFloat("Gaseous") == 1.0f ? species : "";
+    }
+
+    static float concentration(FluidStack gas) {
+        var mixture = gas.get(DestroyDataComponents.MIXTURE);
+        return mixture == null ? 0 : mixture.getList("Contents", Tag.TAG_COMPOUND).getCompound(0).getFloat("Concentration");
+    }
+
+    static double millimoles(FluidStack gas) {
+        return gas.getAmount() * (double) concentration(gas);
+    }
+
+    static String quantity(FluidStack gas) {
+        double amount = millimoles(gas);
+        return String.format(Locale.ROOT, amount == Math.rint(amount) ? "%.0f" : "%.2f", amount);
+    }
+
+    static int accepted(FluidStack stored, FluidStack incoming, int capacity) {
+        String species = gasSpecies(incoming);
+        if (species.isEmpty() || !stored.isEmpty() && !gasSpecies(stored).equals(species)) return 0;
+        double allowed = Math.floor(Math.max(0, capacity - millimoles(stored)) / concentration(incoming));
+        return (int) Math.min(Math.min(allowed, incoming.getAmount()), Integer.MAX_VALUE - stored.getAmount());
+    }
+
+    static FluidStack add(FluidStack stored, FluidStack incoming, int accepted) {
+        int total = stored.getAmount() + accepted;
+        double moles = millimoles(stored) + accepted * (double) concentration(incoming);
+        float concentration = (float) (moles / total);
+        if (concentration * (double) total > moles) concentration = Math.nextDown(concentration);
+        return gasStack(gasSpecies(incoming), total, concentration);
     }
 
     static final class State implements IMultiblockState {
@@ -150,7 +178,12 @@ final class GasTankLogic implements IMultiblockLogic<GasTankLogic.State>, IServe
             tank = new FluidTank(capacity, stack -> !gasSpecies(stack).isEmpty()) {
                 @Override
                 public int fill(FluidStack resource, FluidAction action) {
-                    return super.fill(canonicalGas(resource), action);
+                    int accepted = accepted(getFluid(), resource, getCapacity());
+                    if (accepted > 0 && action.execute()) {
+                        setFluid(add(getFluid(), resource, accepted));
+                        markDirty.run();
+                    }
+                    return accepted;
                 }
 
                 @Override

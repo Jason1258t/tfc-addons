@@ -1,18 +1,18 @@
 {
   "variants": {
     "facing=north": {
-      "model": "create:block/basin/block"
+      "model": "destroy_extras:block/etching_bath"
     },
     "facing=east": {
-      "model": "create:block/basin/block",
+      "model": "destroy_extras:block/etching_bath",
       "y": 90
     },
     "facing=south": {
-      "model": "create:block/basin/block",
+      "model": "destroy_extras:block/etching_bath",
       "y": 180
     },
     "facing=west": {
-      "model": "create:block/basin/block",
+      "model": "destroy_extras:block/etching_bath",
       "y": 270
     }
   }

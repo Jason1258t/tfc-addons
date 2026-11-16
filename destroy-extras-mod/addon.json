@@ -1,12 +1,12 @@
 {
   "id": "destroy_extras",
   "name": "Destroy Extras — химические машины",
-  "version": "0.10.0",
-  "jar": "destroy-extras-0.10.0.jar",
-  "sha256": "ae2642a44810ef2f3df1e6fe39d14025b7044a09364958dc7df2be19f8a315ea",
+  "version": "0.11.0",
+  "jar": "destroy-extras-0.11.0.jar",
+  "sha256": "fe10e1c9ded0162d4de6d3ecbc2dbb798d21bfbacad821a7fc6c13a3b7390af4",
   "order": 801,
   "side": "both",
-  "summary": "Химические машины Destroy: мембранный электролизёр, газовые баки и трубки для водорода и хлора, переносные баллоны и заправочный узел. Травление плат L1–L3 и химическая металлургия.",
+  "summary": "Мембранный электролизёр, баки и универсальные трубки для водорода, хлора, азота и кислорода. Устанавливаемые баллоны, вентили и узел заправки. Травление плат L1–L3 и химическая металлургия Destroy.",
   "needs": "Сервер и все игроки; ставится обычным tfc pull. NeoForge 21.1.251+, Destroy 0.4.6-eligibbs, Petrolpark 1.5.11, Destroy Bridge 0.2.0, EE Extras 2.9.0+, Create 6.0.10, Electro Energetics 1.1.2+ и Immersive Engineering 12.4.2+. Survival-рецепты также используют TFC. Нержавеющие баки и баллоны используют Firmalife.",
   "blocks": [
     {
@@ -193,35 +193,39 @@
       }
     },
     {
-      "id": "destroy_extras:hydrogen_pipe",
-      "name": "Водородная трубка",
-      "image": "hydrogen_pipe.png",
+      "id": "destroy_extras:gas_pipe",
+      "name": "Газовая трубка",
+      "image": "gas_pipe.png",
       "recipe": {
-        "pattern": ["PPP", " D "],
-        "count": 3,
+        "pattern": ["PPP", " C "],
         "key": {
           "P": {
             "item": "immersiveengineering:fluid_pipe"
           },
-          "D": {
-            "item": "minecraft:light_blue_dye"
+          "C": {
+            "item": "minecraft:copper_ingot"
           }
-        }
+        },
+        "count": 3
       }
     },
     {
-      "id": "destroy_extras:chlorine_pipe",
-      "name": "Хлорная трубка",
-      "image": "chlorine_pipe.png",
+      "id": "destroy_extras:gas_valve",
+      "name": "Газовый вентиль",
+      "image": "gas_valve.png",
       "recipe": {
-        "pattern": ["PPP", " D "],
-        "count": 3,
+        "pattern": [" L ", "PCP"],
         "key": {
-          "P": {
-            "item": "immersiveengineering:fluid_pipe"
+          "L": {
+            "item": "minecraft:lever"
           },
-          "D": {
-            "item": "minecraft:yellow_dye"
+          "P": {
+            "item": "destroy_extras:gas_pipe",
+            "image": "gas_pipe.png",
+            "name": "Газовая трубка"
+          },
+          "C": {
+            "item": "minecraft:copper_ingot"
           }
         }
       }

@@ -30,6 +30,7 @@ final class GasTankTest {
     private GasTankTest() {}
 
     static void commands(RegisterCommandsEvent event) {
+        GasHardwareTest.commands(event, GasTankTest::gas);
         GasCylinderTest.commands(event,
             (level, pos, face) -> place(level, pos, 0, "compact_steel", face), GasTankTest::gas);
         event.getDispatcher().register(Commands.literal("destroyextratest")
@@ -96,7 +97,7 @@ final class GasTankTest {
             Direction face = tankFace(hydrogen);
             var controller = tankFor(hydrogen);
             place(level, controller, 0, "compact_steel", face);
-            Block pipe = hydrogen ? GasPipes.HYDROGEN.get() : GasPipes.CHLORINE.get();
+            Block pipe = GasPipes.PIPE.get();
             for (int offset = 1; offset <= 5; offset++) {
                 level.setBlock(controller.relative(face, offset), pipe.defaultBlockState(), Block.UPDATE_ALL);
             }
@@ -119,7 +120,7 @@ final class GasTankTest {
             var mixture = gas.get(DestroyDataComponents.MIXTURE).getList("Contents", 10).getCompound(0);
             check(mixture.getString("Molecule").equals("destroy:" + species) && mixture.getFloat("Gaseous") == 1,
                 "в баке неверный газ или фаза: " + species);
-            check(pipe.fill(gas(foreign, 250), FluidAction.SIMULATE) == 0, "труба приняла чужой газ: " + species);
+            check(pipe.fill(gas(foreign, 250), FluidAction.SIMULATE) == 0, "заполненный бак принял чужой газ: " + species);
             check(pipe.fill(gas(species, 250), FluidAction.SIMULATE) == 250, "линия не проводит свой газ: " + species);
             var breakPoint = tankFor(hydrogen).relative(face, 2);
             level.setBlock(breakPoint, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);

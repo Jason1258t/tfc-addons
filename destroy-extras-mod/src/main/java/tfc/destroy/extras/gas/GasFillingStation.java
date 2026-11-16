@@ -40,14 +40,25 @@ public final class GasFillingStation {
     static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GasFillingStationEntity>> ENTITY =
         DestroyExtras.BLOCK_ENTITIES.register("gas_filling_station", () -> BlockEntityType.Builder
             .of(GasFillingStationEntity::new, BLOCK.get()).build(null));
-    public static final DeferredItem<GasCylinderItem> STEEL = cylinder("gas_cylinder_steel", 10, 2);
-    public static final DeferredItem<GasCylinderItem> STAINLESS = cylinder("gas_cylinder_stainless_steel", 20, 4);
-    public static final DeferredItem<GasCylinderItem> BLUE_STEEL = cylinder("gas_cylinder_blue_steel", 40, 6);
+    static final DeferredBlock<GasCylinderBlock> STEEL_BLOCK = cylinderBlock("gas_cylinder_steel");
+    static final DeferredBlock<GasCylinderBlock> STAINLESS_BLOCK = cylinderBlock("gas_cylinder_stainless_steel");
+    static final DeferredBlock<GasCylinderBlock> BLUE_STEEL_BLOCK = cylinderBlock("gas_cylinder_blue_steel");
+    static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GasCylinderEntity>> CYLINDER_ENTITY =
+        DestroyExtras.BLOCK_ENTITIES.register("gas_cylinder", () -> BlockEntityType.Builder
+            .of(GasCylinderEntity::new, STEEL_BLOCK.get(), STAINLESS_BLOCK.get(), BLUE_STEEL_BLOCK.get()).build(null));
+    public static final DeferredItem<GasCylinderItem> STEEL = cylinder(STEEL_BLOCK, 10, 2);
+    public static final DeferredItem<GasCylinderItem> STAINLESS = cylinder(STAINLESS_BLOCK, 20, 4);
+    public static final DeferredItem<GasCylinderItem> BLUE_STEEL = cylinder(BLUE_STEEL_BLOCK, 40, 6);
 
     private GasFillingStation() {}
 
-    private static DeferredItem<GasCylinderItem> cylinder(String id, int volume, int pressure) {
-        return DestroyExtras.ITEMS.register(id, () -> new GasCylinderItem(volume, pressure));
+    private static DeferredBlock<GasCylinderBlock> cylinderBlock(String id) {
+        return DestroyExtras.BLOCKS.register(id, () -> new GasCylinderBlock(BlockBehaviour.Properties.of()
+            .strength(2.5f).requiresCorrectToolForDrops().noOcclusion().pushReaction(net.minecraft.world.level.material.PushReaction.BLOCK)));
+    }
+
+    private static DeferredItem<GasCylinderItem> cylinder(DeferredBlock<GasCylinderBlock> block, int volume, int pressure) {
+        return DestroyExtras.ITEMS.register(block.getId().getPath(), () -> new GasCylinderItem(block.get(), volume, pressure));
     }
 
     public static void register(IEventBus bus) {
@@ -58,6 +69,8 @@ public final class GasFillingStation {
     private static void capabilities(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ENTITY.get(),
             (station, side) -> station.portSide() == side ? station.inlet : null);
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, CYLINDER_ENTITY.get(),
+            (cylinder, side) -> side == net.minecraft.core.Direction.UP ? cylinder.port() : null);
     }
 
     public static void addToTab(BuildCreativeModeTabContentsEvent event) {

@@ -156,8 +156,8 @@ public final class DestroyExtras {
         if (event.getTabKey().equals(CEECreativeTab.CREATIVE_TAB)) {
             event.accept(ELECTROLYZER_ITEM.get());
             event.accept(MEMBRANE_ITEM.get());
-            event.accept(GasPipes.HYDROGEN_ITEM.get());
-            event.accept(GasPipes.CHLORINE_ITEM.get());
+            event.accept(GasPipes.PIPE_ITEM.get());
+            event.accept(GasPipes.VALVE_ITEM.get());
             GasFillingStation.addToTab(event);
             event.accept(ETCHING_BATH_ITEM.get());
             event.accept(METALLURGY_ITEM.get());

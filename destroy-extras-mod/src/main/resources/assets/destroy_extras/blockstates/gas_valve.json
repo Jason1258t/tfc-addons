@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "axis=y,open=true": {
+      "model": "destroy_extras:block/gas_valve_open"
+    },
+    "axis=y,open=false": {
+      "model": "destroy_extras:block/gas_valve_closed"
+    },
+    "axis=z,open=true": {
+      "model": "destroy_extras:block/gas_valve_open",
+      "x": 90
+    },
+    "axis=z,open=false": {
+      "model": "destroy_extras:block/gas_valve_closed",
+      "x": 90
+    },
+    "axis=x,open=true": {
+      "model": "destroy_extras:block/gas_valve_open",
+      "x": 90,
+      "y": 90
+    },
+    "axis=x,open=false": {
+      "model": "destroy_extras:block/gas_valve_closed",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

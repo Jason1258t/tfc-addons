@@ -28,6 +28,11 @@
     },
     "destroy_extras:hydrogen_pipe",
     "destroy_extras:chlorine_pipe",
-    "destroy_extras:gas_filling_station"
+    "destroy_extras:gas_filling_station",
+    "destroy_extras:gas_pipe",
+    "destroy_extras:gas_valve",
+    "destroy_extras:gas_cylinder_steel",
+    "destroy_extras:gas_cylinder_stainless_steel",
+    "destroy_extras:gas_cylinder_blue_steel"
   ]
 }

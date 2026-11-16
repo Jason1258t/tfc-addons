@@ -1,8 +1,8 @@
 {
   "parent": "minecraft:block/orientable",
   "textures": {
-    "front": "minecraft:block/smithing_table_front",
-    "top": "tfc:block/metal/block/steel",
-    "side": "tfc:block/metal/block/steel"
+    "front": "destroy_extras:block/machines/dock_front",
+    "side": "destroy_extras:block/machines/tank_case",
+    "top": "destroy_extras:block/machines/dock_top"
   }
 }

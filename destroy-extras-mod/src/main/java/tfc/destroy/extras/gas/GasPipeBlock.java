@@ -22,7 +22,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import petrolpark.mc.destroy.DestroyDataComponents;
 
-public final class GasPipeBlock extends PipeBlock {
+public class GasPipeBlock extends PipeBlock {
     public static final MapCodec<GasPipeBlock> CODEC = simpleCodec(GasPipeBlock::new);
     private static final int TRANSFER_LIMIT = 250;
     private static final int MAX_PIPES = 256;
@@ -33,12 +33,14 @@ public final class GasPipeBlock extends PipeBlock {
     public GasPipeBlock(Properties properties) {
         super(1.5f / 16, properties);
         BlockState state = stateDefinition.any();
-        for (var property : PROPERTY_BY_DIRECTION.values()) state = state.setValue(property, false);
+        for (var property : PROPERTY_BY_DIRECTION.values()) {
+            if (state.hasProperty(property)) state = state.setValue(property, false);
+        }
         registerDefaultState(state);
     }
 
     @Override
-    protected MapCodec<GasPipeBlock> codec() {
+    protected MapCodec<? extends GasPipeBlock> codec() {
         return CODEC;
     }
 
@@ -51,8 +53,8 @@ public final class GasPipeBlock extends PipeBlock {
         BlockPos neighbor = pos.relative(side);
         if (!level.hasChunkAt(neighbor)) return state;
         BlockState target = level.getBlockState(neighbor);
-        boolean connected = target.getBlock() instanceof GasPipeBlock
-            ? target.is(this)
+        boolean connected = target.getBlock() instanceof GasPipeBlock pipe
+            ? connectsTo(pipe) && pipe.hasPort(target, side.getOpposite())
             : level instanceof Level world && world.getCapability(Capabilities.FluidHandler.BLOCK, neighbor, side.getOpposite()) != null;
         return state.setValue(PROPERTY_BY_DIRECTION.get(side), connected);
     }
@@ -88,13 +90,26 @@ public final class GasPipeBlock extends PipeBlock {
         return result;
     }
 
+    private boolean connectsTo(GasPipeBlock other) {
+        // Старые линии разных цветов могли соприкасаться без соединения.
+        return !(this == GasPipes.HYDROGEN.get() && other == GasPipes.CHLORINE.get()
+            || this == GasPipes.CHLORINE.get() && other == GasPipes.HYDROGEN.get());
+    }
+
+    boolean hasPort(BlockState state, Direction side) {
+        return true;
+    }
+
+    boolean permitsFlow(BlockState state, Direction side) {
+        return hasPort(state, side);
+    }
+
     private boolean accepts(FluidStack stack) {
-        String expected = this == GasPipes.HYDROGEN.get() ? "destroy:hydrogen" : "destroy:chlorine";
-        return expected.equals(GasTankLogic.gasSpecies(stack));
+        return !GasTankLogic.gasSpecies(stack).isEmpty();
     }
 
     IFluidHandler handler(Level level, BlockPos pos, Direction from) {
-        return new Port(level, pos.immutable(), from);
+        return hasPort(level.getBlockState(pos), from) ? new Port(level, pos.immutable(), from) : null;
     }
 
     /** Автоматическая выдача только в выделенную газовую линию. */
@@ -120,12 +135,15 @@ public final class GasPipeBlock extends PipeBlock {
         queue.add(inlet);
         while (!queue.isEmpty()) {
             BlockPos pipe = queue.removeFirst();
+            BlockState pipeState = level.getBlockState(pipe);
+            GasPipeBlock segment = (GasPipeBlock) pipeState.getBlock();
             for (Direction side : DIRECTIONS) {
+                if (!segment.permitsFlow(pipeState, side)) continue;
                 BlockPos target = pipe.relative(side);
                 if (target.equals(source) || target.equals(blockedReceiver) || !level.hasChunkAt(target)) continue;
                 BlockState targetState = level.getBlockState(target);
                 if (targetState.getBlock() instanceof GasPipeBlock next) {
-                    if (next == this && visited.add(target)) {
+                    if (segment.connectsTo(next) && next.permitsFlow(targetState, side.getOpposite()) && visited.add(target)) {
                         if (visited.size() > MAX_PIPES) return 0;
                         queue.add(target);
                     }
@@ -147,7 +165,9 @@ public final class GasPipeBlock extends PipeBlock {
 
     private int transfer(Level level, BlockPos pos, Direction from, FluidStack resource, FluidAction action, BlockPos blockedReceiver) {
         if (level.isClientSide || TRANSFERRING.get() != null || !accepts(resource)
-            || !level.hasChunkAt(pos) || !level.getBlockState(pos).is(GasPipeBlock.this)) return 0;
+            || !level.hasChunkAt(pos)) return 0;
+        BlockState state = level.getBlockState(pos);
+        if (!state.is(this) || !permitsFlow(state, from)) return 0;
         TRANSFERRING.set(true);
         try {
             FluidStack gas = resource.copy();

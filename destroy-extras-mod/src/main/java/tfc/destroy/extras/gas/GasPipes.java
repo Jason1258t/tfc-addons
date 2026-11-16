@@ -10,6 +10,12 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import tfc.destroy.extras.DestroyExtras;
 
 public final class GasPipes {
+    public static final DeferredBlock<GasPipeBlock> PIPE = pipe("gas_pipe");
+    public static final DeferredBlock<GasValveBlock> VALVE = DestroyExtras.BLOCKS.register("gas_valve",
+        () -> new GasValveBlock(properties()));
+    public static final DeferredItem<BlockItem> PIPE_ITEM = DestroyExtras.ITEMS.registerSimpleBlockItem(PIPE);
+    public static final DeferredItem<BlockItem> VALVE_ITEM = DestroyExtras.ITEMS.registerSimpleBlockItem(VALVE);
+    // Старые ID остаются рабочими в сохранениях и совместимы с новой трубкой.
     public static final DeferredBlock<GasPipeBlock> HYDROGEN = pipe("hydrogen_pipe");
     public static final DeferredBlock<GasPipeBlock> CHLORINE = pipe("chlorine_pipe");
     public static final DeferredItem<BlockItem> HYDROGEN_ITEM = DestroyExtras.ITEMS.registerSimpleBlockItem(HYDROGEN);
@@ -19,7 +25,11 @@ public final class GasPipes {
 
     private static DeferredBlock<GasPipeBlock> pipe(String id) {
         return DestroyExtras.BLOCKS.register(id,
-            () -> new GasPipeBlock(BlockBehaviour.Properties.of().strength(1.5f).requiresCorrectToolForDrops().noOcclusion()));
+            () -> new GasPipeBlock(properties()));
+    }
+
+    private static BlockBehaviour.Properties properties() {
+        return BlockBehaviour.Properties.of().strength(1.5f).requiresCorrectToolForDrops().noOcclusion();
     }
 
     public static void register(IEventBus bus) {
@@ -27,7 +37,7 @@ public final class GasPipes {
     }
 
     private static void registerCapabilities(RegisterCapabilitiesEvent event) {
-        for (GasPipeBlock pipe : new GasPipeBlock[]{HYDROGEN.get(), CHLORINE.get()}) {
+        for (GasPipeBlock pipe : new GasPipeBlock[]{PIPE.get(), VALVE.get(), HYDROGEN.get(), CHLORINE.get()}) {
             event.registerBlock(Capabilities.FluidHandler.BLOCK,
                 (level, pos, state, blockEntity, side) -> pipe.handler(level, pos, side), pipe);
         }

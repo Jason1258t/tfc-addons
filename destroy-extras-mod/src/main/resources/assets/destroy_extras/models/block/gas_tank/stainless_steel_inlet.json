@@ -7,6 +7,6 @@
     "bottom": "firmalife:block/metal/block/stainless_steel",
     "up": "firmalife:block/metal/block/stainless_steel",
     "down": "firmalife:block/metal/block/stainless_steel",
-    "front": "minecraft:block/smithing_table_front"
+    "front": "destroy_extras:block/machines/tank_front"
   }
 }

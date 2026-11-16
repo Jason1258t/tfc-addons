@@ -139,7 +139,8 @@ def main():
     tag_path = ROOT / "data/minecraft/tags/block/mineable/pickaxe.json"
     tag = json.loads(tag_path.read_text())
     common = "gas_tank_controller"
-    model(common, {"all": "minecraft:block/smithing_table_side"})
+    model(common, {"side": "destroy_extras:block/machines/tank_front",
+                   "end": "destroy_extras:block/machines/tank_case"}, "minecraft:block/cube_column")
 
     for material, (_, namespace, _, _) in MATERIALS.items():
         texture = f"{namespace}:block/metal/block/{material}"
@@ -151,7 +152,7 @@ def main():
             "bottom": texture,
             "up": texture,
             "down": texture,
-            "front": "minecraft:block/smithing_table_front",
+            "front": "destroy_extras:block/machines/tank_front",
         }, "minecraft:block/orientable")
 
     for size, (width, height, size_ru, size_en) in SIZES.items():

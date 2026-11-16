@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "destroy_extras:chlorine_pipe"
+    }
+  ],
+  "result": {
+    "id": "destroy_extras:gas_pipe",
+    "count": 1
+  }
+}

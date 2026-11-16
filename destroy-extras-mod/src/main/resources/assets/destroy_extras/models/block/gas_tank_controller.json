@@ -1,6 +1,7 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube_column",
   "textures": {
-    "all": "minecraft:block/smithing_table_side"
+    "side": "destroy_extras:block/machines/tank_front",
+    "end": "destroy_extras:block/machines/tank_case"
   }
 }

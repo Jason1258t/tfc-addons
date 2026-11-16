@@ -88,12 +88,10 @@ final class GasFillingStationEntity extends BlockEntity {
 
     private int receive(FluidStack offered, IFluidHandler.FluidAction action) {
         if (discharge || !powered() || !(cylinder.getItem() instanceof GasCylinderItem item)) return 0;
-        FluidStack incoming = GasTankLogic.canonicalGas(offered);
         FluidStack stored = item.gas(cylinder);
-        if (incoming.isEmpty() || !stored.isEmpty() && !FluidStack.isSameFluidSameComponents(incoming, stored)) return 0;
-        int accepted = Math.min(TRANSFER_LIMIT, Math.min(incoming.getAmount(), item.capacity() - stored.getAmount()));
+        int accepted = Math.min(TRANSFER_LIMIT, GasTankLogic.accepted(stored, offered, item.capacity()));
         if (accepted > 0 && action.execute()) {
-            item.setGas(cylinder, incoming, stored.getAmount() + accepted);
+            item.setGas(cylinder, GasTankLogic.add(stored, offered, accepted));
             setChanged();
         }
         return accepted;
@@ -115,14 +113,14 @@ final class GasFillingStationEntity extends BlockEntity {
         BlockPos neighbor = worldPosition.relative(side);
         IFluidHandler port = server.hasChunkAt(neighbor)
             ? server.getCapability(Capabilities.FluidHandler.BLOCK, neighbor, side.getOpposite()) : null;
-        device.setActive(port != null && (discharge ? !stored.isEmpty() : stored.getAmount() < item.capacity()));
+        device.setActive(port != null && (discharge ? !stored.isEmpty() : GasTankLogic.millimoles(stored) < item.capacity()));
         if (port == null || !powered()) return;
 
         if (discharge) {
             if (stored.isEmpty()) return;
             int moved = port.fill(stored.copyWithAmount(Math.min(TRANSFER_LIMIT, stored.getAmount())), IFluidHandler.FluidAction.EXECUTE);
             if (moved > 0) {
-                item.setGas(cylinder, stored, stored.getAmount() - moved);
+                item.setGas(cylinder, stored.copyWithAmount(stored.getAmount() - moved));
                 setChanged();
             }
         } else {
