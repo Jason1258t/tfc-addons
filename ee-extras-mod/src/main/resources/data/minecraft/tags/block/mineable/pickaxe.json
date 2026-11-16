@@ -37,6 +37,7 @@
     },
     "ee_extras:pcb_design_table",
     "ee_extras:pcb_photolithographer",
-    "ee_extras:pcb_via_metallizer"
+    "ee_extras:pcb_via_metallizer",
+    "ee_extras:electric_press"
   ]
 }

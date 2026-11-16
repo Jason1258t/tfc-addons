@@ -10,6 +10,10 @@ import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.george_vi.electroenergetics.simulation.WireType;
+import ee.extras.machine.ElectricPressBlock;
+import ee.extras.machine.ElectricPressBlockEntity;
+import ee.extras.machine.ElectricPressRenderer;
+import ee.extras.machine.PressMotorDevice;
 import ee.extras.motor.BeltMotorDevice;
 import ee.extras.motor.BeltMotorItem;
 import ee.extras.ac.AcBlocks;
@@ -52,10 +56,12 @@ import org.slf4j.Logger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.api.distmarker.Dist;
@@ -96,6 +102,16 @@ public class EeExtras {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MOD_ID);
     public static final DeferredRegister<WireType> WIRES = DeferredRegister.create(CEERegistries.WIRE_TYPE, MOD_ID);
+
+    public static final DeferredHolder<SimulatedDeviceType<?>, SimulatedDeviceType<PressMotorDevice>> ELECTRIC_PRESS_DEVICE =
+            DEVICES.register("electric_press", () -> new SimulatedDeviceType<>(rl("electric_press"), PressMotorDevice::new));
+    public static final DeferredBlock<ElectricPressBlock> ELECTRIC_PRESS =
+            BLOCKS.register("electric_press", () -> new ElectricPressBlock(metal().noOcclusion().pushReaction(PushReaction.BLOCK)));
+    public static final DeferredItem<BlockItem> ELECTRIC_PRESS_ITEM =
+            ITEMS.registerSimpleBlockItem(ELECTRIC_PRESS);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ElectricPressBlockEntity>> ELECTRIC_PRESS_BE =
+            BLOCK_ENTITIES.register("electric_press", () -> BlockEntityType.Builder
+                    .of(ElectricPressBlockEntity::new, ELECTRIC_PRESS.get()).build(null));
 
     public static final Kind<RectifierDevice> THREE_PHASE = new Kind<>(Layout.THREE_PHASE, Tier.LIGHT, RectifierDevice::new);
     public static final Kind<RectifierDevice> SINGLE_PHASE = new Kind<>(Layout.SINGLE_PHASE, Tier.LIGHT, RectifierDevice::new);
@@ -292,6 +308,7 @@ public class EeExtras {
             LinesClient.register(modBus, NeoForge.EVENT_BUS);
             LanternConversion.registerTooltip(NeoForge.EVENT_BUS);
             GeneratorClient.register(modBus);
+            ElectricPressRenderer.register(modBus);
             DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> {
                 ee.extras.pcb.PcbClient.register(modBus);
                 return null;
@@ -312,6 +329,7 @@ public class EeExtras {
         if (!event.getTabKey().equals(CEECreativeTab.CREATIVE_TAB.getKey())) return;
         for (Kind<?> k : POWER) event.accept(k.item.get());
         AcBlocks.addToTab(event);
+        event.accept(ELECTRIC_PRESS_ITEM.get());
         event.accept(ee.extras.panel.PanelModules.SWITCH_ITEM.get());
         for (Supplier<? extends Item> item : new Supplier[] {KINETIC_GENERATOR_ITEM, CONVERTER_ITEM, CABLE_CONVERTER_ITEM,
                 FOUR_CORE_TERMINATION_ITEM, PHASE_TAP_ITEM, DUPLEX_INSULATOR_ITEM, FOUR_CORE_INSULATOR_ITEM, FOUR_CORE_SPOOL, THIN_SPOOL, THIN_SINGLE_SPOOL, DECORATIVE_SINGLE_SPOOL, CABLE_CAP})

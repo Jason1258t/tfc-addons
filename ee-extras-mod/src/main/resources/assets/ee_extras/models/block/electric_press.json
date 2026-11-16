@@ -1,0 +1,9 @@
+{
+  "parent": "create:block/mechanical_press/block",
+  "textures": {
+    "gearbox": "ee_extras:block/electric_press_front",
+    "4": "ee_extras:block/electric_press_side",
+    "mechanical_press_top": "ee_extras:block/electric_press_top",
+    "particle": "ee_extras:block/electric_press_side"
+  }
+}
