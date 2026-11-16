@@ -82,16 +82,11 @@ final class IntegratedDrivesScene {
                 }
             }
             var first = context.at(-1, 1, 4);
-            var input = level.getBlockEntity(first);
-            if (input != null) {
-                // Загрузка через штатный формат секции проверяет путь по желобу отдельно от выдачи смежных блоков.
-                var tag = input.saveWithoutMetadata(level.registryAccess());
-                var inventory = tag.getCompound("Inventory");
-                inventory.put("item", new ItemStack(Items.EMERALD, 16).save(level.registryAccess()));
-                tag.put("Inventory", inventory);
-                input.loadWithComponents(tag, level.registryAccess());
-            }
-            scene.check("в исходной секции 16 изумрудов", deliveredEmeralds(level, first) == 16);
+            var stack = new ItemStack(Items.EMERALD, 16);
+            var remainder = augerSlot(level, first, "insertSlot",
+                    new Class<?>[] {ItemStack.class, int.class, boolean.class}, stack, 0, false);
+            scene.check("в исходной секции 16 изумрудов (остаток " + remainder + ")", remainder.isEmpty()
+                    && deliveredEmeralds(level, first) == 16);
             player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         });
         scene.until("крайняя секция получила 16 изумрудов", 800, () -> {
@@ -158,10 +153,21 @@ final class IntegratedDrivesScene {
     }
 
     private static int deliveredEmeralds(ServerLevel level, BlockPos pos) {
-        var output = level.getBlockEntity(pos);
-        if (output == null) return 0;
-        var item = output.saveWithoutMetadata(level.registryAccess()).getCompound("Inventory").getCompound("item");
-        return "minecraft:emerald".equals(item.getString("id")) ? item.getInt("count") : 0;
+        var stack = augerSlot(level, pos, "getItem", new Class<?>[] {int.class}, 0);
+        return stack.is(Items.EMERALD) ? stack.getCount() : 0;
+    }
+
+    private static ItemStack augerSlot(ServerLevel level, BlockPos pos, String operation,
+                                      Class<?>[] types, Object... args) {
+        var entity = level.getBlockEntity(pos);
+        if (entity == null) return ItemStack.EMPTY;
+        try {
+            // Simulated необязателен для EE Extras. Сцена полной сборки обращается к его обычному инвентарю.
+            var inventory = entity.getClass().getMethod("getInventory").invoke(entity);
+            return (ItemStack) inventory.getClass().getMethod(operation, types).invoke(inventory, args);
+        } catch (ReflectiveOperationException error) {
+            throw new IllegalStateException("Инвентарь шнека на " + pos.toShortString(), error);
+        }
     }
 
     private static boolean install(ServerPlayer player, BlockPos pos) {
