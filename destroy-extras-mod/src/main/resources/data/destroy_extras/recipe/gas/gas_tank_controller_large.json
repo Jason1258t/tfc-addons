@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SSS",
+    "PMP",
+    "SSS"
+  ],
+  "key": {
+    "S": {
+      "item": "immersiveengineering:sheetmetal_steel"
+    },
+    "P": {
+      "item": "immersiveengineering:fluid_pipe"
+    },
+    "M": {
+      "item": "immersiveengineering:component_steel"
+    }
+  },
+  "result": {
+    "id": "destroy_extras:gas_tank_controller_large",
+    "count": 1
+  }
+}

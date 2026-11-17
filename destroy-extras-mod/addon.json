@@ -1,13 +1,13 @@
 {
   "id": "destroy_extras",
   "name": "Destroy Extras — химические машины",
-  "version": "0.9.0",
-  "jar": "destroy-extras-0.9.0.jar",
-  "sha256": "8e31e97f6081ffecc876d4de32dbd82fa2a07cbbe9a259eda09ad26e0ea1f77c",
+  "version": "0.11.1",
+  "jar": "destroy-extras-0.11.1.jar",
+  "sha256": "5b00b2d0ff69d3ff1d80de5888810b1627d0a240dcf62d5a4c3f362ec806a9a4",
   "order": 801,
   "side": "both",
-  "summary": "Химические машины Destroy: мембранный электролизёр — мультиблок IE с окном, очками Create и рецептами разных реакций; травление плат L1–L3 и металлургический процессор. Выщелачивание и электроэкстракция Cu/Ni/Zn, Bayer и Hall–Héroult, регенерация FeCl₃ и переработка электронного лома. Рецепты загружаются из datapack, питание — 240/300/600 В EE.",
-  "needs": "Сервер и все игроки; ставится обычным tfc pull. NeoForge 21.1.251+, Destroy 0.4.6-eligibbs, Petrolpark 1.5.11, Destroy Bridge 0.2.0, EE Extras 2.9.0+, Create 6.0.10, Electro Energetics 1.1.2+ и Immersive Engineering 12.4.2+. Survival-рецепты также используют TFC.",
+  "summary": "Мембранный электролизёр, баки и универсальные трубки для водорода, хлора, азота и кислорода. Устанавливаемые баллоны, вентили и узел заправки. Травление плат L1–L3 и химическая металлургия Destroy.",
+  "needs": "Сервер и все игроки; ставится обычным tfc pull. NeoForge 21.1.251+, Destroy 0.4.6-eligibbs, Petrolpark 1.5.11, Destroy Bridge 0.2.0, EE Extras 2.9.0+, Create 6.0.10, Electro Energetics 1.1.2+ и Immersive Engineering 12.4.2+. Survival-рецепты также используют TFC. Нержавеющие баки и баллоны используют Firmalife.",
   "blocks": [
     {
       "id": "destroy_extras:membrane_electrolyzer",
@@ -134,6 +134,171 @@
       "id": "destroy_extras:stabilized_tailings",
       "name": "Стабилизированные хвосты",
       "image": "stabilized_tailings.png"
+    },
+    {
+      "id": "destroy_extras:gas_tank_controller_compact",
+      "name": "Компактный контроллер газового бака",
+      "image": "gas_tank_controller_compact.png",
+      "recipe": {
+        "pattern": [" S ", "PMP", " S "],
+        "key": {
+          "S": {
+            "item": "immersiveengineering:sheetmetal_steel"
+          },
+          "P": {
+            "item": "immersiveengineering:fluid_pipe"
+          },
+          "M": {
+            "item": "immersiveengineering:component_steel"
+          }
+        }
+      }
+    },
+    {
+      "id": "destroy_extras:gas_tank_controller_medium",
+      "name": "Средний контроллер газового бака",
+      "image": "gas_tank_controller_medium.png",
+      "recipe": {
+        "pattern": ["SSS", "PMP", " S "],
+        "key": {
+          "S": {
+            "item": "immersiveengineering:sheetmetal_steel"
+          },
+          "P": {
+            "item": "immersiveengineering:fluid_pipe"
+          },
+          "M": {
+            "item": "immersiveengineering:component_steel"
+          }
+        }
+      }
+    },
+    {
+      "id": "destroy_extras:gas_tank_controller_large",
+      "name": "Большой контроллер газового бака",
+      "image": "gas_tank_controller_large.png",
+      "recipe": {
+        "pattern": ["SSS", "PMP", "SSS"],
+        "key": {
+          "S": {
+            "item": "immersiveengineering:sheetmetal_steel"
+          },
+          "P": {
+            "item": "immersiveengineering:fluid_pipe"
+          },
+          "M": {
+            "item": "immersiveengineering:component_steel"
+          }
+        }
+      }
+    },
+    {
+      "id": "destroy_extras:gas_pipe",
+      "name": "Газовая трубка",
+      "image": "gas_pipe.png",
+      "recipe": {
+        "pattern": ["PPP", " C "],
+        "key": {
+          "P": {
+            "item": "immersiveengineering:fluid_pipe"
+          },
+          "C": {
+            "item": "minecraft:copper_ingot"
+          }
+        },
+        "count": 3
+      }
+    },
+    {
+      "id": "destroy_extras:gas_valve",
+      "name": "Газовый вентиль",
+      "image": "gas_valve.png",
+      "recipe": {
+        "pattern": [" L ", "PCP"],
+        "key": {
+          "L": {
+            "item": "minecraft:lever"
+          },
+          "P": {
+            "item": "destroy_extras:gas_pipe",
+            "image": "gas_pipe.png",
+            "name": "Газовая трубка"
+          },
+          "C": {
+            "item": "minecraft:copper_ingot"
+          }
+        }
+      }
+    },
+    {
+      "id": "destroy_extras:gas_filling_station",
+      "name": "Узел заправки газовых баллонов",
+      "image": "gas_filling_station.png",
+      "recipe": {
+        "pattern": ["SPS", "CMC", "SSS"],
+        "key": {
+          "S": {
+            "item": "immersiveengineering:sheetmetal_steel"
+          },
+          "P": {
+            "item": "immersiveengineering:fluid_pipe"
+          },
+          "C": {
+            "item": "minecraft:copper_ingot"
+          },
+          "M": {
+            "item": "immersiveengineering:component_steel"
+          }
+        }
+      }
+    },
+    {
+      "id": "destroy_extras:gas_cylinder_steel",
+      "name": "Стальной газовый баллон",
+      "image": "gas_cylinder_steel.png",
+      "recipe": {
+        "pattern": [" P ", "S S", "SSS"],
+        "key": {
+          "P": {
+            "item": "immersiveengineering:fluid_pipe"
+          },
+          "S": {
+            "item": "tfc:metal/sheet/steel"
+          }
+        }
+      }
+    },
+    {
+      "id": "destroy_extras:gas_cylinder_stainless_steel",
+      "name": "Нержавеющий газовый баллон",
+      "image": "gas_cylinder_stainless_steel.png",
+      "recipe": {
+        "pattern": [" P ", "S S", "SSS"],
+        "key": {
+          "P": {
+            "item": "immersiveengineering:fluid_pipe"
+          },
+          "S": {
+            "item": "firmalife:metal/sheet/stainless_steel"
+          }
+        }
+      }
+    },
+    {
+      "id": "destroy_extras:gas_cylinder_blue_steel",
+      "name": "Газовый баллон из синей стали",
+      "image": "gas_cylinder_blue_steel.png",
+      "recipe": {
+        "pattern": [" P ", "S S", "SSS"],
+        "key": {
+          "P": {
+            "item": "immersiveengineering:fluid_pipe"
+          },
+          "S": {
+            "item": "tfc:metal/double_sheet/blue_steel"
+          }
+        }
+      }
     }
   ]
 }

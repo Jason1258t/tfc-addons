@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "side": "destroy_extras:block/machines/tank_front",
+    "end": "destroy_extras:block/machines/tank_case"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "variants": {
+    "multiblockslave=true": {
+      "model": "destroy_extras:block/gas_tank/stainless_steel"
+    },
+    "facing=north,multiblockslave=false": {
+      "model": "destroy_extras:block/gas_tank/stainless_steel_inlet",
+      "y": 180
+    },
+    "facing=east,multiblockslave=false": {
+      "model": "destroy_extras:block/gas_tank/stainless_steel_inlet",
+      "y": 270
+    },
+    "facing=south,multiblockslave=false": {
+      "model": "destroy_extras:block/gas_tank/stainless_steel_inlet",
+      "y": 0
+    },
+    "facing=west,multiblockslave=false": {
+      "model": "destroy_extras:block/gas_tank/stainless_steel_inlet",
+      "y": 90
+    }
+  }
+}

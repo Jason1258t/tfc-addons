@@ -39,6 +39,7 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 import tfc.destroy.bridge.electric.ProcessPowerDevice;
 import tfc.destroy.bridge.fluid.AtomicFluidOperation;
 import tfc.destroy.bridge.fluid.SaltWaterAdapter;
+import tfc.destroy.extras.gas.GasPipeBlock;
 import tfc.destroy.extras.DestroyExtras;
 import tfc.destroy.extras.recipe.ExtrasRecipeTypes;
 import tfc.destroy.extras.recipe.MembraneElectrolysisRecipe;
@@ -53,6 +54,8 @@ public final class ElectrolyzerLogic implements IMultiblockLogic<ElectrolyzerLog
     public static final int MIXTURE_CAPACITY = 2000;
     public static final int OUTPUT_CAPACITY = 4000;
     public static final int MEMBRANE_OPERATIONS = 64;
+    private static final double MIN_OPERATING_VOLTAGE = ProcessPowerDevice.NOMINAL_VOLTAGE * 0.9;
+    private static final double MAX_OPERATING_VOLTAGE = ProcessPowerDevice.NOMINAL_VOLTAGE * 1.1;
 
     /** Клетка с клеммами EE: верх, задний ряд, середина. */
     public static final BlockPos POWER = new BlockPos(1, 2, 0);
@@ -144,6 +147,14 @@ public final class ElectrolyzerLogic implements IMultiblockLogic<ElectrolyzerLog
         if (!(context.getLevel().getRawLevel() instanceof ServerLevel level)) return;
         ElectrolyzerStatus previous = state.status;
         state.tick(level, context.getLevel().toAbsolute(POWER));
+        if (!state.cathodeGas.isEmpty()) {
+            GasPipeBlock.pushIntoPipe(level, context.getLevel().toAbsolute(CATHODE_GAS_PORT.posInMultiblock()),
+                Direction.UP, state.cathodeGasOut);
+        }
+        if (!state.anodeGas.isEmpty()) {
+            GasPipeBlock.pushIntoPipe(level, context.getLevel().toAbsolute(ANODE_GAS_PORT.posInMultiblock()),
+                Direction.UP, state.anodeGasOut);
+        }
         // Очкам нужны прогресс и баки: при смене состояния сразу, иначе раз в полсекунды, если что-то поменялось.
         Synced now = state.synced();
         if (state.status != previous || context.getLevel().shouldTickModulo(10) && !now.equals(state.lastSent)) {
@@ -252,7 +263,7 @@ public final class ElectrolyzerLogic implements IMultiblockLogic<ElectrolyzerLog
                 blocked = blockedPort(value, targets, products);
             } else if (!hasBatch) {
                 status = ElectrolyzerStatus.IDLE;
-            } else if (!device.hasWorkingPower()) {
+            } else if (!(voltage >= MIN_OPERATING_VOLTAGE && voltage <= MAX_OPERATING_VOLTAGE)) {
                 status = ElectrolyzerStatus.WAITING_FOR_POWER;
             } else {
                 status = ElectrolyzerStatus.RUNNING;

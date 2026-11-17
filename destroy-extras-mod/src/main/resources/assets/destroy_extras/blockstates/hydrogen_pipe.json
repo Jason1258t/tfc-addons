@@ -1,0 +1,62 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "destroy_extras:block/gas_pipe/hydrogen_center"
+      }
+    },
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "destroy_extras:block/gas_pipe/hydrogen_arm"
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "destroy_extras:block/gas_pipe/hydrogen_arm",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "destroy_extras:block/gas_pipe/hydrogen_arm",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "destroy_extras:block/gas_pipe/hydrogen_arm",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "true"
+      },
+      "apply": {
+        "model": "destroy_extras:block/gas_pipe/hydrogen_arm",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "down": "true"
+      },
+      "apply": {
+        "model": "destroy_extras:block/gas_pipe/hydrogen_arm",
+        "x": 90
+      }
+    }
+  ]
+}

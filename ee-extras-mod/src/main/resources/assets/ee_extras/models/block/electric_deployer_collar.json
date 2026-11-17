@@ -1,0 +1,16 @@
+{
+  "credit": "Made with Blockbench",
+  "parent": "block/block",
+  "ambientocclusion": false,
+  "textures": {
+    "mechanical_press_pole": "create:block/mechanical_press_pole"
+  },
+  "elements": [],
+  "groups": [
+    {
+      "name": "head",
+      "origin": [8, 8, 8],
+      "children": [0, 1]
+    }
+  ]
+}

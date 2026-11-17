@@ -1,0 +1,174 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "axis_along_first": "false",
+        "facing": "down"
+      },
+      "apply": {
+        "model": "ee_extras:block/electric_deployer_horizontal",
+        "x": 270,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis_along_first": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "ee_extras:block/electric_deployer_horizontal",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "axis_along_first": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "ee_extras:block/electric_deployer_vertical",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "axis_along_first": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "ee_extras:block/electric_deployer_vertical"
+      }
+    },
+    {
+      "when": {
+        "axis_along_first": "false",
+        "facing": "up"
+      },
+      "apply": {
+        "model": "ee_extras:block/electric_deployer_horizontal",
+        "x": 90,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis_along_first": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "ee_extras:block/electric_deployer_horizontal",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis_along_first": "true",
+        "facing": "down"
+      },
+      "apply": {
+        "model": "ee_extras:block/electric_deployer_horizontal",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "axis_along_first": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "ee_extras:block/electric_deployer_vertical",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "axis_along_first": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "ee_extras:block/electric_deployer_horizontal",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "axis_along_first": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "ee_extras:block/electric_deployer_horizontal"
+      }
+    },
+    {
+      "when": {
+        "axis_along_first": "true",
+        "facing": "up"
+      },
+      "apply": {
+        "model": "ee_extras:block/electric_deployer_horizontal",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "axis_along_first": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "ee_extras:block/electric_deployer_vertical",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "ee_extras:block/electric_press_terminals"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "ee_extras:block/electric_press_terminals"
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "ee_extras:block/electric_press_terminals"
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "ee_extras:block/electric_press_terminals"
+      }
+    },
+    {
+      "when": {
+        "facing": "up"
+      },
+      "apply": {
+        "model": "ee_extras:block/electric_press_terminals",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "down"
+      },
+      "apply": {
+        "model": "ee_extras:block/electric_press_terminals",
+        "x": 90
+      }
+    }
+  ]
+}

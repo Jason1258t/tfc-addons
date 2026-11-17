@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "create:mechanical_press"
+    },
+    {
+      "item": "ee_extras:small_motor"
+    },
+    {
+      "item": "ee_extras:copper_busbar"
+    }
+  ],
+  "result": {
+    "id": "ee_extras:electric_press"
+  }
+}

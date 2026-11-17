@@ -65,6 +65,9 @@ public class DevTest {
         Wire.register(d);
         ElectronicsTest.register(d);
         SolarTest.register(d);
+        BeltMotorTest.register(d);
+        ElectricPressTest.register(d);
+        ElectricMachinesTest.register(d);
         if (net.neoforged.fml.ModList.get().isLoaded("computercraft")) ComputerCraftTest.register(d);
         if (net.neoforged.fml.ModList.get().isLoaded("destroy")) registerPetTest(d);
         if (net.neoforged.fml.ModList.get().isLoaded("tfc")) ThermometerTest.register(d);
@@ -171,6 +174,12 @@ public class DevTest {
                 .then(Commands.literal("lanternreport").executes(c -> Lantern.report(c.getSource())))
                 .then(Commands.literal("lanternie").executes(c -> Lantern.ieWired(c.getSource())))
                 .then(Commands.literal("lanterncut").executes(c -> Lantern.cut(c.getSource())))
+                .then(Commands.literal("panel").executes(c -> PanelTest.build(c.getSource())))
+                .then(Commands.literal("panelsingle").executes(c -> PanelTest.buildSinglePole(c.getSource())))
+                .then(Commands.literal("panelsingletoggle").executes(c -> PanelTest.toggleSinglePole(c.getSource())))
+                .then(Commands.literal("paneltoggle").executes(c -> PanelTest.toggle(c.getSource())))
+                .then(Commands.literal("panelon").executes(c -> PanelTest.report(c.getSource(), true)))
+                .then(Commands.literal("paneloff").executes(c -> PanelTest.report(c.getSource(), false)))
                 .then(Commands.literal("caps").executes(c -> CapTest.build(c.getSource())))
                 .then(Commands.literal("capreport").executes(c -> CapTest.report(c.getSource())))
                 .then(Commands.literal("capbreak").executes(c -> CapTest.breakBulb(c.getSource())))

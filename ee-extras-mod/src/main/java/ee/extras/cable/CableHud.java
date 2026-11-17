@@ -6,6 +6,8 @@ import com.george_vi.electroenergetics.content.bundled_wire.BundledWireApplyingB
 import com.george_vi.electroenergetics.content.bundled_wire.BundledWireItem;
 import com.george_vi.electroenergetics.content.bundled_wire.BundledWireTerminationState;
 import ee.extras.EeExtras;
+import ee.extras.panel.PanelModules;
+import ee.extras.panel.PanelPorts;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -54,16 +56,22 @@ public final class CableHud {
         ItemStack stack = mc.player.getMainHandItem();
         if (!(stack.getItem() instanceof BundledWireItem) || !(mc.hitResult instanceof BlockHitResult hit)) return;
         BlockState state = mc.level.getBlockState(hit.getBlockPos());
-        CableEnd end = CableEnd.of(mc.level, hit.getBlockPos(), state);
+        PanelPorts.Hit port = PanelPorts.identify(mc.level, hit);
+        CableEnd end = port == null ? CableEnd.of(mc.level, hit.getBlockPos(), state) : port.end();
         if (end == null) return;
 
         CableKind spool = stack.getItem() instanceof FourCoreSpoolItem ? CableKind.FOUR_CORE : CableKind.DUPLEX;
         boolean fits = CableLaying.fits(spool, end);
         BundledWireTerminationState selected = stack.get(CEEDataComponents.SELECTED_WIRE_TERMINATION);
-        MutableComponent title = (end.contacts() == null ? Component.translatable("ee_extras.nodes.cable") : EeExtras.CABLE_CAP.get().getDescription().copy()).withStyle(ChatFormatting.BOLD);
+        MutableComponent title;
+        if (port != null) title = Component.translatable("ee_extras.cable." + port.label());
+        else if (end.contacts() == null) title = Component.translatable("ee_extras.nodes.cable");
+        else title = EeExtras.CABLE_CAP.get().getDescription().copy();
+        title.withStyle(ChatFormatting.BOLD);
         MutableComponent line;
         if (!fits) line = Component.translatable("ee_extras.cable." + (spool == CableKind.DUPLEX ? "needs_duplex" : "needs_four_core"));
-        else if (selected != null && selected.pos().equals(end.pos())) line = Component.translatable("ee_extras.cable.selected");
+        else if (port != null ? end.cable().equals(stack.get(PanelModules.SELECTED_PORT.get()))
+                : selected != null && selected.pos().equals(end.pos())) line = Component.translatable("ee_extras.cable.selected");
         else line = Component.translatable("ee_extras.cable.accepts." + (end.eeTermination() ? "ee" : end.kind() == CableKind.DUPLEX ? "duplex" : "four_core"));
 
         int x = g.guiWidth() / 2, y = g.guiHeight() / 2 + 33;

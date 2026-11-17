@@ -1,0 +1,8 @@
+{
+  "render_type": "minecraft:cutout",
+  "parent": "create:block/basin/block",
+  "textures": {
+    "12": "destroy_extras:block/machines/etching_bath",
+    "particle": "destroy_extras:block/machines/etching_bath"
+  }
+}

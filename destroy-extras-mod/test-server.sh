@@ -25,7 +25,9 @@ if [ -z "${SKIP_LIBS:-}" ]; then
   (cd ../destroy-bridge-mod && ./libs.sh)
 fi
 ./gradlew jar --console=plain
-(cd ../destroy-bridge-mod && ./gradlew jar --console=plain)
+if [ -z "${BRIDGE_JAR:-}" ]; then
+  (cd ../destroy-bridge-mod && ./gradlew jar --console=plain)
+fi
 if [ -z "${KEEP:-}" ]; then rm -rf "$RUN_DIR"; fi
 mkdir -p "$RUN_DIR/mods"
 rm -f "$RUN_DIR/mods"/*.jar
@@ -42,7 +44,7 @@ fi
 if [ "$PROFILE" = sable ]; then cp "$MODS/sable-neoforge-1.21.1-2.0.5.jar" "$RUN_DIR/mods/"; fi
 EE_VERSION=$(sed -n 's/^mod_version=//p' ../ee-extras-mod/gradle.properties)
 VERSION=$(sed -n 's/^mod_version=//p' gradle.properties)
-cp ../destroy-bridge-mod/build/libs/destroy-bridge-0.2.0.jar "$RUN_DIR/mods/"
+cp "${BRIDGE_JAR:-../destroy-bridge-mod/build/libs/destroy-bridge-0.2.0.jar}" "$RUN_DIR/mods/destroy-bridge-0.2.0.jar"
 cp "../ee-extras-mod/build/libs/ee-extras-$EE_VERSION.jar" "$RUN_DIR/mods/"
 {
   echo "profile=$PROFILE"

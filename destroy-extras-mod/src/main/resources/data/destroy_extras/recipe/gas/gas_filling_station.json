@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SPS",
+    "CMC",
+    "SSS"
+  ],
+  "key": {
+    "S": {
+      "item": "immersiveengineering:sheetmetal_steel"
+    },
+    "P": {
+      "item": "immersiveengineering:fluid_pipe"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "M": {
+      "item": "immersiveengineering:component_steel"
+    }
+  },
+  "result": {
+    "id": "destroy_extras:gas_filling_station",
+    "count": 1
+  }
+}

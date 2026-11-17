@@ -31,12 +31,18 @@ import tfc.stand.scene.Scene;
  * площадке общей заготовки сцены (tools/stand-scene). На стенде — stand_submit scene=destroy-extras.
  */
 public final class ClientTest {
-    private final Scene scene = new Scene("destroy-extras");
+    private final Scene scene;
     /** Ячейка машины: середина площадки, на 1 выше пола, машина лицом на юг */
     private BlockPos cell;
 
     public ClientTest() {
         String requested = Scene.requested();
+        if ("gas-hardware-art".equals(requested)) {
+            scene = new Scene("gas-hardware-art");
+            NeoForge.EVENT_BUS.addListener(this::screen);
+            return;
+        }
+        scene = new Scene("destroy-extras");
         if (requested != null && !requested.equals("destroy-extras")) return;
         System.out.println("DESTROYEXTRACLIENT INIT");
         // В dev-runtime ServiceLoader не видит service-файл exploded resources; production jar использует его штатно.
@@ -90,6 +96,12 @@ public final class ClientTest {
         scene.client("очки инженера", this::goggleChecks);
         scene.camera(1, 1, -5, 7, -40, 20);
         scene.shot("formed-back");
+        scene.camera(1, 1.5, -5, 5, 180, 85);
+        scene.shot("formed-top");
+        scene.camera(1, 1, -5, 6, 90, 14);
+        scene.shot("formed-side-left");
+        scene.camera(1, 1, -5, 6, -90, 14);
+        scene.shot("formed-side-right");
         scene.gui(true);
         scene.server("окно машины", c -> openWindow(c));
         scene.ticks(40).client("скриншот окна машины", () -> {
@@ -110,6 +122,39 @@ public final class ClientTest {
             check("Ponder открыт для контроллера", mc().screen instanceof PonderUI);
             shot("ponder-industrial");
         });
+    }
+
+    private void hardwareArt() {
+        var blocks = List.of(
+            DestroyExtras.METALLURGY_BLOCK.get().defaultBlockState(),
+            net.minecraft.core.registries.BuiltInRegistries.BLOCK
+                .get(DestroyExtras.rl("gas_tank_controller_medium")).defaultBlockState(),
+            tfc.destroy.extras.gas.GasFillingStation.BLOCK.get().defaultBlockState(),
+            DestroyExtras.ETCHING_BATH_BLOCK.get().defaultBlockState(),
+            net.minecraft.world.level.block.Block.byItem(tfc.destroy.extras.gas.GasFillingStation.BLUE_STEEL.get()).defaultBlockState(),
+            tfc.destroy.extras.gas.GasPipes.VALVE.get().defaultBlockState());
+        var positions = new BlockPos[blocks.size()];
+        scene.server("расставить новые блоки", ctx -> {
+            for (int i = 0; i < blocks.size(); i++) {
+                positions[i] = ctx.at(i % 3 * 2 - 2, 1, i / 3 * 3);
+                ctx.level().setBlock(positions[i], blocks.get(i), net.minecraft.world.level.block.Block.UPDATE_ALL);
+            }
+        });
+        scene.until("модели в клиентском чанке", 600, () -> {
+            for (int i = 0; i < blocks.size(); i++) {
+                if (mc().level.getBlockState(positions[i]) != blocks.get(i)) return false;
+            }
+            return true;
+        });
+        scene.client("модели всех блоков загружены", () -> {
+            var renderer = mc().getBlockRenderer();
+            var missing = mc().getModelManager().getMissingModel();
+            for (var block : blocks) {
+                check("клиент: " + block.getBlock().getDescriptionId(), renderer.getBlockModel(block) != missing);
+            }
+        });
+        scene.gui(false).camera(0, 1.2, 1.4, 8, 25, 29).shot("gas-machines");
+        scene.camera(-2, 1.3, 3, 3, 140, 32).shot("etching-bath");
     }
 
     private boolean recipeScreen() {
@@ -244,6 +289,7 @@ public final class ClientTest {
     private void screen(ScreenEvent.Init.Post event) {
         if (!(event.getScreen() instanceof net.minecraft.client.gui.screens.TitleScreen) || started) return;
         started = true;
+        if ("gas-hardware-art".equals(Scene.requested())) hardwareArt();
         scene.start();
     }
 

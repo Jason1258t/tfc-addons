@@ -1,0 +1,182 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "front": "ee_extras:block/fluid_dispenser_front",
+    "side": "ee_extras:block/fluid_dispenser_side",
+    "top": "ee_extras:block/fluid_dispenser_top",
+    "particle": "ee_extras:block/fluid_dispenser_side",
+    "contact": "minecraft:block/copper_block",
+    "dial": "minecraft:block/raw_gold_block",
+    "slot": "minecraft:block/smooth_basalt"
+  },
+  "elements": [
+    {
+      "from": [1, 2, 1],
+      "to": [15, 14, 15],
+      "faces": {
+        "down": {
+          "texture": "#side"
+        },
+        "up": {
+          "texture": "#side"
+        },
+        "north": {
+          "texture": "#side"
+        },
+        "south": {
+          "texture": "#front"
+        },
+        "west": {
+          "texture": "#side"
+        },
+        "east": {
+          "texture": "#side"
+        }
+      }
+    },
+    {
+      "from": [2, 14, 2],
+      "to": [14, 16, 14],
+      "faces": {
+        "down": {
+          "texture": "#contact"
+        },
+        "up": {
+          "texture": "#top"
+        },
+        "north": {
+          "texture": "#contact"
+        },
+        "south": {
+          "texture": "#contact"
+        },
+        "west": {
+          "texture": "#contact"
+        },
+        "east": {
+          "texture": "#contact"
+        }
+      }
+    },
+    {
+      "from": [2, 0, 2],
+      "to": [14, 2, 14],
+      "faces": {
+        "down": {
+          "texture": "#side"
+        },
+        "up": {
+          "texture": "#side"
+        },
+        "north": {
+          "texture": "#side"
+        },
+        "south": {
+          "texture": "#side"
+        },
+        "west": {
+          "texture": "#side"
+        },
+        "east": {
+          "texture": "#side"
+        }
+      }
+    },
+    {
+      "from": [4, 8.5, 15],
+      "to": [6, 11.5, 16],
+      "faces": {
+        "down": {
+          "texture": "#dial"
+        },
+        "up": {
+          "texture": "#dial"
+        },
+        "north": {
+          "texture": "#dial"
+        },
+        "south": {
+          "texture": "#dial"
+        },
+        "west": {
+          "texture": "#dial"
+        },
+        "east": {
+          "texture": "#dial"
+        }
+      }
+    },
+    {
+      "from": [9, 8, 15],
+      "to": [13, 12, 15.4],
+      "faces": {
+        "down": {
+          "texture": "#slot"
+        },
+        "up": {
+          "texture": "#slot"
+        },
+        "north": {
+          "texture": "#slot"
+        },
+        "south": {
+          "texture": "#slot"
+        },
+        "west": {
+          "texture": "#slot"
+        },
+        "east": {
+          "texture": "#slot"
+        }
+      }
+    },
+    {
+      "from": [5, -2, 5],
+      "to": [11, 0, 11],
+      "faces": {
+        "down": {
+          "texture": "#contact"
+        },
+        "up": {
+          "texture": "#contact"
+        },
+        "north": {
+          "texture": "#contact"
+        },
+        "south": {
+          "texture": "#contact"
+        },
+        "west": {
+          "texture": "#contact"
+        },
+        "east": {
+          "texture": "#contact"
+        }
+      }
+    },
+    {
+      "from": [6, -4, 6],
+      "to": [10, -2, 10],
+      "faces": {
+        "down": {
+          "texture": "#contact"
+        },
+        "up": {
+          "texture": "#contact"
+        },
+        "north": {
+          "texture": "#contact"
+        },
+        "south": {
+          "texture": "#contact"
+        },
+        "west": {
+          "texture": "#contact"
+        },
+        "east": {
+          "texture": "#contact"
+        }
+      }
+    }
+  ]
+}

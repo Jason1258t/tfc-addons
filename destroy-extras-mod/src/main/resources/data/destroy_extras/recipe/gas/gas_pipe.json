@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    " C "
+  ],
+  "key": {
+    "P": {
+      "item": "immersiveengineering:fluid_pipe"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    }
+  },
+  "result": {
+    "id": "destroy_extras:gas_pipe",
+    "count": 3
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "ee_extras:small_motor"
+    },
+    {
+      "item": "ee_extras:copper_busbar"
+    },
+    {
+      "item": "create:shaft"
+    }
+  ],
+  "result": {
+    "id": "ee_extras:belt_motor"
+  }
+}

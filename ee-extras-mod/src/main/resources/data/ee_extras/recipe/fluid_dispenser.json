@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "create:spout"
+    },
+    {
+      "item": "ee_extras:copper_busbar"
+    },
+    {
+      "item": "create:fluid_valve"
+    }
+  ],
+  "result": {
+    "id": "ee_extras:fluid_dispenser"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "side": "tfc:block/metal/block/steel",
+    "end": "tfc:block/metal/block/steel",
+    "top": "tfc:block/metal/block/steel",
+    "bottom": "tfc:block/metal/block/steel",
+    "up": "tfc:block/metal/block/steel",
+    "down": "tfc:block/metal/block/steel",
+    "front": "destroy_extras:block/machines/tank_front"
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "variants": {
+    "closed=false,facing=down,roll=false": {
+      "model": "electroenergetics:block/cut_off_switch/block",
+      "x": 180
+    },
+    "closed=false,facing=down,roll=true": {
+      "model": "electroenergetics:block/cut_off_switch/block_roll",
+      "x": 180
+    },
+    "closed=false,facing=east,roll=false": {
+      "model": "electroenergetics:block/cut_off_switch/block",
+      "x": 270,
+      "y": 270
+    },
+    "closed=false,facing=east,roll=true": {
+      "model": "electroenergetics:block/cut_off_switch/block_roll",
+      "x": 270,
+      "y": 270
+    },
+    "closed=false,facing=north,roll=false": {
+      "model": "electroenergetics:block/cut_off_switch/block",
+      "x": 270,
+      "y": 180
+    },
+    "closed=false,facing=north,roll=true": {
+      "model": "electroenergetics:block/cut_off_switch/block_roll",
+      "x": 270,
+      "y": 180
+    },
+    "closed=false,facing=south,roll=false": {
+      "model": "electroenergetics:block/cut_off_switch/block",
+      "x": 270
+    },
+    "closed=false,facing=south,roll=true": {
+      "model": "electroenergetics:block/cut_off_switch/block_roll",
+      "x": 270
+    },
+    "closed=false,facing=up,roll=false": {
+      "model": "electroenergetics:block/cut_off_switch/block"
+    },
+    "closed=false,facing=up,roll=true": {
+      "model": "electroenergetics:block/cut_off_switch/block_roll"
+    },
+    "closed=false,facing=west,roll=false": {
+      "model": "electroenergetics:block/cut_off_switch/block",
+      "x": 270,
+      "y": 90
+    },
+    "closed=false,facing=west,roll=true": {
+      "model": "electroenergetics:block/cut_off_switch/block_roll",
+      "x": 270,
+      "y": 90
+    },
+    "closed=true,facing=down,roll=false": {
+      "model": "electroenergetics:block/cut_off_switch/block_closed",
+      "x": 180
+    },
+    "closed=true,facing=down,roll=true": {
+      "model": "electroenergetics:block/cut_off_switch/block_closed_roll",
+      "x": 180
+    },
+    "closed=true,facing=east,roll=false": {
+      "model": "electroenergetics:block/cut_off_switch/block_closed",
+      "x": 270,
+      "y": 270
+    },
+    "closed=true,facing=east,roll=true": {
+      "model": "electroenergetics:block/cut_off_switch/block_closed_roll",
+      "x": 270,
+      "y": 270
+    },
+    "closed=true,facing=north,roll=false": {
+      "model": "electroenergetics:block/cut_off_switch/block_closed",
+      "x": 270,
+      "y": 180
+    },
+    "closed=true,facing=north,roll=true": {
+      "model": "electroenergetics:block/cut_off_switch/block_closed_roll",
+      "x": 270,
+      "y": 180
+    },
+    "closed=true,facing=south,roll=false": {
+      "model": "electroenergetics:block/cut_off_switch/block_closed",
+      "x": 270
+    },
+    "closed=true,facing=south,roll=true": {
+      "model": "electroenergetics:block/cut_off_switch/block_closed_roll",
+      "x": 270
+    },
+    "closed=true,facing=up,roll=false": {
+      "model": "electroenergetics:block/cut_off_switch/block_closed"
+    },
+    "closed=true,facing=up,roll=true": {
+      "model": "electroenergetics:block/cut_off_switch/block_closed_roll"
+    },
+    "closed=true,facing=west,roll=false": {
+      "model": "electroenergetics:block/cut_off_switch/block_closed",
+      "x": 270,
+      "y": 90
+    },
+    "closed=true,facing=west,roll=true": {
+      "model": "electroenergetics:block/cut_off_switch/block_closed_roll",
+      "x": 270,
+      "y": 90
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " P ",
+    "S S",
+    "SSS"
+  ],
+  "key": {
+    "P": {
+      "item": "immersiveengineering:fluid_pipe"
+    },
+    "S": {
+      "item": "tfc:metal/sheet/steel"
+    }
+  },
+  "result": {
+    "id": "destroy_extras:gas_cylinder_steel",
+    "count": 1
+  }
+}
