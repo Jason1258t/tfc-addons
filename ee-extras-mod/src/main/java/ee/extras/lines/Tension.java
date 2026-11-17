@@ -2,6 +2,7 @@ package ee.extras.lines;
 
 import com.george_vi.electroenergetics.CEERegistries;
 import com.george_vi.electroenergetics.CEEWireTypes;
+import com.george_vi.electroenergetics.client.WireRenderer;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.content.wire.WireAttachmentType;
 import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionBehaviour;
@@ -11,6 +12,7 @@ import com.george_vi.electroenergetics.foundation.nodes.NodeConnectionPoint;
 import com.george_vi.electroenergetics.simulation.WireType;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.george_vi.electroenergetics.simulation.infrastructure.WireData;
+import com.george_vi.electroenergetics.simulation.infrastructure.detached_nodes.DetachedNodeHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllSoundEvents;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
@@ -63,6 +65,8 @@ public final class Tension {
     public static final PartialModel CLAMP_MODEL = PartialModel.of(EeExtras.rl("block/line/tension_clamp"));
     public static final DeferredHolder<WireAttachmentType, WireAttachmentType> CLAMP =
             ATTACHMENTS.register("tension_clamp", ClampAttachment::new);
+    static final DeferredHolder<WireAttachmentType, WireAttachmentType> ANCHOR_CLAMP =
+            ATTACHMENTS.register("anchor_clamp", ClampAttachment::new);
     public static final DeferredHolder<WireInteractionBehaviour, WireInteractionBehaviour> CLAMP_BEHAVIOUR =
             BEHAVIOURS.register("tension_clamp", ClampBehaviour::new);
     public static DeferredItem<Item> CLAMP_ITEM;
@@ -142,6 +146,15 @@ public final class Tension {
         @Override
         @OnlyIn(Dist.CLIENT)
         public int getWireDisplayColor(NodeConnectionPoint point, Level level, Player player, ItemStack stack) {
+            if (point == null) return attachmentColor();
+            var connection = point.connection();
+            if (DetachedNodeHelper.isDetached(connection.node1()) && DetachedNodeHelper.isDetached(connection.node2())) {
+                WireData wire = WireRenderer.getConnectionData(connection);
+                if (wire != null && (hasClamp(wire) || InsulatorAnchors.hasAnchor(wire, isFirstEnd(point)))) {
+                    return 0xFF7371;
+                }
+                return 0x9EDE73;
+            }
             return attachmentColor();
         }
 
@@ -154,6 +167,10 @@ public final class Tension {
             if (data == null) return;
             if (Float.isNaN(minFactor(data.wireType()))) {
                 player.displayClientMessage(Component.translatable("ee_extras.tension.not_tensionable"), true);
+                return;
+            }
+            if (InsulatorAnchors.isHangingSpan(sd, c) || InsulatorAnchors.hasAnchor(data)) {
+                InsulatorAnchors.install(sd, c, data, isFirstEnd(point), player, stack);
                 return;
             }
             if (hasClamp(data)) {
@@ -174,6 +191,10 @@ public final class Tension {
             float f = minFactor(data.wireType());
             player.displayClientMessage(Component.translatable("ee_extras.tension.done", Math.round((1 - f) * 100)), true);
         }
+    }
+
+    private static boolean isFirstEnd(NodeConnectionPoint point) {
+        return (point.point() < 0.5f) == point.connection().node1().equals(point.node1());
     }
 
     /** Натяжной зажим на проводе: модель вдоль провода (ось X модели — вдоль провода, как у гасителя EE) */

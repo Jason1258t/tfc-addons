@@ -5,6 +5,9 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "WirePointsRawMixin",
+    "DetachedNodeAnchorMixin",
+    "AnchoredWireSagMixin",
+    "AnchorClampRemovalMixin",
     "PanelCableNodesMixin",
     "ElectricPumpEfficiencyMixin",
     "BeltMotorKineticsMixin",

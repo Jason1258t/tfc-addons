@@ -1,5 +1,8 @@
 {
   "scenes": {
+    "insulator-anchors": {
+      "shots": ["free-suspension", "anchored-span"]
+    },
     "wall-disconnect": {
       "shots": ["disconnect-closed", "disconnect-open"]
     },
