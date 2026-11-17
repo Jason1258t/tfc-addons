@@ -7,7 +7,7 @@
   },
   "chains": {
     "aero-fuel-restart": {
-      "note": "Dev #282: три двигателя под нагрузкой на подуровне Sable, сохранение, перезапуск и демонтаж",
+      "note": "Dev #282: три двигателя под нагрузкой на подуровне Sable, сохранение, перезапуск и демонтаж; опора под платформой удерживает её в зоне прогона",
       "steps": [
         {
           "name": "build",
@@ -15,6 +15,7 @@
           "levelType": "minecraft:flat",
           "cmd": [
             "forceload add -16 992 15 1023",
+            "fill -8 72 992 15 72 1015 minecraft:bedrock",
             "fill -1 144 1000 12 144 1008 minecraft:smooth_stone",
             "aehosetest matrix",
             "sleep 1",
