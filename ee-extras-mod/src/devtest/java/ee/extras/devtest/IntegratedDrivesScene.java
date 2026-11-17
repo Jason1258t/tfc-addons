@@ -62,6 +62,10 @@ final class IntegratedDrivesScene {
                 context.set(context.at(-3, 1, z), CEEBlocks.CREATIVE_BATTERY.getDefaultState());
             }
         });
+        scene.gui(false);
+        scene.camera(0, 1.25, 0, 4.4, 190, 23);
+        inspectBelt(scene, beltMount, "до монтажа");
+        scene.shot("belt-before");
         scene.ticks(20).server("смонтировать и подключить катушкой", context -> {
             var player = context.player();
             var level = player.serverLevel();
@@ -115,6 +119,7 @@ final class IntegratedDrivesScene {
         scene.until("четыре провода видны клиенту", 400, () -> WireRenderer.getAllConnections().size() >= 4);
         scene.gui(false);
         scene.camera(0, 1.25, 0, 4.4, 190, 23);
+        inspectBelt(scene, beltMount, "после монтажа");
         scene.shot("belt-drive");
         scene.camera(0, 1.25, 4, 4.4, 190, 23);
         scene.shot("auger-drive");
@@ -152,6 +157,19 @@ final class IntegratedDrivesScene {
             scene.check("без проводов желоб стоит", speed(level, context.at(1, 1, 4)) == 0);
         });
         scene.start();
+    }
+
+    private static void inspectBelt(Scene scene, AtomicReference<BlockPos> mount, String phase) {
+        scene.client("состояние ленты " + phase, () -> {
+            var level = Minecraft.getInstance().level;
+            for (int x = -1; x <= 1; x++) {
+                var pos = mount.get().offset(x, 0, 0);
+                var entity = level.getBlockEntity(pos);
+                scene.note(phase + ", секция " + x + " в " + pos.toShortString() + ": "
+                        + level.getBlockState(pos) + " / "
+                        + (entity == null ? "без блок-сущности" : entity.saveWithoutMetadata(level.registryAccess())));
+            }
+        });
     }
 
     private static int deliveredCargo(ServerLevel level, BlockPos pos, Item cargo) {

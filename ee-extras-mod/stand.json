@@ -4,7 +4,7 @@
       "shots": ["disconnect-closed", "disconnect-open"]
     },
     "integrated-drives": {
-      "shots": ["belt-drive", "auger-drive"]
+      "shots": ["belt-before", "belt-drive", "auger-drive"]
     },
     "electric-press": {
       "shots": ["electric-press"]
