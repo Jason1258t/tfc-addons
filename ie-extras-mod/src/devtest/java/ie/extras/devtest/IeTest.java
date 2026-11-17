@@ -79,6 +79,7 @@ public class IeTest {
     static void commands(RegisterCommandsEvent e) {
         CommandDispatcher<CommandSourceStack> d = e.getDispatcher();
         d.register(Commands.literal("ietest")
+                .then(Commands.literal("beamhouse").executes(c -> beamhouse(c.getSource())))
                 .then(Commands.literal("earmuffs").executes(c -> EarmuffsCheck.run(c.getSource())))
                 .then(Commands.literal("setup").then(Commands.argument("signal", IntegerArgumentType.integer(0, 15))
                         .executes(c -> setup(c.getSource(), IntegerArgumentType.getInteger(c, "signal")))))
@@ -98,6 +99,28 @@ public class IeTest {
                         .then(Commands.literal("ee").then(Commands.argument("heat", FloatArgumentType.floatArg(0, 1))
                                 .executes(c -> basin(c.getSource(), "ee", FloatArgumentType.getFloat(c, "heat"))))))
                 .then(Commands.literal("basinreport").executes(c -> basinReport(c.getSource()))));
+    }
+
+    static int beamhouse(CommandSourceStack src) {
+        ServerLevel level = src.getLevel();
+        var player = net.neoforged.neoforge.common.util.FakePlayerFactory.getMinecraft(level);
+        int passed = 0;
+        for (Direction front : Direction.Plane.HORIZONTAL) {
+            for (boolean mirror : new boolean[]{false, true}) {
+                BlockPos origin = new BlockPos(8, -54, 8);
+                for (BlockPos pos : BlockPos.betweenClosed(origin.offset(-4, 0, -4), origin.offset(4, 3, 4))) {
+                    level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+                }
+                if (BeamhouseCheck.verify(level, player, origin, front, mirror)) {
+                    passed++;
+                } else {
+                    src.sendFailure(Component.literal("ASSERTFAIL: " + front + ", зеркало=" + mirror));
+                }
+            }
+        }
+        int count = passed;
+        src.sendSuccess(() -> Component.literal("Варианты=" + count), false);
+        return count;
     }
 
     static int setup(CommandSourceStack src, int signal) {

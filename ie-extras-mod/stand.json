@@ -1,0 +1,7 @@
+{
+  "scenes": {
+    "beamhouse-ports": {
+      "shots": ["item-input", "mirrored-ports"]
+    }
+  }
+}

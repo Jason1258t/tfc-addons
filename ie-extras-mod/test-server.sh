@@ -9,6 +9,10 @@ if [ -z "${KEEP:-}" ]; then rm -rf run; fi
 mkdir -p run/mods
 rm -f run/mods/*.jar
 cp libs/*.jar run/mods/
+if [ "${WITH_ATT:-0}" = 1 ]; then
+  MODS="${MODS:-${TFC_MODS_DIR:-${TFC_PACK_CACHE:-$HOME/.cache/tfc-plans/pack}/mods}}"
+  cp "$MODS"/AdvancedTFCTech-NeoForge-*.jar run/mods/
+fi
 echo 'eula=true' > run/eula.txt
 cat > run/server.properties <<'P'
 level-type=minecraft\:flat

@@ -4,7 +4,7 @@ license = "MIT"
 
 [[mods]]
 modId = "ie_extras"
-version = "1.2.0"
+version = "1.2.1"
 displayName = "IE Extras"
 authors = "TFC Studio"
 description = '''
@@ -63,3 +63,11 @@ type = "optional"
 versionRange = "[1.2.18,)"
 ordering = "NONE"
 side = "BOTH"
+
+# Модель кожевенного барабана подменяется после загрузки ресурсов Advanced TFC Tech.
+[[dependencies.ie_extras]]
+modId = "advancedtfctech"
+type = "optional"
+versionRange = "[3.3]"
+ordering = "AFTER"
+side = "CLIENT"

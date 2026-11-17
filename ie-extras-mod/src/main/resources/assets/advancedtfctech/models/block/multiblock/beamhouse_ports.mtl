@@ -1,0 +1,5 @@
+newmtl beamhouse
+map_Kd advancedtfctech:block/multiblock/beamhouse
+
+newmtl item_input
+map_Kd minecraft:block/dropper_front
