@@ -135,7 +135,8 @@
           "F": {
             "item": "create:fluid_pipe"
           }
-        }
+        },
+        "count": 2
       }
     },
     {
@@ -151,7 +152,8 @@
           "S": {
             "item": "immersiveengineering:plate_steel"
           }
-        }
+        },
+        "count": 4
       }
     }
   ]
