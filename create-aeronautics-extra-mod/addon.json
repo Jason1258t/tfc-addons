@@ -1,13 +1,13 @@
 {
   "id": "create_aeronautics_extra",
-  "name": "Create Aeronautics Extra — бортовой компьютер",
-  "version": "1.0.1",
-  "jar": "create-aeronautics-extra-1.0.1.jar",
-  "sha256": "36832676b4d2d9a64dfb26e448ad9697d290e14cacf06efad6ef83595f538b89",
+  "name": "Create Aeronautics Extra — бортовые системы",
+  "version": "1.1.0",
+  "jar": "create-aeronautics-extra-1.1.0.jar",
+  "sha256": "64dc21bb2236a2b660012e2afddc6d667301ed9a6e9553ce0d3ae9c4f7b58623",
   "order": 80,
   "side": "both",
-  "summary": "Бортовая электрика для машин и кораблей Create Aeronautics: бортовой компьютер — один блок с валом Create и клеммами Electro Energetics, в который ставится до 4 модулей. Генераторный модуль превращает вращение в ток, аккумуляторный (ячейка 24 В, как аккумулятор EE) держит бортовую сеть. Как в настоящей машине: генератор заряжает аккумулятор, аккумулятор питает потребителей. Работает и на земле, и на собранном корабле.",
-  "needs": "Сервер и все игроки (новые блок и предметы). NeoForge 21.1.219+, Create 6.0.10, Electro Energetics 1.1.2+. Create Aeronautics не обязателен.",
+  "summary": "Бортовая электрика и компактная топливная система для машин Create Aeronautics. Бортовой компьютер превращает вращение в ток и хранит заряд. Топливный насос подаёт горючее из бака Create или Better Fluids по гибким патрубкам к портативному, штатному дизельному или транспортному двигателю.",
+  "needs": "Сервер и все игроки. NeoForge 21.1.219+, Create 6.0.10, Electro Energetics 1.1.2+. Для штатных двигателей нужны соответствующие моды Aeronautics и Portable Engine Liquid Fuel либо Create: Diesel Generators. Рецепты насоса, рукава и транспортного двигателя используют сталь Immersive Engineering.",
   "blocks": [
     {
       "id": "create_aeronautics_extra:onboard_computer",
@@ -71,6 +71,85 @@
           "P": {
             "item": "create:brass_sheet",
             "tag": "c:plates/brass"
+          }
+        }
+      }
+    },
+    {
+      "id": "create_aeronautics_extra:transport_engine",
+      "name": "Транспортный дизельный двигатель",
+      "image": "transport_engine.png",
+      "recipe": {
+        "pattern": ["SPS", "PBP", " MF"],
+        "key": {
+          "S": {
+            "item": "immersiveengineering:plate_steel"
+          },
+          "P": {
+            "item": "createdieselgenerators:engine_piston"
+          },
+          "B": {
+            "item": "create:brass_casing"
+          },
+          "M": {
+            "item": "create:precision_mechanism"
+          },
+          "F": {
+            "item": "create:shaft"
+          }
+        }
+      }
+    },
+    {
+      "id": "create_aeronautics_extra:fuel_pump",
+      "name": "Компактный топливный насос",
+      "image": "fuel_pump.png",
+      "recipe": {
+        "pattern": [" B ", "SPS", " L "],
+        "key": {
+          "B": {
+            "item": "create:brass_sheet"
+          },
+          "S": {
+            "item": "immersiveengineering:plate_steel"
+          },
+          "P": {
+            "item": "create:mechanical_pump"
+          },
+          "L": {
+            "item": "minecraft:lever"
+          }
+        }
+      }
+    },
+    {
+      "id": "create_aeronautics_extra:fuel_port",
+      "name": "Топливный порт",
+      "image": "fuel_port.png",
+      "recipe": {
+        "pattern": [" B ", " F "],
+        "key": {
+          "B": {
+            "item": "create:brass_sheet"
+          },
+          "F": {
+            "item": "create:fluid_pipe"
+          }
+        }
+      }
+    },
+    {
+      "id": "create_aeronautics_extra:fuel_hose",
+      "name": "Гибкий топливный патрубок",
+      "image": "fuel_hose.png",
+      "recipe": {
+        "pattern": ["B B", " S "],
+        "key": {
+          "B": {
+            "item": "create:brass_sheet"
+          },
+          "S": {
+            "item": "immersiveengineering:plate_steel"
           }
         }
       }

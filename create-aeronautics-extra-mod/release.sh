@@ -12,5 +12,5 @@ VERSION=$(sed -n 's/^mod_version=//p' gradle.properties)
 rm -f create-aeronautics-extra-*.jar
 cp "build/libs/create-aeronautics-extra-$VERSION.jar" .
 # Иконки для сайта (icons/) — общим генератором MCP (как у EE Extras)
-(cd ../.. && node scripts/mcp/render.mjs tools/create-aeronautics-extra-mod create_aeronautics_extra:onboard_computer create_aeronautics_extra:generator_module create_aeronautics_extra:battery_module --out tools/create-aeronautics-extra-mod/icons --size 192)
+(cd ../.. && node scripts/mcp/render.mjs tools/create-aeronautics-extra-mod create_aeronautics_extra:onboard_computer create_aeronautics_extra:generator_module create_aeronautics_extra:battery_module create_aeronautics_extra:transport_engine create_aeronautics_extra:fuel_pump create_aeronautics_extra:fuel_port create_aeronautics_extra:fuel_hose --out tools/create-aeronautics-extra-mod/icons --size 192)
 echo "готово: create-aeronautics-extra-$VERSION.jar → tools/create-aeronautics-extra-mod; обновите addon.json и проверьте MCP addon_check"
