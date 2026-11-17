@@ -332,8 +332,8 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
     }
 
     private void click(int id) {
-        if (id == PcbEditorMenu.CHECK && menu.editor() != null) {
-            diagnostics = PcbDiagnostics.check(menu.editor().topology());
+        if (id == PcbEditorMenu.CHECK) {
+            diagnostics = PcbDiagnostics.check(menu.topology());
             diagnosticScroll = 0;
             diagnosticsOpen = true;
         } else if (id >= 0 && id < PcbTopology.CELLS || id >= PcbEditorMenu.EDGE && id < PcbEditorMenu.EDGE + PcbTopology.CELLS * 4
@@ -631,9 +631,8 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
         if (!insideCanvas(localX, localY)) return;
         int x = localX - GRID_X;
         int y = mouseY - topPos - GRID_Y;
-        if (x < 0 || y < 0 || x >= CELL * PcbTopology.SIZE || y >= CELL * PcbTopology.SIZE
-                || menu.editor() == null) return;
-        CompoundTag topology = menu.editor().topology();
+        if (x < 0 || y < 0 || x >= CELL * PcbTopology.SIZE || y >= CELL * PcbTopology.SIZE) return;
+        CompoundTag topology = menu.topology();
         int cell = y / CELL * PcbTopology.SIZE + x / CELL;
         if (menu.layer() == 0 && PcbTopology.get(topology, 0, cell) == PcbTopology.TERMINAL) {
             int number = 1;
@@ -700,8 +699,7 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
         }
         graphics.fill(leftPos + canvasLeft - 2, topPos + 24, leftPos + canvasRight + 2, topPos + canvasBottom + 2, 0xFF0B1114);
         graphics.enableScissor(leftPos + canvasLeft, topPos + 26, leftPos + canvasRight, topPos + canvasBottom);
-        PcbEditorBlockEntity editor = menu.editor();
-        CompoundTag topology = editor == null ? PcbTopology.create(menu.level()) : editor.topology();
+        CompoundTag topology = menu.topology();
         int[] definitions = topology.getIntArray(PcbWiring.KEY);
         highlightNetwork(topology);
         for (int y = 0; y < PcbTopology.SIZE; y++) {
@@ -900,8 +898,7 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
 
     private java.util.Map<net.minecraft.world.item.Item, Integer> bill() {
         var needed = new java.util.LinkedHashMap<net.minecraft.world.item.Item, Integer>();
-        if (menu.editor() == null) return needed;
-        for (int definition : menu.editor().topology().getIntArray(PcbWiring.KEY)) {
+        for (int definition : menu.topology().getIntArray(PcbWiring.KEY)) {
             if (!PcbFootprint.valid(definition)) continue;
             var item = PcbAssembly.item(PcbModules.get(definition).kind());
             if (item != net.minecraft.world.item.Items.AIR) needed.merge(item, 1, Integer::sum);
@@ -1035,7 +1032,7 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
     }
 
     private void refreshProjectName() {
-        previousProjectName = menu.editor() == null ? "" : menu.editor().topology().getString("ProjectName");
+        previousProjectName = menu.topology().getString("ProjectName");
         if (!projectName.getValue().equals(previousProjectName)) projectName.setValue(previousProjectName);
     }
 

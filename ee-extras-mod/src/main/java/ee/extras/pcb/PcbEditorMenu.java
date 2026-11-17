@@ -1,6 +1,9 @@
 package ee.extras.pcb;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -47,6 +50,9 @@ public class PcbEditorMenu extends AbstractContainerMenu {
     private double draftThreshold = Double.NaN;
     private final ContainerLevelAccess access;
     private final PcbEditorBlockEntity editor;
+    private final Player player;
+    private CompoundTag clientTopology;
+    private CompoundTag sentTopology;
     private final DataSlot selected = DataSlot.standalone();
     private final DataSlot moving = DataSlot.standalone();
     private final DataSlot tool = DataSlot.standalone();
@@ -78,6 +84,7 @@ public class PcbEditorMenu extends AbstractContainerMenu {
         super(PcbItems.EDITOR_MENU.get(), id);
         this.access = access;
         this.editor = editor;
+        this.player = inventory.player;
         Container container = editor == null ? new SimpleContainer(1) : editor;
         addSlot(new Slot(container, 0, 268, 8) {
             @Override
@@ -132,14 +139,14 @@ public class PcbEditorMenu extends AbstractContainerMenu {
         int definition = PcbWiring.component(part(), rotation(), resistance(), threshold(), normallyClosed());
         return mirrored.get() != 0 ? PcbWiring.mirror(definition) : definition;
     }
-    long instanceId() { return selected() >= 0 && editor != null ? PcbModuleIds.get(editor.topology(), layer() * PcbTopology.CELLS + selected()) : 0; }
+    long instanceId() { return selected() >= 0 ? PcbModuleIds.get(topology(), layer() * PcbTopology.CELLS + selected()) : 0; }
 
     double nominalValue() {
-        return selected() >= 0 && editor != null ? PcbParameters.nominal(selectedDefinition(), PcbParameters.get(editor.topology(), layer() * PcbTopology.CELLS + selected()))
+        return selected() >= 0 ? PcbParameters.nominal(selectedDefinition(), PcbParameters.get(topology(), layer() * PcbTopology.CELLS + selected()))
                 : Double.isFinite(draftNominal) ? draftNominal : PcbParameters.nominal(selectedDefinition(), new net.minecraft.nbt.CompoundTag());
     }
     double thresholdValue() {
-        return selected() >= 0 && editor != null ? PcbParameters.threshold(selectedDefinition(), PcbParameters.get(editor.topology(), layer() * PcbTopology.CELLS + selected()))
+        return selected() >= 0 ? PcbParameters.threshold(selectedDefinition(), PcbParameters.get(topology(), layer() * PcbTopology.CELLS + selected()))
                 : Double.isFinite(draftThreshold) ? draftThreshold : PcbParameters.threshold(selectedDefinition(), new net.minecraft.nbt.CompoundTag());
     }
     private net.minecraft.nbt.CompoundTag draftParameters() {
@@ -205,6 +212,26 @@ public class PcbEditorMenu extends AbstractContainerMenu {
 
     public PcbEditorBlockEntity editor() {
         return editor;
+    }
+
+    CompoundTag topology() {
+        if (clientTopology != null) return clientTopology;
+        return editor == null ? PcbTopology.create(level()) : editor.topology();
+    }
+
+    void receiveTopology(PcbEditorPackets.Topology packet) {
+        if (player.level().isClientSide && containerId == packet.container()) clientTopology = packet.data();
+    }
+
+    @Override
+    public void broadcastChanges() {
+        super.broadcastChanges();
+        // Схема нужна редактору даже тогда, когда чанку не рассылают обновления блоков.
+        if (editor == null || !(player instanceof ServerPlayer serverPlayer) || player.containerMenu != this) return;
+        if (!editor.topology().equals(sentTopology)) {
+            sentTopology = editor.topology().copy();
+            PacketDistributor.sendToPlayer(serverPlayer, new PcbEditorPackets.Topology(containerId, sentTopology));
+        }
     }
 
     @Override
@@ -273,6 +300,7 @@ public class PcbEditorMenu extends AbstractContainerMenu {
             redo.clear();
         }
         observedTopology = editor.topology().copy();
+        broadcastChanges();
     }
 
     private boolean applyClick(Player player, int id) {

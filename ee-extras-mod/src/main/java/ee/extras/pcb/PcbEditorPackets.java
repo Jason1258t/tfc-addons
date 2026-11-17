@@ -2,6 +2,7 @@ package ee.extras.pcb;
 
 import ee.extras.EeExtras;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -36,9 +37,19 @@ public final class PcbEditorPackets {
         @Override public Type<Rename> type(){return TYPE;}
     }
 
+    public record Topology(int container, CompoundTag data) implements CustomPacketPayload {
+        private static final Type<Topology> TYPE = new Type<>(EeExtras.rl("pcb_editor_topology"));
+        private static final StreamCodec<ByteBuf, Topology> CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, Topology::container, ByteBufCodecs.COMPOUND_TAG, Topology::data, Topology::new);
+        @Override public Type<Topology> type() { return TYPE; }
+    }
+
     public static void register(IEventBus bus) { bus.addListener(PcbEditorPackets::registerPayload); }
 
     private static void registerPayload(RegisterPayloadHandlersEvent event) {
+        event.registrar("1").playToClient(Topology.TYPE, Topology.CODEC, (packet, context) -> {
+            if (context.player().containerMenu instanceof PcbEditorMenu menu) menu.receiveTopology(packet);
+        });
         event.registrar("1").playToServer(Rename.TYPE,Rename.CODEC,(packet,context)->{
             var player=context.player();
             if(player.containerMenu instanceof PcbEditorMenu menu && menu.containerId==packet.container() && menu.stillValid(player))menu.renameProject(packet);
