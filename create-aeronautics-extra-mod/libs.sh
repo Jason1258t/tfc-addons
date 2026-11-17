@@ -6,7 +6,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 MODS="${MODS:-${TFC_MODS_DIR:-${TFC_PACK_CACHE:-$HOME/.cache/tfc-plans/pack}/mods}}"
 rm -rf libs && mkdir libs
-for j in "$MODS"/create-1.21.1-*.jar "$MODS"/electroenergetics-*.jar; do
+for j in "$MODS"/create-1.21.1-*.jar "$MODS"/electroenergetics-*.jar "$MODS"/sable-neoforge-*.jar; do
   cp "$j" libs/
   unzip -qq -o -j "$j" 'META-INF/jarjar/*.jar' -d libs/ 2>/dev/null || true
 done

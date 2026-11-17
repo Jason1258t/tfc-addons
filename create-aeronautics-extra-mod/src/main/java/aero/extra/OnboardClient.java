@@ -22,8 +22,11 @@ final class OnboardClient {
     private OnboardClient() {}
 
     static void register(IEventBus modBus) {
-        modBus.addListener((EntityRenderersEvent.RegisterRenderers e) ->
-                e.registerBlockEntityRenderer(AeroExtra.ONBOARD_COMPUTER_BE.get(), Renderer::new));
+        modBus.addListener((EntityRenderersEvent.RegisterRenderers e) -> {
+            e.registerBlockEntityRenderer(AeroExtra.ONBOARD_COMPUTER_BE.get(), Renderer::new);
+            e.registerBlockEntityRenderer(AeroExtra.FUEL_PORT_BE.get(), FuelHoseRenderer::new);
+            e.registerBlockEntityRenderer(AeroExtra.FUEL_PUMP_BE.get(), FuelHoseRenderer::new);
+        });
         modBus.addListener((FMLClientSetupEvent e) -> e.enqueueWork(() ->
                 SimpleBlockEntityVisualizer.builder(AeroExtra.ONBOARD_COMPUTER_BE.get())
                         .factory((ctx, be, partialTick) -> new OrientedRotatingVisual<>(ctx, be, partialTick,

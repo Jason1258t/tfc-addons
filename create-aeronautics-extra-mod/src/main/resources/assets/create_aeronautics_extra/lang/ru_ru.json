@@ -24,5 +24,8 @@
   "block.create_aeronautics_extra.transport_engine": "Транспортный дизельный двигатель",
   "create_aeronautics_extra.transport_engine.target_rpm": "Заданные обороты: %s об/мин",
   "block.create_aeronautics_extra.fuel_pump": "Компактный топливный насос",
-  "block.create_aeronautics_extra.fuel_port": "Топливный порт"
+  "block.create_aeronautics_extra.fuel_port": "Топливный порт",
+  "item.create_aeronautics_extra.fuel_hose": "Гибкий топливный патрубок",
+  "create_aeronautics_extra.fuel_hose.selected": "Выбрана первая точка патрубка",
+  "create_aeronautics_extra.fuel_hose.rejected": "Патрубок не установлен. Проверьте точки, длину, препятствия и запас рукава."
 }

@@ -24,5 +24,8 @@
   "block.create_aeronautics_extra.transport_engine": "Transport Diesel Engine",
   "create_aeronautics_extra.transport_engine.target_rpm": "Target speed: %s RPM",
   "block.create_aeronautics_extra.fuel_pump": "Compact Fuel Pump",
-  "block.create_aeronautics_extra.fuel_port": "Fuel Port"
+  "block.create_aeronautics_extra.fuel_port": "Fuel Port",
+  "item.create_aeronautics_extra.fuel_hose": "Flexible Fuel Hose",
+  "create_aeronautics_extra.fuel_hose.selected": "First hose endpoint selected",
+  "create_aeronautics_extra.fuel_hose.rejected": "Hose could not be installed. Check endpoints, length, obstructions and hose supply."
 }

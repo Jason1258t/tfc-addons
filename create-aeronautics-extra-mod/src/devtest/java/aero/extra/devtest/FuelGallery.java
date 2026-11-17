@@ -2,6 +2,8 @@ package aero.extra.devtest;
 
 import aero.extra.AeroExtra;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -49,6 +51,22 @@ final class FuelGallery {
         scene.shot("02-pump-and-engine");
         scene.camera(3.9, 0.7, 0.35, 4.8, -20, 24);
         scene.shot("03-tank-port-and-mount");
+        scene.server("трасса из двух патрубков", c -> {
+            var origin = c.at(-5, 2, -4);
+            FuelHoseCheck.build(c.level(), origin);
+            scene.check("рукав установлен через крепление", FuelHoseCheck.canRun(c.level(), origin));
+            c.player().setItemInHand(InteractionHand.MAIN_HAND, FuelHoseCheck.hose(8));
+        });
+        scene.ticks(40);
+        scene.camera(0, 2.4, -4.0, 11, 12, 21);
+        scene.shot("04-hose-route");
+        scene.gui(true);
+        scene.client("инвентарь с гибким патрубком", () -> {
+            var mc = Minecraft.getInstance();
+            mc.setScreen(new InventoryScreen(mc.player));
+        });
+        scene.ticks(10);
+        scene.shot("05-hose-inventory");
         scene.start();
     }
 

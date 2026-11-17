@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [" B ", " F "],
+  "key": {
+    "B": {
+      "item": "create:brass_sheet"
+    },
+    "F": {
+      "item": "create:fluid_pipe"
+    }
+  },
+  "result": {
+    "id": "create_aeronautics_extra:fuel_port",
+    "count": 2
+  }
+}

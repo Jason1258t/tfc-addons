@@ -1,14 +1,19 @@
 package aero.extra;
 
 import com.mojang.serialization.MapCodec;
+import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.content.fluids.tank.FluidTankBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DirectionalBlock;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -17,7 +22,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
-final class FuelPortBlock extends DirectionalBlock {
+final class FuelPortBlock extends DirectionalBlock implements IBE<FuelEndpointBlockEntity> {
     static final BooleanProperty RELAY = BooleanProperty.create("relay");
     private static final MapCodec<FuelPortBlock> CODEC = simpleCodec(FuelPortBlock::new);
 
@@ -43,6 +48,16 @@ final class FuelPortBlock extends DirectionalBlock {
     }
 
     @Override
+    protected BlockState rotate(BlockState state, Rotation rotation) {
+        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, Mirror mirror) {
+        return state.rotate(mirror.getRotation(state.getValue(FACING)));
+    }
+
+    @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         Direction facing = state.getValue(FACING);
         return switch (facing) {
@@ -53,6 +68,24 @@ final class FuelPortBlock extends DirectionalBlock {
             case EAST -> box(8, 4, 4, 16, 12, 12);
             case WEST -> box(0, 4, 4, 8, 12, 12);
         };
+    }
+
+    @Override
+    public Class<FuelEndpointBlockEntity> getBlockEntityClass() {
+        return FuelEndpointBlockEntity.class;
+    }
+
+    @Override
+    public BlockEntityType<? extends FuelEndpointBlockEntity> getBlockEntityType() {
+        return AeroExtra.FUEL_PORT_BE.get();
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState next, boolean moving) {
+        if (!moving && !state.is(next.getBlock()) && level instanceof ServerLevel server) {
+            FuelHoses.drop(server, pos, FuelHoses.get(server).disconnect(server, pos));
+        }
+        IBE.onRemove(state, level, pos, next);
     }
 
     static IFluidHandler tank(Level level, BlockPos portPos, BlockState state) {

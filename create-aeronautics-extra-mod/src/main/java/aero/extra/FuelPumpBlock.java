@@ -3,6 +3,7 @@ package aero.extra;
 import com.mojang.serialization.MapCodec;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -10,6 +11,8 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DirectionalBlock;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -40,6 +43,16 @@ public final class FuelPumpBlock extends DirectionalBlock implements IBE<FuelPum
     }
 
     @Override
+    protected BlockState rotate(BlockState state, Rotation rotation) {
+        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, Mirror mirror) {
+        return state.rotate(mirror.getRotation(state.getValue(FACING)));
+    }
+
+    @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return switch (state.getValue(FACING).getAxis()) {
             case X -> box(0, 4, 4, 16, 12, 12);
@@ -58,6 +71,14 @@ public final class FuelPumpBlock extends DirectionalBlock implements IBE<FuelPum
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (level.isClientSide || type != getBlockEntityType()) return null;
         return (world, pos, current, entity) -> ((FuelPumpBlockEntity) entity).tick();
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState next, boolean moving) {
+        if (!moving && !state.is(next.getBlock()) && level instanceof ServerLevel server) {
+            FuelHoses.drop(server, pos, FuelHoses.get(server).disconnect(server, pos));
+        }
+        IBE.onRemove(state, level, pos, next);
     }
 
     @Override

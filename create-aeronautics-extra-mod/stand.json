@@ -1,8 +1,59 @@
 {
   "scenes": {
     "aero-fuel-gallery": {
-      "note": "Dev #282: модели двигателя, насоса и обоих режимов топливного порта",
-      "shots": ["01-all-blocks", "02-pump-and-engine", "03-tank-port-and-mount"]
+      "note": "Dev #282: модели двигателя, насоса, порта, крепления и гибкого патрубка",
+      "shots": ["01-all-blocks", "02-pump-and-engine", "03-tank-port-and-mount", "04-hose-route", "05-hose-inventory"]
+    }
+  },
+  "chains": {
+    "aero-fuel-restart": {
+      "note": "Dev #282: три двигателя под нагрузкой на подуровне Sable, сохранение, перезапуск и демонтаж",
+      "steps": [
+        {
+          "name": "build",
+          "kind": "server",
+          "levelType": "minecraft:flat",
+          "cmd": [
+            "forceload add -16 992 15 1023",
+            "fill -1 144 1000 12 144 1008 minecraft:smooth_stone",
+            "aehosetest matrix",
+            "sleep 1",
+            "sable assemble area -1 144 1000 12 146 1008",
+            "aehosetest plotprime",
+            "sleep 3",
+            "aehosetest plotread"
+          ],
+          "failFast": true,
+          "expect": [
+            "simulated:white_portable_engine rpm=32[.]0 fan=32[.]0 fuel=[0-9]+[^\\n]*hose=1",
+            "create_aeronautics_extra:transport_engine rpm=32[.]0 fan=32[.]0 fuel=[0-9]+[^\\n]*hose=1",
+            "createdieselgenerators:diesel_engine rpm=96[.]0 fan=96[.]0 fuel=[0-9]+[^\\n]*hose=1"
+          ],
+          "save": true
+        },
+        {
+          "name": "restart",
+          "kind": "server",
+          "world": "build",
+          "cmd": [
+            "forceload add -16 992 15 1023",
+            "sleep 2",
+            "aehosetest plotprime",
+            "sleep 3",
+            "aehosetest plotread",
+            "aehosetest plotcut",
+            "sleep 0.5",
+            "aehosetest plotread"
+          ],
+          "failFast": true,
+          "expect": [
+            "simulated:white_portable_engine rpm=32[.]0 fan=32[.]0 fuel=[0-9]+[^\\n]*hose=1",
+            "create_aeronautics_extra:transport_engine rpm=32[.]0 fan=32[.]0 fuel=[0-9]+[^\\n]*hose=1",
+            "createdieselgenerators:diesel_engine rpm=96[.]0 fan=96[.]0 fuel=[0-9]+[^\\n]*hose=1",
+            "create_aeronautics_extra:transport_engine rpm=0[.]0 fan=0[.]0 fuel=[0-9]+[^\\n]*hose=0"
+          ]
+        }
+      ]
     }
   }
 }

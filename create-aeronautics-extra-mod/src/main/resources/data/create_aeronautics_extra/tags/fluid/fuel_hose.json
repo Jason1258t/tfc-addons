@@ -1,0 +1,7 @@
+{
+  "values": [
+    { "id": "createdieselgenerators:diesel", "required": false },
+    { "id": "immersiveengineering:biodiesel", "required": false },
+    { "id": "immersiveengineering:high_power_biodiesel", "required": false }
+  ]
+}

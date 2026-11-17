@@ -72,6 +72,16 @@ public class AeTest {
 
     static void commands(RegisterCommandsEvent e) {
         CommandDispatcher<CommandSourceStack> d = e.getDispatcher();
+        var hose = Commands.literal("aehosetest").requires(source -> source.hasPermission(2));
+        for (String action : List.of("build", "read", "prime", "break")) {
+            hose.then(Commands.literal(action).executes(c -> FuelHoseCheck.run(c.getSource(), action)));
+        }
+        if (net.neoforged.fml.ModList.get().isLoaded("sable")) {
+            for (String action : List.of("matrix", "plotread", "plotprime", "plotcut")) {
+                hose.then(Commands.literal(action).executes(c -> FuelHoseCheck.matrix(c.getSource(), action)));
+            }
+        }
+        d.register(hose);
         d.register(Commands.literal("aetest")
                 .then(Commands.literal("build").then(Commands.argument("s", IntegerArgumentType.integer(0, 2))
                         .then(Commands.argument("rpm", IntegerArgumentType.integer(0, 256))

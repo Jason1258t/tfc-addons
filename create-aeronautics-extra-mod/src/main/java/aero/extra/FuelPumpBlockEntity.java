@@ -8,6 +8,10 @@ import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.ModList;
@@ -16,9 +20,10 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
-public final class FuelPumpBlockEntity extends BlockEntity {
+public final class FuelPumpBlockEntity extends FuelEndpointBlockEntity {
     private static final ResourceLocation PORTABLE = ResourceLocation.parse("simulated:portable_engine");
     private static final ResourceLocation CDG = ResourceLocation.parse("createdieselgenerators:diesel_engine_tile_entity");
+    private static final TagKey<Fluid> HOSE_FUELS = TagKey.create(Registries.FLUID, AeroExtra.rl("fuel_hose"));
     private static final int RATE = 50;
     private static final int PRIME_TICKS = 40;
     // Остаток сохраняется, если приёмник изменил ответ после симуляции перелива.
@@ -53,7 +58,13 @@ public final class FuelPumpBlockEntity extends BlockEntity {
                 && kinetic.getGeneratedSpeed() != 0 && kinetic.getSpeed() != 0);
     }
 
+    private FuelHoses hoses() {
+        return FuelHoses.get((ServerLevel) level);
+    }
+
     private IFluidHandler source() {
+        FuelHoses hoses = hoses();
+        if (hoses.connected(worldPosition)) return hoses.source((ServerLevel) level, worldPosition);
         Direction output = facing();
         BlockPos pos = worldPosition.relative(output.getOpposite());
         if (!level.hasChunkAt(pos) || level.getBlockEntity(pos) instanceof FuelPumpBlockEntity) return null;
@@ -82,12 +93,16 @@ public final class FuelPumpBlockEntity extends BlockEntity {
         IFluidHandler source = source();
         if (source == null || source == destination) return;
         FluidStack available = source.drain(RATE, IFluidHandler.FluidAction.SIMULATE);
-        if (!canDeliver(available, destination, cdg)) return;
+        if (!canDeliver(available, destination, cdg) || !allowedAtInlet(available)) return;
         int capacity = destination.fill(available, IFluidHandler.FluidAction.SIMULATE);
         if (capacity <= 0) return;
         recovery.setFluid(source.drain(available.copyWithAmount(capacity), IFluidHandler.FluidAction.EXECUTE));
         setChanged();
         deliver(destination, cdg);
+    }
+
+    private boolean allowedAtInlet(FluidStack stack) {
+        return !hoses().connected(worldPosition) || stack.getFluid().is(HOSE_FUELS);
     }
 
     private boolean canDeliver(FluidStack stack, IFluidHandler destination, boolean cdg) {
@@ -127,7 +142,8 @@ public final class FuelPumpBlockEntity extends BlockEntity {
             if (!(target instanceof TransportEngineBlockEntity) || !driven(target)) return FluidStack.EMPTY;
             if (!recovery.getFluid().isEmpty()) return recovery.drain(request, action);
             IFluidHandler source = source();
-            return source == null ? FluidStack.EMPTY : source.drain(request.copyWithAmount(Math.min(RATE, request.getAmount())), action);
+            if (source == null || !allowedAtInlet(request)) return FluidStack.EMPTY;
+            return source.drain(request.copyWithAmount(Math.min(RATE, request.getAmount())), action);
         }
 
         @Override

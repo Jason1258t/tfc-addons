@@ -101,6 +101,12 @@ public class AeroExtra {
     static final DeferredItem<BlockItem> FUEL_PORT_ITEM = ITEMS.register("fuel_port",
             () -> new BlockItem(FUEL_PORT.get(), new Item.Properties()));
 
+    static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FuelEndpointBlockEntity>> FUEL_PORT_BE =
+            BLOCK_ENTITIES.register("fuel_port", () -> BlockEntityType.Builder
+                    .of(FuelEndpointBlockEntity::new, FUEL_PORT.get()).build(null));
+    static final DeferredItem<FuelHoseItem> FUEL_HOSE = ITEMS.register("fuel_hose",
+            () -> new FuelHoseItem(new Item.Properties()));
+
     public static final DeferredItem<ModuleItem> GENERATOR_MODULE = ITEMS.register("generator_module",
             () -> new ModuleItem(ModuleItem.Kind.GENERATOR, new Item.Properties().stacksTo(16)));
     public static final DeferredItem<ModuleItem> BATTERY_MODULE = ITEMS.register("battery_module",
@@ -129,6 +135,7 @@ public class AeroExtra {
         event.accept(TRANSPORT_ENGINE_ITEM.get());
         event.accept(FUEL_PUMP_ITEM.get());
         event.accept(FUEL_PORT_ITEM.get());
+        event.accept(FUEL_HOSE.get());
         event.accept(GENERATOR_MODULE.get());
         event.accept(BATTERY_MODULE.get());
     }

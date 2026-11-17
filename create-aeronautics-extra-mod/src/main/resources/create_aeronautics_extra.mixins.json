@@ -3,7 +3,7 @@
   "minVersion": "0.8",
   "package": "aero.extra.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": ["PortableEngineRedstoneMixin"],
+  "mixins": ["PortableEngineRedstoneMixin", "SableFuelHosesMixin"],
   "injectors": {
     "defaultRequire": 1
   }
