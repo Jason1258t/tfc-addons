@@ -37,5 +37,5 @@ PANEL_RENDER_DIR=$(mktemp -d)
 trap 'unlink "$PANEL_RENDER_DIR/assets/ee_extras"; rmdir "$PANEL_RENDER_DIR/assets" "$PANEL_RENDER_DIR"' EXIT
 mkdir "$PANEL_RENDER_DIR/assets"
 ln -s "$PWD/src/main/resources/assets/ee_extras" "$PANEL_RENDER_DIR/assets/ee_extras"
-(cd ../.. && node scripts/mcp/render.mjs "$PANEL_RENDER_DIR" ee_extras:panel_duplex_switch --out tools/ee-extras-mod/icons --size 192)
+(cd ../.. && node scripts/mcp/render.mjs "$PANEL_RENDER_DIR" ee_extras:panel_duplex_switch ee_extras:wall_disconnect --out tools/ee-extras-mod/icons --size 192)
 echo "готово: ee-extras-$VERSION.jar → tools/ee-extras-mod; обновите addon.json и проверьте MCP addon_check"

@@ -1,5 +1,8 @@
 {
   "scenes": {
+    "wall-disconnect": {
+      "shots": ["disconnect-closed", "disconnect-open"]
+    },
     "integrated-drives": {
       "shots": ["belt-drive", "auger-drive"]
     },

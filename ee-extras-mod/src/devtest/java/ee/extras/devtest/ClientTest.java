@@ -56,6 +56,10 @@ public final class ClientTest {
             ElectricMachinesScene.start();
             return;
         }
+        if (WallDisconnectScene.ON) {
+            WallDisconnectScene.start();
+            return;
+        }
         if (ElectricPressScene.ON) {
             ElectricPressScene.start();
             return;
@@ -74,7 +78,7 @@ public final class ClientTest {
     @SubscribeEvent
     public static void tick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
-        if (IntegratedDrivesScene.ON || ElectricMachinesScene.ON || ElectricPressScene.ON || FlywheelWireTest.ON || mc.player == null || mc.getSingleplayerServer() == null) return;
+        if (IntegratedDrivesScene.ON || ElectricMachinesScene.ON || ElectricPressScene.ON || WallDisconnectScene.ON || FlywheelWireTest.ON || mc.player == null || mc.getSingleplayerServer() == null) return;
         tick++;
         var server = mc.getSingleplayerServer();
         try {

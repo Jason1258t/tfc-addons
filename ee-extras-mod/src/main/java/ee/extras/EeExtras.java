@@ -11,6 +11,7 @@ import com.george_vi.electroenergetics.devices.device.SimulatedDevice;
 import com.george_vi.electroenergetics.devices.device.SimulatedDeviceType;
 import com.george_vi.electroenergetics.simulation.WireType;
 import ee.extras.machine.ElectricDeployerBlock;
+import ee.extras.machine.WallDisconnectBlock;
 import ee.extras.machine.ElectricDeployerBlockEntity;
 import ee.extras.machine.ElectricDeployerRenderer;
 import ee.extras.machine.ElectricMixerBlock;
@@ -149,6 +150,10 @@ public class EeExtras {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FluidDispenserBlockEntity>> FLUID_DISPENSER_BE =
             BLOCK_ENTITIES.register("fluid_dispenser", () -> BlockEntityType.Builder
                     .of(FluidDispenserBlockEntity::new, FLUID_DISPENSER.get()).build(null));
+
+    public static final DeferredBlock<WallDisconnectBlock> WALL_DISCONNECT =
+            BLOCKS.register("wall_disconnect", () -> new WallDisconnectBlock(metal().noOcclusion().pushReaction(PushReaction.BLOCK)));
+    public static final DeferredItem<BlockItem> WALL_DISCONNECT_ITEM = ITEMS.registerSimpleBlockItem(WALL_DISCONNECT);
 
     public static final Kind<RectifierDevice> THREE_PHASE = new Kind<>(Layout.THREE_PHASE, Tier.LIGHT, RectifierDevice::new);
     public static final Kind<RectifierDevice> SINGLE_PHASE = new Kind<>(Layout.SINGLE_PHASE, Tier.LIGHT, RectifierDevice::new);
@@ -378,6 +383,7 @@ public class EeExtras {
         event.accept(ELECTRIC_MIXER_ITEM.get());
         event.accept(ELECTRIC_DEPLOYER_ITEM.get());
         event.accept(FLUID_DISPENSER_ITEM.get());
+        event.accept(WALL_DISCONNECT_ITEM.get());
         event.accept(ee.extras.panel.PanelModules.SWITCH_ITEM.get());
         for (Supplier<? extends Item> item : new Supplier[] {KINETIC_GENERATOR_ITEM, CONVERTER_ITEM, CABLE_CONVERTER_ITEM,
                 FOUR_CORE_TERMINATION_ITEM, PHASE_TAP_ITEM, DUPLEX_INSULATOR_ITEM, FOUR_CORE_INSULATOR_ITEM, FOUR_CORE_SPOOL, THIN_SPOOL, THIN_SINGLE_SPOOL, DECORATIVE_SINGLE_SPOOL, CABLE_CAP})

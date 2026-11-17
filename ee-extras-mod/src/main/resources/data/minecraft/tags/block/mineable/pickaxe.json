@@ -41,6 +41,7 @@
     "ee_extras:electric_press",
     "ee_extras:electric_mixer",
     "ee_extras:electric_deployer",
-    "ee_extras:fluid_dispenser"
+    "ee_extras:fluid_dispenser",
+    "ee_extras:wall_disconnect"
   ]
 }
