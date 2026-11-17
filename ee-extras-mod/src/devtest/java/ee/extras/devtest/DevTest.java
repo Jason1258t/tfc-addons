@@ -14,6 +14,9 @@ import com.george_vi.electroenergetics.content.gauge.GaugeDevice;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.foundation.device.ElectricalDeviceBlock;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
+import com.george_vi.electroenergetics.foundation.scroll_value.VoltageScrollValueBehaviour;
+import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.mojang.brigadier.CommandDispatcher;
 import ee.extras.EeExtras;
@@ -64,6 +67,7 @@ public class DevTest {
         PcbSupplyTest.register(d);
         Wire.register(d);
         ElectronicsTest.register(d);
+        PersistenceTest.register(d);
         SolarTest.register(d);
         BeltMotorTest.register(d);
         ElectricPressTest.register(d);
@@ -74,7 +78,7 @@ public class DevTest {
         d.register(Commands.literal("rectest")
                 .then(Commands.literal("build").executes(c -> build(c.getSource())))
                 .then(Commands.literal("power")
-                        .then(Commands.argument("volts", com.mojang.brigadier.arguments.DoubleArgumentType.doubleArg(0))
+                        .then(Commands.argument("volts", com.mojang.brigadier.arguments.DoubleArgumentType.doubleArg(0, 1_000_000))
                                 .executes(c -> power(c.getSource(),
                                         com.mojang.brigadier.arguments.DoubleArgumentType.getDouble(c, "volts")))))
                 .then(Commands.literal("report").executes(c -> report(c.getSource())))
@@ -287,23 +291,37 @@ public class DevTest {
     }
 
     static int power(CommandSourceStack src, double volts) {
-        DevicesSavedData devices = DevicesSavedData.load(src.getLevel());
+        ServerLevel level = src.getLevel();
+        DevicesSavedData devices = DevicesSavedData.load(level);
         StringBuilder out = new StringBuilder();
         for (BlockPos base : new BlockPos[] {THREE, SINGLE}) {
             int phases = base == THREE ? 3 : 1;
             for (int i = 0; i < phases; i++) {
-                CreativeBatteryDevice b = devices.getDevice(battery(base, i), CreativeBatteryDevice.class);
-                if (b == null) {
-                    out.append("нет батареи ").append(battery(base, i)).append("; ");
+                BlockPos pos = battery(base, i);
+                CreativeBatteryDevice b = devices.getDevice(pos, CreativeBatteryDevice.class);
+                var setting = BlockEntityBehaviour.get(level, pos, ScrollValueBehaviour.TYPE);
+                if (b == null || !(setting instanceof VoltageScrollValueBehaviour voltage)) {
+                    out.append("нет батареи или её настройки ").append(pos).append("; ");
                     continue;
                 }
-                b.voltage = volts;
+                // Тик установки EE задаёт частоту по режиму блока. Дожидаемся его перед настройкой схемы.
+                if (level.getBlockTicks().hasScheduledTick(pos, CEEBlocks.CREATIVE_BATTERY.get())) {
+                    out.append("батарея ещё запускается ").append(pos).append("; ");
+                    continue;
+                }
+                voltage.setValue((int) Math.round(volts * 1000));
+                b.voltage = voltage.getVoltage();
+                // Частота и фаза нужны испытательной схеме и задаются только в симуляции EE.
                 b.acFrequency = 1;
                 b.phaseOffset = 120f * i;
             }
         }
-        String msg = out.length() == 0 ? "батареи включены: " + volts + " В" : out.toString();
-        src.sendSuccess(() -> Component.literal(msg), false);
+        if (!out.isEmpty()) {
+            src.sendFailure(Component.literal(out.toString()));
+            return 0;
+        }
+        devices.setDirty();
+        src.sendSuccess(() -> Component.literal("батареи включены: " + volts + " В"), false);
         return 1;
     }
 

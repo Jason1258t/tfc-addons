@@ -20,9 +20,18 @@
         {
           "name": "build",
           "kind": "server",
-          "cmd": ["forceload add 0 0 32 32", "rectest build", "rectest power 10", "sleep 15", "rectest report"],
+          "cmd": [
+            "forceload add 0 0 32 32",
+            "rectest build",
+            "sleep 3",
+            "rectest power 10",
+            "sleep 15",
+            "rectest report"
+          ],
           "failFast": true,
-          "expect": ["трёхфазный: на выходе [1-9]"],
+          "expect": [
+            "трёхфазный: на выходе [1-9][.,][0-9]+ В[^\\n]*; батарея 10[.,]0 В, частота 1[.,]0[^\\n]*однофазный:[^\\n]*; батарея 10[.,]0 В, частота 1[.,]0"
+          ],
           "save": true
         },
         {
@@ -38,7 +47,10 @@
           ],
           "failFast": true,
           "failOn": ["Test failed"],
-          "expect": ["Test passed[\\s\\S]*Test passed[\\s\\S]*Test passed", "трёхфазный: на выходе [1-9]"],
+          "expect": [
+            "Test passed[\\s\\S]*Test passed[\\s\\S]*Test passed",
+            "трёхфазный: на выходе [1-9][.,][0-9]+ В[^\\n]*; батарея 10[.,]0 В, частота 1[.,]0[^\\n]*однофазный:[^\\n]*; батарея 10[.,]0 В, частота 1[.,]0"
+          ],
           "save": true
         },
         {
@@ -47,6 +59,43 @@
           "world": "restart",
           "shots": 2,
           "save": true
+        }
+      ]
+    },
+    "battery-persistence": {
+      "note": "четыре творческие батареи EE и два преобразователя EE Extras: проверка настроек после двух рестартов",
+      "steps": [
+        {
+          "name": "configure",
+          "kind": "server",
+          "cmd": [
+            "forceload add 0 0 32 32",
+            "eepersist place",
+            "sleep 3",
+            "eepersist configure",
+            "sleep 3",
+            "eepersist check"
+          ],
+          "failFast": true,
+          "expect": ["Настройки сохранены"],
+          "save": true
+        },
+        {
+          "name": "restart-1",
+          "kind": "server",
+          "world": "configure",
+          "cmd": ["sleep 3", "eepersist check"],
+          "failFast": true,
+          "expect": ["Настройки сохранены"],
+          "save": true
+        },
+        {
+          "name": "restart-2",
+          "kind": "server",
+          "world": "restart-1",
+          "cmd": ["sleep 3", "eepersist check"],
+          "failFast": true,
+          "expect": ["Настройки сохранены"]
         }
       ]
     }
