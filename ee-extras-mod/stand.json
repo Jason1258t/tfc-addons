@@ -78,6 +78,126 @@
           "expect": ["Имя редактора и установленной платы сохранено"]
         }
       ]
+    },
+    "pcb-create-restart": {
+      "note": "#301.26: интерфейс Create, независимые адаптеры/получатели, питание, сохранение и клиент",
+      "steps": [
+        {
+          "name": "build",
+          "kind": "server",
+          "levelType": "minecraft:flat",
+          "cmd": [
+            "forceload add 224 224 272 272",
+            "pcbcreate build",
+            "sleep 5",
+            "pcbcreate check 2.5",
+            "!pcbcreate check 4",
+            "pcbcreate displays",
+            "pcbcreate state true",
+            "pcbcreate digital 1.9",
+            "sleep 2",
+            "pcbcreate state false",
+            "pcbcreate digital 2.5",
+            "sleep 2",
+            "pcbcreate state false",
+            "pcbcreate digital 3.1",
+            "sleep 2",
+            "pcbcreate state true",
+            "pcbcreate digital 2.5",
+            "sleep 2",
+            "pcbcreate state true",
+            "pcbcreate digital 5",
+            "pcbcreate supply 0",
+            "sleep 3",
+            "pcbcreate check 0",
+            "pcbcreate blank",
+            "pcbcreate state false",
+            "pcbcreate supply 2",
+            "sleep 3",
+            "pcbcreate check 1",
+            "pcbcreate blank",
+            "pcbcreate supply 5",
+            "pcbcreate reverse",
+            "sleep 3",
+            "pcbcreate check -2.5",
+            "pcbcreate blank",
+            "pcbcreate normal",
+            "pcbcreate supply 7",
+            "sleep 3",
+            "pcbcreate check 3.5",
+            "pcbcreate blank",
+            "pcbcreate ac",
+            "sleep 3",
+            "pcbcreate blank",
+            "pcbcreate supply 5",
+            "sleep 3",
+            "pcbcreate displays",
+            "pcbcreate state true",
+            "forceload remove 224 224 272 272",
+            "sleep 35",
+            "execute unless loaded 240 -60 240 run say CHUNK_UNLOADED",
+            "forceload add 224 224 272 272",
+            "sleep 5",
+            "execute if loaded 240 -60 240 run say CHUNK_LOADED",
+            "pcbcreate check 2.5",
+            "pcbcreate displays",
+            "pcbcreate state true"
+          ],
+          "failFast": true,
+          "expect": [
+            "Два физических приёмника Create",
+            "Лампа Create Deco: true",
+            "Оба табло и выход лампы очищены",
+            "CHUNK_UNLOADED",
+            "CHUNK_LOADED"
+          ],
+          "save": true
+        },
+        {
+          "name": "restart",
+          "kind": "server",
+          "world": "build",
+          "cmd": ["sleep 5", "pcbcreate check 2.5", "pcbcreate displays", "pcbcreate state true"],
+          "failFast": true,
+          "expect": ["Два физических приёмника Create", "Лампа Create Deco: true"]
+        },
+        {
+          "name": "client",
+          "kind": "client",
+          "scene": "pcb-create",
+          "shots": [
+            "adapter",
+            "voltage",
+            "second-adapter",
+            "flap-display",
+            "state",
+            "lamp-on",
+            "lamp-off",
+            "complete",
+            "editor-catalog",
+            "editor-mounted",
+            "editor-redo"
+          ],
+          "timeout": 1200
+        }
+      ]
+    }
+  },
+  "scenes": {
+    "pcb-create": {
+      "shots": [
+        "adapter",
+        "voltage",
+        "second-adapter",
+        "flap-display",
+        "state",
+        "lamp-on",
+        "lamp-off",
+        "complete",
+        "editor-catalog",
+        "editor-mounted",
+        "editor-redo"
+      ]
     }
   }
 }

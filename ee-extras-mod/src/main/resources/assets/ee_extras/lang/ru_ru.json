@@ -386,5 +386,10 @@
   "item.ee_extras.pcb_rotary_knob": "Поворотная ручка платы",
   "item.ee_extras.pcb_buzzer": "Зуммер платы",
   "item.ee_extras.pcb_seven_segment": "Семисегментный индикатор платы",
-  "item.ee_extras.pcb_logic_gates": "Логическая сборка платы: 4 NAND"
+  "item.ee_extras.pcb_logic_gates": "Логическая сборка платы: 4 NAND",
+  "item.ee_extras.pcb_create_interface": "Адаптер платы Create",
+  "ee_extras.pcb.create_voltage": "Адаптер платы · напряжение (В)",
+  "ee_extras.pcb.create_state": "Адаптер платы · состояние",
+  "ee_extras.pcb.create_adapter": "Адаптер %s",
+  "ee_extras.pcb.create_adapter_title": "Номер адаптера на плате"
 }
