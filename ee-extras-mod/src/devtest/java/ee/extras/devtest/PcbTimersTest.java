@@ -21,11 +21,18 @@ import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 final class PcbTimersTest {
-    private static final BlockPos BOARD = new BlockPos(24, -60, 16), BATTERY = BOARD.east(4), WIND = BOARD.east(6);
+    private static BlockPos BOARD = new BlockPos(24, -60, 16), BATTERY = BOARD.east(4), WIND = BOARD.east(6);
     private static ServerLevel watched;
     private static int samples, high, low, edges;
     private static boolean previous;
     private static boolean listening;
+
+    static int buildAt(CommandSourceStack source, BlockPos board, boolean clock) {
+        BOARD = board;
+        BATTERY = board.east(4);
+        WIND = board.east(6);
+        return build(source, clock);
+    }
 
     static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         if (!listening) {

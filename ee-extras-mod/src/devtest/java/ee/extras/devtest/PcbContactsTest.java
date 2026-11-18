@@ -21,7 +21,14 @@ import net.neoforged.neoforge.common.util.FakePlayerFactory;
 
 /** Компиляция трёх физических выводов и проверка обоих положений в матрице EE. */
 final class PcbContactsTest {
-    private static final BlockPos BOARD = new BlockPos(24, -60, 24), SUPPLY = BOARD.east(4), BASE = BOARD.east(6);
+    private static BlockPos BOARD = new BlockPos(24, -60, 24), SUPPLY = BOARD.east(4), BASE = BOARD.east(6);
+
+    static int buildAt(CommandSourceStack source, BlockPos board, int type) {
+        BOARD = board;
+        SUPPLY = board.east(4);
+        BASE = board.east(6);
+        return build(source, type);
+    }
     static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("pcbcontacts").requires(s -> s.hasPermission(2))
                 .then(Commands.literal("switch").executes(c -> build(c.getSource(), 3)))

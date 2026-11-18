@@ -59,6 +59,7 @@ public final class ClientTest {
         if (PCB_EXTRA_PHOTOS || PCB_CONNECTOR_PHOTOS || PCB_BRIDGE_PHOTOS || PCB_STEPUP_PHOTOS || PCB_POWER_PHOTOS || PCB_MODULE_PHOTOS || PCB_UPGRADE_PHOTOS || PCB_MOUNT_PHOTOS || started || !(e.getScreen() instanceof TitleScreen)) return;
         started = true;
         if (PcbCreateScene.ON) { PcbCreateScene.start(); return; }
+        if (PcbAcceptanceScene.ON) { PcbAcceptanceScene.start(); return; }
         Minecraft mc = Minecraft.getInstance();
         mc.options.pauseOnLostFocus = false;
         var settings = new LevelSettings("eetest", GameType.CREATIVE, false, Difficulty.PEACEFUL, true, new GameRules(), WorldDataConfiguration.DEFAULT);
@@ -68,7 +69,7 @@ public final class ClientTest {
 
     @SubscribeEvent
     public static void tick(ClientTickEvent.Post event) {
-        if (PcbCreateScene.ON) return;
+        if (PcbCreateScene.ON || PcbAcceptanceScene.ON) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.getSingleplayerServer() == null) return;
         tick++;
