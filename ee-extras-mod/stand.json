@@ -851,6 +851,62 @@
           "world": "save"
         }
       ]
+    },
+    "pcb-l1-stepup-lifecycle": {
+      "note": "#301.27: ВВ-трансформатор — внешний нагруженный вольтметр/баланс, настоящая выгрузка и холодный процесс; пока не исполнено",
+      "steps": [
+        {
+          "name": "save",
+          "kind": "server",
+          "levelType": "minecraft:flat",
+          "cmd": [
+            "gamerule spawnChunkRadius 0",
+            "setworldspawn 4096 100 4096",
+            "forceload add 0 0 47 47",
+            "sleep 5",
+            "pcbstepup ac",
+            "sleep 5",
+            "pcbstepup expect 196.6953",
+            "pcblifecycle remember stepup-circuit Circuit 24 -60 24",
+            "expect Saved=1",
+            "forceload remove all",
+            "sleep 40",
+            "pcblifecycle chunk false 24 -60 24",
+            "expect Loaded=0",
+            "forceload add 0 0 47 47",
+            "sleep 5",
+            "pcblifecycle chunk true 24 -60 24",
+            "expect Loaded=1",
+            "pcblifecycle same stepup-circuit",
+            "expect Equal=1",
+            "pcbstepup expect 196.6953",
+            "save-all flush"
+          ],
+          "failFast": true,
+          "expect": ["PCB_LIFECYCLE_OK", "баланс/токи/плата — OK"],
+          "save": true
+        },
+        {
+          "name": "restart",
+          "kind": "server",
+          "world": "save",
+          "cmd": [
+            "sleep 5",
+            "pcblifecycle same stepup-circuit",
+            "expect Equal=1",
+            "pcbstepup expect 196.6953",
+            "pcbstepup off",
+            "sleep 3",
+            "pcbstepup expect 0",
+            "pcbstepup volts 24",
+            "sleep 5",
+            "pcbstepup expect 196.6953"
+          ],
+          "failFast": true,
+          "expect": ["PCB_LIFECYCLE_OK", "баланс/токи/плата — OK"],
+          "save": true
+        }
+      ]
     }
   },
   "scenes": {
