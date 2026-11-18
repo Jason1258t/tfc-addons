@@ -50,6 +50,18 @@ final class PcbCreateTest {
         root.then(Commands.literal("state").then(Commands.argument("value", com.mojang.brigadier.arguments.BoolArgumentType.bool())
                 .executes(context -> state(context.getSource(), com.mojang.brigadier.arguments.BoolArgumentType.getBool(context, "value")))));
         root.then(Commands.literal("blank").executes(context -> blank(context.getSource())));
+        root.then(Commands.literal("enabled").then(Commands.argument("value", com.mojang.brigadier.arguments.BoolArgumentType.bool())
+                .executes(context -> enabled(context.getSource(), com.mojang.brigadier.arguments.BoolArgumentType.getBool(context, "value")))));
+        root.then(Commands.literal("saved").executes(context -> saved(context.getSource())));
+        root.then(Commands.literal("unloaded").executes(context -> {
+            var level = context.getSource().getLevel();
+            PcbExtraTest.check(!level.hasChunk(BOARD.getX() >> 4, BOARD.getZ() >> 4), "чанк платы действительно выгружен");
+            context.getSource().sendSuccess(() -> Component.literal("Чанк адаптера выгружен"), false);
+            return 1;
+        }));
+        root.then(Commands.literal("load").then(Commands.argument("ohms", DoubleArgumentType.doubleArg(.01, 1e9))
+                .executes(context -> load(context.getSource(), DoubleArgumentType.getDouble(context, "ohms")))));
+        root.then(Commands.literal("check-load").executes(context -> checkLoad(context.getSource())));
         dispatcher.register(root);
     }
 
@@ -61,6 +73,7 @@ final class PcbCreateTest {
         routing.part(57, 36, new int[]{0, 1, 4}, 10000, 0);
         routing.part(117, 40, new int[]{2, 3, 0, 1}, 0, 0);
         routing.part(123, 40, new int[]{4, 1, 0, 1}, 0, 0);
+        routing.part(211, 0, new int[]{2, 1}, 1e9, 0);
         for (int pin = 0; pin < 4; pin++) routing.terminal(PcbDemoRouting.terminalCell(pin), pin);
         var topology = routing.build();
         DevTest.place(level, BOARD, PcbItems.CIRCUIT_BLOCK.get().defaultBlockState().setValue(PcbCircuitBlock.CUSTOM, true));
@@ -68,7 +81,7 @@ final class PcbCreateTest {
         PcbTopology.attach(board, topology);
         PcbModulesTest.call(PcbCircuitBlockEntity.class, level.getBlockEntity(BOARD), "setBoard", board);
         var compiled = PcbModulesTest.<java.util.List<PcbCircuitDevice.Part>>call(PcbBridgeTest.wiring(), null, "compile", topology);
-        PcbExtraTest.check(compiled != null && compiled.size() == 4, "компиляция ручки и адаптера Create");
+        PcbExtraTest.check(compiled != null && compiled.size() == 5, "компиляция ручки и адаптера Create");
         PcbModulesTest.call(PcbCircuitDevice.class, device(level), "setCircuit", compiled, PcbCircuitDevice.Rating.L2, 4);
         PcbModulesTest.call(PcbCircuitDevice.class, device(level), "adjustComponent", 0, 50);
         PcbModulesTest.call(PcbCircuitDevice.class, device(level), "adjustComponent", 1, 25);
@@ -82,12 +95,22 @@ final class PcbCreateTest {
             power(level, battery, 5);
         }
         link(level, BOARD.north(), Direction.NORTH, ANALOG_TARGET, false);
+        // Механическое табло питается настоящим зацеплением с отдельной шестернёй, не подменой скорости.
+        for (int x = 0; x < 3; x++) DevTest.place(level, ANALOG_TARGET.east(x), Blocks.AIR.defaultBlockState());
+        DevTest.place(level, ANALOG_TARGET, AllBlocks.DISPLAY_BOARD.getDefaultState()
+                .setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
+        DevTest.place(level, ANALOG_TARGET.east(), AllBlocks.COGWHEEL.getDefaultState()
+                .setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.AXIS, Direction.Axis.Z));
+        DevTest.place(level, ANALOG_TARGET.east().south(), AllBlocks.CREATIVE_MOTOR.getDefaultState()
+                .setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING, Direction.NORTH));
+        ((com.simibubi.create.content.kinetics.motor.CreativeMotorBlockEntity)
+                level.getBlockEntity(ANALOG_TARGET.east().south())).generatedSpeed.setValue(128);
         link(level, BOARD.south(), Direction.SOUTH, STATE_TARGET, true);
         link(level, BOARD.above(), Direction.UP, SECOND_TARGET, false);
         ((DisplayLinkBlockEntity) level.getBlockEntity(BOARD.above())).getSourceConfig().putInt("Adapter", 1);
         DevTest.place(level, BOARD.west(), BuiltInRegistries.BLOCK.get(ResourceLocation.parse("createdeco:green_brass_lamp"))
                 .defaultBlockState().setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING, Direction.WEST));
-        source.sendSuccess(() -> Component.literal("Адаптер Create: ручка, питание, два физических Display Link и два табло Nixie"), false);
+        source.sendSuccess(() -> Component.literal("Адаптер Create: две ручки, два адаптера, три Display Link, механическое табло, два Nixie и лампа"), false);
         return 1;
     }
 
@@ -139,19 +162,99 @@ final class PcbCreateTest {
     }
 
     private static String text(ServerLevel level, BlockPos position) {
-        return level.getBlockEntity(position).saveWithFullMetadata(level.registryAccess()).getString("CustomText");
+        var entity = level.getBlockEntity(position);
+        if (entity instanceof com.simibubi.create.content.trains.display.FlapDisplayBlockEntity flap) {
+            var controller = flap.getController();
+            PcbExtraTest.check(controller != null && controller.isSpeedRequirementFulfilled(),
+                    "реальный привод механического табло работает");
+            var result = new StringBuilder();
+            for (var section : controller.getLines().getFirst().getSections()) {
+                String json = section.write(level.registryAccess()).getString("Text");
+                var component = json.isEmpty() ? Component.empty() : Component.Serializer.fromJson(json, level.registryAccess());
+                PcbExtraTest.check(component != null, "текст секции механического табло");
+                result.append(component.getString());
+            }
+            return Component.Serializer.toJson(Component.literal(result.toString()), level.registryAccess());
+        }
+        return entity.saveWithFullMetadata(level.registryAccess()).getString("CustomText");
+    }
+
+    private static String plainText(ServerLevel level, BlockPos position) {
+        var component = Component.Serializer.fromJson(text(level, position), level.registryAccess());
+        PcbExtraTest.check(component != null, "текст физического приёмника " + position);
+        return component.getString();
+    }
+
+    static int enabled(CommandSourceStack source, boolean expected) {
+        var tag = new CompoundTag();
+        device(source.getLevel()).write(tag);
+        PcbExtraTest.check(!tag.getBoolean("Burnt"), "плата не сгорела");
+        for (String index : new String[]{"2", "3"}) {
+            var adapter = tag.getCompound("CreateInterfaces").getCompound(index);
+            PcbExtraTest.check(adapter.contains("Powered") && adapter.getBoolean("Powered") == expected,
+                    "питание адаптера " + index + ": " + adapter);
+        }
+        source.sendSuccess(() -> Component.literal("Оба адаптера включены: " + expected), false);
+        return 1;
+    }
+
+    static int load(CommandSourceStack source, double ohms) {
+        var tag = new CompoundTag();
+        var device = device(source.getLevel());
+        device.write(tag);
+        var parts = tag.getList("Circuit", net.minecraft.nbt.Tag.TAG_COMPOUND);
+        PcbExtraTest.check(parts.size() == 5 && parts.getCompound(4).getString("Kind").equals("RESISTOR"),
+                "видимый нагрузочный резистор");
+        parts.getCompound(4).putDouble("Ohms", ohms);
+        device.read(tag);
+        return 1;
+    }
+
+    static int checkLoad(CommandSourceStack source) {
+        var tag = new CompoundTag();
+        device(source.getLevel()).write(tag);
+        var adapter = tag.getCompound("CreateInterfaces").getCompound("2");
+        double ohms = tag.getList("Circuit", net.minecraft.nbt.Tag.TAG_COMPOUND).getCompound(4).getDouble("Ohms");
+        // Делитель 5к + (5к || 1ГОм входа || внешняя нагрузка), без обращения к реализации адаптера.
+        double bottom = 1 / (1.0 / 5000 + 1.0 / 1e9 + 1 / ohms);
+        double expected = adapter.getDouble("Supply") * bottom / (5000 + bottom);
+        PcbExtraTest.check(adapter.getBoolean("Powered") && !tag.getBoolean("Burnt"), "нагруженный адаптер питается");
+        check(source, expected);
+        source.sendSuccess(() -> Component.literal("Нагрузка " + ohms + " Ом: делитель подтверждён"), false);
+        return 1;
+    }
+
+    static int saved(CommandSourceStack source) {
+        var level = source.getLevel();
+        PcbExtraTest.check(level.getBlockEntity(BOARD) instanceof PcbCircuitBlockEntity, "сохранённая плата существует");
+        var tag = new CompoundTag();
+        device(level).write(tag);
+        PcbExtraTest.check(tag.getList("Circuit", net.minecraft.nbt.Tag.TAG_COMPOUND).size() == 5,
+                "сохранены пять смонтированных модулей");
+        int[] positions = tag.getIntArray("Positions");
+        PcbExtraTest.check(positions.length >= 2 && positions[0] == 50 && positions[1] == 25,
+                "сохранены положения обеих ручек");
+        var link = (DisplayLinkBlockEntity) level.getBlockEntity(BOARD.above());
+        PcbExtraTest.check(link != null && link.getSourceConfig().getInt("Adapter") == 1 && link.activeSource != null,
+                "сохранён выбор второго адаптера и источник Create");
+        enabled(source, true);
+        check(source, 2.5);
+        displays(source);
+        state(source, true);
+        source.sendSuccess(() -> Component.literal("Сохранённая схема Create восстановлена"), false);
+        return 1;
     }
 
     static int displays(CommandSourceStack source) {
         var level = source.getLevel();
-        String analog = text(level, ANALOG_TARGET), digital = text(level, STATE_TARGET);
-        PcbExtraTest.check(analog.contains("2.50") && digital.contains("1"), "обе Nixie получили данные: " + analog + "/" + digital);
-        String second = text(level, SECOND_TARGET);
-        PcbExtraTest.check(second.contains("3.75"), "второй адаптер независимо выбран: " + second);
+        String analog = plainText(level, ANALOG_TARGET), digital = plainText(level, STATE_TARGET);
+        PcbExtraTest.check(analog.equals("2.50") && digital.equals("1"), "табло и Nixie получили данные: " + analog + "/" + digital);
+        String second = plainText(level, SECOND_TARGET);
+        PcbExtraTest.check(second.equals("3.75"), "второй адаптер независимо выбран: " + second);
         PcbExtraTest.check(PcbModulesTest.call(PcbCircuitDevice.class, device(level), "createInterface", -1) == null
                 && PcbModulesTest.call(PcbCircuitDevice.class, device(level), "createInterface", 2) == null,
                 "неверный номер не подменяется первым адаптером");
-        source.sendSuccess(() -> Component.literal("Два физических приёмника Create: " + analog + " / " + digital), false);
+        source.sendSuccess(() -> Component.literal("Три физических приёмника Create: " + analog + " / " + digital), false);
         return 1;
     }
 
@@ -170,7 +273,7 @@ final class PcbCreateTest {
         var level = source.getLevel();
         for (var position : new BlockPos[]{ANALOG_TARGET, STATE_TARGET, SECOND_TARGET}) {
             var component = Component.Serializer.fromJson(text(level, position), level.registryAccess());
-            PcbExtraTest.check(component != null && component.getString().isEmpty(), "очистка Nixie " + position);
+            PcbExtraTest.check(component != null && component.getString().isEmpty(), "очистка приёмника " + position);
         }
         PcbExtraTest.check(level.getBlockState(BOARD).getValue(PcbCircuitBlock.OUTPUT) == 0, "выход лампы выключен");
         source.sendSuccess(() -> Component.literal("Оба табло и выход лампы очищены при отключении"), false);
