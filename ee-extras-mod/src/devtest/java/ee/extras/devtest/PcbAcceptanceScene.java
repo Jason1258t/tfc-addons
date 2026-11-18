@@ -10,6 +10,7 @@ final class PcbAcceptanceScene {
 
     static void start() {
         var scene = new Scene("pcb-acceptance").area(32, 10);
+        scene.client("крупный план плат", () -> net.minecraft.client.Minecraft.getInstance().options.fov().set(35));
         scene.server("шесть физических плат с источниками и нагрузками", context -> {
             var source = context.player().createCommandSourceStack();
             for (int type = 36; type <= 38; type++) {
@@ -48,8 +49,10 @@ final class PcbAcceptanceScene {
             PcbModulesTest.call(PcbTimersTest.class, null, "expect", source, 24.0);
         });
         String[] shots = {"knob", "buzzer", "seven-segment", "nand", "mechanical-timer"};
-        for (int index = 0; index < shots.length; index++)
-            scene.gui(false).camera(index == 4 ? -7.5 : .5, 2.12, -19.5 + index * 8, 1.9, 180, 65).shot(shots[index]);
+        for (int index = 0; index < shots.length; index++) {
+            scene.gui(false).camera(index == 4 ? -7.5 : .5, 2.12, -19.5 + index * 8, 1.9, 180, 65);
+            cleanShot(scene, shots[index]);
+        }
         for (int position : new int[]{0, 50, 100}) {
             scene.server("трёхпозиционный переключатель: " + position, context -> {
                 var device = DevicesSavedData.load(context.level()).getDevice(context.at(-8, 2, 20), PcbCircuitDevice.class);
@@ -58,9 +61,20 @@ final class PcbAcceptanceScene {
             }).ticks(40).server("контакт и нагрузка переключателя", context ->
                     PcbModulesTest.call(PcbContactsTest.class, null, "expect", context.player().createCommandSourceStack(),
                             position == 0 ? 24.0 : 0.0));
-            scene.camera(-7.5, 2.12, 20.5, 1.9, 180, 65).shot("selector-" + position);
+            scene.camera(-7.5, 2.12, 20.5, 1.9, 180, 65);
+            cleanShot(scene, "selector-" + position);
         }
         scene.camera(3, 2, 0, 30, 130, 60).shot("overview");
         scene.start();
+    }
+
+    private static void cleanShot(Scene scene, String name) {
+        scene.server("эффекты игрока не закрывают плату", context -> context.player().removeAllEffects());
+        scene.client("убрать оставшиеся частицы перед кадром", () -> {
+            var client = net.minecraft.client.Minecraft.getInstance();
+            client.player.removeAllEffects();
+            client.particleEngine.iterateParticles(particle -> particle.remove());
+        });
+        scene.ticks(3).shot(name);
     }
 }
