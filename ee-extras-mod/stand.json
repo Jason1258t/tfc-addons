@@ -80,7 +80,7 @@
       ]
     },
     "pcb-create-restart": {
-      "note": "#301.26: два адаптера, механическое табло, два Nixie и лампа; нагрузка/КЗ аналогового входа, гистерезис, питание, выгрузка и холодный перезапуск. AC требует отдельного сценария.",
+      "note": "#301.26: два адаптера, табло с приводом, два Nixie, лампа; нагрузка/КЗ/баланс мощности, AC50Гц и DC, гистерезис, выгрузка и холодный перезапуск.",
       "steps": [
         {
           "name": "build",
@@ -116,6 +116,14 @@
             "pcbcreate digital 5",
             "sleep 3",
             "pcbcreate state true",
+            "pcbcreate ac",
+            "sleep 3",
+            "pcbcreate enabled false",
+            "pcbcreate blank",
+            "pcbcreate supply 5",
+            "sleep 5",
+            "pcbcreate saved",
+            "pcbcreate balance",
             "pcbcreate supply 0",
             "sleep 3",
             "pcbcreate enabled false",

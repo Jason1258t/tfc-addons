@@ -61,6 +61,16 @@ final class PcbCreateTest {
         }));
         root.then(Commands.literal("load").then(Commands.argument("ohms", DoubleArgumentType.doubleArg(.01, 1e9))
                 .executes(context -> load(context.getSource(), DoubleArgumentType.getDouble(context, "ohms")))));
+        root.then(Commands.literal("ac").executes(context -> {
+            var level = context.getSource().getLevel();
+            power(level, SUPPLY, 5 * Math.sqrt(2));
+            level.setBlock(SUPPLY, level.getBlockState(SUPPLY).setValue(
+                    com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock.AC, true), 3);
+            var battery = DevicesSavedData.load(level).getDevice(SUPPLY, CreativeBatteryDevice.class);
+            battery.acFrequency = 50;
+            return 1;
+        }));
+        root.then(Commands.literal("balance").executes(context -> balance(context.getSource())));
         root.then(Commands.literal("check-load").executes(context -> checkLoad(context.getSource())));
         dispatcher.register(root);
     }
@@ -135,6 +145,8 @@ final class PcbCreateTest {
     }
 
     static void power(ServerLevel level, BlockPos position, double volts) {
+        level.setBlock(position, level.getBlockState(position).setValue(
+                com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryBlock.AC, false), 3);
         var battery = DevicesSavedData.load(level).getDevice(position, CreativeBatteryDevice.class);
         battery.voltage = volts;
         battery.acFrequency = 0;
@@ -210,16 +222,42 @@ final class PcbCreateTest {
         return 1;
     }
 
+    static int balance(CommandSourceStack source) {
+        var tag = new CompoundTag();
+        device(source.getLevel()).write(tag);
+        var first = tag.getCompound("CreateInterfaces").getCompound("2");
+        var second = tag.getCompound("CreateInterfaces").getCompound("3");
+        double supply = first.getDouble("Supply"), analog = first.getDouble("Analog");
+        double other = second.getDouble("Analog");
+        double load = tag.getList("Circuit", net.minecraft.nbt.Tag.TAG_COMPOUND).getCompound(4).getDouble("Ohms");
+        double expected = 2 * supply * supply / 10000;
+        expected += (supply - analog) * (supply - analog) / 5000.01 + analog * analog / 5000;
+        expected += (supply - other) * (supply - other) / 2500.01 + other * other / 7500;
+        expected += analog * analog / (load + .01);
+        for (var adapter : new CompoundTag[]{first, second}) {
+            double a = adapter.getDouble("Analog"), digital = adapter.getDouble("Digital");
+            expected += (a * a + digital * digital) / 1e9;
+        }
+        double residual = tag.getDouble("Watts") - expected;
+        PcbExtraTest.check(Double.isFinite(residual) && Math.abs(residual) < 1e-5,
+                "независимый баланс мощности всей платы: " + residual + " Вт");
+        double finalExpected = expected;
+        source.sendSuccess(() -> Component.literal("Баланс Create: измерено=" + tag.getDouble("Watts")
+                + " расчёт=" + finalExpected + " остаток=" + residual + " Вт"), false);
+        return 1;
+    }
+
     static int checkLoad(CommandSourceStack source) {
         var tag = new CompoundTag();
         device(source.getLevel()).write(tag);
         var adapter = tag.getCompound("CreateInterfaces").getCompound("2");
         double ohms = tag.getList("Circuit", net.minecraft.nbt.Tag.TAG_COMPOUND).getCompound(4).getDouble("Ohms");
         // Делитель 5к + (5к || 1ГОм входа || внешняя нагрузка), без обращения к реализации адаптера.
-        double bottom = 1 / (1.0 / 5000 + 1.0 / 1e9 + 1 / ohms);
-        double expected = adapter.getDouble("Supply") * bottom / (5000 + bottom);
+        double bottom = 1 / (1.0 / 5000 + 1.0 / 1e9 + 1 / (ohms + .01));
+        double expected = adapter.getDouble("Supply") * bottom / (5000.01 + bottom);
         PcbExtraTest.check(adapter.getBoolean("Powered") && !tag.getBoolean("Burnt"), "нагруженный адаптер питается");
         check(source, expected);
+        balance(source);
         source.sendSuccess(() -> Component.literal("Нагрузка " + ohms + " Ом: делитель подтверждён"), false);
         return 1;
     }
