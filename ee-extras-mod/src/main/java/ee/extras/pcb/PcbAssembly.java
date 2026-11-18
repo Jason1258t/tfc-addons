@@ -26,6 +26,7 @@ final class PcbAssembly {
             case RESISTOR -> PcbItems.RESISTOR.get();
             case RHEOSTAT -> PcbItems.RHEOSTAT.get();
             case LOGIC_GATES -> PcbItems.LOGIC_GATES.get();
+            case CREATE_INTERFACE -> PcbItems.CREATE_INTERFACE.get();
             case SEVEN_SEGMENT -> PcbItems.SEVEN_SEGMENT.get();
             case BUZZER -> PcbItems.BUZZER.get();
             case ROTARY_KNOB -> PcbItems.ROTARY_KNOB.get();

@@ -82,6 +82,10 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 if (part.kind == Kind.BRIDGE_RECTIFIER || part.kind == Kind.VOLTAGE_REGULATOR) { join(group,part.a,part.coilA); join(group,part.a,part.coilB); }
                 if(part.kind == Kind.OPTOCOUPLER) { join(group,part.coilA,part.coilB); join(group,part.coilA,part.alternate); }
                 if(part.kind.sensor()) join(group,part.a,part.coilA);
+                if (part.kind == Kind.CREATE_INTERFACE) {
+                    join(group, part.a, part.coilA);
+                    join(group, part.a, part.coilB);
+                }
                 if (part.kind.controlled()) join(group, part.coilA, part.coilB);
                 if (part.windingInput()) join(group, part.a, part.coilA);
                 if (part.kind == Kind.LATCHING_RELAY) { join(group, part.coilA, part.alternate); join(group, part.coilB, part.alternate); }
@@ -107,6 +111,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
     }
 
     private final PcbOnboardTransformer onboardPower;
+    private PcbCreateInterface[] createInterfaces = new PcbCreateInterface[MAX_PARTS];
     private PcbOptocoupler[] optos = new PcbOptocoupler[MAX_PARTS];
     private PcbSensor[] sensors = new PcbSensor[MAX_PARTS];
     private PcbVoltageRegulator[] regulators = new PcbVoltageRegulator[MAX_PARTS];
@@ -155,7 +160,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
 
     public enum Kind {
         TRACE, RESISTOR, RELAY, BUTTON, SWITCH, LAMP, REDSTONE_IN, REDSTONE_OUT,
-        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP, LATCHING_RELAY, THREE_POSITION_SWITCH, COMPARATOR, D_FLIP_FLOP, COUNTER, REGISTER, DECODER, ONBOARD_TRANSFORMER, STEP_UP_TRANSFORMER, BRIDGE_RECTIFIER, VOLTAGE_REGULATOR, TEMPERATURE_SENSOR, LIGHT_SENSOR, ROTATION_SENSOR, OPTOCOUPLER, CONNECTOR_8, ROTARY_KNOB, BUZZER, SEVEN_SEGMENT, LOGIC_GATES;
+        CAPACITOR, DIODE, FUSE, VOLTMETER, AMMETER, TRANSISTOR, LED, RHEOSTAT, POTENTIOMETER, MECHANICAL_TIMER, CLOCK, LED_PANEL, LED_STRIP, LATCHING_RELAY, THREE_POSITION_SWITCH, COMPARATOR, D_FLIP_FLOP, COUNTER, REGISTER, DECODER, ONBOARD_TRANSFORMER, STEP_UP_TRANSFORMER, BRIDGE_RECTIFIER, VOLTAGE_REGULATOR, TEMPERATURE_SENSOR, LIGHT_SENSOR, ROTATION_SENSOR, OPTOCOUPLER, CONNECTOR_8, ROTARY_KNOB, BUZZER, SEVEN_SEGMENT, LOGIC_GATES, CREATE_INTERFACE;
 
         boolean potentiometer() { return this == POTENTIOMETER || this == ROTARY_KNOB; }
 
@@ -212,6 +217,7 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                     && (!poweredLogic() || node(coilA) && node(coilB) && node(logicOutput()))
                     && (kind != Kind.LATCHING_RELAY || node(coilA) && node(coilB) && node(alternate) && coilA != alternate && coilB != alternate)
                     && (kind != Kind.OPTOCOUPLER || node(coilA) && node(coilB) && node(alternate) && a != coilA && a != coilB && a != alternate && b != coilA && b != coilB && b != alternate)
+                    && (kind != Kind.CREATE_INTERFACE || node(coilA) && node(coilB))
                     && (!kind.sensor() || node(coilA))
                     && (!kind.potentiometer() || node(coilA) && coilA != a && coilA != b)
                     && (kind != Kind.BRIDGE_RECTIFIER && kind != Kind.VOLTAGE_REGULATOR || node(coilA) && node(coilB))
@@ -259,6 +265,10 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
     private void resetStepUps(List<Part> parts) {
         stepUps = new PcbStepUpTransformer[MAX_PARTS];
         bridges = new PcbBridgeRectifier[MAX_PARTS];
+        createInterfaces = new PcbCreateInterface[MAX_PARTS];
+        for (int i = 0; i < parts.size(); i++) {
+            if (parts.get(i).kind == Kind.CREATE_INTERFACE) createInterfaces[i] = new PcbCreateInterface(pos, i);
+        }
         optos = new PcbOptocoupler[MAX_PARTS];
         for(int i=0;i<parts.size();i++) if(parts.get(i).kind == Kind.OPTOCOUPLER) optos[i]=new PcbOptocoupler(pos,i);
         sensors = new PcbSensor[MAX_PARTS];
@@ -285,6 +295,11 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         for (int i = 0; i < circuit.parts.size(); i++) {
             Kind kind = circuit.parts.get(i).kind;
             if (kind == Kind.TRACE || ordinal-- != 0) continue;
+            if (kind == Kind.CREATE_INTERFACE) {
+                int adapterNumber = 0;
+                for (int adapter = 0; adapter <= i; adapter++) if (createInterfaces[adapter] != null) adapterNumber++;
+                return "Адаптер №" + adapterNumber + " · " + createInterfaces[i].status();
+            }
             if (kind == Kind.OPTOCOUPLER) return optos[i].status();
             if (kind.sensor()) return sensors[i].status();
             if (kind == Kind.VOLTAGE_REGULATOR) return regulators[i].status();
@@ -347,6 +362,10 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
             if (part.kind == Kind.CONNECTOR_8) { PcbConnector.preTick(collector,part,pos); continue; }
             if (part.kind.supply()) { onboardPower.preTick(collector, part); continue; }
             if (part.kind == Kind.STEP_UP_TRANSFORMER) { stepUps[i].preTick(collector,part); continue; }
+            if (part.kind == Kind.CREATE_INTERFACE) {
+                createInterfaces[i].preTick(collector, part);
+                continue;
+            }
             if (part.kind == Kind.OPTOCOUPLER) { optos[i].preTick(collector,part); continue; }
             if (part.kind.sensor()) { sensors[i].preTick(collector,part); continue; }
             if (part.kind == Kind.VOLTAGE_REGULATOR) { regulators[i].preTick(collector,part); continue; }
@@ -487,6 +506,17 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                 maxInsulationVoltage = Math.max(maxInsulationVoltage,stepUps[i].output());
                 maxCurrent = Math.max(maxCurrent,stepUps[i].current());
                 deviceSD.setDirty();
+                continue;
+            }
+            if (part.kind == Kind.CREATE_INTERFACE) {
+                boolean wasHigh = createInterfaces[i].high();
+                var measurement = createInterfaces[i].measure(results, part);
+                if (wasHigh != createInterfaces[i].high()) deviceSD.setDirty();
+                invalidBridge |= !Double.isFinite(measurement.volts()) || !Double.isFinite(measurement.watts())
+                        || !Double.isFinite(measurement.amps());
+                watts += measurement.watts();
+                maxVoltage = Math.max(maxVoltage, measurement.volts());
+                maxCurrent = Math.max(maxCurrent, measurement.amps());
                 continue;
             }
             if (part.kind == Kind.OPTOCOUPLER) { var m=optos[i].measure(results,part); watts+=m.watts(); maxVoltage=Math.max(maxVoltage,m.volts()); maxCurrent=Math.max(maxCurrent,m.amps()); deviceSD.setDirty(); continue; }
@@ -738,6 +768,10 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
                                 net.minecraft.sounds.SoundSource.BLOCKS,.35f,1.4f);
                     }
                 }
+                case CREATE_INTERFACE -> {
+                    if (createInterfaces[i].high()) output = 15;
+                    if (createInterfaces[i].powered()) controlStates |= 1L << component;
+                }
                 case REDSTONE_OUT -> {
                     if (voltage(results, part.a, part.b) >= part.threshold) output = 15;
                 }
@@ -798,6 +832,14 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         return meterValue;
     }
 
+    PcbCreateInterface createInterface(int ordinal) {
+        if (burnt || ordinal < 0) return null;
+        for (PcbCreateInterface adapter : createInterfaces) {
+            if (adapter != null && ordinal-- == 0) return adapter;
+        }
+        return null;
+    }
+
     @Override
     public boolean shouldRemove(BlockState oldState, BlockState newState) {
         return oldState.getBlock() != newState.getBlock();
@@ -854,6 +896,9 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         int terminals = tag.contains("Terminals") ? Math.clamp(tag.getInt("Terminals"), 0, MAX_TERMINALS) : LEGACY_TERMINALS;
         circuit = new Circuit(parts, terminals);
         resetStepUps(parts);
+        for (int i = 0; i < parts.size(); i++) {
+            if (createInterfaces[i] != null) createInterfaces[i].read(tag.getCompound("CreateInterfaces").getCompound(Integer.toString(i)));
+        }
         for(int i=0;i<parts.size();i++) if(optos[i]!=null) optos[i].read(tag.getCompound("Optocouplers").getCompound(Integer.toString(i)));
         for(int i=0;i<parts.size();i++) if(regulators[i]!=null) regulators[i].read(tag.getCompound("RegulatorPower").getCompound(Integer.toString(i)));
         var savedStepUps = tag.getCompound("StepUpPower");
@@ -887,6 +932,14 @@ public final class PcbCircuitDevice extends SimpleElectricalDevice {
         var sensorData=new CompoundTag();
         for(int i=0;i<circuit.parts.size();i++) if(sensors[i]!=null){var saved=new CompoundTag();sensors[i].write(saved);sensorData.put(Integer.toString(i),saved);}
         tag.put("Sensors",sensorData);
+        var createData = new CompoundTag();
+        for (int i = 0; i < circuit.parts.size(); i++) {
+            if (createInterfaces[i] == null) continue;
+            var saved = new CompoundTag();
+            createInterfaces[i].write(saved);
+            createData.put(Integer.toString(i), saved);
+        }
+        tag.put("CreateInterfaces", createData);
         tag.putInt("CircuitVersion", PcbTopology.VERSION);
         tag.putInt("Terminals", circuit.terminals);
         tag.putLongArray("TimerDue", timerDue);

@@ -386,5 +386,10 @@
   "item.ee_extras.pcb_rotary_knob": "PCB Rotary Knob",
   "item.ee_extras.pcb_buzzer": "PCB Buzzer",
   "item.ee_extras.pcb_seven_segment": "PCB Seven-Segment Display",
-  "item.ee_extras.pcb_logic_gates": "PCB Quad NAND Gates"
+  "item.ee_extras.pcb_logic_gates": "PCB Quad NAND Gates",
+  "item.ee_extras.pcb_create_interface": "PCB Create Adapter",
+  "ee_extras.pcb.create_voltage": "PCB Adapter · Voltage (V)",
+  "ee_extras.pcb.create_state": "PCB Adapter · State",
+  "ee_extras.pcb.create_adapter": "Adapter %s",
+  "ee_extras.pcb.create_adapter_title": "Adapter number on the board"
 }

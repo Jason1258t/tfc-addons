@@ -583,6 +583,13 @@ public class PcbEditorScreen extends AbstractContainerScreen<PcbEditorMenu> {
                 tips.add(Component.literal("Раздельное питание выхода 3–6 В DC · нагрузка до 5 мА"));
                 tips.add(Component.literal("Без питания выход низкий · земли соединять не нужно"));
             }
+            if (entry.kind() == PcbCircuitDevice.Kind.CREATE_INTERFACE) {
+                tips.add(Component.literal("Питание 3–6 В DC · 0,5 мА при 5 В · входы 1 ГОм"));
+                tips.add(Component.literal("Display Link: напряжение или состояние · обновление раз в секунду"));
+                tips.add(Component.literal("Без питания табло очищается · логический вход управляет выходом лампы"));
+                tips.add(Component.literal("Номер адаптера в Display Link: сверху вниз, слева направо"));
+                tips.add(Component.literal("Выход лампы общий: включён, если хотя бы один адаптер выдаёт 1"));
+            }
             if(entry.kind().sensor()) {
                 tips.add(Component.literal(entry.kind()==PcbCircuitDevice.Kind.ROTATION_SENSOR ? "−256…+256 об/мин · механизм Create за платой · остановка 2,5 В" : entry.kind()==PcbCircuitDevice.Kind.TEMPERATURE_SENSOR ? "−40…160 °C · блок за платой, иначе воздух TFC" : "Свет 0…15 перед платой · небо с учётом времени суток"));
                 tips.add(Component.literal("3–6 В DC · 0,5–4,5 В при 5 В без нагрузки · 0,5 мА"));

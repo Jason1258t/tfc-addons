@@ -12,8 +12,14 @@ final class PcbModules {
     }
     record Module(Kind kind, String name, String model, int width, int height, int level, int sections) {
         Module(Kind kind, String name, String model, int width, int height, int level) { this(kind, name, model, width, height, level, 1); }
-        int pins() { return kind == Kind.SEVEN_SEGMENT ? 8 : kind == Kind.CONNECTOR_8 ? 9 : kind.sensor() ? 3 : PcbLogic.chip(kind) ? PcbLogic.pins(kind) : kind == Kind.CLOCK || kind == Kind.STEP_UP_TRANSFORMER || kind == Kind.BRIDGE_RECTIFIER || kind == Kind.VOLTAGE_REGULATOR ? 4 : sections > 1 ? 2 * sections : kind == Kind.RELAY || kind == Kind.LATCHING_RELAY || kind == Kind.COMPARATOR || kind == Kind.OPTOCOUPLER ? 5 : kind.potentiometer() || kind == Kind.SWITCH || kind == Kind.THREE_POSITION_SWITCH || kind == Kind.TRANSISTOR || kind == Kind.MECHANICAL_TIMER ? 3 : kind.controlled() ? 4 : 2; }
+        int pins() { return kind == Kind.SEVEN_SEGMENT ? 8 : kind == Kind.CONNECTOR_8 ? 9 : kind.sensor() ? 3 : PcbLogic.chip(kind) ? PcbLogic.pins(kind) : kind == Kind.CREATE_INTERFACE || kind == Kind.CLOCK || kind == Kind.STEP_UP_TRANSFORMER || kind == Kind.BRIDGE_RECTIFIER || kind == Kind.VOLTAGE_REGULATOR ? 4 : sections > 1 ? 2 * sections : kind == Kind.RELAY || kind == Kind.LATCHING_RELAY || kind == Kind.COMPARATOR || kind == Kind.OPTOCOUPLER ? 5 : kind.potentiometer() || kind == Kind.SWITCH || kind == Kind.THREE_POSITION_SWITCH || kind == Kind.TRANSISTOR || kind == Kind.MECHANICAL_TIMER ? 3 : kind.controlled() ? 4 : 2; }
         String pinName(int pin) {
+            if (kind == Kind.CREATE_INTERFACE) return switch (pin) {
+                case 0 -> "Аналоговый вход (В)";
+                case 1 -> "Логический вход";
+                case 2 -> "Питание + (3–6 В DC)";
+                default -> "Земля";
+            };
             if (kind == Kind.SEVEN_SEGMENT) return pin==7 ? "Общий катод −" : "Сегмент "+(char)('a'+pin)+" +";
             if (kind == Kind.BUZZER) return pin==0 ? "+ (3–6 В DC)" : "−";
             if (kind == Kind.CONNECTOR_8) return pin == 8 ? "Общий провод (до 80 мА)" : "Линия " + (pin+1) + " (0–6 В, до 10 мА)";
@@ -39,6 +45,12 @@ final class PcbModules {
             return pin == 0 ? "A" : "B";
         }
         PinType pinType(int pin) {
+            if (kind == Kind.CREATE_INTERFACE) return switch (pin) {
+                case 0 -> PinType.ANALOG;
+                case 1 -> PinType.LOGIC;
+                case 2 -> PinType.POWER;
+                default -> PinType.GROUND;
+            };
             if (kind == Kind.SEVEN_SEGMENT) return pin==7 ? PinType.GROUND : PinType.LOGIC;
             if (kind == Kind.CONNECTOR_8) return pin == 8 ? PinType.GROUND : PinType.CONTACT;
             if(kind == Kind.OPTOCOUPLER) return pin<2 ? PinType.CONTACT : pin==2 ? PinType.POWER : pin==3 ? PinType.GROUND : PinType.LOGIC;
@@ -57,7 +69,7 @@ final class PcbModules {
         String section() {
             return switch (kind) {
                 case BUTTON, SWITCH, THREE_POSITION_SWITCH, REDSTONE_IN, POTENTIOMETER, ROTARY_KNOB -> "Управление";
-                case SEVEN_SEGMENT, BUZZER, LAMP, LED, LED_PANEL, LED_STRIP, REDSTONE_OUT, VOLTMETER, AMMETER -> "Индикация";
+                case CREATE_INTERFACE, SEVEN_SEGMENT, BUZZER, LAMP, LED, LED_PANEL, LED_STRIP, REDSTONE_OUT, VOLTMETER, AMMETER -> "Индикация";
                 case RESISTOR, RHEOSTAT, CAPACITOR, FUSE -> "Пассивные";
                 case ONBOARD_TRANSFORMER, STEP_UP_TRANSFORMER, BRIDGE_RECTIFIER, VOLTAGE_REGULATOR -> "Питание";
                 case MECHANICAL_TIMER, CLOCK -> "Время";
@@ -85,7 +97,7 @@ final class PcbModules {
         }
         boolean timed() { return kind == Kind.MECHANICAL_TIMER || kind == Kind.CLOCK; }
         boolean adjustable() { return kind == Kind.RHEOSTAT || kind.potentiometer() || kind == Kind.THREE_POSITION_SWITCH; }
-        boolean input() { return kind == Kind.OPTOCOUPLER || kind.sensor() || kind.supply() || kind == Kind.STEP_UP_TRANSFORMER || kind == Kind.VOLTAGE_REGULATOR || kind == Kind.BUTTON || kind == Kind.SWITCH || adjustable() || timed(); }
+        boolean input() { return kind == Kind.CREATE_INTERFACE || kind == Kind.OPTOCOUPLER || kind.sensor() || kind.supply() || kind == Kind.STEP_UP_TRANSFORMER || kind == Kind.VOLTAGE_REGULATOR || kind == Kind.BUTTON || kind == Kind.SWITCH || adjustable() || timed(); }
     }
 
     static final Module[] ALL = {
@@ -128,7 +140,8 @@ final class PcbModules {
             new Module(Kind.ROTARY_KNOB, "Поворотная ручка", "rotary_knob", 2, 2, 2),
             new Module(Kind.BUZZER, "Зуммер 3–6 В DC", "buzzer", 2, 2, 1),
             new Module(Kind.SEVEN_SEGMENT, "Индикатор 7 сегментов", "seven_segment", 2, 3, 2, 7),
-            new Module(Kind.LOGIC_GATES, "Логическая сборка: 4 NAND", "logic_gates", 2, 3, 2)
+            new Module(Kind.LOGIC_GATES, "Логическая сборка: 4 NAND", "logic_gates", 2, 3, 2),
+            new Module(Kind.CREATE_INTERFACE, "Адаптер Create", "create_interface", 3, 2, 2)
     };
 
     private PcbModules() {}

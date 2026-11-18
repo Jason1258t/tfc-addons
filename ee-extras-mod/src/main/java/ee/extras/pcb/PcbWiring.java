@@ -130,9 +130,9 @@ final class PcbWiring {
                     default -> -1;
                 };
                 double ohms = module.timed() ? OHMS[resistance] : nominal;
-                if (kind == Kind.COMPARATOR || kind == Kind.CLOCK) {
-                    a = pins[kind == Kind.CLOCK ? 2 : 3];
-                    b = pins[kind == Kind.CLOCK ? 3 : 4];
+                if (kind == Kind.COMPARATOR || kind == Kind.CLOCK || kind == Kind.CREATE_INTERFACE) {
+                    a = pins[kind == Kind.COMPARATOR ? 3 : 2];
+                    b = pins[kind == Kind.COMPARATOR ? 4 : 3];
                     inputA = pins[0]; inputB = pins[1];
                     alternate = kind == Kind.COMPARATOR ? pins[2] : -1;
                     ohms = 10000;
