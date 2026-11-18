@@ -49,6 +49,16 @@ final class FuelGallery {
         scene.shot("01-all-blocks");
         scene.camera(-0.35, 0.6, 0.4, 4, 25, 30);
         scene.shot("02-pump-and-engine");
+        scene.server("шесть направлений транспортного двигателя", c -> {
+            int index = 0;
+            for (Direction direction : Direction.values()) {
+                c.set(c.at(-5 + index * 2, 0, 5), facing(AeroExtra.TRANSPORT_ENGINE.get(), direction));
+                index++;
+            }
+        });
+        scene.ticks(30);
+        scene.camera(0.5, 0.6, 5.5, 9.5, 15, 28);
+        scene.shot("06-engine-orientations");
         scene.camera(3.9, 0.7, 0.35, 4.8, -20, 24);
         scene.shot("03-tank-port-and-mount");
         scene.server("трасса из двух патрубков", c -> {

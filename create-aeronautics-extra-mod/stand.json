@@ -2,7 +2,14 @@
   "scenes": {
     "aero-fuel-gallery": {
       "note": "Dev #282: модели двигателя, насоса, порта, крепления и гибкого патрубка",
-      "shots": ["01-all-blocks", "02-pump-and-engine", "03-tank-port-and-mount", "04-hose-route", "05-hose-inventory"]
+      "shots": [
+        "01-all-blocks",
+        "02-pump-and-engine",
+        "03-tank-port-and-mount",
+        "04-hose-route",
+        "05-hose-inventory",
+        "06-engine-orientations"
+      ]
     }
   },
   "chains": {

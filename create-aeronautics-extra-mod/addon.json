@@ -1,9 +1,9 @@
 {
   "id": "create_aeronautics_extra",
   "name": "Create Aeronautics Extra — бортовые системы",
-  "version": "1.1.0",
-  "jar": "create-aeronautics-extra-1.1.0.jar",
-  "sha256": "64dc21bb2236a2b660012e2afddc6d667301ed9a6e9553ce0d3ae9c4f7b58623",
+  "version": "1.1.2",
+  "jar": "create-aeronautics-extra-1.1.2.jar",
+  "sha256": "11818f1d30e75a6e3a4ddc1e13a27822c930ad9c7b19ce65a9269bbbf335e9fa",
   "order": 80,
   "side": "both",
   "summary": "Бортовая электрика и компактная топливная система для машин Create Aeronautics. Бортовой компьютер превращает вращение в ток и хранит заряд. Топливный насос подаёт горючее из бака Create или Better Fluids по гибким патрубкам к портативному, штатному дизельному или транспортному двигателю.",

@@ -6,6 +6,7 @@ cd "$(dirname "$0")"
 export JAVA_HOME="${JAVA_HOME:-$HOME/.gradle/local-tools/jdk21/Contents/Home}"
 [ -d libs ] || ./libs.sh
 python3 art/gen_assets.py
+python3 art/gen_transport_engine.py
 ./gradlew build -q --console=plain
 ./check-nodes.sh
 VERSION=$(sed -n 's/^mod_version=//p' gradle.properties)

@@ -1,79 +1,505 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "particle": "create:block/brass_casing",
-    "body": "create:block/brass_casing",
-    "shaft": "create:block/gantry_shaft"
+    "louvres": "create_aeronautics_extra:block/transport_engine_louvres",
+    "service": "create_aeronautics_extra:block/transport_engine_service",
+    "head": "create_aeronautics_extra:block/transport_engine_head",
+    "base": "create_aeronautics_extra:block/transport_engine_base",
+    "particle": "create_aeronautics_extra:block/transport_engine_base",
+    "steel": "create:block/industrial_iron_block",
+    "shaft": "create:block/axis",
+    "shaft_top": "create:block/axis_top",
+    "brass": "create:block/brass_block"
   },
   "elements": [
     {
+      "name": "Монтажная лапа",
       "from": [
         1,
-        0,
-        1
+        1,
+        0
+      ],
+      "to": [
+        4,
+        14,
+        1.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            6,
+            6
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            6,
+            6
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            6,
+            6
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            6,
+            6
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            6,
+            6
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            6,
+            6
+          ]
+        }
+      }
+    },
+    {
+      "name": "Монтажная лапа",
+      "from": [
+        12,
+        1,
+        0
       ],
       "to": [
         15,
-        11,
-        15
+        14,
+        1.5
       ],
       "faces": {
         "up": {
-          "texture": "#body"
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            6,
+            6
+          ]
         },
         "down": {
-          "texture": "#body"
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            6,
+            6
+          ]
         },
         "north": {
-          "texture": "#body"
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            6,
+            6
+          ]
         },
         "south": {
-          "texture": "#body"
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            6,
+            6
+          ]
         },
         "east": {
-          "texture": "#body"
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            6,
+            6
+          ]
         },
         "west": {
-          "texture": "#body"
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            6,
+            6
+          ]
         }
       }
     },
     {
+      "name": "Масляный поддон",
+      "from": [
+        4,
+        2,
+        1.5
+      ],
+      "to": [
+        12,
+        12,
+        4
+      ],
+      "faces": {
+        "up": {
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "Картер",
       "from": [
         3,
-        11,
-        3
+        2,
+        4
       ],
       "to": [
         13,
-        13,
-        13
+        11.5,
+        8
       ],
       "faces": {
         "up": {
-          "texture": "#body"
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
         },
         "down": {
-          "texture": "#body"
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
         },
         "north": {
-          "texture": "#body"
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
         },
         "south": {
-          "texture": "#body"
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
         },
         "east": {
-          "texture": "#body"
+          "texture": "#service",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
         },
         "west": {
-          "texture": "#body"
+          "texture": "#service",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
         }
       }
     },
     {
+      "name": "Кожух маховика",
+      "from": [
+        3.5,
+        11.5,
+        3.5
+      ],
+      "to": [
+        12.5,
+        14,
+        12.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "Верх маховика",
+      "from": [
+        5,
+        11.5,
+        12.5
+      ],
+      "to": [
+        11,
+        14,
+        13.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            12,
+            5
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            12,
+            5
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            12,
+            5
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            12,
+            5
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            12,
+            5
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            12,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ступица",
+      "from": [
+        5,
+        14,
+        5
+      ],
+      "to": [
+        11,
+        14.5,
+        11
+      ],
+      "faces": {
+        "up": {
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "Выходной вал",
       "from": [
         6,
-        13,
+        14.5,
         6
       ],
       "to": [
@@ -83,24 +509,2144 @@
       ],
       "faces": {
         "up": {
-          "texture": "#shaft"
+          "texture": "#shaft_top",
+          "uv": [
+            6,
+            0,
+            10,
+            3
+          ]
         },
         "down": {
-          "texture": "#shaft"
+          "texture": "#shaft_top",
+          "uv": [
+            6,
+            0,
+            10,
+            3
+          ]
         },
         "north": {
-          "texture": "#shaft"
+          "texture": "#shaft",
+          "uv": [
+            6,
+            0,
+            10,
+            3
+          ]
         },
         "south": {
-          "texture": "#shaft"
+          "texture": "#shaft",
+          "uv": [
+            6,
+            0,
+            10,
+            3
+          ]
         },
         "east": {
-          "texture": "#shaft"
+          "texture": "#shaft",
+          "uv": [
+            6,
+            0,
+            10,
+            3
+          ]
         },
         "west": {
-          "texture": "#shaft"
+          "texture": "#shaft",
+          "uv": [
+            6,
+            0,
+            10,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "name": "Цилиндр 1",
+      "from": [
+        5,
+        2.5,
+        8
+      ],
+      "to": [
+        11,
+        5.0,
+        12
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            9,
+            9
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            9,
+            9
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            9,
+            9
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            9,
+            9
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            9,
+            9
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            9,
+            9
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ребро цилиндра 1",
+      "from": [
+        4.5,
+        2.3,
+        8.5
+      ],
+      "to": [
+        11.5,
+        5.2,
+        9.0
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ребро цилиндра 1",
+      "from": [
+        4.5,
+        2.3,
+        10
+      ],
+      "to": [
+        11.5,
+        5.2,
+        10.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ребро цилиндра 1",
+      "from": [
+        4.5,
+        2.3,
+        11.5
+      ],
+      "to": [
+        11.5,
+        5.2,
+        12.0
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "name": "Крышка головки 1",
+      "from": [
+        4.5,
+        2.5,
+        12.5
+      ],
+      "to": [
+        11.5,
+        5.0,
+        14
+      ],
+      "faces": {
+        "up": {
+          "texture": "#head",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#head",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#head",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#head",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#head",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#head",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "Форсунка 1",
+      "from": [
+        3.5,
+        3.2,
+        10.5
+      ],
+      "to": [
+        4.5,
+        4.0,
+        12.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            3,
+            6,
+            6
+          ]
+        },
+        "down": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            3,
+            6,
+            6
+          ]
+        },
+        "north": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            3,
+            6,
+            6
+          ]
+        },
+        "south": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            3,
+            6,
+            6
+          ]
+        },
+        "east": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            3,
+            6,
+            6
+          ]
+        },
+        "west": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            3,
+            6,
+            6
+          ]
+        }
+      }
+    },
+    {
+      "name": "Топливная трубка 1",
+      "from": [
+        2.75,
+        3.5,
+        7
+      ],
+      "to": [
+        3.25,
+        4.0,
+        11.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            4,
+            5,
+            8
+          ]
+        },
+        "down": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            4,
+            5,
+            8
+          ]
+        },
+        "north": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            4,
+            5,
+            8
+          ]
+        },
+        "south": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            4,
+            5,
+            8
+          ]
+        },
+        "east": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            4,
+            5,
+            8
+          ]
+        },
+        "west": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            4,
+            5,
+            8
+          ]
+        }
+      }
+    },
+    {
+      "name": "Выпускной канал 1",
+      "from": [
+        11,
+        3.0,
+        10
+      ],
+      "to": [
+        13.5,
+        4.0,
+        11
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        }
+      }
+    },
+    {
+      "name": "Цилиндр 2",
+      "from": [
+        5,
+        5.5,
+        8
+      ],
+      "to": [
+        11,
+        8.0,
+        12
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            9,
+            9
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            9,
+            9
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            9,
+            9
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            9,
+            9
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            9,
+            9
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            9,
+            9
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ребро цилиндра 2",
+      "from": [
+        4.5,
+        5.3,
+        8.5
+      ],
+      "to": [
+        11.5,
+        8.2,
+        9.0
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ребро цилиндра 2",
+      "from": [
+        4.5,
+        5.3,
+        10
+      ],
+      "to": [
+        11.5,
+        8.2,
+        10.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ребро цилиндра 2",
+      "from": [
+        4.5,
+        5.3,
+        11.5
+      ],
+      "to": [
+        11.5,
+        8.2,
+        12.0
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "name": "Крышка головки 2",
+      "from": [
+        4.5,
+        5.5,
+        12.5
+      ],
+      "to": [
+        11.5,
+        8.0,
+        14
+      ],
+      "faces": {
+        "up": {
+          "texture": "#head",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#head",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#head",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#head",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#head",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#head",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "Форсунка 2",
+      "from": [
+        3.5,
+        6.2,
+        10.5
+      ],
+      "to": [
+        4.5,
+        7.0,
+        12.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            3,
+            6,
+            6
+          ]
+        },
+        "down": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            3,
+            6,
+            6
+          ]
+        },
+        "north": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            3,
+            6,
+            6
+          ]
+        },
+        "south": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            3,
+            6,
+            6
+          ]
+        },
+        "east": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            3,
+            6,
+            6
+          ]
+        },
+        "west": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            3,
+            6,
+            6
+          ]
+        }
+      }
+    },
+    {
+      "name": "Топливная трубка 2",
+      "from": [
+        2.75,
+        6.5,
+        7
+      ],
+      "to": [
+        3.25,
+        7.0,
+        11.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            4,
+            5,
+            8
+          ]
+        },
+        "down": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            4,
+            5,
+            8
+          ]
+        },
+        "north": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            4,
+            5,
+            8
+          ]
+        },
+        "south": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            4,
+            5,
+            8
+          ]
+        },
+        "east": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            4,
+            5,
+            8
+          ]
+        },
+        "west": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            4,
+            5,
+            8
+          ]
+        }
+      }
+    },
+    {
+      "name": "Выпускной канал 2",
+      "from": [
+        11,
+        6.0,
+        10
+      ],
+      "to": [
+        13.5,
+        7.0,
+        11
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        }
+      }
+    },
+    {
+      "name": "Цилиндр 3",
+      "from": [
+        5,
+        8.5,
+        8
+      ],
+      "to": [
+        11,
+        11.0,
+        12
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            9,
+            9
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            9,
+            9
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            9,
+            9
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            9,
+            9
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            9,
+            9
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            9,
+            9
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ребро цилиндра 3",
+      "from": [
+        4.5,
+        8.3,
+        8.5
+      ],
+      "to": [
+        11.5,
+        11.2,
+        9.0
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ребро цилиндра 3",
+      "from": [
+        4.5,
+        8.3,
+        10
+      ],
+      "to": [
+        11.5,
+        11.2,
+        10.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ребро цилиндра 3",
+      "from": [
+        4.5,
+        8.3,
+        11.5
+      ],
+      "to": [
+        11.5,
+        11.2,
+        12.0
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            8,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "name": "Крышка головки 3",
+      "from": [
+        4.5,
+        8.5,
+        12.5
+      ],
+      "to": [
+        11.5,
+        11.0,
+        14
+      ],
+      "faces": {
+        "up": {
+          "texture": "#head",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#head",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#head",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#head",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#head",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#head",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "Форсунка 3",
+      "from": [
+        3.5,
+        9.2,
+        10.5
+      ],
+      "to": [
+        4.5,
+        10.0,
+        12.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            3,
+            6,
+            6
+          ]
+        },
+        "down": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            3,
+            6,
+            6
+          ]
+        },
+        "north": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            3,
+            6,
+            6
+          ]
+        },
+        "south": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            3,
+            6,
+            6
+          ]
+        },
+        "east": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            3,
+            6,
+            6
+          ]
+        },
+        "west": {
+          "texture": "#brass",
+          "uv": [
+            3,
+            3,
+            6,
+            6
+          ]
+        }
+      }
+    },
+    {
+      "name": "Топливная трубка 3",
+      "from": [
+        2.75,
+        9.5,
+        7
+      ],
+      "to": [
+        3.25,
+        10.0,
+        11.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            4,
+            5,
+            8
+          ]
+        },
+        "down": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            4,
+            5,
+            8
+          ]
+        },
+        "north": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            4,
+            5,
+            8
+          ]
+        },
+        "south": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            4,
+            5,
+            8
+          ]
+        },
+        "east": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            4,
+            5,
+            8
+          ]
+        },
+        "west": {
+          "texture": "#brass",
+          "uv": [
+            4,
+            4,
+            5,
+            8
+          ]
+        }
+      }
+    },
+    {
+      "name": "Выпускной канал 3",
+      "from": [
+        11,
+        9.0,
+        10
+      ],
+      "to": [
+        13.5,
+        10.0,
+        11
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        }
+      }
+    },
+    {
+      "name": "Топливный насос двигателя",
+      "from": [
+        1.75,
+        3,
+        5.5
+      ],
+      "to": [
+        3.25,
+        10.5,
+        7.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#base",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "Выпускной коллектор",
+      "from": [
+        13,
+        2.5,
+        9.5
+      ],
+      "to": [
+        15,
+        11,
+        11.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            7,
+            7
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            7,
+            7
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            7,
+            7
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            7,
+            7
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            7,
+            7
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            7,
+            7
+          ]
+        }
+      }
+    },
+    {
+      "name": "Выпускной патрубок",
+      "from": [
+        13,
+        2.5,
+        11.5
+      ],
+      "to": [
+        15,
+        4.5,
+        15.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            6,
+            8
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            6,
+            8
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            6,
+            8
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            6,
+            8
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            6,
+            8
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            2,
+            6,
+            8
+          ]
+        }
+      }
+    },
+    {
+      "name": "Впускной коллектор",
+      "from": [
+        1,
+        3.5,
+        12
+      ],
+      "to": [
+        3.5,
+        10.5,
+        13.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        },
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            3,
+            7,
+            7
+          ]
+        }
+      }
+    },
+    {
+      "name": "Воздушный фильтр",
+      "from": [
+        1,
+        1,
+        9
+      ],
+      "to": [
+        4,
+        3.5,
+        14.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#louvres",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#louvres",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#louvres",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#louvres",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#louvres",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#louvres",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "name": "Задняя крышка и вход топлива",
+      "from": [
+        4,
+        0,
+        4
+      ],
+      "to": [
+        12,
+        2,
+        11
+      ],
+      "faces": {
+        "up": {
+          "texture": "#service",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#service",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#service",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#service",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#service",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#service",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
         }
       }
     }
-  ]
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        -60.0,
+        0.0,
+        45.0
+      ],
+      "scale": [
+        0.625,
+        0.625,
+        0.625
+      ]
+    }
+  }
 }
