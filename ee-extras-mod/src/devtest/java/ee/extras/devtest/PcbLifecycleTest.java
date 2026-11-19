@@ -17,6 +17,37 @@ import net.minecraft.resources.ResourceLocation;
 final class PcbLifecycleTest {
     static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("pcbprotection").requires(s -> s.hasPermission(2))
+                .then(Commands.literal("load")
+                        .then(Commands.argument("a", com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 31))
+                                .then(Commands.argument("b", com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 31))
+                                        .then(Commands.argument("ohms", com.mojang.brigadier.arguments.DoubleArgumentType.doubleArg(.01, 1e9))
+                                                .then(Commands.argument("pos", BlockPosArgument.blockPos()).executes(c -> {
+                                                    var source = c.getSource();
+                                                    var pos = BlockPosArgument.getLoadedBlockPos(c, "pos");
+                                                    var device = DevicesSavedData.load(source.getLevel()).getDevice(pos, PcbCircuitDevice.class);
+                                                    require(device != null, "нет платы " + pos);
+                                                    var tag = new CompoundTag();
+                                                    device.write(tag);
+                                                    var load = new CompoundTag();
+                                                    load.putString("Kind", "RESISTOR");
+                                                    load.putInt("A", com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(c, "a"));
+                                                    load.putInt("B", com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(c, "b"));
+                                                    load.putDouble("Ohms", com.mojang.brigadier.arguments.DoubleArgumentType.getDouble(c, "ohms"));
+                                                    var parts = tag.getList("Circuit", net.minecraft.nbt.Tag.TAG_COMPOUND);
+                                                    int count = parts.size();
+                                                    parts.add(load);
+                                                    device.read(tag);
+                                                    var actual = new CompoundTag();
+                                                    device.write(actual);
+                                                    var restored = actual.getList("Circuit", net.minecraft.nbt.Tag.TAG_COMPOUND);
+                                                    require(restored.size() == count + 1, "нагрузка не принята");
+                                                    var last = restored.getCompound(count);
+                                                    require(last.getString("Kind").equals("RESISTOR") && last.getInt("A") == load.getInt("A")
+                                                            && last.getInt("B") == load.getInt("B") && last.getDouble("Ohms") == load.getDouble("Ohms"),
+                                                            "нагрузка отличается после чтения");
+                                                    success(source, "Добавлена реальная резистивная ветвь EE: " + load);
+                                                    return 1;
+                                                }))))))
                 .then(Commands.literal("power")
                         .then(Commands.argument("volts", com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 240))
                                 .then(Commands.argument("pos", BlockPosArgument.blockPos()).executes(c -> {

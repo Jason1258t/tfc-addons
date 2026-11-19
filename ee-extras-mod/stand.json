@@ -2296,7 +2296,7 @@
             "pcblatch set 24",
             "sleep 2",
             "pcblatch set 0",
-            "pcblatch expect true",
+            "pcblatch expect true 24",
             "pcbprotection state false 8 -60 8",
             "!pcbprotection state true 8 -60 8",
             "pcbprotection short 2 4 8 -60 8",
@@ -2368,7 +2368,7 @@
             "sleep 5",
             "pcbprotection state false 24 -60 24",
             "!pcbprotection state true 24 -60 24",
-            "pcbprotection power 60 28 -60 24",
+            "pcbprotection power 120 28 -60 24",
             "sleep 2",
             "pcbprotection state true 24 -60 24"
           ],
@@ -2505,6 +2505,68 @@
           "save": true,
           "failFast": true,
           "expect": ["PCB_LIFECYCLE_OK"]
+        }
+      ]
+    },
+    "pcb-pot-short": {
+      "steps": [
+        {
+          "name": "short",
+          "kind": "server",
+          "cmd": [
+            "forceload add 0 0 47 47",
+            "pcbknobs pot",
+            "pcbknobs set 25",
+            "sleep 5",
+            "pcbknobs expect 18",
+            "pcbprotection load 2 1 0.01 24 -60 24",
+            "sleep 3",
+            "pcbprotection state false 24 -60 24",
+            "expect Meter=0±0.01",
+            "pcbprotection power 0 28 -60 24",
+            "sleep 3",
+            "pcbprotection state false 24 -60 24",
+            "expect Watts=0±0.001",
+            "pcbprotection power 24 28 -60 24",
+            "sleep 3",
+            "pcbprotection state false 24 -60 24",
+            "expect Meter=0±0.01"
+          ],
+          "failFast": true,
+          "save": true,
+          "expect": ["PCB_LIFECYCLE_OK"],
+          "levelType": "minecraft:flat"
+        }
+      ]
+    },
+    "pcb-rheostat-short": {
+      "steps": [
+        {
+          "name": "short",
+          "kind": "server",
+          "cmd": [
+            "forceload add 0 0 47 47",
+            "pcbknobs rheostat",
+            "pcbknobs set 50",
+            "sleep 5",
+            "pcbknobs expect 16",
+            "pcbprotection load 2 1 0.01 24 -60 24",
+            "sleep 3",
+            "pcbprotection state false 24 -60 24",
+            "expect Meter=0±0.01",
+            "pcbprotection power 0 28 -60 24",
+            "sleep 3",
+            "pcbprotection state false 24 -60 24",
+            "expect Watts=0±0.001",
+            "pcbprotection power 24 28 -60 24",
+            "sleep 3",
+            "pcbprotection state false 24 -60 24",
+            "expect Meter=0±0.01"
+          ],
+          "failFast": true,
+          "save": true,
+          "expect": ["PCB_LIFECYCLE_OK"],
+          "levelType": "minecraft:flat"
         }
       ]
     }
