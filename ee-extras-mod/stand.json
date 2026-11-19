@@ -2226,6 +2226,63 @@
           "levelType": "minecraft:flat"
         }
       ]
+    },
+    "pcb-lamps-lifecycle": {
+      "steps": [
+        {
+          "name": "save",
+          "kind": "server",
+          "cmd": [
+            "gamerule spawnChunkRadius 0",
+            "setworldspawn 4096 100 4096",
+            "forceload add 64 0 111 47",
+            "sleep 5",
+            "pcblamps build",
+            "sleep 10",
+            "pcblamps expect 7",
+            "!pcblamps expect 0",
+            "pcblifecycle remember lamps-circuit Circuit 82 -60 16",
+            "expect Saved=1",
+            "forceload remove all",
+            "sleep 40",
+            "pcblifecycle chunk false 82 -60 16",
+            "expect Loaded=0",
+            "forceload add 64 0 111 47",
+            "sleep 10",
+            "pcblifecycle chunk true 82 -60 16",
+            "expect Loaded=1",
+            "pcblifecycle same lamps-circuit",
+            "expect Equal=1",
+            "pcblamps expect 7",
+            "save-all flush"
+          ],
+          "failFast": true,
+          "save": true,
+          "expect": ["PCB_LAMPS_OK"],
+          "levelType": "minecraft:flat"
+        },
+        {
+          "name": "restart",
+          "kind": "server",
+          "world": "save",
+          "cmd": [
+            "sleep 10",
+            "pcblifecycle same lamps-circuit",
+            "expect Equal=1",
+            "pcblamps expect 7",
+            "pcbprotection power 0 84 -60 21",
+            "sleep 3",
+            "pcblamps expect 0",
+            "pcbprotection power 24 84 -60 21",
+            "sleep 5",
+            "pcblamps expect 7",
+            "save-all flush"
+          ],
+          "failFast": true,
+          "save": true,
+          "expect": ["PCB_LAMPS_OK"]
+        }
+      ]
     }
   },
   "scenes": {
