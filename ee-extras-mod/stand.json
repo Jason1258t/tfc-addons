@@ -2368,7 +2368,7 @@
             "sleep 5",
             "pcbprotection state false 24 -60 24",
             "!pcbprotection state true 24 -60 24",
-            "pcbprotection power 120 28 -60 24",
+            "pcbprotection power 60 28 -60 24",
             "sleep 2",
             "pcbprotection state true 24 -60 24"
           ],
