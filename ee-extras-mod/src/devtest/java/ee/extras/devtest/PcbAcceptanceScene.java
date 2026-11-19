@@ -9,7 +9,7 @@ final class PcbAcceptanceScene {
     static final boolean ON = Scene.requested("pcb-acceptance");
 
     static void start() {
-        var scene = new Scene("pcb-acceptance").area(32, 10);
+        var scene = new Scene("pcb-acceptance").area(32, 40);
         scene.client("крупный план плат", () -> net.minecraft.client.Minecraft.getInstance().options.fov().set(35));
         scene.server("шесть физических плат с источниками и нагрузками", context -> {
             var source = context.player().createCommandSourceStack();
@@ -50,7 +50,8 @@ final class PcbAcceptanceScene {
         });
         String[] shots = {"knob", "buzzer", "seven-segment", "nand", "mechanical-timer"};
         for (int index = 0; index < shots.length; index++) {
-            scene.gui(false).camera(index == 4 ? -7.5 : .5, 2.12, -19.5 + index * 8, 1.9, 180, 65);
+            // Scene.camera уже отсчитывает X/Z от центра блока площадки.
+            scene.gui(false).camera(index == 4 ? -8 : 0, 2.12, -20 + index * 8, 1.9, 180, 65);
             cleanShot(scene, shots[index]);
         }
         for (int position : new int[]{0, 50, 100}) {
@@ -61,10 +62,12 @@ final class PcbAcceptanceScene {
             }).ticks(40).server("контакт и нагрузка переключателя", context ->
                     PcbModulesTest.call(PcbContactsTest.class, null, "expect", context.player().createCommandSourceStack(),
                             position == 0 ? 24.0 : 0.0));
-            scene.camera(-7.5, 2.12, 20.5, 1.9, 180, 65);
+            scene.camera(-8, 2.12, 20, 1.9, 180, 65);
             cleanShot(scene, "selector-" + position);
         }
-        scene.camera(3, 2, 0, 30, 130, 60).shot("overview");
+        scene.client("общий план всей оснастки", () -> net.minecraft.client.Minecraft.getInstance().options.fov().set(70));
+        scene.camera(3, 2, 0, 30, 130, 60);
+        cleanShot(scene, "overview");
         scene.start();
     }
 
