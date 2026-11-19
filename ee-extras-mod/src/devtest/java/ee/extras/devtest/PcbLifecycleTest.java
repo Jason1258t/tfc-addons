@@ -16,6 +16,50 @@ import net.minecraft.resources.ResourceLocation;
 /** Сравнивает реальные сохранённые поля платы; эталоны переживают новый процесс сервера. */
 final class PcbLifecycleTest {
     static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        dispatcher.register(Commands.literal("pcbprotection").requires(s -> s.hasPermission(2))
+                .then(Commands.literal("power")
+                        .then(Commands.argument("volts", com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 240))
+                                .then(Commands.argument("pos", BlockPosArgument.blockPos()).executes(c -> {
+                                    var source = c.getSource();
+                                    var pos = BlockPosArgument.getLoadedBlockPos(c, "pos");
+                                    int volts = com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(c, "volts");
+                                    var battery = DevicesSavedData.load(source.getLevel()).getDevice(pos,
+                                            com.george_vi.electroenergetics.content.creative_battery.CreativeBatteryDevice.class);
+                                    require(battery != null, "нет источника " + pos);
+                                    var entity = (com.simibubi.create.foundation.blockEntity.SmartBlockEntity) source.getLevel().getBlockEntity(pos);
+                                    entity.getBehaviour(com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour.TYPE).setValue(volts * 1000);
+                                    battery.voltage = volts;
+                                    battery.acFrequency = 0;
+                                    success(source, "Физический источник " + pos + ": Volts=" + volts);
+                                    return 1;
+                                }))))
+                .then(Commands.literal("short")
+                        .then(Commands.argument("a", com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 31))
+                                .then(Commands.argument("b", com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 31))
+                                        .then(Commands.argument("pos", BlockPosArgument.blockPos()).executes(c -> {
+                                            var pos = BlockPosArgument.getLoadedBlockPos(c, "pos");
+                                            DevTest.wire(c.getSource().getLevel(), pos,
+                                                    com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(c, "a"), pos,
+                                                    com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(c, "b"));
+                                            success(c.getSource(), "Внешний медный провод замкнул контакты " + pos);
+                                            return 1;
+                                        })))))
+                .then(Commands.literal("state")
+                        .then(Commands.argument("burnt", BoolArgumentType.bool())
+                                .then(Commands.argument("pos", BlockPosArgument.blockPos()).executes(c -> {
+                                    var source = c.getSource();
+                                    var pos = BlockPosArgument.getLoadedBlockPos(c, "pos");
+                                    var device = DevicesSavedData.load(source.getLevel()).getDevice(pos, PcbCircuitDevice.class);
+                                    require(device != null, "нет платы " + pos);
+                                    var tag = new CompoundTag();
+                                    device.write(tag);
+                                    require(tag.getBoolean("Burnt") == BoolArgumentType.getBool(c, "burnt"),
+                                            "защита платы " + pos + ": " + tag);
+                                    require(Double.isFinite(tag.getDouble("Watts")), "нечисловая мощность");
+                                    success(source, "Защита " + pos + ": Burnt=" + (tag.getBoolean("Burnt") ? 1 : 0)
+                                            + ", Watts=" + tag.getDouble("Watts") + ", Meter=" + tag.getDouble("Meter"));
+                                    return 1;
+                                })))));
         dispatcher.register(Commands.literal("pcblifecycle").requires(s -> s.hasPermission(2))
                 .then(Commands.literal("tickets")
                         .then(Commands.argument("pos", BlockPosArgument.blockPos()).executes(c -> {
