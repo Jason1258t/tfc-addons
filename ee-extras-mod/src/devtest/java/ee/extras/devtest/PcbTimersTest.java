@@ -25,6 +25,8 @@ final class PcbTimersTest {
     private static ServerLevel watched;
     private static int samples, high, low, edges;
     private static boolean previous;
+    private static boolean shortWatch;
+    private static double maxShortWatts, minShortWatts, maxShortOutput;
     private static boolean listening;
 
     static int buildAt(CommandSourceStack source, BlockPos board, boolean clock) {
@@ -47,7 +49,21 @@ final class PcbTimersTest {
                 .then(Commands.literal("reload").executes(c -> {
                     var tag = new CompoundTag(); device(c.getSource().getLevel()).write(tag); device(c.getSource().getLevel()).read(tag); return 1;
                 }))
-                .then(Commands.literal("watch").executes(c -> { watched = c.getSource().getLevel(); samples = high = low = edges = 0; previous = false; return 1; }))
+                .then(Commands.literal("watch").executes(c -> { shortWatch=false; watched = c.getSource().getLevel(); samples = high = low = edges = 0; previous = false; return 1; }))
+                .then(Commands.literal("short-watch").executes(c -> {
+                    watched=c.getSource().getLevel();samples=high=low=0;shortWatch=true;
+                    maxShortWatts=maxShortOutput=0;minShortWatts=Double.POSITIVE_INFINITY;return 1;
+                }))
+                .then(Commands.literal("short-report").executes(c -> {
+                    var tag=new CompoundTag();device(c.getSource().getLevel()).write(tag);
+                    if(samples<100 || high<20 || low<20 || maxShortWatts<.20 || maxShortWatts>.30
+                            || maxShortOutput>.01 || tag.getBoolean("Burnt"))
+                        throw new IllegalStateException("Клок КЗ: "+samples+" отсчётов, фазы"+high+"/"+low
+                                +", мощность"+minShortWatts+"…"+maxShortWatts+", выход"+maxShortOutput);
+                    c.getSource().sendSuccess(()->Component.literal("CLOCK_SHORT_OK: Samples="+samples
+                            +", High="+high+", Low="+low+", MinWatts="+minShortWatts+", MaxWatts="+maxShortWatts
+                            +", MaxOutput="+maxShortOutput),false);return 1;
+                }))
                 .then(Commands.literal("report").executes(c -> {
                     if (samples < 100 || high < 20 || low < 20 || edges < 3 || edges > 7) throw new IllegalStateException("Клок: " + samples + " тиков, " + high + "/" + low + ", фронтов " + edges);
                     c.getSource().sendSuccess(() -> Component.literal("Клок: " + samples + " тиков, высокий/низкий " + high + "/" + low + ", переходов " + edges), false);
@@ -66,6 +82,13 @@ final class PcbTimersTest {
 
     private static void tick(ServerTickEvent.Post event) {
         if (watched == null || samples >= 100) return;
+        if(shortWatch) {
+            var tag=new CompoundTag();device(watched).write(tag);
+            double watts=tag.getDouble("Watts"),output=Math.abs(tag.getDouble("Meter"));
+            if(!Double.isFinite(watts)||!Double.isFinite(output))throw new IllegalStateException("Клок КЗ: нечисловое измерение");
+            maxShortWatts=Math.max(maxShortWatts,watts);minShortWatts=Math.min(minShortWatts,watts);
+            maxShortOutput=Math.max(maxShortOutput,output);if(watts>.1)high++;else low++;samples++;return;
+        }
         boolean state = volts(watched) > 2;
         if (state) high++; else low++;
         if (samples > 0 && previous != state) edges++;

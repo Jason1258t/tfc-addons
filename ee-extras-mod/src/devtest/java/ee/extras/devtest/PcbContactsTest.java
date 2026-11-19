@@ -31,6 +31,11 @@ final class PcbContactsTest {
     }
     static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("pcbcontacts").requires(s -> s.hasPermission(2))
+                .then(Commands.literal("at").then(Commands.argument("pos",net.minecraft.commands.arguments.coordinates.BlockPosArgument.blockPos())
+                        .executes(c -> {
+                            BOARD=net.minecraft.commands.arguments.coordinates.BlockPosArgument.getBlockPos(c,"pos");
+                            SUPPLY=BOARD.east(4);BASE=BOARD.east(6);return 1;
+                        })))
                 .then(Commands.literal("switch").executes(c -> build(c.getSource(), 3)))
                 .then(Commands.literal("transistor").executes(c -> build(c.getSource(), 12)))
                 .then(Commands.literal("relay").executes(c -> build(c.getSource(), 1)))
@@ -39,7 +44,9 @@ final class PcbContactsTest {
                         .executes(c -> {
                             var level=c.getSource().getLevel(); var player=FakePlayerFactory.getMinecraft(level);
                             int percent=com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(c,"percent");
-                            Vec3 mounted=PcbModulesTest.call(PcbCircuitBlock.class,null,"mountedPoint",new Vec3(7.0/16,1.5/16,(6+3*percent/100.0)/16),Direction.UP);
+                            // Крайнее положение выбираем внутри корпуса, а не в соседней клетке за его границей.
+                            double fraction=Math.clamp(percent/100.0,.001,.999);
+                            Vec3 mounted=PcbModulesTest.call(PcbCircuitBlock.class,null,"mountedPoint",new Vec3(7.0/16,1.5/16,(6+3*fraction)/16),Direction.UP);
                             check(level.getBlockState(BOARD).useWithoutItem(level,player,new BlockHitResult(mounted.add(Vec3.atLowerCornerOf(BOARD)),Direction.UP,BOARD,false)).consumesAction(),"трёхпозиционный переключатель принимает положение");return 1;
                         })))
                 .then(Commands.literal("click").executes(c -> {
