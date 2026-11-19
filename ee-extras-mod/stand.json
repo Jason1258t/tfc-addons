@@ -2422,6 +2422,91 @@
           "levelType": "minecraft:flat"
         }
       ]
+    },
+    "pcb-strip-l1-acceptance": {
+      "steps": [
+        {
+          "name": "save",
+          "kind": "server",
+          "cmd": [
+            "gamerule spawnChunkRadius 0",
+            "setworldspawn 4096 100 4096",
+            "forceload add 0 16 31 31",
+            "sleep 5",
+            "pcblights reverse-l1",
+            "pcblights power 31",
+            "sleep 5",
+            "pcblights expect 27",
+            "pcblights measure",
+            "pcblights power 0",
+            "sleep 3",
+            "pcblights expect 0",
+            "pcblights measure",
+            "expect Watts=0±0.001",
+            "pcblights build-l1",
+            "pcblights power 21",
+            "sleep 5",
+            "pcblights expect 21",
+            "pcblights measure",
+            "pcblifecycle remember strip-l1-circuit Circuit 8 -60 24",
+            "expect Saved=1",
+            "forceload remove all",
+            "sleep 40",
+            "pcblifecycle chunk false 8 -60 24",
+            "expect Loaded=0",
+            "forceload add 0 16 31 31",
+            "sleep 10",
+            "pcblifecycle chunk true 8 -60 24",
+            "expect Loaded=1",
+            "pcblifecycle same strip-l1-circuit",
+            "expect Equal=1",
+            "pcblights expect 21",
+            "pcblights measure",
+            "save-all flush"
+          ],
+          "save": true,
+          "failFast": true,
+          "expect": ["PCB_STRIP_MEASURE_OK"],
+          "levelType": "minecraft:flat"
+        },
+        {
+          "name": "restart",
+          "kind": "server",
+          "world": "save",
+          "cmd": [
+            "sleep 10",
+            "pcblifecycle same strip-l1-circuit",
+            "expect Equal=1",
+            "pcblights expect 21",
+            "pcblights measure",
+            "pcblights power 31",
+            "sleep 3",
+            "pcblights expect 31",
+            "pcblights measure",
+            "save-all flush"
+          ],
+          "save": true,
+          "failFast": true,
+          "expect": ["PCB_STRIP_MEASURE_OK"]
+        },
+        {
+          "name": "overvoltage",
+          "kind": "server",
+          "world": "restart",
+          "cmd": [
+            "sleep 10",
+            "pcblights expect 31",
+            "pcblights measure",
+            "!pcbprotection state true 8 -60 24",
+            "pcbprotection power 60 12 -62 30",
+            "sleep 3",
+            "pcbprotection state true 8 -60 24"
+          ],
+          "save": true,
+          "failFast": true,
+          "expect": ["PCB_LIFECYCLE_OK"]
+        }
+      ]
     }
   },
   "scenes": {

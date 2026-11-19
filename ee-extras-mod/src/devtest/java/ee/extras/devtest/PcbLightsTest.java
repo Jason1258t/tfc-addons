@@ -33,7 +33,10 @@ final class PcbLightsTest {
     static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("pcblights").requires(s -> s.hasPermission(2))
                 .then(Commands.literal("build").executes(c -> build(c.getSource(),false)))
+                .then(Commands.literal("build-l1").executes(c -> build(c.getSource(),false,true)))
                 .then(Commands.literal("reverse").executes(c -> build(c.getSource(),true)))
+                .then(Commands.literal("reverse-l1").executes(c -> build(c.getSource(),true,true)))
+                .then(Commands.literal("measure").executes(c -> measure(c.getSource())))
                 .then(Commands.literal("power").then(Commands.argument("mask",com.mojang.brigadier.arguments.IntegerArgumentType.integer(0,31))
                         .executes(c -> { power(c.getSource().getLevel(),com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(c,"mask")); return 1; })))
                 .then(Commands.literal("expect").then(Commands.argument("mask",com.mojang.brigadier.arguments.IntegerArgumentType.integer(0,31))
@@ -53,9 +56,14 @@ final class PcbLightsTest {
 
     @SuppressWarnings("unchecked")
     private static int build(CommandSourceStack source,boolean reverse) {
+        return build(source,reverse,false);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static int build(CommandSourceStack source,boolean reverse,boolean l1) {
         var level=source.getLevel(); var player=FakePlayerFactory.getMinecraft(level);
         DevTest.place(level,TABLE,PcbItems.EDITOR_BLOCK.get().defaultBlockState());
-        var editor=(PcbEditorBlockEntity)level.getBlockEntity(TABLE); rotatedLayouts(editor); editor.clear(2);
+        var editor=(PcbEditorBlockEntity)level.getBlockEntity(TABLE); rotatedLayouts(editor); editor.clear(l1?1:2);
         var menu=new PcbEditorMenu(82,player.getInventory(),ContainerLevelAccess.create(level,TABLE),editor);
         menu.clickMenuButton(player,1040+19);
         for(int i=0;i<5;i++) menu.clickMenuButton(player,PcbEditorMenu.OHMS);
@@ -95,7 +103,7 @@ final class PcbLightsTest {
             player.getAbilities().instabuild=creative;
         } catch(ReflectiveOperationException e) { throw new IllegalStateException(e); }
         DevTest.place(level,BOARD,Blocks.AIR.defaultBlockState()); DevTest.place(level,BOARD.below(),Blocks.STONE.defaultBlockState());
-        var stack=PcbItems.L2_BOARD.toStack(); topology.putBoolean("Assembled",true); stack.set(PcbItems.PCB_TOPOLOGY.get(),topology);
+        var stack=(l1?PcbItems.L1_BOARD:PcbItems.L2_BOARD).toStack(); topology.putBoolean("Assembled",true); stack.set(PcbItems.PCB_TOPOLOGY.get(),topology);
         player.setItemInHand(InteractionHand.MAIN_HAND,stack);
         var hit=new BlockHitResult(Vec3.atCenterOf(BOARD.below()).add(0,.5,0),Direction.UP,BOARD.below(),false);
         check(stack.useOn(new UseOnContext(player,InteractionHand.MAIN_HAND,hit)).consumesAction(),"готовая плата устанавливается предметом");
@@ -172,5 +180,29 @@ final class PcbLightsTest {
         check(actual==mask,"маска "+actual+" вместо "+mask);
         check(!level.getBlockState(BOARD).getValue(PcbCircuitBlock.BURNT),"штатное питание не сжигает плату");
         source.sendSuccess(() -> Component.literal("Полоса: маска секций "+actual+" — верно"),false); return 1;
+    }
+
+    private static int measure(CommandSourceStack source) {
+        var level=source.getLevel();
+        var device=DevicesSavedData.load(level).getDevice(BOARD,PcbCircuitDevice.class);
+        var tag=new net.minecraft.nbt.CompoundTag();device.write(tag);
+        check(!tag.getBoolean("Burnt"),"плата цела перед измерением");
+        var parts=tag.getList("Circuit",net.minecraft.nbt.Tag.TAG_COMPOUND);
+        var results=PcbBridgeTest.RESULTS.get(level);
+        check(results!=null,"есть результаты EE");
+        int base;
+        try {var field=PcbCircuitDevice.class.getDeclaredField("MAX_NODES");field.setAccessible(true);base=field.getInt(null);}
+        catch(ReflectiveOperationException e){throw new IllegalStateException(e);}
+        for(int i=0;i<5;i++) {
+            var part=parts.getCompound(i);
+            double resistance=PcbModulesTest.call(PcbCircuitDevice.class,null,"indicatorResistance",part.getDouble("Ohms"));
+            double volts=Math.sqrt(results.getVoltageAtSqr(BOARD,part.getInt("A"),part.getInt("B")));
+            double amps=Math.sqrt(results.getVoltageAtSqr(BOARD,base+i,part.getInt("B")))/resistance;
+            check(Double.isFinite(volts)&&Double.isFinite(amps),"конечные измерения секции"+i);
+            String text="PCB_STRIP_MEASURE: секция"+i+", Volts="+volts+", Amps="+amps;
+            source.sendSuccess(()->Component.literal(text),false);
+        }
+        source.sendSuccess(()->Component.literal("PCB_STRIP_MEASURE_OK: Rating="+tag.getString("Rating")+", Watts="+tag.getDouble("Watts")),false);
+        return 1;
     }
 }
