@@ -24,6 +24,7 @@
     "WireVisualMixin",
     "WireRendererCapMixin",
     "BundledWirePreviewMixin",
+    "InsulatorTipTargetMixin",
     "WireRaycastMixin"
   ],
   "injectors": { "defaultRequire": 0 }

@@ -189,6 +189,7 @@ public class DevTest {
                 .then(Commands.literal("capbreak").executes(c -> CapTest.breakBulb(c.getSource())))
                 .then(Commands.literal("captake").executes(c -> CapTest.take(c.getSource())))
                 .then(Commands.literal("anchors")
+                        .then(Commands.literal("selection").executes(c -> InsulatorAnchorTest.selection(c.getSource())))
                         .then(Commands.literal("build").executes(c -> InsulatorAnchorTest.build(c.getSource())))
                         .then(Commands.literal("clamp").executes(c -> InsulatorAnchorTest.clamp(c.getSource())))
                         .then(Commands.literal("check").executes(c -> InsulatorAnchorTest.check(c.getSource(), true)))

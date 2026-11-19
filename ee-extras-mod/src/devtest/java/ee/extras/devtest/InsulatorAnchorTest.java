@@ -1,6 +1,13 @@
 package ee.extras.devtest;
 
 import com.george_vi.electroenergetics.CEEBlocks;
+import com.george_vi.electroenergetics.CEEItems;
+import com.george_vi.electroenergetics.CEEDataComponents;
+import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.phys.BlockHitResult;
 import com.george_vi.electroenergetics.CEEWireTypes;
 import com.george_vi.electroenergetics.devices.device.DevicesSavedData;
 import com.george_vi.electroenergetics.content.wire.attachments.AttachmentRemovalWireInteractionBehaviour;
@@ -29,6 +36,7 @@ final class InsulatorAnchorTest {
     private static final BlockPos RIGHT = LEFT.offset(18, 2, 8);
     private static final BlockPos BATTERY = LEFT.below(7);
     private static final BlockPos METER = RIGHT.below(7);
+    private static final BlockPos LOAD = METER.east(2);
     private static final BlockPos SHORT_LEFT = LEFT.offset(0, 0, 16);
     private static final BlockPos SHORT_RIGHT = SHORT_LEFT.offset(4, 0, 0);
 
@@ -52,8 +60,14 @@ final class InsulatorAnchorTest {
     }
 
     static void clamp(ServerLevel level, InWorldNodeConnection span, Player player, float point) {
-        Tension.CLAMP_BEHAVIOUR.get().interactWire(new NodeConnectionPoint(span.node1(), span.node2(), point),
-                level, player, Tension.CLAMP_ITEM.toStack());
+        var sd = InfrastructureSavedData.load(level);
+        var stack = new ItemStack(Tension.CLAMP_ITEM.get(), 2);
+        for (var tip : new InWorldNode[] { span.node1(), span.node2() }) {
+            var glass = sd.getConnections(tip).stream()
+                    .filter(c -> ee.extras.lines.InsulatorAnchors.isGlass(sd.getConnectionData(c).wireType())).findFirst().orElseThrow();
+            Tension.CLAMP_BEHAVIOUR.get().interactWire(new NodeConnectionPoint(glass.node1(), glass.node2(), 0.5f),
+                    level, player, stack);
+        }
     }
 
     private static InWorldNode tip(InfrastructureSavedData sd, BlockPos pos) {
@@ -120,6 +134,48 @@ final class InsulatorAnchorTest {
         return good ? 1 : 0;
     }
 
+    private static void select(ServerLevel level, InWorldNode tip, Player player, ItemStack stack) {
+        var sd = InfrastructureSavedData.load(level);
+        var glass = sd.getConnections(tip).stream()
+                .filter(c -> ee.extras.lines.InsulatorAnchors.isGlass(sd.getConnectionData(c).wireType())).findFirst().orElseThrow();
+        Tension.CLAMP_BEHAVIOUR.get().interactWire(new NodeConnectionPoint(glass.node1(), glass.node2(), 0.5f),
+                level, player, stack);
+    }
+
+    static int selection(CommandSourceStack source) {
+        var level = source.getLevel();
+        var sd = InfrastructureSavedData.load(level);
+        var player = FakePlayerFactory.getMinecraft(level);
+        var connection = build(level, new BlockPos(3, -51, 35), new BlockPos(21, -51, 35));
+        var stack = new ItemStack(Tension.CLAMP_ITEM.get(), 2);
+        select(level, connection.node1(), player, stack);
+        boolean first = connection.node1().equals(stack.get(CEEDataComponents.SELECTED_NODE))
+                && stack.getCount() == 2 && sd.getConnectionData(connection).attachments().isEmpty();
+        select(level, connection.node1(), player, stack);
+        boolean cancel = !stack.has(CEEDataComponents.SELECTED_NODE) && stack.getCount() == 2;
+        sd.removeConnectionNoDrops(connection);
+        select(level, connection.node1(), player, stack);
+        select(level, connection.node2(), player, stack);
+        boolean unconnected = !sd.isConnected(connection.node1(), connection.node2()) && stack.getCount() == 2;
+        sd.connect(connection.node1(), connection.node2(), CEEWireTypes.COPPER.get());
+        select(level, connection.node2(), player, stack);
+        boolean unsupported = sd.getConnectionData(connection).attachments().isEmpty() && stack.getCount() == 2;
+        sd.removeConnectionNoDrops(connection);
+        sd.connect(connection.node1(), connection.node2(), LineWire.ACSR.type.get());
+        stack.setCount(1);
+        select(level, connection.node2(), player, stack);
+        boolean insufficient = sd.getConnectionData(connection).attachments().isEmpty() && stack.getCount() == 1;
+        stack.setCount(2);
+        select(level, connection.node2(), player, stack);
+        boolean success = sd.getConnectionData(connection).attachments().size() == 2 && stack.isEmpty();
+        boolean ok = first && cancel && unconnected && unsupported && insufficient && success;
+        String result = "ВЫБОР ГИРЛЯНД " + (ok ? "ОК" : "ОШИБКА") + " первая=" + first + " отмена=" + cancel
+                + " нет связи=" + unconnected + " неподходящий провод=" + unsupported
+                + " мало зажимов=" + insufficient + " установка=" + success;
+        source.sendSuccess(() -> Component.literal(result), false);
+        return ok ? 1 : 0;
+    }
+
     static int power(CommandSourceStack source) {
         var level = source.getLevel();
         var sd = InfrastructureSavedData.load(level);
@@ -127,17 +183,35 @@ final class InsulatorAnchorTest {
         DevTest.place(level, METER, CEEBlocks.VOLTMETER.getDefaultState());
         Lines.ensure(level, BATTERY);
         Lines.ensure(level, METER);
-        var copper = CEEWireTypes.COPPER.get();
-        // Запас длины для отвода при переходе от свободного подвеса к анкерному.
-        sd.connect(new InWorldNode(0, BATTERY), tip(sd, LEFT), WireData.ofLength(copper, 12));
-        sd.connect(tip(sd, RIGHT), new InWorldNode(0, METER), WireData.ofLength(copper, 12));
-        DevTest.wire(level, BATTERY, 1, METER, 1);
+        DevTest.place(level, LOAD, CEEBlocks.RESISTIVE_HEATER.getDefaultState());
+        Lines.ensure(level, LOAD);
+        var player = FakePlayerFactory.getMinecraft(level);
+        var spool = CEEItems.COPPER_WIRE_SPOOL.asStack();
+        var item = (WireSpoolItem) spool.getItem();
+        player.setItemInHand(InteractionHand.MAIN_HAND, spool);
+        item.interactDetachedNode(tip(sd, LEFT), player, level, spool);
+        Vec3 batteryNode = new InWorldNode(0, BATTERY).getPosition(level);
+        item.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND,
+                new BlockHitResult(batteryNode, Direction.UP, BATTERY, false)));
+        boolean input = sd.isConnected(tip(sd, LEFT), new InWorldNode(0, BATTERY));
+        spool = CEEItems.COPPER_WIRE_SPOOL.asStack();
+        player.setItemInHand(InteractionHand.MAIN_HAND, spool);
+        Vec3 meterNode = new InWorldNode(0, METER).getPosition(level);
+        item.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND,
+                new BlockHitResult(meterNode, Direction.UP, METER, false)));
+        item.interactDetachedNode(tip(sd, RIGHT), player, level, spool);
+        boolean output = sd.isConnected(tip(sd, RIGHT), new InWorldNode(0, METER));
+        boolean back = DevTest.spoolWire(player, CEEItems.COPPER_WIRE_SPOOL.asStack(), BATTERY, 1, METER, 1);
+        boolean load = DevTest.spoolWire(player, CEEItems.COPPER_WIRE_SPOOL.asStack(), METER, 0, LOAD, 0)
+                & DevTest.spoolWire(player, CEEItems.COPPER_WIRE_SPOOL.asStack(), METER, 1, LOAD, 1);
+        source.sendSuccess(() -> Component.literal("ОТВОДЫ КАТУШКОЙ " + input + "/" + output + "/" + back + "/нагрузка=" + load), false);
         return 1;
     }
 
     static int voltage(CommandSourceStack source) {
         String volts = Extras.vm(DevicesSavedData.load(source.getLevel()), METER);
-        boolean powered = volts.equals("300.0") || volts.equals("300,0");
+        double value = Double.parseDouble(volts.replace(',', '.'));
+        boolean powered = value > 290 && value <= 300.1;
         source.sendSuccess(() -> Component.literal((powered ? "ПИТАНИЕ ОК " : "ПИТАНИЕ ОШИБКА ") + volts + " В"), false);
         return powered ? 1 : 0;
     }

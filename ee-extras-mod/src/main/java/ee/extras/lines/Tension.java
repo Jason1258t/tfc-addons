@@ -145,9 +145,18 @@ public final class Tension {
 
         @Override
         @OnlyIn(Dist.CLIENT)
+        public DisplayType getWireDisplayType(NodeConnectionPoint point, Level level, Player player, ItemStack stack) {
+            WireData wire = WireRenderer.getConnectionData(point.connection());
+            return wire != null && InsulatorAnchors.isGlass(wire.wireType()) ? DisplayType.LINE : DisplayType.DOT;
+        }
+
+        @Override
+        @OnlyIn(Dist.CLIENT)
         public int getWireDisplayColor(NodeConnectionPoint point, Level level, Player player, ItemStack stack) {
             if (point == null) return attachmentColor();
             var connection = point.connection();
+            WireData target = WireRenderer.getConnectionData(connection);
+            if (target != null && InsulatorAnchors.isGlass(target.wireType())) return 0x9EDE73;
             if (DetachedNodeHelper.isDetached(connection.node1()) && DetachedNodeHelper.isDetached(connection.node2())) {
                 WireData wire = WireRenderer.getConnectionData(connection);
                 if (wire != null && (hasClamp(wire) || InsulatorAnchors.hasAnchor(wire, isFirstEnd(point)))) {
@@ -165,12 +174,16 @@ public final class Tension {
             InWorldNodeConnection c = point.connection();
             WireData data = sd.getConnectionData(c);
             if (data == null) return;
+            if (InsulatorAnchors.isGlass(data.wireType())) {
+                InsulatorAnchors.select(sd, c, player, stack);
+                return;
+            }
             if (Float.isNaN(minFactor(data.wireType()))) {
                 player.displayClientMessage(Component.translatable("ee_extras.tension.not_tensionable"), true);
                 return;
             }
             if (InsulatorAnchors.isHangingSpan(sd, c) || InsulatorAnchors.hasAnchor(data)) {
-                InsulatorAnchors.install(sd, c, data, isFirstEnd(point), player, stack);
+                player.displayClientMessage(Component.translatable("ee_extras.tension.anchor_select_strings"), true);
                 return;
             }
             if (hasClamp(data)) {

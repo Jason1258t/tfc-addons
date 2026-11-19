@@ -1,6 +1,10 @@
 package ee.extras.lines;
 
 import com.george_vi.electroenergetics.CEEWireTypes;
+import com.george_vi.electroenergetics.CEEDataComponents;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.CustomData;
 import com.george_vi.electroenergetics.content.wire.WireAttachment;
 import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.WireType;
@@ -26,7 +30,7 @@ public final class InsulatorAnchors {
 
     private InsulatorAnchors() {}
 
-    private static boolean isGlass(WireType type) {
+    public static boolean isGlass(WireType type) {
         if (type == CEEWireTypes.GLASS_INSULATOR.get()) return true;
         for (var colored : CEEWireTypes.COLORED_GLASS_INSULATOR) {
             if (type == colored.get()) return true;
@@ -100,27 +104,85 @@ public final class InsulatorAnchors {
         return new Span(a, b, horizontal.scale(1 / distance), scale);
     }
 
-    static void install(InfrastructureSavedData sd, InWorldNodeConnection connection, WireData wire, boolean first,
-                        Player player, ItemStack stack) {
-        InWorldNodeData a = sd.getNodeData(connection.node1());
-        InWorldNodeData b = sd.getNodeData(connection.node2());
-        Span span = span(sd, a, b);
-        if (span == null) {
-            player.displayClientMessage(Component.translatable("ee_extras.tension.anchor_invalid"), true);
+    public static InWorldNode glassTip(InWorldNodeConnection connection) {
+        boolean first = DetachedNodeHelper.isDetached(connection.node1());
+        boolean second = DetachedNodeHelper.isDetached(connection.node2());
+        return first == second ? null : first ? connection.node1() : connection.node2();
+    }
+
+    static void select(InfrastructureSavedData sd, InWorldNodeConnection glass, Player player, ItemStack stack) {
+        InWorldNode tip = glassTip(glass);
+        if (tip == null || !isPhysical(sd.getNodeData(tip))) {
+            message(player, "anchor_invalid");
             return;
         }
-        if (Tension.hasClamp(wire) || hasAnchor(wire, first)) {
-            player.displayClientMessage(Component.translatable("ee_extras.tension.anchor_already"), true);
+        InWorldNode selected = stack.get(CEEDataComponents.SELECTED_NODE);
+        String dimension = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag()
+                .getString("ee_extras_anchor_dimension");
+        if (player.isShiftKeyDown() || tip.equals(selected)) {
+            clearSelection(stack);
+            message(player, "anchor_cancelled");
             return;
         }
-        double distance = span.tip(true).distanceTo(span.tip(false));
-        float offset = (float) Math.min(0.30, Tension.CLAMP_FROM_END / distance);
+        if (selected == null || !sd.level.dimension().location().toString().equals(dimension)) {
+            stack.set(CEEDataComponents.SELECTED_NODE, tip);
+            CustomData.update(DataComponents.CUSTOM_DATA, stack, tag ->
+                    tag.putString("ee_extras_anchor_dimension", sd.level.dimension().location().toString()));
+            message(player, "anchor_selected");
+            return;
+        }
+        if (!isPhysical(sd.getNodeData(selected))) {
+            clearSelection(stack);
+            message(player, "anchor_missing");
+            return;
+        }
+        InWorldNodeConnection connection = new InWorldNodeConnection(selected, tip);
+        WireData wire = sd.getConnectionData(connection);
+        if (wire == null) {
+            message(player, "anchor_unconnected");
+            return;
+        }
+        if (Float.isNaN(Tension.minFactor(wire.wireType()))) {
+            message(player, "not_tensionable");
+            return;
+        }
+        Span geometry = span(sd, sd.getNodeData(connection.node1()), sd.getNodeData(connection.node2()));
+        if (geometry == null) {
+            message(player, "anchor_invalid");
+            return;
+        }
+        if (Tension.hasClamp(wire)) {
+            message(player, "anchor_already");
+            return;
+        }
+        int needed = (hasAnchor(wire, true) ? 0 : 1) + (hasAnchor(wire, false) ? 0 : 1);
+        if (needed == 0) {
+            clearSelection(stack);
+            message(player, "anchor_already");
+            return;
+        }
+        if (!player.isCreative() && stack.getCount() < needed) {
+            message(player, "anchor_need_two");
+            return;
+        }
+        float offset = (float) Math.min(0.30, Tension.CLAMP_FROM_END / geometry.tip(true).distanceTo(geometry.tip(false)));
         List<Pair<Float, WireAttachment>> attachments = new ArrayList<>(wire.attachments());
-        attachments.add(Pair.of(first ? offset : 1 - offset, new WireAttachment(Tension.ANCHOR_CLAMP.get())));
+        if (!hasAnchor(wire, true)) attachments.add(Pair.of(offset, new WireAttachment(Tension.ANCHOR_CLAMP.get())));
+        if (!hasAnchor(wire, false)) attachments.add(Pair.of(1 - offset, new WireAttachment(Tension.ANCHOR_CLAMP.get())));
         updateAttachments(sd, connection, wire, attachments);
-        AllSoundEvents.WRENCH_ROTATE.playOnServer(sd.level, BlockPos.containing((first ? a : b).getGlobalPos()));
-        if (!player.isCreative()) stack.shrink(1);
-        player.displayClientMessage(Component.translatable("ee_extras.tension.anchor_done"), true);
+        clearSelection(stack);
+        if (!player.isCreative()) stack.shrink(needed);
+        AllSoundEvents.WRENCH_ROTATE.playOnServer(sd.level, BlockPos.containing(sd.getNodePosition(tip)));
+        message(player, "anchor_done");
+    }
+
+    private static void clearSelection(ItemStack stack) {
+        stack.remove(CEEDataComponents.SELECTED_NODE);
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.remove("ee_extras_anchor_dimension"));
+    }
+
+    private static void message(Player player, String key) {
+        player.displayClientMessage(Component.translatable("ee_extras.tension." + key), true);
     }
 
     private static void updateAttachments(InfrastructureSavedData sd, InWorldNodeConnection connection,

@@ -1,6 +1,19 @@
 package ee.extras.lines;
 
 import com.george_vi.electroenergetics.client.ElectricStatsTooltipModifier;
+import com.george_vi.electroenergetics.CEEDataComponents;
+import com.george_vi.electroenergetics.content.wire_spool.WireSpoolItem;
+import com.george_vi.electroenergetics.content.wire.interaction.WireInteractionHandler;
+import com.george_vi.electroenergetics.foundation.QuadraticWireHelper;
+import com.george_vi.electroenergetics.foundation.nodes.InWorldNode;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import com.george_vi.electroenergetics.client.WireRenderer;
+import net.minecraft.client.Minecraft;
+import net.createmod.catnip.outliner.Outliner;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import com.george_vi.electroenergetics.client.ElectricStatsTooltipModifier.ElectricStatSet;
 import com.simibubi.create.foundation.item.TooltipModifier;
 import java.util.Locale;
@@ -21,6 +34,64 @@ public final class LinesClient {
     public static void register(IEventBus modBus, IEventBus gameBus) {
         modBus.addListener(LinesClient::setup);
         gameBus.addListener(LinesClient::tooltip);
+        gameBus.addListener(LinesClient::selection);
+    }
+
+    /** Катушкой можно выбрать всю гирлянду. Электрический контакт остаётся на нижнем наконечнике. */
+    public static InWorldNode insulatorTip(BlockHitResult hit, InWorldNode original) {
+        var mc = Minecraft.getInstance();
+        if (mc.player == null || mc.level == null || !(mc.player.getMainHandItem().getItem() instanceof WireSpoolItem)) {
+            return original;
+        }
+        var from = WireInteractionHandler.getTraceOrigin(mc.player);
+        double range = mc.player.getAttributeValue(Attributes.BLOCK_INTERACTION_RANGE) + 1;
+        var to = WireInteractionHandler.getTraceTarget(mc.player, range, from);
+        double bestDistance = hit.getType() == HitResult.Type.MISS ? range : from.distanceTo(hit.getLocation());
+        if (original != null) {
+            var position = original.getPosition(mc.level);
+            if (position != null) bestDistance = Math.min(bestDistance, from.distanceTo(position));
+        }
+        InWorldNode best = original;
+        for (var wire : WireRenderer.getAllConnections()) {
+            var connection = wire.getFirst();
+            if (!InsulatorAnchors.isGlass(wire.getSecond().wireType())) continue;
+            var tip = InsulatorAnchors.glassTip(connection);
+            var a = connection.node1().getPosition(mc.level);
+            var b = connection.node2().getPosition(mc.level);
+            if (tip == null || a == null || b == null) continue;
+            var points = QuadraticWireHelper.wirePoints(a, b, wire.getSecond().getSag(a.distanceTo(b)), 0.5f, null);
+            var previous = a;
+            for (int i = 0; i <= points.size(); i++) {
+                var next = i == points.size() ? b : points.get(i);
+                var intersection = new AABB(previous, next).inflate(0.15).clip(from, to);
+                if (intersection.isPresent()) {
+                    double distance = from.distanceTo(intersection.get());
+                    if (distance < bestDistance) {
+                        best = tip;
+                        bestDistance = distance;
+                    }
+                }
+                previous = next;
+            }
+        }
+        return best;
+    }
+
+    static void selection(ClientTickEvent.Post event) {
+        var mc = Minecraft.getInstance();
+        if (mc.player == null || mc.level == null) return;
+        var stack = mc.player.getMainHandItem();
+        if (!stack.is(Tension.CLAMP_ITEM.get())) return;
+        var selected = stack.get(CEEDataComponents.SELECTED_NODE);
+        if (selected == null) return;
+        for (var wire : WireRenderer.getAllConnections()) {
+            var connection = wire.getFirst();
+            if (!InsulatorAnchors.isGlass(wire.getSecond().wireType()) || !connection.isAny(selected)) continue;
+            var a = connection.node1().getPosition(mc.level);
+            var b = connection.node2().getPosition(mc.level);
+            if (a != null && b != null) Outliner.getInstance().showLine("ee_extras_anchor_selected", a, b)
+                    .lineWidth(0.08f).colored(0xFFD166).disableLineNormals();
+        }
     }
 
     static void setup(FMLClientSetupEvent e) {
