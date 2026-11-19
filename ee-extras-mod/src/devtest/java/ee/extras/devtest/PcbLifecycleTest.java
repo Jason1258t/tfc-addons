@@ -17,6 +17,19 @@ import net.minecraft.resources.ResourceLocation;
 final class PcbLifecycleTest {
     static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("pcblifecycle").requires(s -> s.hasPermission(2))
+                .then(Commands.literal("tickets")
+                        .then(Commands.argument("pos", BlockPosArgument.blockPos()).executes(c -> {
+                            var source = c.getSource();
+                            var pos = BlockPosArgument.getBlockPos(c, "pos");
+                            var manager = source.getLevel().getChunkSource().chunkMap.getDistanceManager();
+                            long chunk = net.minecraft.world.level.ChunkPos.asLong(pos.getX() >> 4, pos.getZ() >> 4);
+                            String ticket = PcbModulesTest.call(net.minecraft.server.level.DistanceManager.class,
+                                    manager, "getTicketDebugString", chunk);
+                            success(source, "Заявки чанка " + pos.toShortString() + ": " + ticket
+                                    + ", Loaded=" + (source.getLevel().hasChunkAt(pos) ? 1 : 0)
+                                    + ", BlockTicking=" + (manager.inBlockTickingRange(chunk) ? 1 : 0));
+                            return 1;
+                        })))
                 .then(Commands.literal("chunk")
                         .then(Commands.argument("loaded", BoolArgumentType.bool())
                                 .then(Commands.argument("pos", BlockPosArgument.blockPos()).executes(c -> {
