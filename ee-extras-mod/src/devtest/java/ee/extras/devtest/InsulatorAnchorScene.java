@@ -69,7 +69,7 @@ final class InsulatorAnchorScene {
             click(scene, "гирлянда " + i, () -> {
                 var mc = Minecraft.getInstance();
                 return glass[side].node1().getPosition(mc.level).lerp(glass[side].node2().getPosition(mc.level), 0.5);
-            }, () -> {
+            }, () -> new Vec3(0, 0.4, 2), () -> {
                 WireInteractionHandler.tick();
                 var selected = WireInteractionHandler.targetedPoint;
                 scene.check("выбрана гирлянда " + side, selected != null && selected.connection().equals(glass[side]));
@@ -103,10 +103,28 @@ final class InsulatorAnchorScene {
                 }
                 return route.get()[at].getPosition(level);
             }, () -> {
+                var node = route.get()[at];
+                if (at == 0 || at == 3) return new Vec3(0, 0.4, 2);
+                var point = node.getPosition(Minecraft.getInstance().level);
+                var outward = point.subtract(node.sourcePos().getCenter()).normalize().scale(2.5);
+                if (outward.y < -0.4) {
+                    return outward.horizontalDistanceSqr() < 0.01 ? new Vec3(0, -0.4, 2)
+                            : new Vec3(outward.x, -0.4, outward.z);
+                }
+                return outward;
+            }, () -> {
                 WireApplyingBehaviour.tick();
                 scene.note("цель катушки " + at + ": " + WireApplyingBehaviour.targetingDetachedNode);
-                if (at == 0 || at == 3) scene.check("выбран нижний наконечник " + at,
-                        route.get()[at].equals(WireApplyingBehaviour.targetingDetachedNode));
+                if (at == 0 || at == 3) {
+                    scene.check("выбран нижний наконечник " + at,
+                            route.get()[at].equals(WireApplyingBehaviour.targetingDetachedNode));
+                } else {
+                    var mc = Minecraft.getInstance();
+                    var hit = mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult block
+                            ? InWorldNode.getHitNode(block, mc.level) : null;
+                    scene.note("клемма " + at + ": нужно " + route.get()[at] + ", выбрана " + hit);
+                    scene.check("выбрана клемма " + at, route.get()[at].equals(hit));
+                }
             });
         }
         scene.ticks(100);
@@ -126,12 +144,12 @@ final class InsulatorAnchorScene {
         scene.shot("anchored-span").start();
     }
 
-    private static void click(Scene scene, String label, Supplier<Vec3> target, Runnable check) {
+    private static void click(Scene scene, String label, Supplier<Vec3> target, Supplier<Vec3> offset, Runnable check) {
         var location = new java.util.concurrent.atomic.AtomicReference<Vec3>();
-        scene.client("точка монтажа: " + label, () -> location.set(target.get()));
+        scene.client("точка монтажа: " + label, () -> location.set(target.get().add(offset.get())));
         scene.server("подойти: " + label, c -> {
             var point = location.get();
-            var eye = point.add(0, 0.4, 2);
+            var eye = point;
             c.player().teleportTo(c.level(), eye.x, eye.y - c.player().getEyeHeight(), eye.z, 180, 10);
         });
         scene.ticks(10);
