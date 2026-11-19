@@ -2283,6 +2283,145 @@
           "expect": ["PCB_LAMPS_OK"]
         }
       ]
+    },
+    "pcb-latch-short": {
+      "steps": [
+        {
+          "name": "short",
+          "kind": "server",
+          "cmd": [
+            "forceload add 0 0 47 47",
+            "pcblatch build",
+            "sleep 5",
+            "pcblatch set 24",
+            "sleep 2",
+            "pcblatch set 0",
+            "pcblatch expect true",
+            "pcbprotection state false 8 -60 8",
+            "!pcbprotection state true 8 -60 8",
+            "pcbprotection short 2 4 8 -60 8",
+            "sleep 2",
+            "pcbprotection state true 8 -60 8"
+          ],
+          "failFast": true,
+          "save": true,
+          "expect": ["PCB_LIFECYCLE_OK"],
+          "levelType": "minecraft:flat"
+        }
+      ]
+    },
+    "pcb-mechanical-short": {
+      "steps": [
+        {
+          "name": "short",
+          "kind": "server",
+          "cmd": [
+            "forceload add 0 0 47 47",
+            "pcbtimers mechanical",
+            "sleep 5",
+            "pcbtimers click",
+            "sleep 1",
+            "pcbtimers expect 24",
+            "pcbprotection state false 24 -60 16",
+            "!pcbprotection state true 24 -60 16",
+            "pcbprotection short 2 3 24 -60 16",
+            "sleep 2",
+            "pcbprotection state true 24 -60 16"
+          ],
+          "failFast": true,
+          "save": true,
+          "expect": ["PCB_LIFECYCLE_OK"],
+          "levelType": "minecraft:flat"
+        }
+      ]
+    },
+    "pcb-pot-overvoltage": {
+      "steps": [
+        {
+          "name": "overvoltage",
+          "kind": "server",
+          "cmd": [
+            "forceload add 0 0 47 47",
+            "pcbknobs pot",
+            "sleep 5",
+            "pcbprotection state false 24 -60 24",
+            "!pcbprotection state true 24 -60 24",
+            "pcbprotection power 60 28 -60 24",
+            "sleep 2",
+            "pcbprotection state true 24 -60 24"
+          ],
+          "failFast": true,
+          "save": true,
+          "expect": ["PCB_LIFECYCLE_OK"],
+          "levelType": "minecraft:flat"
+        }
+      ]
+    },
+    "pcb-rheostat-overvoltage": {
+      "steps": [
+        {
+          "name": "overvoltage",
+          "kind": "server",
+          "cmd": [
+            "forceload add 0 0 47 47",
+            "pcbknobs rheostat",
+            "sleep 5",
+            "pcbprotection state false 24 -60 24",
+            "!pcbprotection state true 24 -60 24",
+            "pcbprotection power 60 28 -60 24",
+            "sleep 2",
+            "pcbprotection state true 24 -60 24"
+          ],
+          "failFast": true,
+          "save": true,
+          "expect": ["PCB_LIFECYCLE_OK"],
+          "levelType": "minecraft:flat"
+        }
+      ]
+    },
+    "pcb-latch-wind-overvoltage": {
+      "steps": [
+        {
+          "name": "overvoltage",
+          "kind": "server",
+          "cmd": [
+            "forceload add 0 0 47 47",
+            "pcblatch build",
+            "sleep 5",
+            "pcbprotection state false 8 -60 8",
+            "!pcbprotection state true 8 -60 8",
+            "pcbprotection power 60 14 -60 8",
+            "sleep 2",
+            "pcbprotection state true 8 -60 8"
+          ],
+          "failFast": true,
+          "save": true,
+          "expect": ["PCB_LIFECYCLE_OK"],
+          "levelType": "minecraft:flat"
+        }
+      ]
+    },
+    "pcb-mechanical-wind-overvoltage": {
+      "steps": [
+        {
+          "name": "overvoltage",
+          "kind": "server",
+          "cmd": [
+            "forceload add 0 0 47 47",
+            "pcbtimers mechanical",
+            "sleep 5",
+            "pcbprotection state false 24 -60 16",
+            "!pcbprotection state true 24 -60 16",
+            "pcbprotection power 60 30 -60 16",
+            "sleep 2",
+            "pcbprotection state true 24 -60 16"
+          ],
+          "failFast": true,
+          "save": true,
+          "expect": ["PCB_LIFECYCLE_OK"],
+          "levelType": "minecraft:flat"
+        }
+      ]
     }
   },
   "scenes": {
