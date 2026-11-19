@@ -51,7 +51,7 @@ final class InsulatorAnchorScene {
             terminals[1] = new InWorldNode(1, battery);
             terminals[2] = new InWorldNode(0, meter);
             terminals[3] = new InWorldNode(1, meter);
-            var load = c.at(8, 1, 3);
+            var load = c.at(12, 1, 3);
             c.set(load, CEEBlocks.RESISTIVE_HEATER.getDefaultState());
             Lines.ensure(c.level(), load);
             terminals[4] = new InWorldNode(0, load);
