@@ -50,7 +50,6 @@ import ee.extras.lines.Tension;
 import ee.extras.pcb.PcbItems;
 import ee.extras.solar.SolarPanelBlock;
 import ee.extras.solar.SolarPanelBlockEntity;
-import ee.extras.thermometer.Thermometer;
 import ee.extras.converter.BidiConverterBlock;
 import ee.extras.converter.BidiConverterBlockEntity;
 import ee.extras.converter.BidiConverterDevice;
@@ -320,7 +319,14 @@ public class EeExtras {
         CableWires.init();
         LineWire.register();
         PcbItems.init();
-        if (ModList.get().isLoaded("tfc")) Thermometer.init();
+        // Thermometer (только если TFC установлен и класс доступен)
+        if (ModList.get().isLoaded("tfc")) {
+            try {
+                Class.forName("ee.extras.thermometer.Thermometer").getMethod("init").invoke(null);
+            } catch (ReflectiveOperationException ignored) {
+                // Класс Thermometer не скомпилирован (нет официального TFC в libs) — пропускаем
+            }
+        }
         // Прожектор — наследник блока IE, поэтому его класс и регистрация только при IE (фонарю IE не нужен)
         if (ModList.get().isLoaded("immersiveengineering")) EeFloodlight.init(modBus);
         Tension.register(modBus);
@@ -398,7 +404,13 @@ public class EeExtras {
         event.accept(SOLAR_PANEL_ITEM.get());
         event.accept(ee.extras.wire.SurfaceWires.DUPLEX_ITEM.get());
         event.accept(ee.extras.wire.SurfaceWires.JUNCTION_BOX_ITEM.get());
-        if (ModList.get().isLoaded("tfc")) Thermometer.addToTab(event);
+        if (ModList.get().isLoaded("tfc")) {
+            try {
+                Class.forName("ee.extras.thermometer.Thermometer").getMethod("addToTab", net.minecraft.world.item.CreativeModeTab.Output.class).invoke(null, event);
+            } catch (ReflectiveOperationException ignored) {
+                // Класс Thermometer не скомпилирован (нет официального TFC в libs) — пропускаем
+            }
+        }
         PcbItems.addToTab(event);
         // EE 1.1.2 сам не кладёт во вкладку двухпроводной кабель и соединитель, а переменный ток — только с
         // showACContent (по умолчанию выключен). JEI и поиск творческого режима берут предметы из вкладок — без этого

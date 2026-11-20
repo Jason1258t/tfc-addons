@@ -68,13 +68,18 @@ public class DevTest {
         Wire.register(d);
         ElectronicsTest.register(d);
         PersistenceTest.register(d);
+        PcbMount.register(d);
         SolarTest.register(d);
         BeltMotorTest.register(d);
         ElectricPressTest.register(d);
         ElectricMachinesTest.register(d);
-        if (net.neoforged.fml.ModList.get().isLoaded("computercraft")) ComputerCraftTest.register(d);
+        if (net.neoforged.fml.ModList.get().isLoaded("computercraft")) {
+            try { Class.forName("ee.extras.devtest.ComputerCraftTest").getMethod("register", CommandDispatcher.class).invoke(null, d); } catch (ReflectiveOperationException ignored) {}
+        }
         if (net.neoforged.fml.ModList.get().isLoaded("destroy")) registerPetTest(d);
-        if (net.neoforged.fml.ModList.get().isLoaded("tfc")) ThermometerTest.register(d);
+        if (net.neoforged.fml.ModList.get().isLoaded("tfc")) {
+            try { Class.forName("ee.extras.devtest.ThermometerTest").getMethod("register", CommandDispatcher.class).invoke(null, d); } catch (ReflectiveOperationException ignored) {}
+        }
         d.register(Commands.literal("rectest")
                 .then(Commands.literal("build").executes(c -> build(c.getSource())))
                 .then(Commands.literal("power")
@@ -142,16 +147,15 @@ public class DevTest {
                                                 com.mojang.brigadier.arguments.StringArgumentType.getString(c, "dir"),
                                                 com.mojang.brigadier.arguments.StringArgumentType.getString(c, "mode"))))))
                 .then(Commands.literal("computerpower")
-                        .then(Commands.literal("setup").executes(c -> ComputerPowerTest.setup(c.getSource(), false)))
-                        .then(Commands.literal("advanced").executes(c -> ComputerPowerTest.setup(c.getSource(), true)))
-                        .then(Commands.literal("script").executes(c -> ComputerPowerTest.installScript(c.getSource())))
-                        .then(Commands.literal("discharge").executes(c -> ComputerPowerTest.discharge(c.getSource())))
-                        .then(Commands.literal("battery").executes(c -> ComputerPowerTest.batteryReport(c.getSource())))
-                        .then(Commands.literal("start").executes(c -> ComputerPowerTest.start(c.getSource())))
-                        .then(Commands.literal("report").executes(c -> ComputerPowerTest.report(c.getSource())))
+                        .then(Commands.literal("setup").executes(c -> { try { Class.forName("ee.extras.devtest.ComputerPowerTest").getMethod("setup", CommandSourceStack.class, boolean.class).invoke(null, c.getSource(), false); } catch (ReflectiveOperationException ex) { c.getSource().sendFailure(Component.literal("ComputerPowerTest not available")); } return 1; }))
+                        .then(Commands.literal("advanced").executes(c -> { try { Class.forName("ee.extras.devtest.ComputerPowerTest").getMethod("setup", CommandSourceStack.class, boolean.class).invoke(null, c.getSource(), true); } catch (ReflectiveOperationException ex) { c.getSource().sendFailure(Component.literal("ComputerPowerTest not available")); } return 1; }))
+                        .then(Commands.literal("script").executes(c -> { try { Class.forName("ee.extras.devtest.ComputerPowerTest").getMethod("installScript", CommandSourceStack.class).invoke(null, c.getSource()); } catch (ReflectiveOperationException ex) { c.getSource().sendFailure(Component.literal("ComputerPowerTest not available")); } return 1; }))
+                        .then(Commands.literal("discharge").executes(c -> { try { Class.forName("ee.extras.devtest.ComputerPowerTest").getMethod("discharge", CommandSourceStack.class).invoke(null, c.getSource()); } catch (ReflectiveOperationException ex) { c.getSource().sendFailure(Component.literal("ComputerPowerTest not available")); } return 1; }))
+                        .then(Commands.literal("battery").executes(c -> { try { Class.forName("ee.extras.devtest.ComputerPowerTest").getMethod("batteryReport", CommandSourceStack.class).invoke(null, c.getSource()); } catch (ReflectiveOperationException ex) { c.getSource().sendFailure(Component.literal("ComputerPowerTest not available")); } return 1; }))
+                        .then(Commands.literal("start").executes(c -> { try { Class.forName("ee.extras.devtest.ComputerPowerTest").getMethod("start", CommandSourceStack.class).invoke(null, c.getSource()); } catch (ReflectiveOperationException ex) { c.getSource().sendFailure(Component.literal("ComputerPowerTest not available")); } return 1; }))
+                        .then(Commands.literal("report").executes(c -> { try { Class.forName("ee.extras.devtest.ComputerPowerTest").getMethod("report", CommandSourceStack.class).invoke(null, c.getSource()); } catch (ReflectiveOperationException ex) { c.getSource().sendFailure(Component.literal("ComputerPowerTest not available")); } return 1; }))
                         .then(Commands.argument("volts", com.mojang.brigadier.arguments.DoubleArgumentType.doubleArg(0))
-                                .executes(c -> ComputerPowerTest.voltage(c.getSource(),
-                                        com.mojang.brigadier.arguments.DoubleArgumentType.getDouble(c, "volts")))))
+                                .executes(c -> { try { Class.forName("ee.extras.devtest.ComputerPowerTest").getMethod("voltage", CommandSourceStack.class, double.class).invoke(null, c.getSource(), com.mojang.brigadier.arguments.DoubleArgumentType.getDouble(c, "volts")); } catch (ReflectiveOperationException ex) { c.getSource().sendFailure(Component.literal("ComputerPowerTest not available")); } return 1; })))
                 .then(Commands.literal("cables").executes(c -> Extras.cables(c.getSource())))
                 .then(Commands.literal("cablepower")
                         .then(Commands.argument("volts", com.mojang.brigadier.arguments.DoubleArgumentType.doubleArg(0))

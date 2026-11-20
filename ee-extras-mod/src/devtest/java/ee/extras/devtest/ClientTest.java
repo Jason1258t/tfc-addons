@@ -25,6 +25,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
+import tfc.stand.scene.Scene;
 
 /** Настоящий клиент (test-client.sh): прожектор IE превращается кликом катушкой, состояние и блок-сущность доходят до клиента, снимки вида */
 @EventBusSubscriber(modid = "ee_extras_devtest", value = Dist.CLIENT)
@@ -33,7 +34,22 @@ public final class ClientTest {
             java.nio.file.Path.of("pcb-upgrade-photos"));
     private static final boolean PCB_MOUNT_PHOTOS = java.nio.file.Files.exists(
             java.nio.file.Path.of("pcb-mount-photos"));
+    /** Сцена стенда (tools/stand-scene), если стенд её просит: тогда старая автоматика ниже не работает */
+    private static final String SCENE = Scene.requested();
     private static boolean started;
+
+    static {
+        // По титульному экрану или, в сохранённом мире цепочки (dev #358), по входу в мир
+        if (SCENE != null) Scene.launch(ClientTest::startScene);
+    }
+
+    private static void startScene() {
+        switch (SCENE) {
+            case "flywheel-wires" -> FlywheelWireTest.start();
+            case PcbWorldScene.NAME -> PcbWorldScene.start();
+            default -> System.out.println("SCENE NOTE сцены " + SCENE + " в ee-extras нет");
+        }
+    }
     private static int tick, fails;
     /** Перед игроком: его кликаем настоящим клиентом */
     private static final BlockPos F3 = Flood.BAT.offset(11, 0, -3);
@@ -45,9 +61,9 @@ public final class ClientTest {
 
     @SubscribeEvent
     public static void screen(ScreenEvent.Init.Post e) {
-        if (PCB_UPGRADE_PHOTOS || PCB_MOUNT_PHOTOS || started || !(e.getScreen() instanceof TitleScreen)) return;
+        if (SCENE != null || PCB_UPGRADE_PHOTOS || PCB_MOUNT_PHOTOS || started || !(e.getScreen() instanceof TitleScreen)) return;
         started = true;
-        // Сцена на общей заготовке сама создаёт мир и ведёт шаги
+        // Сцены на общей заготовке: каждая сама создаёт мир и ведёт шаги
         if (IntegratedDrivesScene.ON) {
             IntegratedDrivesScene.start();
             return;
@@ -82,7 +98,9 @@ public final class ClientTest {
     @SubscribeEvent
     public static void tick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
-        if (IntegratedDrivesScene.ON || ElectricMachinesScene.ON || ElectricPressScene.ON || WallDisconnectScene.ON || FlywheelWireTest.ON || InsulatorAnchorScene.ON || mc.player == null || mc.getSingleplayerServer() == null) return;
+        // Stand-сцена (tools/stand-scene) работает через свой EventBus (Scene.launch) — её тик не нужен
+        // Старые сцены (ON-флаги) идут через этот тик
+        if (SCENE != null || IntegratedDrivesScene.ON || ElectricMachinesScene.ON || ElectricPressScene.ON || WallDisconnectScene.ON || FlywheelWireTest.ON || InsulatorAnchorScene.ON || mc.player == null || mc.getSingleplayerServer() == null) return;
         tick++;
         var server = mc.getSingleplayerServer();
         try {

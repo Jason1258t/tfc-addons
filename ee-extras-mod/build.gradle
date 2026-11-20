@@ -9,13 +9,35 @@ base { archivesName = 'ee-extras' }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
+def libsList = file('libs').list() ?: []
+def hasDestroy = libsList.any { it.startsWith('destroy-') }
+def hasComputerCraft = libsList.any { it.toLowerCase().startsWith('computercraft-') || it.toLowerCase().startsWith('cc-') }
+
 // Проверочный мод (только для runServer): собирает цепи с выпрямителями командой /rectest. В jar не попадает.
 sourceSets {
+    main {
+        if (!hasComputerCraft) {
+            java.exclude '**/mixin/DiskRecipeMixin.java'
+            java.exclude '**/mixin/UpgradeManagerMixin.java'
+            java.exclude '**/mixin/ServerComputerPowerMixin.java'
+            java.exclude '**/mixin/PocketComputerPowerMixin.java'
+        }
+        // Thermometer требует официальный TFC (net.dries007.tfc), а в сборке используется TFC-Real-World
+        // который не содержит нужных классов. Исключаем термометр всегда для локальной сборки.
+        java.exclude '**/thermometer/*.java'
+    }
     devtest {
         // Общая заготовка клиентской сцены стенда (tools/stand-scene): в jar стенда — по одному devtest за прогон
         java.srcDir '../stand-scene/src'
         // Проверка PET нужна только с Destroy (DESTROY=1 ./libs.sh): без его jar класс не компилируем
-        if (!file('libs').list()?.any { it.startsWith('destroy-') }) java.exclude '**/PetTest.java'
+        if (!hasDestroy) java.exclude '**/PetTest.java'
+        // ComputerCraft тесты требуют ComputerCraft
+        if (!hasComputerCraft) {
+            java.exclude '**/ComputerCraftTest.java'
+            java.exclude '**/ComputerPowerTest.java'
+        }
+        // ThermometerTest требует официальный TFC
+        java.exclude '**/ThermometerTest.java'
         compileClasspath += sourceSets.main.output
         runtimeClasspath += sourceSets.main.output
     }

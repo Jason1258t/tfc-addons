@@ -66,7 +66,7 @@
       ]
     },
     "battery-persistence": {
-      "note": "четыре творческие батареи EE и два преобразователя EE Extras: проверка настроек после двух рестартов",
+      "note": "четыре творческие батареи EE и два преобразователи EE Extras: проверка настроек после двух рестартов",
       "steps": [
         {
           "name": "configure",
@@ -99,6 +99,38 @@
           "cmd": ["sleep 3", "eepersist check"],
           "failFast": true,
           "expect": ["Настройки сохранены"]
+        }
+      ]
+    },
+    "pcb-restart": {
+      "note": "плата EE Extras: установка на сервере (мир tfc:overworld — сцене нужен он) → рестарт на сохранённом мире → сцена pcb-world снимает плату в этом мире",
+      "steps": [
+        {
+          "name": "mount",
+          "kind": "server",
+          "levelType": "tfc:overworld",
+          "timeout": 1200,
+          "cmd": ["rectest pcbmount"],
+          "failFast": true,
+          "expect": ["PCB MOUNT PASS"],
+          "failOn": ["PCB MOUNT FAIL"],
+          "save": true
+        },
+        {
+          "name": "restart",
+          "kind": "server",
+          "world": "mount",
+          "cmd": ["sleep 10", "rectest pcbcheck"],
+          "failFast": true,
+          "expect": ["PCB MOUNT PASS"],
+          "failOn": ["PCB MOUNT FAIL"],
+          "save": true
+        },
+        {
+          "name": "photo",
+          "kind": "client",
+          "world": "restart",
+          "scene": "pcb-world"
         }
       ]
     }
