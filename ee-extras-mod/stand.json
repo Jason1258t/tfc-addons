@@ -120,7 +120,7 @@
           "name": "restart",
           "kind": "server",
           "world": "mount",
-          "cmd": ["sleep 10", "rectest pcbcheck"],
+          "cmd": ["sleep 10", "pcbcheck"],
           "failFast": true,
           "expect": ["PCB MOUNT PASS"],
           "failOn": ["PCB MOUNT FAIL"],
