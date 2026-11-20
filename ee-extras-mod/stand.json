@@ -110,7 +110,7 @@
           "kind": "server",
           "levelType": "tfc:overworld",
           "timeout": 1200,
-          "cmd": ["rectest pcbmount"],
+          "cmd": ["pcbmount"],
           "failFast": true,
           "expect": ["PCB MOUNT PASS"],
           "failOn": ["PCB MOUNT FAIL"],
