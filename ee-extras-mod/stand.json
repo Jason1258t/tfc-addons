@@ -17,6 +17,9 @@
     },
     "insulator-chain": {
       "shots": ["two-anchored-spans", "support-jumper"]
+    },
+    "panel-inlets": {
+      "shots": ["inlets-south", "inlets-west", "inlets-north", "inlets-east"]
     }
   },
   "chains": {
