@@ -29,6 +29,21 @@ public record CableEnd(BlockPos pos, CableKind kind, boolean eeTermination, int 
         return end == null ? CableCap.end(level, pos, state) : end;
     }
 
+    /** Конкретная пара крышки или вставка щитка под прицелом. */
+    public static CableEnd hit(Level level, net.minecraft.world.phys.BlockHitResult hit) {
+        var panel = ee.extras.panel.PanelPorts.hit(level,hit);
+        if(panel!=null)return panel;
+        var direct=of(hit.getBlockPos(),level.getBlockState(hit.getBlockPos()));
+        return direct!=null?direct:CableCap.hit(level,hit);
+    }
+    public static CableEnd resolve(Level level, InWorldNode node) {
+        if(!level.isLoaded(node.sourcePos()))return null;
+        var panel=ee.extras.panel.PanelPorts.resolve(level,node);
+        if(panel!=null)return panel;
+        var cap=CableCap.resolve(level,node);
+        return cap!=null?cap:of(node.sourcePos(),level.getBlockState(node.sourcePos()));
+    }
+
     public static CableEnd of(BlockPos pos, BlockState state) {
         if (state.getBlock() instanceof PhaseTapBlock) return new CableEnd(pos, CableKind.DUPLEX, true, 0);
         if (state.getBlock() instanceof CableEndBlock b) return new CableEnd(pos, b.kind, false, 0);

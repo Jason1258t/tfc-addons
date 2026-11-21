@@ -116,12 +116,16 @@ public class CableData extends SavedData {
     }
 
     /** Убрать без выпадения все кабели, подведённые к блоку pos (снята крышка прибора); сколько убрано */
-    int removeAt(ServerLevel level, BlockPos pos) {
+    int removeAt(ServerLevel level, BlockPos pos) { return removeAt(level,pos,null); }
+
+    int removeAt(ServerLevel level, BlockPos pos, int[] contacts) {
         InfrastructureSavedData sd = InfrastructureSavedData.load(level);
         int n = 0;
         for (Iterator<Cable> it = cables.iterator(); it.hasNext(); ) {
             Cable c = it.next();
             if (!c.a.sourcePos().equals(pos) && !c.b.sourcePos().equals(pos)) continue;
+            if (contacts != null && c.cores.stream().flatMap(java.util.Arrays::stream).noneMatch(
+                    node -> node.sourcePos().equals(pos) && (node.id()==contacts[0] || node.id()==contacts[1]))) continue;
             remove(sd, c);
             it.remove();
             n++;

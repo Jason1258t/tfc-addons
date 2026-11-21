@@ -69,15 +69,15 @@ public class SurfaceWireItem extends Item {
     }
 
     /** Прибор, к которому можно вести провод; фонарь и прожектор IE сначала становятся блоками сети EE */
-    static WireEnd.Block device(Level level, BlockPos pos, Player player) {
+    static WireEnd.Block device(Level level, BlockPos pos, Player player, net.minecraft.world.phys.BlockHitResult hit) {
         BlockState st = level.getBlockState(pos);
         if (LanternConversion.isIeLantern(st) || LanternConversion.isIeFloodlight(st)) {
             if (level.isClientSide) return new WireEnd.Block(pos);
             LanternConversion.convert(level, pos, player);
             st = level.getBlockState(pos);
         }
-        CableEnd end = CableEnd.of(level, pos, st);
-        return end != null && end.kind() == CableKind.DUPLEX ? new WireEnd.Block(pos) : null;
+        CableEnd end = CableEnd.hit(level,hit);
+        return end != null && end.kind() == CableKind.DUPLEX ? new WireEnd.Block(pos,end.contacts()!=null?end.base():null) : null;
     }
 
     @Override
@@ -87,7 +87,7 @@ public class SurfaceWireItem extends Item {
         if (player == null || player.isShiftKeyDown() || ctx.getHand() != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
         ItemStack stack = ctx.getItemInHand();
         BlockPos pos = ctx.getClickedPos();
-        WireEnd.Block dev = device(level, pos, player);
+        WireEnd.Block dev = device(level, pos, player, new net.minecraft.world.phys.BlockHitResult(ctx.getClickLocation(), ctx.getClickedFace(), pos, ctx.isInside()));
         WireEnd sel = selection(stack);
         if (level.isClientSide) return dev != null || sel != null ? InteractionResult.SUCCESS : InteractionResult.PASS;
         if (dev != null) {

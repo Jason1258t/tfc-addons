@@ -12,7 +12,6 @@ import com.george_vi.electroenergetics.foundation.nodes.InWorldNodeConnection;
 import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureSavedData;
 import com.simibubi.create.AllSoundEvents;
 import ee.extras.panel.PanelModules;
-import ee.extras.panel.PanelPorts;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.BlockPos;
@@ -68,7 +67,7 @@ public final class CableLaying {
             return InteractionResult.SUCCESS;
         }
 
-        CableEnd first = selectedPort != null ? PanelPorts.resolve(level, selectedPort)
+        CableEnd first = selectedPort != null ? CableEnd.resolve(level, selectedPort)
                 : CableEnd.of(level, selected.pos(), level.getBlockState(selected.pos()));
         String problem = problem(sl, kind, first, end);
         if (problem == null && stack.getItem() instanceof ThinSpoolItem && insulator(sl, first) && insulator(sl, end)) problem = "thin_needs_device";
@@ -184,10 +183,8 @@ public final class CableLaying {
         for (CableData.Cable c : mixed) {
             InWorldNode[] old = c.cores.get(0);
             if (sd.isConnected(old[0], old[1])) sd.removeConnectionNoDrops(new InWorldNodeConnection(old[0], old[1]));
-            BlockState sa = level.getBlockState(c.a.sourcePos());
-            BlockState sb = level.getBlockState(c.b.sourcePos());
-            CableEnd a = CableEnd.of(level, c.a.sourcePos(), sa);
-            CableEnd b = CableEnd.of(level, c.b.sourcePos(), sb);
+            CableEnd a = CableEnd.resolve(level, c.a);
+            CableEnd b = CableEnd.resolve(level, c.b);
             if (a == null || b == null) continue;
             InWorldNode[] core = mixedCore(a, b, c.mixedEnd, phase, 1);
             sd.connect(core[0], core[1], CableWires.core(c.kind));

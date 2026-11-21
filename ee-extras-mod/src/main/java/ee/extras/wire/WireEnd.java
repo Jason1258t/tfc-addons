@@ -66,7 +66,7 @@ public sealed interface WireEnd {
         if (tag == null || !tag.contains("Type")) return null;
         try {
             return switch (Type.valueOf(tag.getString("Type"))) {
-                case BLOCK -> new Block(BlockPos.of(tag.getLong("Pos")));
+                case BLOCK -> new Block(BlockPos.of(tag.getLong("Pos")),tag.contains("Port")?tag.getInt("Port"):null);
                 case JUNCTION -> new Junction(tag.getUUID("Id"), new Vec3(tag.getDouble("X"), tag.getDouble("Y"), tag.getDouble("Z")));
                 case WIRE -> new WireTip(tag.getUUID("Id"), BlockPos.of(tag.getLong("Pos")), tag.getBoolean("End"));
                 case FREE -> new Free(new Vec3(tag.getDouble("X"), tag.getDouble("Y"), tag.getDouble("Z")));
@@ -85,7 +85,8 @@ public sealed interface WireEnd {
     }
 
     /** Прибор, принимающий двухжильный кабель: провод подходит к точке кабеля (узел CableEnd.cable) */
-    record Block(BlockPos pos) implements WireEnd {
+    record Block(BlockPos pos, Integer port) implements WireEnd {
+        public Block(BlockPos pos) { this(pos,null); }
         @Override
         public Type type() {
             return Type.BLOCK;
@@ -94,11 +95,13 @@ public sealed interface WireEnd {
         @Override
         public void write(CompoundTag tag) {
             tag.putLong("Pos", pos.asLong());
+            if(port!=null)tag.putInt("Port",port);
         }
 
         public CableEnd end(Level level) {
             if (!level.hasChunk(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()))) return null;
-            CableEnd end = CableEnd.of(level, pos, level.getBlockState(pos));
+            CableEnd end = port==null ? CableEnd.of(level, pos, level.getBlockState(pos))
+                    : CableEnd.resolve(level,new InWorldNode(port,pos));
             return end != null && end.kind() == CableKind.DUPLEX ? end : null;
         }
 

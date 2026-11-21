@@ -347,7 +347,7 @@
   "item.ee_extras.battery_electrolyte": "Battery Electrolyte",
   "item.ee_extras.ink_cartridge": "Ink Cartridge",
   "item.ee_extras.duplex_cable_cap": "Duplex Cable Cap",
-  "item.ee_extras.duplex_cable_cap.tooltip": "Click an EE device with exactly two contacts (lamp, motor, heater…) to cap it: the device then takes one duplex cable — core 1 to contact 1, core 2 to contact 2.",
+  "item.ee_extras.duplex_cable_cap.tooltip": "Click a pair of EE device terminals to add a duplex cable inlet. Rectifier and converter input/output pairs can be covered separately; a three-phase group cannot be covered.",
   "item.ee_extras.duplex_cable_cap.tooltip.nodes": "Becomes part of the device, takes no block space. Shift + empty-hand click removes it; it drops when the device is broken. Crafts from a duplex termination and back.",
   "ee_extras.cable.cap.not_device": "The cap only fits EE devices with wire contacts",
   "ee_extras.cable.cap.contacts": "The cap needs a device with two contacts, this one has %s",
@@ -388,5 +388,6 @@
   "ee_extras.cable.thin_needs_device": "Thin wire goes only to a device or a duplex termination, not between two insulators",
   "ee_extras.converter.output_voltage": "Output voltage (FE → EE)",
   "ee_extras.converter.fe_output_blocked": "No FE output: configure a capacitor side with a hammer",
-  "ee_extras.wire.cancel_hint": "Ctrl + right click — cancel wire placement or insulator selection"
+  "ee_extras.wire.cancel_hint": "Ctrl + right click — cancel wire placement or insulator selection",
+  "ee_extras.cable.cap.no_pair": "There is no separate two-terminal pair here for a duplex cable cover"
 }

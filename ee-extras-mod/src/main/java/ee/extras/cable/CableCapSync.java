@@ -41,8 +41,9 @@ public record CableCapSync(CompoundTag data) implements CustomPacketPayload {
     private static CableCapSync snapshot(ServerLevel level, ChunkPos chunk) {
         CompoundTag tag = new CompoundTag();
         tag.putLong("Chunk", chunk.toLong());
-        tag.putLongArray("Caps", CableCap.get(level).caps.stream()
-                .filter(pos -> (pos.getX() >> 4) == chunk.x && (pos.getZ() >> 4) == chunk.z).mapToLong(BlockPos::asLong).toArray());
+        var caps = CableCap.get(level).caps.stream().filter(c -> new ChunkPos(c.pos()).equals(chunk)).toList();
+        tag.putLongArray("Caps", caps.stream().map(CableCap.Cap::pos).distinct().mapToLong(BlockPos::asLong).toArray());
+        tag.put("Pairs", CableCap.encode(caps));
         return new CableCapSync(tag);
     }
 

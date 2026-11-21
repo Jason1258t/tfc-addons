@@ -6,7 +6,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import ee.extras.EeExtras;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -25,7 +24,7 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 
 public final class CableCapRender {
-    private static final Map<Level, Map<Long, Set<BlockPos>>> CAPS = Collections.synchronizedMap(new WeakHashMap<>());
+    private static final Map<Level, Map<Long, Set<CableCap.Cap>>> CAPS = Collections.synchronizedMap(new WeakHashMap<>());
     private static final RenderType FRONT = RenderType.entityCutoutNoCull(EeExtras.rl("textures/block/duplex_cap_front.png"));
     private static final RenderType SIDE = RenderType.entityCutoutNoCull(EeExtras.rl("textures/block/duplex_cap_side.png"));
 
@@ -37,24 +36,24 @@ public final class CableCapRender {
     static void sync(Level level, CableCapSync packet) {
         long chunk = packet.data().getLong("Chunk");
         var chunks = CAPS.computeIfAbsent(level, key -> new ConcurrentHashMap<>());
-        Set<BlockPos> positions = new HashSet<>();
-        for (long pos : packet.data().getLongArray("Caps")) positions.add(BlockPos.of(pos));
+        Set<CableCap.Cap> positions = CableCap.decode(packet.data());
         if (positions.isEmpty()) chunks.remove(chunk);
         else chunks.put(chunk, positions);
     }
 
-    static boolean has(Level level, BlockPos pos) {
-        return CAPS.getOrDefault(level, Map.of()).getOrDefault(new ChunkPos(pos).toLong(), Set.of()).contains(pos);
+    static java.util.List<CableCap.Cap> at(Level level, BlockPos pos) {
+        return CAPS.getOrDefault(level, Map.of()).getOrDefault(new ChunkPos(pos).toLong(), Set.of()).stream()
+                .filter(c -> c.pos().equals(pos)).toList();
     }
 
     /** Только оболочка кабеля выходит из крышки. Координаты узлов для симуляции остаются у EE. */
     public static Vec3 cableInlet(Level level, InWorldNode node, WireType wire) {
         if (wire != CableWires.DUPLEX.get() && wire != CableWires.THIN.get()) return null;
         BlockPos pos = node.sourcePos();
-        if (!has(level, pos)) return null;
+        var cap = at(level,pos).stream().filter(c -> c.contains(node.id())).findFirst().orElse(null);
+        if (cap == null) return null;
         var state = level.getBlockState(pos);
-        int[] contacts = CableCap.contacts(level, pos, state);
-        if (contacts == null || contacts.length != 2 || (contacts[0] != node.id() && contacts[1] != node.id())) return null;
+        int[] contacts = cap.contacts();
         var geometry = CableCapGeometry.of(level, pos, state, contacts);
         return geometry == null ? null : Vec3.atLowerCornerOf(pos).add(geometry.inlet());
     }
@@ -72,20 +71,20 @@ public final class CableCapRender {
         var buffers = mc.renderBuffers().bufferSource();
         Vec3 camera = event.getCamera().getPosition();
         for (var positions : chunks.values()) {
-            for (BlockPos pos : positions) {
-                if (event.getFrustum().isVisible(new AABB(pos).inflate(0.5)))
-                    draw(mc.level, pos, camera, event.getPoseStack(), buffers);
+            for (var cap : positions) {
+                if (event.getFrustum().isVisible(new AABB(cap.pos()).inflate(0.5)))
+                    draw(mc.level, cap, camera, event.getPoseStack(), buffers);
             }
         }
         buffers.endBatch(FRONT);
         buffers.endBatch(SIDE);
     }
 
-    private static void draw(Level level, BlockPos pos, Vec3 camera, PoseStack pose,
+    private static void draw(Level level, CableCap.Cap cap, Vec3 camera, PoseStack pose,
                              net.minecraft.client.renderer.MultiBufferSource buffers) {
+        var pos = cap.pos();
         var state = level.getBlockState(pos);
-        int[] contacts = CableCap.contacts(level, pos, state);
-        if (contacts == null || contacts.length != 2) return;
+        int[] contacts = cap.contacts();
         var geometry = CableCapGeometry.of(level, pos, state, contacts);
         if (geometry == null) return;
         Vec3 front = geometry.front();

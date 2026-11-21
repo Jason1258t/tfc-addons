@@ -37,6 +37,8 @@ public record CableCapGeometry(Vec3 front, Vec3 back, Vec3 outward, Vec3 length,
         // У лампы клеммы обращены туда же, куда колба, а центр общей формы лежит ближе к колбе.
         if (state.getBlock() instanceof BulbBlock)
             outward = Vec3.atLowerCornerOf(state.getValue(BulbBlock.FACING).getNormal());
+        if (state.getBlock() instanceof ee.extras.PowerBlock<?> || state.getBlock() instanceof ee.extras.converter.BidiConverterBlock)
+            outward = Vec3.atLowerCornerOf(state.getValue(com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock.FACING).getNormal());
         // Продольная ось проходит через оба контакта, бортики уходят под их плоскость.
         outward = outward.subtract(along.scale(outward.dot(along))).normalize();
         Vec3 across = outward.cross(along).normalize();

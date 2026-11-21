@@ -50,7 +50,7 @@ public class ThinSpoolItem extends BundledWireItem {
             stack.remove(ee.extras.panel.PanelModules.SELECTED_PORT.get());
             return InteractionResult.SUCCESS;
         }
-        if (!(state.getBlock() instanceof ElectricalDeviceBlock<?> device) || CableCap.present(level, pos))
+        if (!(state.getBlock() instanceof ElectricalDeviceBlock<?> device))
             return InteractionResult.FAIL;
         Vec3 hit = context.getClickLocation().subtract(Vec3.atLowerCornerOf(pos));
         InWorldNode target = null;
@@ -61,7 +61,7 @@ public class ThinSpoolItem extends BundledWireItem {
             distance = candidate;
             target = new InWorldNode(entry.getKey(), pos);
         }
-        if (target == null) return InteractionResult.FAIL;
+        if (target == null || CableCap.covered(level,pos,target.id())) return InteractionResult.FAIL;
         if (!(level instanceof ServerLevel server)) return InteractionResult.SUCCESS;
         if (first == null) {
             stack.remove(CEEDataComponents.SELECTED_WIRE_TERMINATION);

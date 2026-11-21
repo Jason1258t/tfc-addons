@@ -15,7 +15,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
@@ -55,9 +54,8 @@ public final class CableHud {
         if (mc.options.hideGui || mc.level == null || mc.player == null) return;
         ItemStack stack = mc.player.getMainHandItem();
         if (!(stack.getItem() instanceof BundledWireItem) || !(mc.hitResult instanceof BlockHitResult hit)) return;
-        BlockState state = mc.level.getBlockState(hit.getBlockPos());
         PanelPorts.Hit port = PanelPorts.identify(mc.level, hit);
-        CableEnd end = port == null ? CableEnd.of(mc.level, hit.getBlockPos(), state) : port.end();
+        CableEnd end = CableEnd.hit(mc.level,hit);
         if (end == null) return;
 
         CableKind spool = stack.getItem() instanceof FourCoreSpoolItem ? CableKind.FOUR_CORE : CableKind.DUPLEX;
@@ -70,7 +68,7 @@ public final class CableHud {
         title.withStyle(ChatFormatting.BOLD);
         MutableComponent line;
         if (!fits) line = Component.translatable("ee_extras.cable." + (spool == CableKind.DUPLEX ? "needs_duplex" : "needs_four_core"));
-        else if (port != null ? end.cable().equals(stack.get(PanelModules.SELECTED_PORT.get()))
+        else if ((port != null || end.contacts() != null) ? end.cable().equals(stack.get(PanelModules.SELECTED_PORT.get()))
                 : selected != null && selected.pos().equals(end.pos())) line = Component.translatable("ee_extras.cable.selected");
         else line = Component.translatable("ee_extras.cable.accepts." + (end.eeTermination() ? "ee" : end.kind() == CableKind.DUPLEX ? "duplex" : "four_core"));
 

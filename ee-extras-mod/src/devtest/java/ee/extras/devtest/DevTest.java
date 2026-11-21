@@ -82,6 +82,9 @@ public class DevTest {
             try { Class.forName("ee.extras.devtest.ThermometerTest").getMethod("register", CommandDispatcher.class).invoke(null, d); } catch (ReflectiveOperationException ignored) {}
         }
         d.register(Commands.literal("rectest")
+                .then(Commands.literal("cappairs").executes(c -> CapPairsTest.build(c.getSource())))
+                .then(Commands.literal("cappairscheck").executes(c -> CapPairsTest.check(c.getSource())))
+                .then(Commands.literal("cappairstake").executes(c -> CapPairsTest.take(c.getSource())))
                 .then(Commands.literal("cancelwire").executes(c -> WireCancelTest.run(c.getSource())))
                 .then(Commands.literal("build").executes(c -> build(c.getSource())))
                 .then(Commands.literal("power")

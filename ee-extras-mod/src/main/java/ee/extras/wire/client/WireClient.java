@@ -186,8 +186,9 @@ public final class WireClient {
         BlockPos device = null;
         if (target instanceof BlockHitResult bh) {
             BlockPos pos = bh.getBlockPos();
-            WireEnd.Block dev = new WireEnd.Block(pos);
-            if (dev.valid(mc.level)) {
+            var cableEnd=ee.extras.cable.CableEnd.hit(mc.level,bh);
+            WireEnd.Block dev = new WireEnd.Block(pos,cableEnd!=null&&cableEnd.contacts()!=null?cableEnd.base():null);
+            if (cableEnd != null && dev.valid(mc.level)) {
                 hitPoint = dev.position(mc.level);
                 device = pos;
             } else hitPoint = hitPoint.relative(bh.getDirection(), 0.03125);

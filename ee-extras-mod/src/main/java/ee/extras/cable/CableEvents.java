@@ -50,14 +50,14 @@ public final class CableEvents {
         BlockPos pos = e.getPos();
         if (stack.is(EeExtras.CABLE_CAP.get())) {
             e.setCanceled(true);
-            e.setCancellationResult(CableCap.put(level, pos, e.getEntity(), stack));
+            e.setCancellationResult(CableCap.put(level, pos, e.getEntity(), stack, e.getHitVec().getLocation()));
             return;
         }
-        if (stack.getItem() instanceof BundledWireItem && !(stack.getItem() instanceof FourCoreSpoolItem)) {
-            CableEnd port = ee.extras.panel.PanelPorts.hit(level, e.getHitVec());
-            if (port != null && !stack.has(com.george_vi.electroenergetics.CEEDataComponents.SELECTED_NODE)) {
+        if (stack.getItem() instanceof BundledWireItem) {
+            CableEnd port = CableEnd.hit(level, e.getHitVec());
+            if (port != null && port.contacts() != null && !stack.has(com.george_vi.electroenergetics.CEEDataComponents.SELECTED_NODE)) {
                 e.setCanceled(true);
-                e.setCancellationResult(CableLaying.use(level, e.getEntity(), stack, pos, CableKind.DUPLEX, port));
+                e.setCancellationResult(CableLaying.use(level, e.getEntity(), stack, pos, stack.getItem() instanceof FourCoreSpoolItem ? CableKind.FOUR_CORE : CableKind.DUPLEX, port));
                 return;
             }
         }
@@ -72,7 +72,7 @@ public final class CableEvents {
         // Катушка кабеля по прибору с двумя контактами — сразу в прокладку, по той же причине
         if (stack.getItem() instanceof BundledWireItem && !(stack.getItem() instanceof FourCoreSpoolItem)
                 && CableCap.isTwoContact(level, pos, level.getBlockState(pos))) {
-            InteractionResult r = CableLaying.use(level, e.getEntity(), stack, pos, CableKind.DUPLEX);
+            InteractionResult r = CableLaying.deny(level, e.getEntity(), pos, "cap.needed");
             if (r != null) {
                 e.setCanceled(true);
                 e.setCancellationResult(r);
@@ -82,7 +82,7 @@ public final class CableEvents {
         if (CableCap.present(level, pos)) {
             // Shift + пустая рука — снять крышку; обычный провод на контакты под крышкой не подключить
             if (stack.isEmpty() && e.getHand() == InteractionHand.MAIN_HAND && e.getEntity().isShiftKeyDown()) {
-                if (!(level instanceof ServerLevel sl) || CableCap.take(sl, pos, e.getEntity())) {
+                if (!(level instanceof ServerLevel sl) || CableCap.take(sl, pos, e.getEntity(), e.getHitVec().getLocation())) {
                     e.setCanceled(true);
                     e.setCancellationResult(InteractionResult.SUCCESS);
                 }
@@ -90,7 +90,10 @@ public final class CableEvents {
             }
             if (stack.getItem() instanceof WireSpoolItem) {
                 e.setCanceled(true);
-                e.setCancellationResult(CableLaying.deny(level, e.getEntity(), pos, "cap.covered"));
+                // Свободную пару обрабатывает катушка до окна значений Create, закрытую — не трогаем.
+                e.setCancellationResult(CableCap.hit(level, e.getHitVec()) != null
+                        ? CableLaying.deny(level, e.getEntity(), pos, "cap.covered")
+                        : stack.useOn(new net.minecraft.world.item.context.UseOnContext(e.getEntity(), e.getHand(), e.getHitVec())));
                 return;
             }
         }
