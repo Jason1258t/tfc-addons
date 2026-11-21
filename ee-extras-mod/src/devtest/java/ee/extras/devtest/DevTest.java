@@ -82,6 +82,7 @@ public class DevTest {
             try { Class.forName("ee.extras.devtest.ThermometerTest").getMethod("register", CommandDispatcher.class).invoke(null, d); } catch (ReflectiveOperationException ignored) {}
         }
         d.register(Commands.literal("rectest")
+                .then(Commands.literal("cancelwire").executes(c -> WireCancelTest.run(c.getSource())))
                 .then(Commands.literal("build").executes(c -> build(c.getSource())))
                 .then(Commands.literal("power")
                         .then(Commands.argument("volts", com.mojang.brigadier.arguments.DoubleArgumentType.doubleArg(0, 1_000_000))

@@ -348,6 +348,7 @@ public class EeExtras {
         modBus.addListener(EeExtras::capabilities);
         ee.extras.cable.CableCapSync.register(modBus, NeoForge.EVENT_BUS);
         CableEvents.register(NeoForge.EVENT_BUS);
+        ee.extras.interaction.WireCancel.register(modBus);
         NeoForge.EVENT_BUS.addListener(PocketCharge::addTooltip);
         NeoForge.EVENT_BUS.addListener(BeltMotorItem::useWrench);
         if (FMLEnvironment.dist == Dist.CLIENT) {
@@ -356,6 +357,7 @@ public class EeExtras {
             CableHud.register(modBus, NeoForge.EVENT_BUS);
             ee.extras.wire.client.WireClient.register(modBus, NeoForge.EVENT_BUS);
             LinesClient.register(modBus, NeoForge.EVENT_BUS);
+            ee.extras.interaction.WireCancelClient.register(NeoForge.EVENT_BUS);
             LanternConversion.registerTooltip(NeoForge.EVENT_BUS);
             GeneratorClient.register(modBus);
             ElectricPressRenderer.register(modBus);
