@@ -14,6 +14,9 @@
     },
     "electric-machines": {
       "shots": ["electric-machines", "fluid-dispenser"]
+    },
+    "insulator-chain": {
+      "shots": ["two-anchored-spans", "support-jumper"]
     }
   },
   "chains": {
@@ -131,6 +134,39 @@
           "kind": "client",
           "world": "restart",
           "scene": "pcb-world"
+        }
+      ]
+    },
+    "line-spans": {
+      "note": "#399: перемычки до и после натяжения, запрет второго анкера, независимое снятие",
+      "steps": [
+        {
+          "name": "server",
+          "kind": "server",
+          "cmd": [
+            "forceload add 0 0 48 80",
+            "rectest anchors selection",
+            "rectest anchors build",
+            "sleep 3",
+            "rectest anchors clamp",
+            "sleep 5",
+            "rectest anchors check",
+            "rectest anchors power",
+            "sleep 5",
+            "rectest anchors check",
+            "rectest anchors voltage",
+            "rectest anchors chainbuild",
+            "sleep 5",
+            "rectest anchors chaincheck",
+            "sleep 3",
+            "rectest anchors chaincheck",
+            "rectest anchors chainrelease",
+            "sleep 5",
+            "rectest anchors chainreleased"
+          ],
+          "failFast": true,
+          "expect": ["ВЫБОР ГИРЛЯНД ОК", "ПРОЛЁТ ОК", "ПИТАНИЕ ОК", "ЦЕПОЧКА ОК", "НЕЗАВИСИМОЕ СНЯТИЕ ОК"],
+          "failOn": ["ОШИБКА"]
         }
       ]
     }

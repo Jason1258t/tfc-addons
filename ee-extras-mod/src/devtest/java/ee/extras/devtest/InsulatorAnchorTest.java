@@ -70,7 +70,7 @@ final class InsulatorAnchorTest {
         }
     }
 
-    private static InWorldNode tip(InfrastructureSavedData sd, BlockPos pos) {
+    static InWorldNode tip(InfrastructureSavedData sd, BlockPos pos) {
         InWorldNode top = sd.getNodesAt(pos).getFirst().node;
         var suspension = sd.getConnections(top).getFirst();
         return top.equals(suspension.node1()) ? suspension.node2() : suspension.node1();
@@ -173,6 +173,84 @@ final class InsulatorAnchorTest {
                 + " нет связи=" + unconnected + " неподходящий провод=" + unsupported
                 + " мало зажимов=" + insufficient + " установка=" + success;
         source.sendSuccess(() -> Component.literal(result), false);
+        return ok ? 1 : 0;
+    }
+
+    private static final BlockPos CHAIN_A = new BlockPos(3, -51, 52);
+    private static final BlockPos CHAIN_B = CHAIN_A.offset(18, 0, 0);
+    private static final BlockPos CHAIN_C = CHAIN_B.offset(2, 0, 0);
+    private static final BlockPos CHAIN_D = CHAIN_C.offset(18, 0, 0);
+
+    static int chainBuild(CommandSourceStack source) {
+        var level = source.getLevel();
+        var sd = InfrastructureSavedData.load(level);
+        var first = build(level, CHAIN_A, CHAIN_B);
+        var second = build(level, CHAIN_C, CHAIN_D);
+        sd.connect(tip(sd, CHAIN_B), tip(sd, CHAIN_C), CEEWireTypes.COPPER.get());
+        var player = FakePlayerFactory.getMinecraft(level);
+        clamp(level, first, player, 0.5f);
+        clamp(level, second, player, 0.5f);
+        return 1;
+    }
+
+    static int chainCheck(CommandSourceStack source) {
+        var level = source.getLevel();
+        var sd = InfrastructureSavedData.load(level);
+        var a = tip(sd, CHAIN_A);
+        var b = tip(sd, CHAIN_B);
+        var c = tip(sd, CHAIN_C);
+        var d = tip(sd, CHAIN_D);
+        var first = new InWorldNodeConnection(a, b);
+        var second = new InWorldNodeConnection(c, d);
+        var jumper = new InWorldNodeConnection(b, c);
+        boolean geometry = shape(level, CHAIN_A, CHAIN_B, true) && shape(level, CHAIN_C, CHAIN_D, true);
+        boolean anchored = sd.getConnectionData(first).attachments().size() == 2
+                && sd.getConnectionData(second).attachments().size() == 2;
+        var player = FakePlayerFactory.getMinecraft(level);
+        // Даже перемычку из натягиваемого материала нельзя закрепить поверх занятого наконечника.
+        sd.removeConnectionNoDrops(jumper);
+        sd.connect(b, c, LineWire.ACSR.type.get());
+        var stack = new ItemStack(Tension.CLAMP_ITEM.get(), 2);
+        select(level, b, player, stack);
+        select(level, c, player, stack);
+        boolean refused = stack.getCount() == 2 && sd.getConnectionData(jumper).attachments().isEmpty();
+        var third = hang(level, sd, CHAIN_A.offset(0, 0, 16), false);
+        var competing = new InWorldNodeConnection(b, third);
+        sd.connect(b, third, LineWire.ACSR.type.get());
+        clamp(level, competing, player, 0.5f);
+        boolean competingRefused = sd.getConnectionData(competing).attachments().isEmpty();
+        sd.removeConnectionNoDrops(competing);
+        sd.removeConnectionNoDrops(jumper);
+        sd.connect(b, c, CEEWireTypes.COPPER.get());
+        boolean ok = geometry && anchored && refused && competingRefused;
+        source.sendSuccess(() -> Component.literal("ЦЕПОЧКА " + (ok ? "ОК" : "ОШИБКА")
+                + " геометрия=" + geometry + " анкеры=" + anchored + " перемычка отклонена=" + refused
+                + " занятый конец=" + competingRefused), false);
+        return ok ? 1 : 0;
+    }
+
+    static int chainRelease(CommandSourceStack source) {
+        var level = source.getLevel();
+        var sd = InfrastructureSavedData.load(level);
+        var first = new InWorldNodeConnection(tip(sd, CHAIN_A), tip(sd, CHAIN_B));
+        var remove = new AttachmentRemovalWireInteractionBehaviour();
+        var clicks = sd.getConnectionData(first).attachments().stream().map(a -> a.getFirst()).toList();
+        for (float click : clicks) {
+            remove.interactWire(new NodeConnectionPoint(first.node1(), first.node2(), click), level,
+                    FakePlayerFactory.getMinecraft(level), AllItems.WRENCH.asStack());
+        }
+        return 1;
+    }
+
+    static int chainReleased(CommandSourceStack source) {
+        var level = source.getLevel();
+        var sd = InfrastructureSavedData.load(level);
+        var first = new InWorldNodeConnection(tip(sd, CHAIN_A), tip(sd, CHAIN_B));
+        var second = new InWorldNodeConnection(tip(sd, CHAIN_C), tip(sd, CHAIN_D));
+        boolean ok = sd.getConnectionData(first).attachments().isEmpty()
+                && sd.getConnectionData(second).attachments().size() == 2
+                && shape(level, CHAIN_C, CHAIN_D, true);
+        source.sendSuccess(() -> Component.literal("НЕЗАВИСИМОЕ СНЯТИЕ " + (ok ? "ОК" : "ОШИБКА")), false);
         return ok ? 1 : 0;
     }
 

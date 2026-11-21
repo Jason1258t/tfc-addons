@@ -83,10 +83,15 @@ public final class InsulatorAnchors {
         for (var entry : tip.adjacency.int2ObjectEntrySet()) {
             if (entry.getIntKey() == other.id) continue;
             InWorldNodeData neighbor = sd.getNodeData(entry.getIntKey());
-            if (neighbor == null || DetachedNodeHelper.isDetached(neighbor.node)) return null;
-            // Отводы на неподвижные клеммы нужны, чтобы запитать провод на конце гирлянды.
+            if (neighbor == null) return null;
             WireData wire = entry.getValue();
-            if (!isGlass(wire.wireType())) continue;
+            if (!isGlass(wire.wireType())) {
+                // Перемычки между гирляндами не задают геометрию. Но один наконечник нельзя закрепить дважды.
+                boolean first = new InWorldNodeConnection(tip.node, neighbor.node).node1().equals(tip.node);
+                if (hasAnchor(wire, first)) return null;
+                continue;
+            }
+            if (DetachedNodeHelper.isDetached(neighbor.node)) return null;
             if (suspension != null || wire.length <= 0) return null;
             suspension = new Suspension(neighbor.getGlobalPos(), wire.length);
         }

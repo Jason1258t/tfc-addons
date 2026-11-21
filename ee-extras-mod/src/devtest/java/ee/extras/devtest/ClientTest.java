@@ -46,6 +46,7 @@ public final class ClientTest {
     private static void startScene() {
         switch (SCENE) {
             case "flywheel-wires" -> FlywheelWireTest.start();
+            case "insulator-chain" -> InsulatorChainScene.start();
             case PcbWorldScene.NAME -> PcbWorldScene.start();
             default -> System.out.println("SCENE NOTE сцены " + SCENE + " в ee-extras нет");
         }
