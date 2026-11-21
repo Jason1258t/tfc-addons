@@ -7,7 +7,7 @@ config = "ee_extras.mixins.json"
 
 [[mods]]
 modId = "ee_extras"
-version = "2.26.3"
+version = "2.26.4"
 displayName = "EE Extras"
 authors = "TFC Studio"
 description = '''

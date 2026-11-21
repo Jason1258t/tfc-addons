@@ -86,8 +86,8 @@ final class PanelTest {
 
         var spool = new ItemStack(CEEItems.DUPLEX_WIRE_SPOOL.get(), 8);
         click(level, spool, new BlockHitResult(Vec3.atCenterOf(inputTerminal), Direction.UP, inputTerminal, false));
-        click(level, spool, top);
-        click(level, spool, bottom);
+        click(level, spool, new BlockHitResult(upper.cable().getPosition(level), Direction.UP, PANEL, false));
+        click(level, spool, new BlockHitResult(lower.cable().getPosition(level), Direction.DOWN, PANEL, false));
         click(level, spool, new BlockHitResult(Vec3.atCenterOf(TERMINAL), Direction.UP, TERMINAL, false));
         clickWire(level, upper.conductor(2), lower.conductor(2));
         clickWire(level, upper.conductor(1), lever.nodes[0]);
