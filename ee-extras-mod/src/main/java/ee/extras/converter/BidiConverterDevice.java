@@ -33,6 +33,7 @@ public class BidiConverterDevice extends SimpleElectricalDevice {
     /** Запас «разряда»: взято из FE, ещё не отдано в сеть EE, Вт·тик */
     public double discharge;
     public double voltage;
+    private boolean feBlocked;
     public double resistance;
     /** Мощность за последний тик, Вт: заряд (вход EE) и разряд (выход EE) — для очков и /cee device_data */
     public double chargePower;
@@ -86,12 +87,14 @@ public class BidiConverterDevice extends SimpleElectricalDevice {
             be = found;
         if (be != null) {
             if (be.isRemoved()) be = null;
-            else be.update(chargePower, dischargePower, charge, discharge);
+            else be.update(chargePower, dischargePower, charge, discharge, feBlocked);
         }
     }
 
     /** Обмен FE с блоком за задней гранью: отдать заряд, добрать разряд */
     private void exchange(BlockState state, double max) {
+        feBlocked = false;
+        boolean stored = false, extractable = false;
         Direction facing = state.getValue(BidiConverterBlock.FACING);
         BlockPos behind = pos.relative(facing.getOpposite());
         double rate = rate();
@@ -102,6 +105,8 @@ public class BidiConverterDevice extends SimpleElectricalDevice {
             if (give <= 0 && take <= 0) break;
             IEnergyStorage storage = level.getCapability(Capabilities.EnergyStorage.BLOCK, behind, side);
             if (storage == null) continue;
+            stored |= storage.getEnergyStored() > 0;
+            extractable |= storage.canExtract();
             if (give > 0 && storage.canReceive()) {
                 int moved = storage.receiveEnergy(give, false);
                 give -= moved;
@@ -113,6 +118,7 @@ public class BidiConverterDevice extends SimpleElectricalDevice {
                 discharge += moved * rate;
             }
         }
+        feBlocked = stored && !extractable && discharge < 1;
     }
 
     public static Direction[] order(Direction facing) {

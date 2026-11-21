@@ -385,5 +385,7 @@
   "ee_extras.surface_wire.too_far": "Too far for one click — click a surface halfway",
   "item.ee_extras.thin_insulated_wire_spool": "Thin Insulated Wire Spool",
   "item.ee_extras.thin_insulated_wire_spool.tooltip": "Thin twin wire for device leads: hangs like an EE wire, cores like EE insulated wire. Click a termination, insulator, box or device, then another. Cannot run between two insulators.",
-  "ee_extras.cable.thin_needs_device": "Thin wire goes only to a device or a duplex termination, not between two insulators"
+  "ee_extras.cable.thin_needs_device": "Thin wire goes only to a device or a duplex termination, not between two insulators",
+  "ee_extras.converter.output_voltage": "Output voltage (FE → EE)",
+  "ee_extras.converter.fe_output_blocked": "No FE output: configure a capacitor side with a hammer"
 }

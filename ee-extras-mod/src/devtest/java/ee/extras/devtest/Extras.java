@@ -92,7 +92,10 @@ final class Extras {
         CreativeBatteryDevice b = devices.getDevice(BAT, CreativeBatteryDevice.class);
         BidiConverterDevice c = devices.getDevice(CONV, BidiConverterDevice.class);
         if (b != null) b.voltage = batteryVolts;
-        if (c != null) c.voltage = outVolts;
+        com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour setting =
+                com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour.get(src.getLevel(), CONV,
+                        com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour.TYPE);
+        if (setting != null) setting.setValue((int) Math.round(outVolts / 10));
         src.sendSuccess(() -> Component.literal("батарея " + batteryVolts + " В, разряд " + outVolts + " В"
                 + (b == null ? " (нет батареи)" : "") + (c == null ? " (нет устройства преобразователя)" : "")), false);
         return 1;

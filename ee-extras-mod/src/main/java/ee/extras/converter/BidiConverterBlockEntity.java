@@ -39,6 +39,7 @@ public class BidiConverterBlockEntity extends SmartBlockEntity implements IHaveG
     double dischargePower;
     double charge;
     double discharge;
+    boolean feBlocked;
     private final Storage storage = new Storage();
 
     public BidiConverterBlockEntity(BlockPos pos, BlockState state) {
@@ -47,7 +48,7 @@ public class BidiConverterBlockEntity extends SmartBlockEntity implements IHaveG
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-        voltage = new ScrollValueBehaviour(Component.translatable("electroenergetics.converter.voltage"), this, new ValueBox()) {
+        voltage = new ScrollValueBehaviour(Component.translatable("ee_extras.converter.output_voltage"), this, new ValueBox()) {
             @Override
             public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
                 return new ValueSettingsBoard(label, max, 10,
@@ -63,7 +64,7 @@ public class BidiConverterBlockEntity extends SmartBlockEntity implements IHaveG
     }
 
     int volts() {
-        return voltage == null ? 0 : voltage.value * 10;
+        return voltage == null ? 100 : voltage.value * 10;
     }
 
     private BidiConverterDevice device() {
@@ -80,13 +81,14 @@ public class BidiConverterBlockEntity extends SmartBlockEntity implements IHaveG
     @Override
     public void tick() {
         super.tick();
-        device();
+        updateVoltage();
     }
 
     /** Из устройства EE после расчёта: отправить игрокам, если показания заметно изменились */
-    void update(double chargePower, double dischargePower, double charge, double discharge) {
+    void update(double chargePower, double dischargePower, double charge, double discharge, boolean feBlocked) {
         if (Math.abs(this.chargePower - chargePower) > 1 || Math.abs(this.dischargePower - dischargePower) > 1
-                || Math.abs(this.charge - charge) > 10 || Math.abs(this.discharge - discharge) > 10) {
+                || Math.abs(this.charge - charge) > 10 || Math.abs(this.discharge - discharge) > 10 || this.feBlocked != feBlocked) {
+            this.feBlocked = feBlocked;
             this.chargePower = chargePower;
             this.dischargePower = dischargePower;
             this.charge = charge;
@@ -108,6 +110,11 @@ public class BidiConverterBlockEntity extends SmartBlockEntity implements IHaveG
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
         double rate = CEEConfigs.server().wattFeTConversionRate.get();
+        Lang.builder(EeExtras.MOD_ID).translate("converter.output_voltage").style(ChatFormatting.GRAY).forGoggles(tooltip);
+        Lang.builder(EeExtras.MOD_ID).add(CEELang.formatVoltage(volts()).component()).style(ChatFormatting.AQUA)
+                .forGoggles(tooltip, 1);
+        if (feBlocked)
+            Lang.builder(EeExtras.MOD_ID).translate("converter.fe_output_blocked").style(ChatFormatting.YELLOW).forGoggles(tooltip);
         Lang.builder(EeExtras.MOD_ID).translate("goggles.charge").style(ChatFormatting.GRAY).forGoggles(tooltip);
         Lang.builder(EeExtras.MOD_ID).add(CEELang.formatPower(chargePower)).style(ChatFormatting.AQUA).space()
                 .add(Component.literal("→ ").withStyle(ChatFormatting.DARK_GRAY))
@@ -125,6 +132,7 @@ public class BidiConverterBlockEntity extends SmartBlockEntity implements IHaveG
     @Override
     protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(tag, registries, clientPacket);
+        tag.putBoolean("FeBlocked", feBlocked);
         tag.putDouble("ChargePower", chargePower);
         tag.putDouble("DischargePower", dischargePower);
         tag.putDouble("Charge", charge);
@@ -134,6 +142,7 @@ public class BidiConverterBlockEntity extends SmartBlockEntity implements IHaveG
     @Override
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
+        feBlocked = tag.getBoolean("FeBlocked");
         chargePower = tag.getDouble("ChargePower");
         dischargePower = tag.getDouble("DischargePower");
         charge = tag.getDouble("Charge");
@@ -181,7 +190,7 @@ public class BidiConverterBlockEntity extends SmartBlockEntity implements IHaveG
     static class ValueBox extends ValueBoxTransform.Sided {
         @Override
         protected Vec3 getSouthLocation() {
-            return VecHelper.voxelSpace(8, 8, 5.5);
+            return VecHelper.voxelSpace(8, 8, 7.1);
         }
 
         @Override

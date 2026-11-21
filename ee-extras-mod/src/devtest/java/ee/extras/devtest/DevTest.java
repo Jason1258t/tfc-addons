@@ -68,6 +68,7 @@ public class DevTest {
         Wire.register(d);
         ElectronicsTest.register(d);
         PersistenceTest.register(d);
+        ConverterHvTest.register(d);
         PcbMount.register(d);
         SolarTest.register(d);
         BeltMotorTest.register(d);
