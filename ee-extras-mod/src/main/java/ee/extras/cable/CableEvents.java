@@ -9,6 +9,7 @@ import com.simibubi.create.AllSoundEvents;
 import ee.extras.EeExtras;
 import ee.extras.lantern.LanternConversion;
 import ee.extras.lines.Tension;
+import ee.extras.wire.WireEvents;
 import com.simibubi.create.content.equipment.wrench.WrenchItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -86,6 +87,17 @@ public final class CableEvents {
                     e.setCanceled(true);
                     e.setCancellationResult(InteractionResult.SUCCESS);
                 }
+                return;
+            }
+            // Кусачки EE/IE или ключ Create снимают только накрытую пару контактов.
+            // По свободной паре инструмент работает как обычно — например, ключ поворачивает прибор.
+            if (e.getHand() == InteractionHand.MAIN_HAND
+                    && (stack.is(WireEvents.CUTTERS) || stack.getItem() instanceof WrenchItem)
+                    && CableCap.hit(level, e.getHitVec()) != null) {
+                if (level instanceof ServerLevel sl
+                        && !CableCap.take(sl, pos, e.getEntity(), e.getHitVec().getLocation())) return;
+                e.setCanceled(true);
+                e.setCancellationResult(InteractionResult.SUCCESS);
                 return;
             }
             if (stack.getItem() instanceof WireSpoolItem) {

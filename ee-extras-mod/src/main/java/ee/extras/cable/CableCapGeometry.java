@@ -15,10 +15,18 @@ public record CableCapGeometry(Vec3 front, Vec3 back, Vec3 outward, Vec3 length,
     private static final double HALF_WIDTH = 3.0 / 16;
 
     public static CableCapGeometry of(Level level, BlockPos pos, BlockState state, int[] contacts) {
-        var device = (ElectricalDeviceBlock<?>) state.getBlock();
-        Vec3 a = device.getNodePosition(level, pos, state, contacts[0]);
-        Vec3 b = device.getNodePosition(level, pos, state, contacts[1]);
-        if (a == null || b == null) return null;
+        if (!(state.getBlock() instanceof ElectricalDeviceBlock<?> device)) return null;
+        if (contacts == null || contacts.length != 2 || contacts[0] == contacts[1]) return null;
+        boolean validPair = CableCap.groups(level, pos, state).stream()
+                .anyMatch(pair -> pair[0] == contacts[0] && pair[1] == contacts[1]);
+        if (!validPair) return null;
+        var nodes = device.getNodePositions(level, pos, state);
+        if (nodes == null) return null;
+        Vec3 a = nodes.get(contacts[0]);
+        Vec3 b = nodes.get(contacts[1]);
+        if (a == null || b == null
+                || !device.isNodeAccessible(level, pos, state, contacts[0])
+                || !device.isNodeAccessible(level, pos, state, contacts[1])) return null;
         Vec3 midpoint = a.lerp(b, 0.5);
         Vec3 span = b.subtract(a);
         var shape = state.getShape(level, pos);

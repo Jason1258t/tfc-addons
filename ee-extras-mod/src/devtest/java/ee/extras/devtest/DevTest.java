@@ -87,6 +87,8 @@ public class DevTest {
                 .then(Commands.literal("cappairs").executes(c -> CapPairsTest.build(c.getSource())))
                 .then(Commands.literal("cappairscheck").executes(c -> CapPairsTest.check(c.getSource())))
                 .then(Commands.literal("cappairstake").executes(c -> CapPairsTest.take(c.getSource())))
+                .then(Commands.literal("cappairstools").executes(c -> CapPairsTest.tools(c.getSource())))
+                .then(Commands.literal("capbreakbidi").executes(c -> CapPairsTest.breakBidi(c.getSource())))
                 .then(Commands.literal("cancelwire").executes(c -> WireCancelTest.run(c.getSource())))
                 .then(Commands.literal("build").executes(c -> build(c.getSource())))
                 .then(Commands.literal("power")

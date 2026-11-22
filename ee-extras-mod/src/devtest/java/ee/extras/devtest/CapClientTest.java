@@ -19,6 +19,8 @@ import net.minecraft.world.phys.Vec3;
 /** CAP=1 ./test-client.sh: снимки крышек и получение/снятие крышки на клиенте. */
 final class CapClientTest {
     private static final BlockPos MOTOR = CapTest.HEATER.south(2);
+    private static final BlockPos CONVERTER = new BlockPos(4, -60, 140);
+    private static int[] converterContacts;
 
     static void tick(Minecraft mc, IntegratedServer server, int tick) {
         if (tick == 40) server.execute(() -> {
@@ -37,6 +39,8 @@ final class CapClientTest {
                     .get(net.minecraft.resources.ResourceLocation.parse("electroenergetics:electric_motor"));
             DevTest.place(level, MOTOR, motor.defaultBlockState().rotate(Rotation.CLOCKWISE_90));
             CableCap.put(level, MOTOR, null, new ItemStack(EeExtras.CABLE_CAP.get()));
+            DevTest.place(level, CONVERTER, EeExtras.CONVERTER.get().defaultBlockState());
+            CableCap.put(level, CONVERTER, null, new ItemStack(EeExtras.CABLE_CAP.get()));
             var player = server.getPlayerList().getPlayer(mc.player.getUUID());
             var motorEnd = new WireEnd.Block(MOTOR);
             Vec3 target = motorEnd.position(level).with(net.minecraft.core.Direction.Axis.Y, -59.97);
@@ -57,6 +61,12 @@ final class CapClientTest {
                             && new WireEnd.Block(pos).position(mc.level).equals(Vec3.atLowerCornerOf(pos).add(cover.inlet())));
                 }
             }
+            var converterEnd = CableEnd.of(mc.level, CONVERTER, mc.level.getBlockState(CONVERTER));
+            converterContacts = converterEnd == null ? null : converterEnd.contacts();
+            ClientTest.check("крышка преобразователя получена", converterContacts != null);
+            ClientTest.check("геометрия крышки преобразователя построена",
+                    converterContacts != null
+                            && CableCapGeometry.of(mc.level, CONVERTER, mc.level.getBlockState(CONVERTER), converterContacts) != null);
             WireClientTest.look(mc, Vec3.atCenterOf(CapTest.HEATER));
         }
         if (tick == 150) {
@@ -76,11 +86,18 @@ final class CapClientTest {
             Screenshot.grab(mc.gameDirectory, "cable_cap_motor.png", mc.getMainRenderTarget(), message -> {});
             server.execute(() -> CapTest.take(server.createCommandSourceStack()));
         }
+        if (tick == 215) server.execute(() -> server.overworld().destroyBlock(CONVERTER, true));
+        if (tick == 220) {
+            var state = mc.level.getBlockState(CONVERTER);
+            ClientTest.check("преобразователь с крышкой сломан на клиенте", state.isAir());
+            ClientTest.check("у сломанного преобразователя крышка не бросает исключение",
+                    converterContacts != null && CableCapGeometry.of(mc.level, CONVERTER, state, converterContacts) == null);
+        }
         if (tick == 230) {
             ClientTest.check("снятая крышка исчезла на клиенте",
                     CableEnd.of(mc.level, CapTest.HEATER, mc.level.getBlockState(CapTest.HEATER)) == null);
-            mc.stop();
         }
+        if (tick == 250) mc.stop();
     }
 
     private static boolean coversBoth(net.minecraft.world.level.Level level, BlockPos pos,
