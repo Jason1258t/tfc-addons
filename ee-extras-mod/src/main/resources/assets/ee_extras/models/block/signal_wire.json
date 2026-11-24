@@ -1,0 +1,7 @@
+{
+  "parent": "electroenergetics:block/copper_wire_segment",
+  "textures": {
+    "0": "minecraft:block/redstone_block",
+    "particle": "minecraft:block/redstone_block"
+  }
+}

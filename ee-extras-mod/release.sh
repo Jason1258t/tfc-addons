@@ -13,7 +13,7 @@ rm -f ee-extras-*.jar ee-rectifier-*.jar
 cp "build/libs/ee-extras-$VERSION.jar" .
 # Иконки для сайта (icons/) — общим генератором MCP (сглаживание, те же правила, что у model_render); 192 px — сайт
 # показывает их 96 px, на экранах с двойной плотностью — пиксель в пиксель
-ICONS="compact_kinetic_generator three_phase_rectifier single_phase_rectifier heavy_three_phase_rectifier heavy_single_phase_rectifier
+ICONS="signal_connector signal_spool signal_wire compact_kinetic_generator three_phase_rectifier single_phase_rectifier heavy_three_phase_rectifier heavy_single_phase_rectifier
   three_phase_inverter single_phase_inverter heavy_three_phase_inverter heavy_single_phase_inverter bidirectional_converter four_core_termination
   duplex_cable_insulator four_core_cable_insulator four_core_cable_spool duplex_cable_cap four_core_tap electric_lantern cable_converter floodlight
   copper_busbar_spool power_cable_spool stranded_copper_spool acsr_spool aluminum_spool bronze_spool steel_spool tension_clamp

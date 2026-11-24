@@ -20,6 +20,9 @@
     },
     "panel-inlets": {
       "shots": ["inlets-south", "inlets-west", "inlets-north", "inlets-east"]
+    },
+    "signal-wires": {
+      "shots": ["all-facings", "back-facings"]
     }
   },
   "chains": {

@@ -62,6 +62,7 @@ public class DevTest {
 
     static void commands(RegisterCommandsEvent e) {
         CommandDispatcher<CommandSourceStack> d = e.getDispatcher();
+        SignalTest.register(d);
         Sync.register(d);
         PcbCircuitTest.register(d);
         PcbSupplyTest.register(d);

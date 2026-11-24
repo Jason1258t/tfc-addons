@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    {
+      "item": "immersiveengineering:connector_redstone"
+    },
+    {
+      "item": "electroenergetics:connector"
+    }
+  ],
+  "result": {
+    "id": "ee_extras:signal_connector",
+    "count": 1
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "immersiveengineering"
+    }
+  ]
+}

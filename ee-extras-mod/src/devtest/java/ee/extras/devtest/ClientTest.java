@@ -45,6 +45,7 @@ public final class ClientTest {
 
     private static void startScene() {
         switch (SCENE) {
+            case "signal-wires" -> SignalScene.start();
             case "panel-model-probe" -> PanelModelProbe.run();
             case "panel-inlets" -> PanelInletScene.start();
             case "flywheel-wires" -> FlywheelWireTest.start();

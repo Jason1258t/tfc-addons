@@ -389,5 +389,14 @@
   "ee_extras.converter.output_voltage": "Output voltage (FE → EE)",
   "ee_extras.converter.fe_output_blocked": "No FE output: configure a capacitor side with a hammer",
   "ee_extras.wire.cancel_hint": "Ctrl + right click — cancel wire placement or insulator selection",
-  "ee_extras.cable.cap.no_pair": "There is no separate two-terminal pair here for a duplex cable cover"
+  "ee_extras.cable.cap.no_pair": "There is no separate two-terminal pair here for a duplex cable cover",
+  "block.ee_extras.signal_connector": "EE Redstone Connector",
+  "item.ee_extras.signal_spool": "EE Redstone Wire Coil",
+  "ee_extras.signal.selected": "Signal contact selected. Select the second contact.",
+  "ee_extras.signal.config": "%s · channel: %s",
+  "ee_extras.signal.input": "Input",
+  "ee_extras.signal.output": "Output",
+  "ee_extras.signal.spool_help": "16 channels, signal 0–15, span up to 32 blocks. Click two connectors or panel instruments; Shift cancels.",
+  "ee_extras.signal.connector_help": "Create wrench / IE screwdriver: input/output; dye: channel; empty hand: inspect.",
+  "item.ee_extras.signal_wire": "EE Redstone Wire"
 }

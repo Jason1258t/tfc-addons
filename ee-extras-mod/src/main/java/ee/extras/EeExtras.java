@@ -317,6 +317,7 @@ public class EeExtras {
     public EeExtras(IEventBus modBus, net.neoforged.fml.ModContainer container) {
         AcBlocks.init();
         CableWires.init();
+        ee.extras.redstone.Signals.register();
         LineWire.register();
         PcbItems.init();
         // Thermometer (только если TFC установлен и класс доступен)
@@ -357,6 +358,7 @@ public class EeExtras {
             CableHud.register(modBus, NeoForge.EVENT_BUS);
             ee.extras.wire.client.WireClient.register(modBus, NeoForge.EVENT_BUS);
             LinesClient.register(modBus, NeoForge.EVENT_BUS);
+            ee.extras.redstone.SignalsClient.register(NeoForge.EVENT_BUS);
             ee.extras.interaction.WireCancelClient.register(NeoForge.EVENT_BUS);
             LanternConversion.registerTooltip(NeoForge.EVENT_BUS);
             GeneratorClient.register(modBus);
@@ -386,6 +388,9 @@ public class EeExtras {
         if (!event.getTabKey().equals(CEECreativeTab.CREATIVE_TAB.getKey())) return;
         for (Kind<?> k : POWER) event.accept(k.item.get());
         AcBlocks.addToTab(event);
+        event.accept(ee.extras.redstone.Signals.CONNECTOR_ITEM.get());
+        event.accept(ee.extras.redstone.Signals.SPOOL.get());
+        event.accept(ee.extras.redstone.Signals.SEGMENT.get());
         event.accept(BELT_MOTOR_ITEM.get());
         event.accept(ELECTRIC_PRESS_ITEM.get());
         event.accept(ELECTRIC_MIXER_ITEM.get());

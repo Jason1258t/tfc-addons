@@ -1,0 +1,125 @@
+{
+  "textures": {
+    "wire": "minecraft:block/redstone_block",
+    "particle": "minecraft:block/redstone_block"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        4,
+        7
+      ],
+      "to": [
+        5,
+        12,
+        9
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wire"
+        },
+        "south": {
+          "texture": "#wire"
+        },
+        "up": {
+          "texture": "#wire"
+        },
+        "down": {
+          "texture": "#wire"
+        },
+        "east": {
+          "texture": "#wire"
+        },
+        "west": {
+          "texture": "#wire"
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        11,
+        7
+      ],
+      "to": [
+        13,
+        13,
+        9
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wire"
+        },
+        "south": {
+          "texture": "#wire"
+        },
+        "up": {
+          "texture": "#wire"
+        },
+        "down": {
+          "texture": "#wire"
+        },
+        "east": {
+          "texture": "#wire"
+        },
+        "west": {
+          "texture": "#wire"
+        }
+      }
+    },
+    {
+      "from": [
+        11,
+        4,
+        7
+      ],
+      "to": [
+        13,
+        12,
+        9
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wire"
+        },
+        "south": {
+          "texture": "#wire"
+        },
+        "up": {
+          "texture": "#wire"
+        },
+        "down": {
+          "texture": "#wire"
+        },
+        "east": {
+          "texture": "#wire"
+        },
+        "west": {
+          "texture": "#wire"
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        0,
+        0,
+        -25
+      ],
+      "scale": [
+        0.85,
+        0.85,
+        0.85
+      ]
+    },
+    "ground": {
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    }
+  }
+}

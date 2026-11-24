@@ -9,6 +9,7 @@
     "AnchoredWireSagMixin",
     "AnchorClampRemovalMixin",
     "PanelCableNodesMixin",
+    "PanelSignalNodesMixin",
     "PanelInletPositionsMixin",
     "ElectricPumpEfficiencyMixin",
     "BeltMotorKineticsMixin",

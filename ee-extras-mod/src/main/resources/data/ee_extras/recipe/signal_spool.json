@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    {
+      "item": "immersiveengineering:wirecoil_redstone"
+    },
+    {
+      "item": "electroenergetics:empty_spool"
+    }
+  ],
+  "result": {
+    "id": "ee_extras:signal_spool",
+    "count": 1
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "immersiveengineering"
+    }
+  ]
+}

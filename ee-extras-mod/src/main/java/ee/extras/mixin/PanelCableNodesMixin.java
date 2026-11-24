@@ -38,6 +38,6 @@ public abstract class PanelCableNodesMixin {
      * провод.
      */
     public boolean isNodeAccessible(Level level, BlockPos pos, BlockState state, int id) {
-        return PanelPorts.resolve(level, new InWorldNode(id, pos)) == null;
+        return !ee.extras.redstone.Signals.reserved(id) && PanelPorts.resolve(level, new InWorldNode(id, pos)) == null;
     }
 }

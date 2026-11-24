@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " W ",
+    "WSW",
+    " W "
+  ],
+  "key": {
+    "W": {
+      "item": "ee_extras:signal_wire"
+    },
+    "S": {
+      "item": "electroenergetics:empty_spool"
+    }
+  },
+  "result": {
+    "id": "ee_extras:signal_spool",
+    "count": 1
+  }
+}
