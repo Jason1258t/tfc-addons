@@ -398,5 +398,10 @@
   "ee_extras.signal.output": "Output",
   "ee_extras.signal.spool_help": "16 channels, signal 0–15, span up to 32 blocks. Click two connectors or panel instruments; Shift cancels.",
   "ee_extras.signal.connector_help": "Create wrench / IE screwdriver: input/output; dye: channel; empty hand: inspect.",
-  "item.ee_extras.signal_wire": "EE Redstone Wire"
+  "item.ee_extras.signal_wire": "EE Redstone Wire",
+  "block.ee_extras.metering_pump": "Electric Metering Pump",
+  "ee_extras.metering_pump.dose": "Dose: %s mB",
+  "ee_extras.metering_pump.ready": "Ready: right-click or redstone rising edge",
+  "ee_extras.metering_pump.dispensing": "Dispensing: %s / %s mB remaining",
+  "ee_extras.metering_pump.filling": "Filling: %s / %s mB"
 }

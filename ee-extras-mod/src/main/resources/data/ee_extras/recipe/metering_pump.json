@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AB",
+    "CD"
+  ],
+  "key": {
+    "A": {
+      "item": "electroenergetics:electric_pump"
+    },
+    "B": {
+      "item": "ee_extras:fluid_dispenser"
+    },
+    "C": {
+      "item": "create:fluid_pipe"
+    },
+    "D": {
+      "item": "ee_extras:wall_disconnect"
+    }
+  },
+  "result": {
+    "id": "ee_extras:metering_pump",
+    "count": 1
+  }
+}

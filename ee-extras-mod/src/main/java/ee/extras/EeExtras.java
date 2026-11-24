@@ -18,6 +18,9 @@ import ee.extras.machine.ElectricMixerBlock;
 import ee.extras.machine.ElectricMixerBlockEntity;
 import ee.extras.machine.ElectricMixerRenderer;
 import ee.extras.machine.FluidDispenserBlock;
+import ee.extras.machine.MeteringPumpBlock;
+import ee.extras.machine.MeteringPumpRenderer;
+import ee.extras.machine.MeteringPumpBlockEntity;
 import ee.extras.machine.FluidDispenserBlockEntity;
 import ee.extras.machine.FluidDispenserRenderer;
 import ee.extras.machine.MotorMachineDevice;
@@ -149,6 +152,13 @@ public class EeExtras {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FluidDispenserBlockEntity>> FLUID_DISPENSER_BE =
             BLOCK_ENTITIES.register("fluid_dispenser", () -> BlockEntityType.Builder
                     .of(FluidDispenserBlockEntity::new, FLUID_DISPENSER.get()).build(null));
+
+    public static final DeferredBlock<MeteringPumpBlock> METERING_PUMP =
+            BLOCKS.register("metering_pump", () -> new MeteringPumpBlock(metal().noOcclusion().pushReaction(PushReaction.BLOCK)));
+    public static final DeferredItem<BlockItem> METERING_PUMP_ITEM = ITEMS.registerSimpleBlockItem(METERING_PUMP);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MeteringPumpBlockEntity>> METERING_PUMP_BE =
+            BLOCK_ENTITIES.register("metering_pump", () -> BlockEntityType.Builder
+                    .of(MeteringPumpBlockEntity::new, METERING_PUMP.get()).build(null));
 
     public static final DeferredBlock<WallDisconnectBlock> WALL_DISCONNECT =
             BLOCKS.register("wall_disconnect", () -> new WallDisconnectBlock(metal().noOcclusion().pushReaction(PushReaction.BLOCK)));
@@ -366,6 +376,7 @@ public class EeExtras {
             ElectricMixerRenderer.register(modBus);
             ElectricDeployerRenderer.register(modBus);
             FluidDispenserRenderer.register(modBus);
+            MeteringPumpRenderer.register(modBus);
             DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> {
                 ee.extras.pcb.PcbClient.register(modBus);
                 return null;
@@ -379,6 +390,7 @@ public class EeExtras {
     private static void capabilities(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, CONVERTER_BE.get(), BidiConverterBlockEntity::energy);
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, FLUID_DISPENSER_BE.get(), FluidDispenserBlockEntity::input);
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, METERING_PUMP_BE.get(), MeteringPumpBlockEntity::port);
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ELECTRIC_DEPLOYER_BE.get(), (be, side) -> be.automation());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, PcbItems.PCB_MACHINE_BE.get(), (be, side) -> be.items);
     }
@@ -396,6 +408,7 @@ public class EeExtras {
         event.accept(ELECTRIC_MIXER_ITEM.get());
         event.accept(ELECTRIC_DEPLOYER_ITEM.get());
         event.accept(FLUID_DISPENSER_ITEM.get());
+        event.accept(METERING_PUMP_ITEM.get());
         event.accept(WALL_DISCONNECT_ITEM.get());
         event.accept(ee.extras.panel.PanelModules.SWITCH_ITEM.get());
         for (Supplier<? extends Item> item : new Supplier[] {KINETIC_GENERATOR_ITEM, CONVERTER_ITEM, CABLE_CONVERTER_ITEM,

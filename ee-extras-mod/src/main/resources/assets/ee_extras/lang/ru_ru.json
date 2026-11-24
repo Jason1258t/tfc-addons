@@ -398,5 +398,10 @@
   "ee_extras.signal.output": "Выход",
   "ee_extras.signal.spool_help": "16 каналов, сигнал 0–15, пролёт до 32 блоков. Два клика по коннекторам или приборам щитка; Shift — отмена.",
   "ee_extras.signal.connector_help": "Ключ Create / отвёртка IE — вход/выход; краситель — канал; пустая рука — настройка.",
-  "item.ee_extras.signal_wire": "Редстоуновый провод EE"
+  "item.ee_extras.signal_wire": "Редстоуновый провод EE",
+  "block.ee_extras.metering_pump": "Электрическая порционная помпа",
+  "ee_extras.metering_pump.dose": "Порция: %s мБ",
+  "ee_extras.metering_pump.ready": "Готова: ПКМ или фронт редстоуна 0 → 1",
+  "ee_extras.metering_pump.dispensing": "Выдача: осталось %s / %s мБ",
+  "ee_extras.metering_pump.filling": "Набор: %s / %s мБ"
 }
