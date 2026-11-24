@@ -1,6 +1,5 @@
 package ee.extras.panel;
 
-import com.george_vi.electroenergetics.CEEBlocks;
 import com.george_vi.electroenergetics.content.electrical_panel.ElectricalPanelBlockEntity;
 import com.george_vi.electroenergetics.content.electrical_panel.attachments.PanelAttachment;
 import com.george_vi.electroenergetics.content.electrical_panel.attachments.PanelAttachmentType;
@@ -11,7 +10,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -50,10 +48,7 @@ final class PanelInlet extends PanelAttachment {
         pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(-90));
         pose.scale(0.5F, 0.5F, 0.5F);
         pose.translate(-0.5, 0, -9.5 / 16);
-        var state =
-                CEEBlocks.DUPLEX_WIRE_TERMINATION
-                        .getDefaultState()
-                        .setValue(BlockStateProperties.FACING, Direction.UP);
+        var state = PanelInletGeometry.modelState();
         Minecraft.getInstance()
                 .getBlockRenderer()
                 .renderSingleBlock(state, pose, buffers, light, overlay);

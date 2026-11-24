@@ -19,6 +19,14 @@ import net.minecraft.world.phys.Vec3;
 final class PanelEdgeTest {
     static int build(CommandSourceStack src) {
         var level = src.getLevel();
+        var modelState = PanelInletGeometry.modelState();
+        if (modelState.getValue(
+                        com.george_vi.electroenergetics.content.bundled_wire
+                                .BundledWireTerminationBlock.FLIP)
+                || modelState.getValue(
+                        com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock
+                                .ROLL))
+            throw new IllegalStateException("КРАЙ FAIL: выбран зеркальный вариант модели");
         int index = 0;
         for (var face : Direction.Plane.HORIZONTAL) {
             var pos = new BlockPos(3 + index++ * 5, -58, 24);
@@ -55,6 +63,14 @@ final class PanelEdgeTest {
 
     static int check(CommandSourceStack src) {
         var level = src.getLevel();
+        var modelState = PanelInletGeometry.modelState();
+        if (modelState.getValue(
+                        com.george_vi.electroenergetics.content.bundled_wire
+                                .BundledWireTerminationBlock.FLIP)
+                || modelState.getValue(
+                        com.george_vi.electroenergetics.foundation.base.DirectionalRolledDeviceBlock
+                                .ROLL))
+            throw new IllegalStateException("КРАЙ FAIL: выбран зеркальный вариант модели");
         int index = 0, count = 0;
         for (var face : Direction.Plane.HORIZONTAL) {
             var pos = new BlockPos(3 + index++ * 5, -58, 24);
@@ -107,7 +123,7 @@ final class PanelEdgeTest {
                 () ->
                         Component.literal(
                                 "КРАЙ PASS: 16 вводов, 4 направления щитка, кабель сверху/снизу,"
-                                    + " две клеммы внутри, номера узлов сохранены"),
+                                        + " две клеммы внутри, номера узлов сохранены"),
                 false);
         return 1;
     }
