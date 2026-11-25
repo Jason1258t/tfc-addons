@@ -213,11 +213,11 @@ final class M4Test {
                 check(ctx, bath.batches == 1 && bath.progress == 0, testCase.equals("mixed")
                     ? "мешалка ≥16 RPM выполнила операцию за 200 тиков" : "выполнена ровно одна операция на 400 тиков");
                 if (testCase.equals("mixed")) check(ctx, bath.mixerRpm() >= 16, "ускорение выполнено настоящей Create-мешалкой");
-                check(ctx, bath.items.getStackInSlot(0).isEmpty() && bath.items.getStackInSlot(1).isEmpty(),
+                check(ctx, bath.items.getStackInSlot(0).is(expectedBoard.getItem()) && bath.items.getStackInSlot(1).isEmpty(),
                     "заготовка и маска израсходованы по одной");
-                check(ctx, ItemStack.isSameItem(bath.items.getStackInSlot(2), expectedBoard)
-                    && bath.items.getStackInSlot(2).getCount() == 1, "выдана правильная плата");
-                check(ctx, topology(bath.items.getStackInSlot(2)).equals(saved.getCompound("Topology")),
+                check(ctx, ItemStack.isSameItem(bath.items.getStackInSlot(0), expectedBoard)
+                    && bath.items.getStackInSlot(0).getCount() == 1, "выдана правильная плата");
+                check(ctx, topology(bath.items.getStackInSlot(0)).equals(saved.getCompound("Topology")),
                     "топология результата точно совпадает с маской");
                 check(ctx, bath.input.isEmpty() && bath.spent.getFluidAmount() == 250,
                     "250 мБ FeCl₃ превращены в 250 мБ отработанного раствора");
@@ -309,7 +309,7 @@ final class M4Test {
                 EtchingBathBlockEntity restored = bath(level);
                 check(ctx, restored.batches == 1 && restored.spent.getFluidAmount() == 250
                     && L1_RECIPE.equals(restored.recipeId()), "повторная установка восстановила баки и рецепт");
-                check(ctx, topology(restored.items.getStackInSlot(2)).equals(source(level).savedM4.getCompound("Topology")),
+                check(ctx, topology(restored.items.getStackInSlot(0)).equals(source(level).savedM4.getCompound("Topology")),
                     "повторная установка восстановила плату с топологией");
             }
         }

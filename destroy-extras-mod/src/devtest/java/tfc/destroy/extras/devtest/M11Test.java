@@ -206,7 +206,7 @@ final class M11Test {
         reset();
         ServerLevel level = c.getSource().getLevel();
         int pcbLevel = source(level).savedM4.getInt("Level");
-        ItemStack etched = bath(level).items.getStackInSlot(2);
+        ItemStack etched = bath(level).items.getStackInSlot(0);
         check(c, etched.is(pcbLevel == 2 ? PcbItems.L2_ETCHED_BOARD.get() : PcbItems.L3_ETCHED_BOARD.get()),
             "ванна выдала протравленную плату");
         metal(level).items.setStackInSlot(0, etched.copy());
@@ -231,10 +231,10 @@ final class M11Test {
             case "photo_power" -> checkPower(c, photo(level), pcbLevel);
             case "metal_power" -> checkPower(c, metal(level), pcbLevel);
             case "etch" -> {
-                ItemStack result = bath(level).items.getStackInSlot(2);
+                ItemStack result = bath(level).items.getStackInSlot(0);
                 check(c, result.is(pcbLevel == 2 ? PcbItems.L2_ETCHED_BOARD.get() : PcbItems.L3_ETCHED_BOARD.get())
                     && bath(level).batches == 1, "production-ванна выполнила одно травление");
-                check(c, bath(level).items.getStackInSlot(0).isEmpty() && bath(level).items.getStackInSlot(1).getCount() == 1,
+                check(c, bath(level).items.getStackInSlot(0).is(pcbLevel == 2 ? PcbItems.L2_ETCHED_BOARD.get() : PcbItems.L3_ETCHED_BOARD.get()) && bath(level).items.getStackInSlot(1).getCount() == 1,
                     "подготовленная заготовка израсходована, чертёж не расходуется");
                 check(c, sameTopology(result, expected, pcbLevel), "травление сохранило точную топологию и via");
                 check(c, bath(level).spent.getFluidAmount() == 250
@@ -345,7 +345,7 @@ final class M11Test {
             machine.progress = 0;
             machine.batches = 0;
         }
-        for (int slot = 0; slot < 3; slot++) bath(level).items.setStackInSlot(slot, ItemStack.EMPTY);
+        for (int slot = 0; slot < bath(level).items.getSlots(); slot++) bath(level).items.setStackInSlot(slot, ItemStack.EMPTY);
         bath(level).input.setFluid(FluidStack.EMPTY);
         bath(level).spent.setFluid(FluidStack.EMPTY);
         bath(level).progress = 0;
@@ -384,7 +384,7 @@ final class M11Test {
         if (level.getBlockEntity(drive.above()) instanceof CreativeMotorBlockEntity motor) motor.generatedSpeed.setValue(64);
     }
 
-    private static CompoundTag topology(int level) {
+    static CompoundTag topology(int level) {
         CompoundTag tag = PcbTopology.create(level);
         PcbTopology.set(tag, 0, 0, PcbTopology.TERMINAL);
         for (int cell = 1; cell <= 8; cell++) PcbTopology.set(tag, 0, cell, PcbTopology.COMPONENT);

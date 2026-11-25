@@ -144,6 +144,30 @@ public final class EtchingBathTest {
             restored.items.setStackInSlot(slot, new ItemStack(PcbItems.L1_BOARD_BLANK.get()));
         restored.items.setStackInSlot(1, ItemStack.EMPTY);
         player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+        industrial(level, pos.west(3), 2);
+        industrial(level, pos.west(5), 3);
         System.out.println("ETCHING ALL PASS");
     }
+    private static void industrial(ServerLevel level, BlockPos pos, int pcbLevel) {
+        level.setBlockAndUpdate(pos, DestroyExtras.ETCHING_BATH_BLOCK.get().defaultBlockState());
+        var bath = (EtchingBathBlockEntity) level.getBlockEntity(pos);
+        ItemStack design = new ItemStack(PcbItems.PCB_DESIGN.get());
+        ee.extras.pcb.PcbTopology.attach(design, M11Test.topology(pcbLevel));
+        var expected = design.get(PcbItems.PCB_TOPOLOGY.get()).copy();
+        bath.items.setStackInSlot(1, design);
+        for (int slot : EtchingBathBlockEntity.BOARD_SLOTS)
+            bath.items.setStackInSlot(slot, new ItemStack(pcbLevel == 2 ? PcbItems.L2_PREPARED_BLANK.get() : PcbItems.L3_PREPARED_BLANK.get()));
+        bath.input.setFluid(solution(1000, .12f));
+        for (int i = 0; i < 3300; i++) bath.tick();
+        check(bath.batches == 4 && bath.input.isEmpty() && bath.spent.getFluidAmount() == 1000,
+            "L" + pcbLevel + ": четыре платы из одного бака");
+        check(ItemStack.isSameItemSameComponents(bath.items.getStackInSlot(1), design)
+            && bath.items.getStackInSlot(1).getCount() == 1, "L" + pcbLevel + ": общий чертёж не расходуется");
+        for (int slot : EtchingBathBlockEntity.BOARD_SLOTS)
+            check(bath.items.getStackInSlot(slot).is(pcbLevel == 2 ? PcbItems.L2_ETCHED_BOARD.get() : PcbItems.L3_ETCHED_BOARD.get())
+                && expected.equals(bath.items.getStackInSlot(slot).get(PcbItems.PCB_TOPOLOGY.get())),
+                "L" + pcbLevel + ": топология и via на месте " + slot);
+        level.removeBlock(pos, false);
+    }
+
 }

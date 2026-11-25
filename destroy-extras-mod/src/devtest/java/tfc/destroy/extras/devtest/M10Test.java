@@ -149,7 +149,7 @@ final class M10Test {
     private static int assertBoard(CommandContext<CommandSourceStack> c) {
         reset();
         EtchingBathBlockEntity bath = (EtchingBathBlockEntity) c.getSource().getLevel().getBlockEntity(BATH);
-        check(c, bath.items.getStackInSlot(2).is(PcbItems.L1_BOARD.get()), "получена плата L1");
+        check(c, bath.items.getStackInSlot(0).is(PcbItems.L1_BOARD.get()), "получена плата L1");
         check(c, bath.spent.getFluidAmount() == 250, "отработанный раствор 250 мБ на северном выходе");
         return report(c);
     }
