@@ -5,6 +5,9 @@
     },
     "gas-hardware-art": {
       "shots": ["gas-machines", "etching-bath"]
+    },
+    "etching-bath": {
+      "shots": ["etching-four-boards", "etching-solution"]
     }
   },
   "chains": {

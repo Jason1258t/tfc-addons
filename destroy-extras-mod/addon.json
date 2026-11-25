@@ -1,9 +1,9 @@
 {
   "id": "destroy_extras",
   "name": "Destroy Extras — химические машины",
-  "version": "0.11.1",
-  "jar": "destroy-extras-0.11.1.jar",
-  "sha256": "5b00b2d0ff69d3ff1d80de5888810b1627d0a240dcf62d5a4c3f362ec806a9a4",
+  "version": "0.12.1",
+  "jar": "destroy-extras-0.12.1.jar",
+  "sha256": "1294886b2f0a02909133ea54d240d8beaed960ea0bbc5bb06e5e5105d7020478",
   "order": 801,
   "side": "both",
   "summary": "Мембранный электролизёр, баки и универсальные трубки для водорода, хлора, азота и кислорода. Устанавливаемые баллоны, вентили и узел заправки. Травление плат L1–L3 и химическая металлургия Destroy.",

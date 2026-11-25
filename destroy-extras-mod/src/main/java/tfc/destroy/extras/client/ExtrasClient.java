@@ -12,6 +12,11 @@ public final class ExtrasClient {
     private ExtrasClient() {}
 
     @SubscribeEvent
+    static void renderers(net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterRenderers event) {
+        event.registerBlockEntityRenderer(DestroyExtras.ETCHING_BATH_BE.get(), EtchingBathRenderer::new);
+    }
+
+    @SubscribeEvent
     static void screens(RegisterMenuScreensEvent event) {
         event.register(DestroyExtras.ELECTROLYZER_MENU.get(), ElectrolyzerScreen::new);
     }

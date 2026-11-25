@@ -37,6 +37,29 @@ public final class ClientTest {
 
     public ClientTest() {
         String requested = Scene.requested();
+        if ("etching-bath".equals(requested)) {
+            scene = new Scene("etching-bath");
+            scene.server("проверка ванны, жидкостей, ПКМ и механической руки", c -> {
+                cell = c.at(0, 1, 0);
+                EtchingBathTest.run(c.level(), cell, c.player());
+            });
+            scene.until("синхронизация раствора и четырёх плат", 600, () ->
+                mc().level.getBlockEntity(cell) instanceof tfc.destroy.extras.etching.EtchingBathBlockEntity bath
+                    && bath.input.getFluidAmount() == 3000 && !bath.items.getStackInSlot(5).isEmpty());
+            scene.client("все предметы аддона доступны в креативе", () -> {
+                net.minecraft.world.item.CreativeModeTabs.tryRebuildTabContents(
+                    mc().level.enabledFeatures(), true, mc().level.registryAccess());
+                var search = net.minecraft.world.item.CreativeModeTabs.searchTab();
+                for (var entry : net.minecraft.core.registries.BuiltInRegistries.ITEM.entrySet()) {
+                    if (entry.getKey().location().getNamespace().equals(DestroyExtras.MOD_ID))
+                        check("поиск креатива: " + entry.getKey().location(), search.contains(new ItemStack(entry.getValue())));
+                }
+            });
+            scene.gui(false).camera(0, 1.5, 0, 2.6, 150, 25).shot("etching-four-boards");
+            scene.camera(0, 1.2, 0, 2.3, 35, 65).shot("etching-solution");
+            NeoForge.EVENT_BUS.addListener(this::screen);
+            return;
+        }
         if ("gas-hardware-art".equals(requested)) {
             scene = new Scene("gas-hardware-art");
             NeoForge.EVENT_BUS.addListener(this::screen);

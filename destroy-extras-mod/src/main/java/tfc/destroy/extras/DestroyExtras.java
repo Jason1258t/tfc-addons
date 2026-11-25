@@ -44,6 +44,10 @@ import tfc.destroy.extras.metallurgy.MetallurgicalProcessorBlockEntity;
 import tfc.destroy.extras.recipe.ExtrasRecipeTypes;
 import tfc.destroy.extras.heat.VatElectricHeat;
 
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.core.registries.BuiltInRegistries;
+import tfc.destroy.extras.etching.EtchingBathArmType;
+
 /** Недостающие машины и процессы Destroy; химия и платы здесь не дублируются. */
 @Mod(DestroyExtras.MOD_ID)
 public final class DestroyExtras {
@@ -111,7 +115,21 @@ public final class DestroyExtras {
         return ITEMS.register(id, () -> new Item(new Item.Properties()));
     }
 
+    private static final DeferredRegister<CreativeModeTab> TABS =
+        DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
+    static {
+        TABS.register("main", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup.destroy_extras"))
+            .icon(() -> new ItemStack(ETCHING_BATH_ITEM.get()))
+            .displayItems((parameters, output) -> BuiltInRegistries.ITEM.entrySet().stream()
+                .filter(entry -> entry.getKey().location().getNamespace().equals(MOD_ID))
+                .forEach(entry -> output.accept(entry.getValue())))
+            .build());
+    }
+
     public DestroyExtras(IEventBus modBus) {
+        TABS.register(modBus);
+        EtchingBathArmType.register(modBus);
         GasTankMultiblock.register();
         GasPipes.register(modBus);
         GasFillingStation.register(modBus);
@@ -134,15 +152,8 @@ public final class DestroyExtras {
     }
 
     private static void capabilities(RegisterCapabilitiesEvent event) {
-        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ETCHING_BATH_BE.get(), (be, side) -> {
-            Direction facing = be.getBlockState().getValue(EtchingBathBlock.FACING);
-            Direction local = ElectrolyzerStructure.toLocal(facing, side);
-            if (local == Direction.NORTH) return be.spent;
-            if (local == Direction.SOUTH) return be.hydrochloricAcid;
-            if (local == Direction.EAST) return be.water;
-            return be.input;
-        });
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ETCHING_BATH_BE.get(), (be, side) -> be.items);
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ETCHING_BATH_BE.get(), (be, side) -> be.fluids);
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ETCHING_BATH_BE.get(), (be, side) -> be.automation);
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, METALLURGY_BE.get(), (be, side) -> {
             if (side == Direction.NORTH) return be.reagent;
             if (side == Direction.EAST) return be.output;

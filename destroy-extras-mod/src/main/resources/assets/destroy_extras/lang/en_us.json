@@ -13,7 +13,7 @@
   "status.destroy_extras.electrolyzer.fault": "Fault: no membrane or power",
   "block.destroy_extras.etching_bath": "Etching Bath",
   "destroy_extras.recipe.etching": "Board Etching",
-  "jei.destroy_extras.etching_bath.absorption": "The back port accepts 25 mB of pure HCl and the left port 250 mB of water. The bath atomically produces 275 mB of HCl solution for FeCl₂ electrolysis. The front port outputs spent etchant; the remaining ports carry the working FeCl₃ solution.",
+  "jei.destroy_extras.etching_bath.absorption": "Right-click to place a blank or the shared mask; holds up to 4 upright boards. A Create mechanical arm inserts ingredients and takes finished boards. Every side accepts solution; extraction prefers spent solution. Working and spent tanks hold 4000 mB each.",
   "destroy_extras.fluid.spent_etchant": "Spent etchant",
   "status.destroy_extras.etching.idle": "Waiting for blank, mask and FeCl₃",
   "status.destroy_extras.etching.running": "Etching board",
@@ -148,5 +148,9 @@
   "tooltip.destroy_extras.gas_cylinder.port": "Connect a pipe to the top. Sneak-use with an empty hand to change mode.",
   "block.destroy_extras.gas_cylinder_steel": "Steel Gas Cylinder",
   "block.destroy_extras.gas_cylinder_stainless_steel": "Stainless Steel Gas Cylinder",
-  "block.destroy_extras.gas_cylinder_blue_steel": "Blue Steel Gas Cylinder"
+  "block.destroy_extras.gas_cylinder_blue_steel": "Blue Steel Gas Cylinder",
+  "itemGroup.destroy_extras": "Destroy Extras — Chemistry",
+  "goggles.destroy_extras.etching.input": "Solution: %s / %s mB",
+  "goggles.destroy_extras.etching.spent": "Spent solution: %s / %s mB",
+  "goggles.destroy_extras.etching.boards": "Boards: %s / 4; mask: %s"
 }

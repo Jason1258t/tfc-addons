@@ -13,7 +13,7 @@
   "status.destroy_extras.electrolyzer.fault": "Неисправность: нет мембраны или питания",
   "block.destroy_extras.etching_bath": "Травильная ванна",
   "destroy_extras.recipe.etching": "Травление платы",
-  "jei.destroy_extras.etching_bath.absorption": "Порт сзади принимает 25 мБ чистого HCl, порт слева — 250 мБ воды. Ванна атомарно получает 275 мБ раствора HCl для электролиза FeCl₂. Передний порт выводит отработанный раствор, остальные — рабочий FeCl₃.",
+  "jei.destroy_extras.etching_bath.absorption": "ПКМ устанавливает заготовку или общий трафарет; до 4 плат стоят вертикально. Механическая рука Create подаёт предметы и забирает готовые платы. Любая сторона принимает раствор; откачка сначала забирает отработку. Рабочий бак и бак отработки — по 4000 мБ.",
   "destroy_extras.fluid.spent_etchant": "Отработанный травильный раствор",
   "status.destroy_extras.etching.idle": "Ожидание заготовки, маски и FeCl₃",
   "status.destroy_extras.etching.running": "Травление платы",
@@ -148,5 +148,9 @@
   "tooltip.destroy_extras.gas_cylinder.port": "Трубка подключается сверху. Shift+ПКМ пустой рукой меняет режим.",
   "block.destroy_extras.gas_cylinder_steel": "Стальной газовый баллон",
   "block.destroy_extras.gas_cylinder_stainless_steel": "Нержавеющий газовый баллон",
-  "block.destroy_extras.gas_cylinder_blue_steel": "Газовый баллон из синей стали"
+  "block.destroy_extras.gas_cylinder_blue_steel": "Газовый баллон из синей стали",
+  "itemGroup.destroy_extras": "Destroy Extras — химия",
+  "goggles.destroy_extras.etching.input": "Раствор: %s / %s мБ",
+  "goggles.destroy_extras.etching.spent": "Отработка: %s / %s мБ",
+  "goggles.destroy_extras.etching.boards": "Платы: %s / 4; маска: %s"
 }

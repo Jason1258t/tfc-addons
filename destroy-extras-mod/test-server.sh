@@ -83,7 +83,8 @@ trap - EXIT
 grep -E 'DESTROYEXTRATEST|ERROR|FATAL|Exception|Caused by' "$RUN_DIR/check.log" | head -100 || true
 STATUS=0
 if [ "$RCON_STATUS" -ne 0 ] || [ "$SERVER_STATUS" -ne 0 ]; then STATUS=1; fi
-if grep -E 'DESTROYEXTRATEST FAIL|Unknown (or incomplete )?command|No value present' "$RUN_DIR/results.txt" "$RUN_DIR/check.log"; then STATUS=1; fi
+if grep -E 'DESTROYEXTRATEST FAIL|ETCHING FAIL|Unknown (or incomplete )?command|No value present' "$RUN_DIR/results.txt" "$RUN_DIR/check.log"; then STATUS=1; fi
 if grep -E 'FATAL|Failed to start the minecraft server|Mod loading has failed' "$RUN_DIR/check.log"; then STATUS=1; fi
 case " $* " in *' destroyextratest assert '*) grep -q 'DESTROYEXTRATEST PASS' "$RUN_DIR/results.txt" || STATUS=1 ;; esac
+case " $* " in *' etchingtest '*) grep -q 'ETCHING ALL PASS' "$RUN_DIR/results.txt" || STATUS=1 ;; esac
 exit "$STATUS"

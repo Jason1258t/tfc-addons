@@ -19,6 +19,7 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.minecraft.world.level.material.Fluids;
@@ -31,8 +32,14 @@ import tfc.destroy.extras.DestroyExtras;
 import tfc.destroy.extras.recipe.EtchingRecipe;
 import tfc.destroy.extras.recipe.ExtrasRecipeTypes;
 
+import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
+import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import petrolpark.mc.destroy.core.fluid.GeniusFluidTankBehaviour.GeniusFluidTank;
+
 /** Травление без EE/FE: длительность и расход задаёт JSON, завершение атомарно для предметов и жидкости. */
-public final class EtchingBathBlockEntity extends BlockEntity implements IHaveGoggleInformation {
+public final class EtchingBathBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation {
     public static final int INPUT_CAPACITY = 4000;
     public static final int SPENT_CAPACITY = 4000;
     public static final float MINIMUM_MIXER_RPM = 16.0F;
@@ -42,21 +49,88 @@ public final class EtchingBathBlockEntity extends BlockEntity implements IHaveGo
     public final FluidTank hydrochloricAcid = tank(INPUT_CAPACITY, EtchingChemistry::isPureAcidGas, false);
     public final FluidTank water = tank(INPUT_CAPACITY,
         stack -> stack.getFluid() == Fluids.WATER, false);
-    public final ItemStackHandler items = new ItemStackHandler(3) {
+    public static final int[] BOARD_SLOTS = {0, 3, 4, 5};
+    private int activeSlot;
+    public final ItemStackHandler items = new ItemStackHandler(6) {
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            return slot < 2;
+            if (level == null || slot == 2) return false;
+            for (RecipeHolder<EtchingRecipe> holder : level.getRecipeManager().getAllRecipesFor(ExtrasRecipeTypes.ETCHING_TYPE.get())) {
+                if ((slot == 1 ? holder.value().mask() : holder.value().blank()).test(stack)) return true;
+            }
+            return false;
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return slot == 2 ? 64 : 1;
         }
 
         @Override
         protected void onContentsChanged(int slot) {
-            if (slot < 2) {
+            if (slot != 2) {
                 progress = 0;
                 recipe = null;
                 recipeId = null;
                 nextRecipeScan = 0;
             }
-            setChanged();
+            changed();
+        }
+    };
+
+    public final IItemHandler automation = new IItemHandler() {
+        public int getSlots() {
+            return items.getSlots();
+        }
+        public ItemStack getStackInSlot(int slot) {
+            return items.getStackInSlot(slot);
+        }
+        public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+            return items.insertItem(slot, stack, simulate);
+        }
+        public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            return slot == 1 || items.isItemValid(slot, items.getStackInSlot(slot)) ? ItemStack.EMPTY
+                : items.extractItem(slot, amount, simulate);
+        }
+        public int getSlotLimit(int slot) {
+            return items.getSlotLimit(slot);
+        }
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return items.isItemValid(slot, stack);
+        }
+    };
+
+    /** Все стороны принимают раствор; откачка начинает с отдельного бака отработки. Старые баки доступны для возврата. */
+    public final IFluidHandler fluids = new IFluidHandler() {
+        private FluidTank tankAt(int index) { return switch (index) { case 0 -> spent; case 1 -> input; case 2 -> hydrochloricAcid; default -> water; }; }
+        public int getTanks() {
+            return 4;
+        }
+        public FluidStack getFluidInTank(int tank) {
+            return tankAt(tank).getFluid();
+        }
+        public int getTankCapacity(int tank) {
+            return tankAt(tank).getCapacity();
+        }
+        public boolean isFluidValid(int tank, FluidStack stack) {
+            return tank == 1 && input.isFluidValid(stack);
+        }
+        public int fill(FluidStack stack, FluidAction action) {
+            return input.fill(stack, action);
+        }
+        public FluidStack drain(FluidStack stack, FluidAction action) {
+            for (int i = 0; i < getTanks(); i++) {
+                FluidStack result = tankAt(i).drain(stack, action);
+                if (!result.isEmpty()) return result;
+            }
+            return FluidStack.EMPTY;
+        }
+        public FluidStack drain(int amount, FluidAction action) {
+            for (int i = 0; i < getTanks(); i++) {
+                FluidStack result = tankAt(i).drain(amount, action);
+                if (!result.isEmpty()) return result;
+            }
+            return FluidStack.EMPTY;
         }
     };
 
@@ -74,19 +148,38 @@ public final class EtchingBathBlockEntity extends BlockEntity implements IHaveGo
     }
 
     private FluidTank tank(int capacity, Predicate<FluidStack> validator, boolean affectsRecipe) {
-        return new FluidTank(capacity, validator) {
+        return new GeniusFluidTank(capacity, stack -> {}) {
+            @Override
+            public boolean isFluidValid(FluidStack stack) {
+                return validator.test(stack);
+            }
+
+            @Override
+            public int fill(FluidStack stack, FluidAction action) {
+                return isFluidValid(stack) ? super.fill(stack, action) : 0;
+            }
             @Override
             protected void onContentsChanged() {
                 if (affectsRecipe) {
                     recipe = null;
                     nextRecipeScan = 0;
                 }
-                setChanged();
+                changed();
             }
         };
     }
 
+    @Override
+    public void addBehaviours(List<BlockEntityBehaviour> behaviours) {}
+
+    private void changed() {
+        setChanged();
+        if (level != null && !level.isClientSide) sendData();
+    }
+
+    @Override
     public void tick() {
+        super.tick();
         if (!(level instanceof ServerLevel serverLevel)) return;
         EtchingStatus previousStatus = status;
         mixerRpm = serverLevel.getBlockEntity(worldPosition.above()) instanceof MechanicalMixerBlockEntity mixer
@@ -101,7 +194,7 @@ public final class EtchingBathBlockEntity extends BlockEntity implements IHaveGo
         }
 
         EtchingRecipe value = recipe.value();
-        ItemStack blank = items.getStackInSlot(0);
+        ItemStack blank = items.getStackInSlot(activeSlot);
         ItemStack mask = items.getStackInSlot(1);
         int amount = value.input().amount();
         FluidStack consumed = input.getFluid().copyWithAmount(amount);
@@ -139,9 +232,10 @@ public final class EtchingBathBlockEntity extends BlockEntity implements IHaveGo
             return;
         }
         ResourceLocation completedRecipe = recipeId;
-        items.extractItem(0, 1, false);
+        items.extractItem(activeSlot, 1, false);
         if (value.industrialLevel() == 0) items.extractItem(1, 1, false);
-        output(result);
+        if (items.getStackInSlot(activeSlot).isEmpty()) items.setStackInSlot(activeSlot, result);
+        else output(result);
         recipeId = completedRecipe;
         progress = 0;
         batches++;
@@ -158,6 +252,7 @@ public final class EtchingBathBlockEntity extends BlockEntity implements IHaveGo
 
     private boolean canOutput(ItemStack result) {
         if (result.isEmpty()) return false;
+        if (items.getStackInSlot(activeSlot).getCount() == 1) return true;
         ItemStack existing = items.getStackInSlot(2);
         return existing.isEmpty() || ItemStack.isSameItemSameComponents(existing, result)
             && existing.getCount() + result.getCount() <= result.getMaxStackSize();
@@ -201,12 +296,18 @@ public final class EtchingBathBlockEntity extends BlockEntity implements IHaveGo
         }
         if (recipe != null || level == null || level.getGameTime() < nextRecipeScan) return;
         nextRecipeScan = level.getGameTime() + 20;
-        for (RecipeHolder<EtchingRecipe> candidate : manager.getAllRecipesFor(ExtrasRecipeTypes.ETCHING_TYPE.get())) {
-            if (recipeId != null && !candidate.id().equals(recipeId)) continue;
-            EtchingRecipe value = candidate.value();
-            if (value.blank().test(items.getStackInSlot(0)) && value.mask().test(items.getStackInSlot(1))) {
-                setRecipe(candidate);
-                return;
+        for (int slot : BOARD_SLOTS) {
+            for (RecipeHolder<EtchingRecipe> candidate : manager.getAllRecipesFor(ExtrasRecipeTypes.ETCHING_TYPE.get())) {
+                EtchingRecipe value = candidate.value();
+                if (value.validItems(items.getStackInSlot(slot), items.getStackInSlot(1))
+                    && value.input().test(input.getFluid())
+                    && EtchingChemistry.canEtch(input.getFluid().copyWithAmount(value.input().amount()),
+                        value.input().amount(), value.copperMoles()) && input.getFluidAmount() >= value.input().amount()) {
+                    if (activeSlot != slot) progress = 0;
+                    activeSlot = slot;
+                    setRecipe(candidate);
+                    return;
+                }
             }
         }
     }
@@ -234,6 +335,11 @@ public final class EtchingBathBlockEntity extends BlockEntity implements IHaveGo
         tooltip.add(Component.translatable("goggles.destroy_extras.etching.status", status.text()));
         tooltip.add(Component.translatable("goggles.destroy_extras.etching.mixer",
             String.format(java.util.Locale.ROOT, "%.0f", mixerRpm)));
+        tooltip.add(Component.translatable("goggles.destroy_extras.etching.input", input.getFluidAmount(), INPUT_CAPACITY));
+        tooltip.add(Component.translatable("goggles.destroy_extras.etching.spent", spent.getFluidAmount(), SPENT_CAPACITY));
+        int count = 0;
+        for (int slot : BOARD_SLOTS) if (!items.getStackInSlot(slot).isEmpty()) count++;
+        tooltip.add(Component.translatable("goggles.destroy_extras.etching.boards", count, items.getStackInSlot(1).getHoverName()));
         return true;
     }
 
@@ -256,13 +362,14 @@ public final class EtchingBathBlockEntity extends BlockEntity implements IHaveGo
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(tag, registries, clientPacket);
         tag.put("Input", input.writeToNBT(registries, new CompoundTag()));
         tag.put("Spent", spent.writeToNBT(registries, new CompoundTag()));
         tag.put("HydrochloricAcid", hydrochloricAcid.writeToNBT(registries, new CompoundTag()));
         tag.put("Water", water.writeToNBT(registries, new CompoundTag()));
         tag.put("Items", items.serializeNBT(registries));
+        tag.putInt("ActiveSlot", activeSlot);
         tag.putInt("Progress", progress);
         tag.putInt("Batches", batches);
         tag.putString("Status", status.id());
@@ -270,18 +377,25 @@ public final class EtchingBathBlockEntity extends BlockEntity implements IHaveGo
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(tag, registries, clientPacket);
         input.readFromNBT(registries, tag.getCompound("Input"));
         spent.readFromNBT(registries, tag.getCompound("Spent"));
         hydrochloricAcid.readFromNBT(registries, tag.getCompound("HydrochloricAcid"));
         water.readFromNBT(registries, tag.getCompound("Water"));
-        items.deserializeNBT(registries, tag.getCompound("Items"));
+        CompoundTag inventory = tag.getCompound("Items").copy();
+        inventory.putInt("Size", 6);
+        items.deserializeNBT(registries, inventory);
         progress = tag.getInt("Progress");
         batches = tag.getInt("Batches");
         recipeId = tag.contains("Recipe") ? ResourceLocation.tryParse(tag.getString("Recipe")) : null;
         recipe = null;
         recipeManager = null;
+        activeSlot = tag.getInt("ActiveSlot");
+        if (activeSlot < 0 || activeSlot >= items.getSlots() || activeSlot == 1 || activeSlot == 2) activeSlot = 0;
         status = EtchingStatus.IDLE;
+        if (clientPacket) {
+            for (EtchingStatus candidate : EtchingStatus.values()) if (candidate.id().equals(tag.getString("Status"))) status = candidate;
+        }
     }
 }

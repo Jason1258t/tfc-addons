@@ -91,6 +91,7 @@ public final class DestroyExtrasTest {
         modBus.addListener(DestroyExtrasTest::capabilities);
         NeoForge.EVENT_BUS.addListener(DestroyExtrasTest::commands);
         NeoForge.EVENT_BUS.addListener(M4Test::commands);
+        NeoForge.EVENT_BUS.addListener(EtchingBathTest::commands);
         NeoForge.EVENT_BUS.addListener(M6Test::commands);
         NeoForge.EVENT_BUS.addListener(M10Test::commands);
         NeoForge.EVENT_BUS.addListener(ElectrolyzerMbTest::commands);
