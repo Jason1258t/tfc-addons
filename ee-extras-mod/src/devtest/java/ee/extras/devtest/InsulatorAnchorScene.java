@@ -29,6 +29,14 @@ final class InsulatorAnchorScene {
         InWorldNodeConnection[] glass = new InWorldNodeConnection[2];
         InWorldNode[] terminals = new InWorldNode[6];
         scene.server("две гирлянды и приборы", c -> {
+            if (Scene.inWorld()) {
+                // Только копия сохранённого мира: тесту нужна ровная площадка без старой схемы и растительности.
+                for (BlockPos pos : BlockPos.betweenClosed(c.at(-25, -1, -25), c.at(25, 14, 25)))
+                    c.level().setBlock(pos, pos.getY() < c.origin().getY()
+                            ? Blocks.SMOOTH_STONE.defaultBlockState() : Blocks.AIR.defaultBlockState(),
+                            net.minecraft.world.level.block.Block.UPDATE_CLIENTS
+                                    | net.minecraft.world.level.block.Block.UPDATE_KNOWN_SHAPE);
+            }
             for (int x : new int[] { -9, 9 }) {
                 for (int y = 0; y <= 9; y++) c.set(c.at(x, y, -2), Blocks.POLISHED_ANDESITE.defaultBlockState());
                 for (int z = -1; z <= 0; z++) c.set(c.at(x, 9, z), Blocks.POLISHED_ANDESITE.defaultBlockState());

@@ -49,6 +49,11 @@ public final class ClientTest {
             case "panel-model-probe" -> PanelModelProbe.run();
             case "panel-inlets" -> PanelInletScene.start();
             case "flywheel-wires" -> FlywheelWireTest.start();
+            case "insulator-anchors" -> InsulatorAnchorScene.start();
+            case "wall-disconnect" -> WallDisconnectScene.start();
+            case "integrated-drives" -> IntegratedDrivesScene.start();
+            case "electric-press" -> ElectricPressScene.start();
+            case "electric-machines" -> ElectricMachinesScene.start();
             case "insulator-chain" -> InsulatorChainScene.start();
             case PcbWorldScene.NAME -> PcbWorldScene.start();
             default -> System.out.println("SCENE NOTE сцены " + SCENE + " в ee-extras нет");
