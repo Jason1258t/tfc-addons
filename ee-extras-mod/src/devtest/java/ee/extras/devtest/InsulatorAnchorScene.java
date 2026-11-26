@@ -12,7 +12,6 @@ import com.george_vi.electroenergetics.simulation.infrastructure.InfrastructureS
 import ee.extras.lines.InsulatorAnchors;
 import ee.extras.lines.Tension;
 import java.util.function.Supplier;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
@@ -66,14 +65,15 @@ final class InsulatorAnchorScene {
         scene.ticks(10);
         for (int i = 0; i < 2; i++) {
             final int side = i;
-            click(scene, "гирлянда " + i, () -> {
+            scene.useContact("гирлянда " + i, () -> {
                 var mc = Minecraft.getInstance();
                 return glass[side].node1().getPosition(mc.level).lerp(glass[side].node2().getPosition(mc.level), 0.5);
             }, () -> new Vec3(0, 0.4, 2), () -> {
                 WireInteractionHandler.tick();
                 var selected = WireInteractionHandler.targetedPoint;
-                scene.check("выбрана гирлянда " + side, selected != null && selected.connection().equals(glass[side]));
-            });
+                return selected != null && selected.connection().equals(glass[side]);
+            }, c -> scene.check("сервер обработал зажим " + side,
+                    c.player().getMainHandItem().has(CEEDataComponents.SELECTED_NODE) == (side == 0)));
             if (i == 0) {
                 scene.check("первая гирлянда сохранена в зажиме", () -> Minecraft.getInstance().player.getMainHandItem()
                         .has(CEEDataComponents.SELECTED_NODE));
@@ -95,7 +95,7 @@ final class InsulatorAnchorScene {
                 terminals[2], terminals[4], terminals[3], terminals[5]};
         for (int i = 0; i < 10; i++) {
             final int at = i;
-            click(scene, "катушка " + i, () -> {
+            scene.useContact("катушка " + i, () -> {
                 var level = Minecraft.getInstance().level;
                 if (at == 0 || at == 3) {
                     var string = glass[at == 0 ? 0 : 1];
@@ -116,14 +116,19 @@ final class InsulatorAnchorScene {
                 WireApplyingBehaviour.tick();
                 scene.note("цель катушки " + at + ": " + WireApplyingBehaviour.targetingDetachedNode);
                 if (at == 0 || at == 3) {
-                    scene.check("выбран нижний наконечник " + at,
-                            route.get()[at].equals(WireApplyingBehaviour.targetingDetachedNode));
+                    return route.get()[at].equals(WireApplyingBehaviour.targetingDetachedNode);
                 } else {
                     var mc = Minecraft.getInstance();
                     var hit = mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult block
                             ? InWorldNode.getHitNode(block, mc.level) : null;
                     scene.note("клемма " + at + ": нужно " + route.get()[at] + ", выбрана " + hit);
-                    scene.check("выбрана клемма " + at, route.get()[at].equals(hit));
+                    return route.get()[at].equals(hit);
+                }
+            }, c -> {
+                if (at % 2 == 1) {
+                    var nodes = route.get();
+                    scene.check("провод смонтирован после ПКМ " + at,
+                            InfrastructureSavedData.load(c.level()).isConnected(nodes[at - 1], nodes[at]));
                 }
             });
         }
@@ -144,26 +149,4 @@ final class InsulatorAnchorScene {
         scene.shot("anchored-span").start();
     }
 
-    private static void click(Scene scene, String label, Supplier<Vec3> target, Supplier<Vec3> offset, Runnable check) {
-        var location = new java.util.concurrent.atomic.AtomicReference<Vec3>();
-        scene.client("точка монтажа: " + label, () -> location.set(target.get().add(offset.get())));
-        scene.server("подойти: " + label, c -> {
-            var point = location.get();
-            var eye = point;
-            c.player().teleportTo(c.level(), eye.x, eye.y - c.player().getEyeHeight(), eye.z, 180, 10);
-        });
-        scene.ticks(10);
-        scene.client("навестись: " + label, () -> {
-            var mc = Minecraft.getInstance();
-            Vec3 delta = target.get().subtract(mc.player.getEyePosition());
-            mc.player.setYRot((float) Math.toDegrees(Math.atan2(-delta.x, delta.z)));
-            mc.player.setXRot((float) -Math.toDegrees(Math.atan2(delta.y, Math.sqrt(delta.x * delta.x + delta.z * delta.z))));
-        });
-        scene.ticks(5);
-        scene.client("ПКМ: " + label, () -> {
-            check.run();
-            KeyMapping.click(Minecraft.getInstance().options.keyUse.getKey());
-        });
-        scene.ticks(15);
-    }
 }

@@ -234,6 +234,71 @@ public final class Scene {
     }
 
     /**
+     * Выбрать контакт настоящим наведением и нажать ПКМ (dev #397). preferredOffset — наружу от корпуса;
+     * если цель закрыта соседним блоком/полом, пробуем другие ракурсы. selected проверяет ФАКТИЧЕСКУЮ
+     * цель мода, а не только координату блока. Без совпадения ПКМ не отправляется. verify выполняется
+     * на сервере после клика: вызывающий код проверяет изменение соединения/состояния инструмента.
+     */
+    public Scene useContact(String label, Supplier<Vec3> target, Supplier<Vec3> preferredOffset,
+            BooleanSupplier selected, Consumer<Ctx> verify) {
+        boolean[] clicked = {false}, safe = {false};
+        AtomicReference<Vec3> eye = new AtomicReference<>();
+        for (int attempt = 0; attempt < 7; attempt++) {
+            final int view = attempt;
+            client("ракурс контакта: " + label, () -> {
+                if (clicked[0]) return;
+                Vec3 offset = switch (view) {
+                    case 0 -> preferredOffset.get();
+                    case 1 -> new Vec3(2.5, 0.4, 0);
+                    case 2 -> new Vec3(-2.5, 0.4, 0);
+                    case 3 -> new Vec3(0, 0.4, 2.5);
+                    case 4 -> new Vec3(0, 0.4, -2.5);
+                    case 5 -> new Vec3(0, 2.5, 0);
+                    default -> new Vec3(0, -1.0, 2.5);
+                };
+                eye.set(target.get().add(offset));
+                safe[0] = false;
+            });
+            server("подойти к контакту: " + label, c -> {
+                if (clicked[0]) return;
+                Vec3 point = eye.get();
+                Vec3 feet = point.add(0, -c.player().getEyeHeight(), 0);
+                AABB box = c.player().getBoundingBox().move(feet.subtract(c.player().position()));
+                safe[0] = c.level().noCollision(c.player(), box);
+                if (!safe[0]) return;
+                c.player().getAbilities().flying = true;
+                c.player().onUpdateAbilities();
+                c.player().teleportTo(c.level(), feet.x, feet.y, feet.z, 0, 0);
+            });
+            add("наведение на контакт: " + label, t -> {
+                if (clicked[0] || !safe[0]) return true;
+                var player = mc().player;
+                if (player.getEyePosition().distanceTo(eye.get()) > 0.3) return t >= 100;
+                Vec3 delta = target.get().subtract(player.getEyePosition());
+                float yaw = (float) Math.toDegrees(Math.atan2(-delta.x, delta.z));
+                float pitch = (float) -Math.toDegrees(Math.atan2(delta.y, delta.horizontalDistance()));
+                player.setYRot(yaw);
+                player.setXRot(pitch);
+                player.yRotO = yaw;
+                player.xRotO = pitch;
+                if (t < 5) return false;
+                if (selected.getAsBoolean()) {
+                    note(label + ": выбран контакт, ракурс " + view);
+                    net.minecraft.client.KeyMapping.click(mc().options.keyUse.getKey());
+                    clicked[0] = true;
+                    return true;
+                }
+                return t >= 15;
+            });
+        }
+        check("контакт выбран и ПКМ отправлен: " + label, () -> clicked[0]);
+        ticks(15);
+        return server("результат ПКМ: " + label, c -> {
+            if (clicked[0]) verify.accept(c);
+        });
+    }
+
+    /**
      * Ждать, пока клиент увидит те же блоки, что сервер, в коробке from..to (до 30 с): иначе кадр снимет пустоту.
      * Сравниваются состояния блоков; сервер снимает их в своём потоке.
      */
