@@ -1,0 +1,11 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+
+[[mods]]
+modId = "registrate_audit"
+version = "1.0.0"
+displayName = "Диагностика регистрации Create"
+
+[[mixins]]
+config = "registrate-audit.mixins.json"

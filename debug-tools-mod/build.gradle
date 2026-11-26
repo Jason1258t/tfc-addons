@@ -9,10 +9,16 @@ base { archivesName = 'debug-tools' }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
+// Диагностика регистрации — отдельный jar стенда; в публикуемый аддон не входит.
+sourceSets { devtest {} }
+configurations { devtestCompileOnly.extendsFrom compileOnly }
+
 neoForge {
     version = project.neo_version
+    addModdingDependenciesTo(sourceSets.devtest)
     mods {
         debug_tools { sourceSet sourceSets.main }
+        registrate_audit { sourceSet sourceSets.devtest }
     }
 }
 
@@ -22,3 +28,9 @@ dependencies {
 }
 
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+
+tasks.register('devtestJar', Jar) {
+    dependsOn tasks.named('devtestClasses')
+    archiveClassifier = 'devtest'
+    from sourceSets.devtest.output
+}

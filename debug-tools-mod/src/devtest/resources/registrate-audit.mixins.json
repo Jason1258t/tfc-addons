@@ -1,0 +1,8 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "debug.tools.audit",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": ["RegistrateAuditMixin"],
+  "injectors": { "defaultRequire": 1 }
+}
