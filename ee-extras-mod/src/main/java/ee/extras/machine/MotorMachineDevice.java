@@ -29,7 +29,7 @@ public final class MotorMachineDevice extends SimpleElectricalDevice {
     @Override
     public void preTick(BridgeCollector bridges) {
         MotorMachine machine = machine();
-        if (machine == null || level.hasNeighborSignal(pos)) return;
+        if (machine == null || !machine.drive().enabled()) return;
         float stress = machine.processing() ? machine.drive().requiredStress() : 0;
         bridges.builder(pos).resistor(0, 1, motor.resistance(stress, (float) motor.availableStress(voltage.get())));
     }
@@ -43,7 +43,7 @@ public final class MotorMachineDevice extends SimpleElectricalDevice {
         int samples = Math.min(first.length, second.length);
         for (int i = 0; i < samples; i++) voltage.add(first[i] - second[i]);
         double rms = samples == 0 ? 0 : voltage.get();
-        machine.drive().setRunning(!level.hasNeighborSignal(pos) && rms > 0
+        machine.drive().setRunning(machine.drive().enabled() && rms > 0
                 && motor.availableStress(rms) >= machine.drive().requiredStress());
     }
 

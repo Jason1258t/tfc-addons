@@ -345,6 +345,7 @@ public class EeExtras {
         ee.extras.wire.SurfaceWires.register(modBus, container);
         ee.extras.wire.WireComponents.register(modBus);
         ee.extras.panel.PanelModules.register(modBus);
+        ee.extras.machine.MachineDrive.registerControls();
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
         DEVICES.register("belt_motor", () -> BeltMotorDevice.TYPE);
@@ -409,7 +410,6 @@ public class EeExtras {
         event.accept(ELECTRIC_DEPLOYER_ITEM.get());
         event.accept(FLUID_DISPENSER_ITEM.get());
         event.accept(METERING_PUMP_ITEM.get());
-        event.accept(WALL_DISCONNECT_ITEM.get());
         event.accept(ee.extras.panel.PanelModules.SWITCH_ITEM.get());
         for (Supplier<? extends Item> item : new Supplier[] {KINETIC_GENERATOR_ITEM, CONVERTER_ITEM, CABLE_CONVERTER_ITEM,
                 FOUR_CORE_TERMINATION_ITEM, PHASE_TAP_ITEM, DUPLEX_INSULATOR_ITEM, FOUR_CORE_INSULATOR_ITEM, FOUR_CORE_SPOOL, THIN_SPOOL, THIN_SINGLE_SPOOL, DECORATIVE_SINGLE_SPOOL, CABLE_CAP})

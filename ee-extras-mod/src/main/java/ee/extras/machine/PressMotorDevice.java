@@ -28,7 +28,7 @@ public final class PressMotorDevice extends SimpleElectricalDevice {
     @Override
     public void preTick(BridgeCollector bridges) {
         ElectricPressBlockEntity press = press();
-        if (press == null || level.hasNeighborSignal(pos)) return;
+        if (press == null || !press.drive().enabled()) return;
         float stress = press.processing() ? press.requiredStress() : 0;
         bridges.builder(pos).resistor(0, 1, motor.resistance(stress, (float) motor.availableStress(voltage.get())));
     }
@@ -42,7 +42,7 @@ public final class PressMotorDevice extends SimpleElectricalDevice {
         int samples = Math.min(first.length, second.length);
         for (int i = 0; i < samples; i++) voltage.add(first[i] - second[i]);
         double rms = samples == 0 ? 0 : voltage.get();
-        press.setMotorRunning(!level.hasNeighborSignal(pos) && rms > 0
+        press.setMotorRunning(press.drive().enabled() && rms > 0
                 && motor.availableStress(rms) >= press.requiredStress());
     }
 

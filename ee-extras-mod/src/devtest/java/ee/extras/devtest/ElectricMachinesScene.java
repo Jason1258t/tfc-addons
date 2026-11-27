@@ -24,6 +24,7 @@ final class ElectricMachinesScene {
     static void start() {
         Scene scene = new Scene("electric-machines");
         scene.server("поставить приборы", context -> {
+            context.set(context.at(-6, 2, 0), EeExtras.ELECTRIC_PRESS.get().defaultBlockState());
             context.set(context.at(-3, 2, 0), EeExtras.ELECTRIC_MIXER.get().defaultBlockState());
             context.set(context.at(-3, 0, 0), AllBlocks.BASIN.getDefaultState());
             context.set(context.at(0, 2, 0), EeExtras.ELECTRIC_DEPLOYER.get().defaultBlockState()
@@ -41,7 +42,7 @@ final class ElectricMachinesScene {
             scene.check("источник EE зарегистрирован", supply != null);
             if (supply == null) return;
             supply.voltage = 330;
-            for (int x : new int[] {-3, 0}) {
+            for (int x : new int[] {-6, -3, 0}) {
                 var machine = context.at(x, 2, 0);
                 for (int contact = 0; contact < 2; contact++) {
                     boolean wired = DevTest.spoolWire(player, new ItemStack(CEEItems.COPPER_WIRE_SPOOL.get(), 16),
@@ -54,16 +55,63 @@ final class ElectricMachinesScene {
             player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         });
         scene.ticks(40).server("обороты при питании", context -> {
-            for (int x : new int[] {-3, 0}) {
+            for (int x : new int[] {-6, -3, 0}) {
                 var machine = context.player().serverLevel().getBlockEntity(context.at(x, 2, 0));
                 scene.check("32 об/мин без сети Create у прибора " + x, machine instanceof KineticBlockEntity be
                         && be.getSpeed() == 32 && !be.hasNetwork());
             }
         });
-        scene.until("четыре провода у клиента", 400, () -> WireRenderer.getAllConnections().size() >= 4);
+        scene.server("поставить управление и настроить обороты", context -> {
+            var player = context.player();
+            var level = player.serverLevel();
+            DevicesSavedData.load(level).getDevice(context.at(-5, 1, 1), CreativeBatteryDevice.class).voltage = 1000;
+            for (int x : new int[] {-6, -3, 0}) {
+                var pos = context.at(x, 2, 0);
+                MachineControlsTest.mount(player, pos);
+                var speed = BlockEntityBehaviour.get(level, pos,
+                        com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour.TYPE);
+                scene.check("регулятор скорости " + x, speed != null);
+                if (speed != null) speed.setValue(128);
+            }
+            player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+        });
+        scene.ticks(40).server("проверить заданные обороты", context -> {
+            for (int x : new int[] {-6, -3, 0}) {
+                var be = (KineticBlockEntity) context.player().serverLevel().getBlockEntity(context.at(x, 2, 0));
+                scene.check("128 об/мин " + x, be.getSpeed() == 128);
+            }
+        });
+        scene.until("четыре провода у клиента", 400, () -> WireRenderer.getAllConnections().size() >= 6);
         scene.gui(false);
         scene.camera(-0.75, 1.4, 0, 10, 193, 17);
         scene.shot("electric-machines");
+        scene.server("аварийная остановка", context -> {
+            for (int x : new int[] {-6, -3, 0}) MachineControlsTest.click(context.player(), context.at(x, 2, 0), ItemStack.EMPTY, 1, false);
+        });
+        scene.ticks(10).server("проверить остановку", context -> {
+            for (int x : new int[] {-6, -3, 0}) {
+                var be = (KineticBlockEntity) context.player().serverLevel().getBlockEntity(context.at(x, 2, 0));
+                scene.check("аварийный стоп " + x, be.getSpeed() == 0);
+            }
+        });
+        scene.camera(-3, 2.6, 0, 3, 180, 7);
+        scene.shot("machine-controls-stopped");
+        scene.camera(-6, 2.6, 0, 3, 180, 7);
+        scene.shot("press-controls-stopped");
+        scene.server("показать настройку скорости", context -> {
+            context.player().setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(com.simibubi.create.AllItems.WRENCH.get()));
+        });
+        scene.gui(true);
+        scene.camera(-3, 2.8, .5, 2.5, 180, 0);
+        scene.ticks(20).client("настройка синхронизирована клиенту", () -> {
+            var mc = net.minecraft.client.Minecraft.getInstance();
+            var pos = net.minecraft.core.BlockPos.containing(scene.at(-3, 2, 0));
+            var setting = BlockEntityBehaviour.get(mc.level, pos,
+                    com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour.TYPE);
+            scene.check("клиент получил 128 об/мин", setting != null && setting.getValue() == 128);
+        });
+        scene.shot("speed-window");
+        scene.gui(false);
         scene.camera(3, 1.7, 0, 4, 200, 14);
         scene.shot("fluid-dispenser");
         scene.start();

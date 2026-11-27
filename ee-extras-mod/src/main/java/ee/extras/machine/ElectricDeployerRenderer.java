@@ -40,6 +40,7 @@ public final class ElectricDeployerRenderer extends DeployerRenderer {
         renderItem(deployer, partialTicks, pose, buffers, light, overlay);
         FilteringRenderer.renderOnBlockEntity(deployer, partialTicks, pose, buffers, light, overlay);
 
+        MachineControlsRenderer.render((MotorMachine) deployer, partialTicks, pose, buffers, light, overlay);
         var state = deployer.getBlockState();
         var facing = state.getValue(DirectionalAxisKineticBlock.FACING);
         var offset = getHandOffset(deployer, partialTicks, state);

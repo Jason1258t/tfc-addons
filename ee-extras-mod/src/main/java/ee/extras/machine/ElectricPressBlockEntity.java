@@ -9,9 +9,16 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
-public final class ElectricPressBlockEntity extends MechanicalPressBlockEntity {
+public final class ElectricPressBlockEntity extends MechanicalPressBlockEntity implements MotorMachine {
     static final int RPM = 32;
-    private float motorSpeed;
+    private final MachineDrive drive = new MachineDrive(this, RPM);
+
+    @Override public MachineDrive drive() { return drive; }
+
+    @Override public void addBehaviours(java.util.List<com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour> behaviours) {
+        super.addBehaviours(behaviours);
+        MachineDrive.addBehaviours(this, behaviours);
+    }
 
     public ElectricPressBlockEntity(BlockPos pos, BlockState state) {
         super(EeExtras.ELECTRIC_PRESS_BE.get(), pos, state);
@@ -24,43 +31,44 @@ public final class ElectricPressBlockEntity extends MechanicalPressBlockEntity {
 
     @Override
     public float getSpeed() {
-        return motorSpeed;
+        return drive.speed();
     }
 
     float requiredStress() {
-        return RPM * calculateStressApplied();
+        return drive.requiredStress();
     }
 
-    boolean processing() {
+    public boolean processing() {
         return isRunning();
+    }
+
+    @Override public void destroy() {
+        drive.controls.drop();
+        super.destroy();
     }
 
     @Override
     public void tick() {
-        if (level != null && !level.isClientSide && level.hasNeighborSignal(worldPosition)) {
+        if (level != null && !level.isClientSide && !drive.enabled()) {
             setMotorRunning(false);
         }
         super.tick();
+        drive.controls.tick();
     }
 
     void setMotorRunning(boolean running) {
-        float previous = motorSpeed;
-        motorSpeed = running ? RPM : 0;
-        if (motorSpeed != previous) {
-            onSpeedChanged(previous);
-            sendData();
-        }
+        drive.setRunning(running);
     }
 
     @Override
     protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(tag, registries, clientPacket);
-        if (clientPacket) tag.putFloat("MotorSpeed", motorSpeed);
+        drive.write(tag, clientPacket);
     }
 
     @Override
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
-        motorSpeed = clientPacket ? tag.getFloat("MotorSpeed") : 0;
+        drive.read(tag, clientPacket);
     }
 }

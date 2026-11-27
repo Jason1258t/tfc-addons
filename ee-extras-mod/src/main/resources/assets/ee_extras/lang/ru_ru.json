@@ -403,5 +403,6 @@
   "ee_extras.metering_pump.dose": "Порция: %s мБ",
   "ee_extras.metering_pump.ready": "Готова: ПКМ или фронт редстоуна 0 → 1",
   "ee_extras.metering_pump.dispensing": "Выдача: осталось %s / %s мБ",
-  "ee_extras.metering_pump.filling": "Набор: %s / %s мБ"
+  "ee_extras.metering_pump.filling": "Набор: %s / %s мБ",
+  "ee_extras.machine.speed": "Скорость вращения"
 }

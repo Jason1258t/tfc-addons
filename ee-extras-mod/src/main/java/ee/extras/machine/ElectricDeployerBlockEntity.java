@@ -33,6 +33,12 @@ public final class ElectricDeployerBlockEntity extends DeployerBlockEntity imple
     }
 
     @Override
+    public void addBehaviours(java.util.List<com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour> behaviours) {
+        super.addBehaviours(behaviours);
+        MachineDrive.addBehaviours(this, behaviours);
+    }
+
+    @Override
     public MachineDrive drive() {
         return drive;
     }
@@ -53,10 +59,16 @@ public final class ElectricDeployerBlockEntity extends DeployerBlockEntity imple
         return !phase.name().equals("WAITING");
     }
 
+    @Override public void destroy() {
+        drive.controls.drop();
+        super.destroy();
+    }
+
     @Override
     public void tick() {
-        if (level != null && !level.isClientSide && level.hasNeighborSignal(worldPosition)) drive.setRunning(false);
+        if (level != null && !level.isClientSide && !drive.enabled()) drive.setRunning(false);
         super.tick();
+        drive.controls.tick();
     }
 
     @Override

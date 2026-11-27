@@ -32,6 +32,7 @@ public final class ElectricPressRenderer extends SafeBlockEntityRenderer<Electri
     @Override
     protected void renderSafe(ElectricPressBlockEntity press, float partialTicks, PoseStack pose,
             MultiBufferSource buffers, int light, int overlay) {
+        MachineControlsRenderer.render((MotorMachine) press, partialTicks, pose, buffers, light, overlay);
         var state = press.getBlockState();
         PressingBehaviour behaviour = press.getPressingBehaviour();
         float offset = behaviour.getRenderedHeadOffset(partialTicks) * behaviour.mode.headOffset;

@@ -15,7 +15,7 @@
       "item": "create:fluid_pipe"
     },
     "D": {
-      "item": "ee_extras:wall_disconnect"
+      "item": "electroenergetics:cut_off_switch"
     }
   },
   "result": {

@@ -33,6 +33,7 @@ public final class ElectricMixerRenderer extends SafeBlockEntityRenderer<Electri
     @Override
     protected void renderSafe(ElectricMixerBlockEntity mixer, float partialTicks, PoseStack pose,
             MultiBufferSource buffers, int light, int overlay) {
+        MachineControlsRenderer.render((MotorMachine) mixer, partialTicks, pose, buffers, light, overlay);
         var state = mixer.getBlockState();
         float offset = mixer.getRenderedHeadOffset(partialTicks);
         float angle = AnimationTickHolder.getRenderTime(mixer.getLevel())

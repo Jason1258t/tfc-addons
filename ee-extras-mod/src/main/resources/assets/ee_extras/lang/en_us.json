@@ -403,5 +403,6 @@
   "ee_extras.metering_pump.dose": "Dose: %s mB",
   "ee_extras.metering_pump.ready": "Ready: right-click or redstone rising edge",
   "ee_extras.metering_pump.dispensing": "Dispensing: %s / %s mB remaining",
-  "ee_extras.metering_pump.filling": "Filling: %s / %s mB"
+  "ee_extras.metering_pump.filling": "Filling: %s / %s mB",
+  "ee_extras.machine.speed": "Rotation speed"
 }

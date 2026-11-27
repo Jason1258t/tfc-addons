@@ -13,7 +13,13 @@
       "shots": ["electric-press"]
     },
     "electric-machines": {
-      "shots": ["electric-machines", "fluid-dispenser"]
+      "shots": [
+        "electric-machines",
+        "fluid-dispenser",
+        "machine-controls-stopped",
+        "press-controls-stopped",
+        "speed-window"
+      ]
     },
     "insulator-chain": {
       "shots": ["two-anchored-spans", "support-jumper"]

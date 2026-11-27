@@ -75,6 +75,7 @@ public class DevTest {
         BeltMotorTest.register(d);
         ElectricPressTest.register(d);
         ElectricMachinesTest.register(d);
+        MachineControlsTest.register(d);
         MeteringPumpTest.register(d);
         if (net.neoforged.fml.ModList.get().isLoaded("computercraft")) {
             try { Class.forName("ee.extras.devtest.ComputerCraftTest").getMethod("register", CommandDispatcher.class).invoke(null, d); } catch (ReflectiveOperationException ignored) {}
