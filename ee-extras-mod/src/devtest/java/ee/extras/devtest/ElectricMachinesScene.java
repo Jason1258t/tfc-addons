@@ -102,7 +102,7 @@ final class ElectricMachinesScene {
             context.player().setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(com.simibubi.create.AllItems.WRENCH.get()));
         });
         scene.gui(true);
-        scene.camera(-3, 2.8, .5, 2.5, 180, 0);
+        scene.camera(-3, 2.55, .5, 2.5, 180, 0);
         scene.ticks(20).client("настройка синхронизирована клиенту", () -> {
             var mc = net.minecraft.client.Minecraft.getInstance();
             var pos = net.minecraft.core.BlockPos.containing(scene.at(-3, 2, 0));

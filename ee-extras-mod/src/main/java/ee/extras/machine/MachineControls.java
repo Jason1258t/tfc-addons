@@ -29,7 +29,7 @@ final class MachineControls {
         var hit = event.getHitVec();
         if (!hit.getDirection().getAxis().isHorizontal()) return;
         var point = hit.getLocation().subtract(event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
-        if (point.y < 0.65) return;
+        if (point.y < .35 || point.y > .8) return;
         double x = switch (hit.getDirection()) {
             case SOUTH -> point.x;
             case NORTH -> 1 - point.x;

@@ -21,8 +21,8 @@ final class MachineControlsRenderer {
             pose.pushPose();
             pose.translate(.5, 0, .5);
             pose.mulPose(Axis.YP.rotationDegrees(-controls.faces[i].toYRot()));
-            pose.translate((i == 0 ? .25 : .75) - .5, .8, .505);
-            pose.scale(.45f, .45f, .45f);
+            pose.translate((i == 0 ? .25 : .75) - .5, .55, .505);
+            pose.scale(.55f, .55f, .55f);
             // У щитковых моделей EE задняя плоскость z=14/16, центр x=5/16; лицевая сторона смотрит на -Z.
             pose.mulPose(Axis.YP.rotationDegrees(180));
             pose.translate(-5.0 / 16, -.5, -14.0 / 16);

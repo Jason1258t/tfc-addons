@@ -44,9 +44,9 @@ public final class MachineDrive {
     }
 
     private static final class SpeedSlot extends ValueBoxTransform.Sided {
-        SpeedSlot() { scale = 0.2f; }
+        SpeedSlot() { scale = 0.25f; }
         @Override protected Vec3 getSouthLocation() {
-            return new Vec3(0.5, 0.8, 1.01);
+            return new Vec3(0.5, 0.55, 1.01);
         }
         @Override protected boolean isSideActive(BlockState state, Direction direction) {
             return direction.getAxis().isHorizontal();

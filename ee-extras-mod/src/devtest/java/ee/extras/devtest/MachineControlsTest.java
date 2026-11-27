@@ -38,7 +38,7 @@ final class MachineControlsTest {
     static void click(ServerPlayer player, BlockPos pos, ItemStack stack, int slot, boolean shift) {
         player.setShiftKeyDown(shift);
         player.setItemInHand(InteractionHand.MAIN_HAND, stack);
-        var hit = new BlockHitResult(Vec3.atLowerCornerOf(pos).add(slot == 0 ? .25 : .75, .8, 1), Direction.SOUTH, pos, false);
+        var hit = new BlockHitResult(Vec3.atLowerCornerOf(pos).add(slot == 0 ? .25 : .75, .55, 1), Direction.SOUTH, pos, false);
         if (!player.gameMode.useItemOn(player, player.serverLevel(), stack, InteractionHand.MAIN_HAND, hit).consumesAction())
             throw new IllegalStateException("Клик управления не принят: " + stack);
         player.setShiftKeyDown(false);
